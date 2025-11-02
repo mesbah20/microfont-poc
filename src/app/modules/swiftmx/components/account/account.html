@@ -1,0 +1,80 @@
+<div class="sub-panel">
+  <app-sub-panel-header 
+    [subPanelTitle]="title"
+    [isOptional]="isOptional"
+  />
+  
+  <div class="form-grid-4-col">
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'IBAN'"
+      [controlName]="controlPrefix + 'Iban'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Account ID'"
+      [controlName]="controlPrefix + 'Id'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Scheme Name Code'"
+      [controlName]="controlPrefix + 'SchmeNmCd'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Scheme Name Proprietary'"
+      [controlName]="controlPrefix + 'SchmeNmPrtry'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Issuer'"
+      [controlName]="controlPrefix + 'Issr'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Type Code'"
+      [controlName]="controlPrefix + 'TpCd'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Type Proprietary'"
+      [controlName]="controlPrefix + 'TpPrtry'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Currency'"
+      [controlName]="controlPrefix + 'Ccy'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Name'"
+      [controlName]="controlPrefix + 'Nm'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Proxy Type Code'"
+      [controlName]="controlPrefix + 'PrxyTpCd'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Proxy Type Proprietary'"
+      [controlName]="controlPrefix + 'PrxyTpPrtry'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Proxy ID'"
+      [controlName]="controlPrefix + 'PrxyId'"
+    />
+  </div>
+</div> 

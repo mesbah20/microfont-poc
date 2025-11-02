@@ -1,0 +1,116 @@
+// orbit-spinner.component.scss
+
+.orbit-spinner-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.overlay-mode {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+  }
+
+  &.with-background {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.spinner-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  &.text-top,
+  &.text-bottom {
+    flex-direction: column;
+  }
+
+  &.text-left {
+    flex-direction: row-reverse;
+  }
+
+  &.text-right {
+    flex-direction: row;
+  }
+}
+
+.spinner-text {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.orbit-spinner {
+  position: relative;
+  display: inline-block;
+  --animation-duration: 1.5s;
+
+  &.paused, &.paused * {
+    animation-play-state: paused !important;
+  }
+}
+
+.orbit-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+}
+
+.orbit-ring {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 9999px;
+  animation: orbit-rotate var(--animation-duration) linear infinite;
+}
+
+.orbit-dot {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform-origin: left center;
+  border-radius: 9999px;
+}
+
+// Standalone dots without visible ring
+.orbit-dot-standalone {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  animation: orbit-rotate var(--animation-duration) linear infinite;
+
+  .dot-element {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 9999px;
+  }
+}
+
+@keyframes orbit-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Size presets (width/height are set inline for precision)
+.orbit-spinner.size-small { }
+.orbit-spinner.size-medium { }
+.orbit-spinner.size-large { }
+.orbit-spinner.size-xlarge { }
+
+// Speed presets as fallbacks when customSpeed is not provided
+.orbit-spinner.speed-slow { --animation-duration: 2.5s; }
+.orbit-spinner.speed-normal { --animation-duration: 1.5s; }
+.orbit-spinner.speed-fast { --animation-duration: 0.8s; } 

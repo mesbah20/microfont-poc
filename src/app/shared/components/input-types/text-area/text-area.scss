@@ -1,0 +1,214 @@
+// text-area.scss
+
+// .lds-txt-area {
+//   // Manual resize control styles
+//   .manual-resize-controls {
+//     button {
+//       transition: all 0.2s ease;
+      
+//       &:hover:not(:disabled) {
+//         transform: translateY(-1px);
+//         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+//       // Manual resize floating controls
+//   .resize-controls-floating {
+//     position: absolute;
+//     top: 0.5rem;
+//     right: 0.5rem;
+//     background: rgba(255, 255, 255, 0.95);
+//     backdrop-filter: blur(4px);
+//     border: 1px solid rgba(0, 0, 0, 0.1);
+//     border-radius: 0.375rem;
+//     padding: 0.25rem;
+//     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+//     opacity: 0;
+//     pointer-events: none;
+//     transition: opacity 0.2s ease;
+    
+//     button {
+//       width: 1.5rem;
+//       height: 1.5rem;
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       background: transparent;
+//       border: none;
+//       border-radius: 0.25rem;
+//       font-size: 0.75rem;
+//       color: #6b7280;
+//       cursor: pointer;
+//       transition: all 0.15s ease;
+      
+//       &:hover:not(:disabled) {
+//         background-color: #f3f4f6;
+//         color: #374151;
+//       }
+      
+//       &:disabled {
+//         opacity: 0.4;
+//         cursor: not-allowed;
+//       }
+//     }
+//   }
+
+//   // Show floating controls on textarea focus or hover
+//   &:focus-within .resize-controls-floating,
+//   &:hover .resize-controls-floating {
+//     opacity: 1;
+//     pointer-events: auto;
+//   }
+      
+//       &:active:not(:disabled) {
+//         transform: translateY(0);
+//       }
+      
+//       &:disabled {
+//         opacity: 0.5;
+//         cursor: not-allowed;
+//       }
+//     }
+    
+//     .size-preset {
+//       min-width: 2rem;
+//       height: 1.5rem;
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       font-size: 0.75rem;
+//       font-weight: 500;
+//       border: 1px solid #d1d5db;
+      
+//       &:hover:not(:disabled) {
+//         background-color: #e5e7eb;
+//         border-color: #9ca3af;
+//       }
+//     }
+    
+//     .size-indicator {
+//       padding: 0.25rem 0.5rem;
+//       background-color: #f9fafb;
+//       border: 1px solid #e5e7eb;
+//       border-radius: 0.375rem;
+//       font-size: 0.75rem;
+//       color: #6b7280;
+//       min-width: 3rem;
+//       text-align: center;
+//     }
+//   }
+//   textarea {
+//     // Base styles
+//     font-family: inherit;
+//     font-size: inherit;
+//     line-height: 1.5;
+    
+//     // Auto-resize specific styles
+//     &.resize-none {
+//       resize: none;
+//       overflow: hidden;
+      
+//       // Smooth height transitions
+//       transition: height 0.1s ease;
+      
+//       // Ensure minimum height
+//       min-height: 2.5rem;
+      
+//       // When max rows is reached, allow vertical scrolling
+//       &:has-text-overflow {
+//         overflow-y: auto;
+//       }
+//     }
+    
+//     // Standard resize behavior when auto-resize is disabled
+//     &.resize-vertical {
+//       resize: vertical;
+//       overflow-y: auto;
+//     }
+    
+//     // Focus states
+//     &:focus {
+//       outline: none;
+      
+//       // Maintain smooth transitions on focus
+//       &.resize-none {
+//         transition: height 0.1s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+//       }
+//     }
+    
+//     // Disabled state
+//     &:disabled {
+//       resize: none;
+//       cursor: not-allowed;
+//     }
+//   }
+  
+//   // Label styles
+//   .input-label {
+//     display: block;
+//     margin-bottom: 0.5rem;
+//     font-weight: 500;
+//     color: #374151;
+    
+//     .text-red-500 {
+//       color: #ef4444;
+//     }
+//   }
+  
+//   // Character/row counter in info section
+//   .text-xs {
+//     font-size: 0.75rem;
+//     line-height: 1rem;
+    
+//     &.text-gray-500 {
+//       color: #6b7280;
+//     }
+    
+//     &.text-gray-400 {
+//       color: #9ca3af;
+//     }
+    
+//     &.text-red-500 {
+//       color: #ef4444;
+//     }
+    
+//     &.text-blue-500 {
+//       color: #3b82f6;
+//     }
+//   }
+  
+//   // Error message styling
+//   .text-red-500.text-sm {
+//     font-size: 0.875rem;
+//     line-height: 1.25rem;
+//     color: #ef4444;
+//   }
+// }
+
+// // Animation for smooth auto-resize
+// @keyframes textareaGrow {
+//   from {
+//     height: auto;
+//   }
+//   to {
+//     height: var(--textarea-height);
+//   }
+// }
+
+// // Utility classes for better auto-resize behavior
+// .textarea-auto-resize {
+//   transition: height 0.1s ease;
+//   overflow: hidden;
+//   resize: none;
+// }
+
+// .textarea-smooth {
+//   transition: all 0.2s ease;
+// }
+
+// // Print styles
+// @media print {
+//   textarea {
+//     resize: none;
+//     overflow: visible;
+//     height: auto !important;
+//   }
+// }
+// }

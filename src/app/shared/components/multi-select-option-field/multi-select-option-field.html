@@ -1,0 +1,130 @@
+<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'" #multiSelectWrapper>
+  <!-- Label -->
+  <label 
+    *ngIf="label()" 
+    class="input-label"
+    [class.required]="isRequired()">
+    {{ label() }}
+  </label>
+
+  <div class="select-container">
+    <div class="select-wrapper" [ngClass]="{'readonly-input': isReadonly()}">
+      <!-- Search Input -->
+      <input
+        #searchInput
+        type="text"
+        [placeholder]="getDisplayText() || placeholder() || 'Select options...'"
+        [value]="searchable() ? searchTerm() : ''"
+        [readonly]="!searchable() || isReadonly()"
+        [disabled]="isReadonly()"
+        (input)="onSearchInput($event)"
+        [matTooltip]="tooltip()"
+        [matTooltipPosition]="tooltipPosition()"
+        [matTooltipClass]="tooltipClass()"
+        [matTooltipDisabled]="!tooltip()"
+        (focus)="onInputFocus()"
+        (blur)="onInputBlur()"
+        (keydown)="onKeyDown($event)"
+        (click)="onInputClick($event)"
+        class="custom-select"
+        role="combobox"
+        [attr.aria-expanded]="isOpen()"
+        [attr.aria-label]="label()"
+        autocomplete="off"
+      />
+
+      <!-- Clear Button (when searching) -->
+      <button 
+        *ngIf="searchable() && searchTerm() && !isReadonly()"
+        type="button"
+        class="clear-search-btn"
+        (click)="clearSearch(); $event.stopPropagation()"
+        (mousedown)="$event.preventDefault()"
+        tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+      </button>
+
+      <!-- Dropdown Toggle Button -->
+      <button
+        type="button"
+        class="dropdown-toggle"
+        (click)="onToggleClick($event)"
+        [disabled]="isReadonly()"
+        tabindex="-1"
+      >
+        <svg class="dropdown-icon" [ngClass]="{'rotate-180': isOpen()}" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Dropdown Options (Absolutely Positioned) -->
+    <div 
+      class="dropdown-menu"
+      *ngIf="isOpen()">
+      
+      <!-- Search Results Info -->
+      <div *ngIf="searchable() && searchTerm() && getSearchResultsText()" class="search-results-info">
+        {{ getSearchResultsText() }}
+      </div>
+      
+      <!-- Select All Option (for filtered results) -->
+      <div
+        *ngIf="showSelectAll() && hasSearchResults()"
+        class="dropdown-option select-all-item"
+        [class.selected]="isAllFilteredSelected()"
+        [class.indeterminate]="isFilteredIndeterminate()"
+        (click)="toggleSelectAllFiltered($event)"
+        (mousedown)="$event.preventDefault()"
+        role="option"
+        [attr.aria-selected]="isAllFilteredSelected()">
+        
+        <mat-pseudo-checkbox
+          [state]="isAllFilteredSelected() ? 'checked' : (isFilteredIndeterminate() ? 'indeterminate' : 'unchecked')"
+          class="option-checkbox">
+        </mat-pseudo-checkbox>
+        
+        <span class="option-text select-all-text">
+          {{ searchTerm() ? 'Select All Filtered' : 'Select All' }}
+        </span>
+      </div>
+
+      <!-- Separator line if Select All is shown -->
+      <div *ngIf="showSelectAll() && hasSearchResults()" class="select-all-separator"></div>
+      
+      <!-- Regular Options (filtered) -->
+      <div
+        *ngFor="let option of filteredOptions(); trackBy: trackByKey"
+        class="dropdown-option"
+        [class.selected]="isOptionSelected(option)"
+        (click)="toggleOption(option, $event)"
+        (mousedown)="$event.preventDefault()"
+        role="option"
+        [attr.aria-selected]="isOptionSelected(option)">
+        
+        <mat-pseudo-checkbox
+          [state]="isOptionSelected(option) ? 'checked' : 'unchecked'"
+          class="option-checkbox">
+        </mat-pseudo-checkbox>
+        
+        <span class="option-text">{{ option.value }}</span>
+      </div>
+      
+      <!-- No Results Message -->
+      <div *ngIf="!hasSearchResults() && searchTerm()" class="no-options">
+        <mat-icon>search_off</mat-icon>
+        <span>No options match "{{ searchTerm() }}"</span>
+      </div>
+      
+      <!-- No Options Message -->
+      <div *ngIf="!filteredOptions().length" class="no-options">
+        <mat-icon>list</mat-icon>
+        <span>No options available</span>
+      </div>
+    </div>
+
+
+  <!-- Validation Error -->
+  <div *ngIf="frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)" class="text-red-500 text-xs mt-1">
+    {{ label() }} is required..!
+  </div>

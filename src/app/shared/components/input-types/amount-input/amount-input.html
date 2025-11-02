@@ -1,0 +1,99 @@
+<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
+  <label class="input-label relative">
+    {{ label() }}
+    @if (isRequired()) {
+      <span class="text-red-500">*</span>
+    }
+  </label>
+
+  <div class="input-wrapper">
+  <input [formControlName]="controlName()"
+         [attr.controlName]="controlName()"
+         [ngClass]="{'readonly-input': isReadonly() }"
+         type="number"
+         (input)="onChangeInput($event)"
+         (keypress)="onKeyPress($event)"
+         (paste)="onPaste($event)"
+         [readonly]="isReadonly()"
+         matInput
+         [matTooltip]="tooltip()"
+         [matTooltipPosition]="tooltipPosition()"
+         [matTooltipClass]="tooltipClass()"
+         [matTooltipDisabled]="!tooltip()"
+         [placeholder]="placeholder() ?? 'Enter ' + label()"
+         class="custom-input"
+         [step]="getStepValue()"
+         [min]="allowNegative() ? null : 0"
+         [max]="maxAmt() || null"
+         (input)="onInput($event)"
+         (change)="onChange($event)"
+         (blur)="onBlur()"/>
+
+             @if (frmGroup().get(controlName())?.value && !isReadonly()) {
+      <button 
+        type="button"
+        class="clear-button"
+        (click)="clearInput()"
+        [attr.aria-label]="'Clear ' + label()">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" class="mat-icon" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+      </button>
+    }
+</div>
+  @if (isInvalid()) {
+    <div class="text-red-500 text-sm mt-1">
+      @if (hasError('required')) {
+        <ng-container>
+          {{ label() }} is required..!
+        </ng-container>
+      }
+
+      @if (hasError('min')) {
+        <ng-container>
+          Minimum amount required is {{ getErrorValue('min') }}
+        </ng-container>
+      }
+
+      @if (hasError('max')) {
+        <ng-container>
+          Maximum amount allowed is {{ getErrorValue('max') }}
+        </ng-container>
+      }
+
+      @if (hasError('maxLengthNumber')) {
+        <ng-container>
+          Maximum {{ getErrorValue('maxLengthNumber').requiredLength }} digits allowed
+        </ng-container>
+      }
+       @else if (hasError('maxlength')) {
+        <ng-container>
+          Maximum {{ getErrorValue('maxlength').requiredLength }} characters allowed
+        </ng-container>
+      }
+
+      @if (hasError('leadingZeros')) {
+        <ng-container>
+          Leading zeros are not allowed (e.g., 0987 should be 987)
+        </ng-container>
+      }
+
+      @if (hasError('invalidAmount')) {
+        <ng-container>
+          Invalid amount format. Maximum {{ getErrorValue('invalidAmount').maxDecimals }} decimal places allowed
+        </ng-container>
+      }
+
+      @if (hasError('negativeNotAllowed')) {
+        <ng-container>
+          Negative amounts are not allowed
+        </ng-container>
+      }
+
+
+      @if (hasCustomErrors()) {
+        @for (errorKey of getCustomErrorKeys(); track errorKey) {
+          <div>{{ getCustomErrorMessage(errorKey) }}</div>
+        }
+      }
+    </div>
+  }
+</div>

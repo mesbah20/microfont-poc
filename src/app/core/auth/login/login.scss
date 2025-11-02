@@ -1,0 +1,242 @@
+// Enhanced animations
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-30px) rotate(180deg);
+  }
+}
+
+@keyframes float-reverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-25px) rotate(-180deg);
+  }
+}
+
+@keyframes float-small {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) scale(1.2);
+  }
+}
+
+@keyframes float-small-reverse {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(0.8);
+  }
+}
+
+@keyframes float-tiny {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-8px) scale(1.5);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes title-glow {
+  0%, 100% {
+    text-shadow: 0 0 5px rgba(79, 70, 229, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(79, 70, 229, 0.6), 0 0 30px rgba(139, 92, 246, 0.4);
+  }
+}
+
+@keyframes logo-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(79, 70, 229, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(79, 70, 229, 0.6), 0 0 40px rgba(139, 92, 246, 0.4);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Animation classes
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 10s ease-in-out infinite;
+}
+
+.animate-float-small {
+  animation: float-small 4s ease-in-out infinite;
+}
+
+.animate-float-small-reverse {
+  animation: float-small-reverse 5s ease-in-out infinite;
+}
+
+.animate-float-tiny {
+  animation: float-tiny 3s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+// Component styling
+.login-container {
+  animation: slideInUp 0.8s ease-out;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(79, 70, 229, 0.1), rgba(139, 92, 246, 0.1));
+    border-radius: inherit;
+    z-index: -1;
+  }
+}
+
+.logo-glow {
+  animation: logo-pulse 3s ease-in-out infinite;
+  
+  &:hover {
+    animation-duration: 1s;
+  }
+}
+
+.title-animation {
+  animation: title-glow 3s ease-in-out infinite;
+}
+
+.input-glow {
+  position: relative;
+  
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1), 
+                0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Fixed login button styling
+.login-button {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed, #4f46e5) !important;
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+  color: white !important;
+  
+  &:hover {
+    animation-duration: 1s;
+  }
+  
+  span {
+    color: white !important;
+    z-index: 20 !important;
+    position: relative;
+    font-weight: 600;
+  }
+  
+  svg {
+    color: white !important;
+    fill: white !important;
+  }
+  
+  // Ensure text is always visible
+  &:disabled {
+    color: rgba(255, 255, 255, 0.7) !important;
+    
+    span {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+    
+    svg {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+  }
+}
+
+.security-badge {
+  backdrop-filter: blur(10px);
+  animation: slideInUp 1s ease-out 0.5s both;
+}
+
+// Utility classes
+.bg-clip-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.backdrop-blur-lg {
+  backdrop-filter: blur(20px);
+}
+
+// Responsive enhancements
+@media (max-width: 480px) {
+  .login-container {
+    margin: 1rem;
+    padding: 2rem;
+  }
+  
+  .title-animation {
+    font-size: 2rem;
+  }
+}

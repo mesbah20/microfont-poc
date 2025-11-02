@@ -1,0 +1,35 @@
+<p>lds-stepper works!</p>
+<div class="lds-stepper" [class]="cssClass" [id]="id">
+  <!-- Stepper Header -->
+  <div class="stepper-header">
+    <div *ngFor="let step of steps; let i = index" 
+         class="step" 
+         [class.active]="i === currentStepIndex" 
+         (click)="goToStep(i)">
+      <div class="step-icon">
+        <ng-container *ngIf="step.icon; else defaultIcon">
+          <ng-template [ngTemplateOutlet]="step.icon"></ng-template>
+        </ng-container>
+        <ng-template #defaultIcon>
+          <span>{{ i + 1 }}</span>
+        </ng-template>
+      </div>
+      <div class="step-label">
+        <div class="step-title">{{ step.title }}</div>
+        <div class="step-subtitle">{{ step.subtitle }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stepper Content -->
+  <div class="stepper-content">
+    <ng-container *ngTemplateOutlet="steps[currentStepIndex]?.formContent"></ng-container>
+  </div>
+
+  <!-- Stepper Footer -->
+  <div class="stepper-footer">
+    <button *ngIf="currentStepIndex > 0" mat-button (click)="previousStep()">Back</button>
+    <button *ngIf="currentStepIndex < steps.length - 1" mat-button (click)="nextStep()">Next</button>
+    <button *ngIf="currentStepIndex === steps.length - 1" mat-button (click)="submit()">Submit</button>
+  </div>
+</div>

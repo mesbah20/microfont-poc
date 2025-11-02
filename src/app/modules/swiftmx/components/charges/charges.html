@@ -1,0 +1,69 @@
+<div class="sub-panel">
+  <app-sub-panel-header 
+    [subPanelTitle]="title"
+    [isOptional]="isOptional"
+  />
+  
+  <div class="form-grid-4-col">
+    <app-select-option-field
+      [frmGroup]="frmGroup"
+      [options]="chargeBearerOptions"
+      [label]="'Charge Bearer'"
+      [controlName]="'ChrgBr'"
+    />
+
+    <app-amount-to-word-input
+      [frmGroup]="frmGroup"
+      [label]="'Amount'"
+      [controlName]="'Amt'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Agent BICFI'"
+      [controlName]="'AgtBic'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Agent Clearing System ID'"
+      [controlName]="'AgtClrSysIdCd'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Agent Member ID'"
+      [controlName]="'AgtMmbId'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Agent LEI'"
+      [controlName]="'AgtLei'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Agent Name'"
+      [controlName]="'AgtNm'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Agent Address Line 1'"
+      [controlName]="'AgtAdrLine1'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Agent Address Line 2'"
+      [controlName]="'AgtAdrLine2'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Agent Address Line 3'"
+      [controlName]="'AgtAdrLine3'"
+    />
+  </div>
+</div> 

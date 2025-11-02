@@ -1,0 +1,374 @@
+<div class="page-wrapper">
+  @if(frmGroup) {
+    <form [formGroup]="frmGroup" class="transaction-form">
+      <div class="panel">
+        <div class="transaction-grid-container mb-10">
+          <!-- Header Section -->
+          <section class="header-section">
+            <app-expansion-panel-header
+              [isOpenSignal]="businessHeaderPanel"
+              [panelTitle]="'Transaction Management'"
+            />
+            
+          </section>
+
+          <div class="form-grid-col-1">
+            <!-- Primary Fields Section -->
+            <section class="primary-fields-section bg-gray-50 rounded-lg  mb-6 grid grid-cols-1">
+         
+              <!-- Transaction Reference Subsection -->
+              <div class=" component-section">
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [controlName]="'textBox'"
+                  [label]="'Transaction Reference'"
+                  [isReadonly]="false"
+                  displayMode="horizontal"
+                  [tooltip]="'Auto-generated based on currency and category'"
+                  [tooltipPosition]="'above'"
+                  [tooltipDelay]="300"
+                  [tooltipClass]="'success-tooltip'"
+                  (onBlurred)="onBlur($event)"
+                  (onChanged)="onTextBoxChanged($event)"
+                  [customErrorMessages]="{
+                    required: 'Transaction reference is required',
+                    minlength: 'Minimum 3 characters required',
+                    maxlength: 'Maximum 20 characters allowed',
+                    pattern: 'Only alphanumeric characters and underscores are allowed'
+                  }"
+                ></app-text-base-input>
+              </div>
+
+            
+            </section>
+
+            <section class="sub-panel">
+              <app-expansion-sub-panel-header
+              [isOpenSignal]="subPanel1"
+              [subPanelTitle]="'Configure fields'"
+            />
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-2">
+                <!-- Currency Subsection -->
+                <div class="subsection component-section">
+                  <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'currency'"
+                    [label]="'Currency'"
+            
+                    [isVertical]="true"
+                    [options]="currencyOptions"
+                    [tooltip]="'Currency selection affects country and tax rate'"
+                    [searchable]="false"
+                    (onSelect)="handleCategorySelection($event)"
+                  ></app-select-option-field>
+                </div>
+
+                <!-- Country Subsection -->
+                <div class="subsection component-section">
+                  <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'country'"
+                    [label]="'Country'"
+                    [isReadonly]="true"
+                    [isVertical]="true"
+                    [options]="countryOptions"
+                    [tooltip]="'Country affects risk level and validation rules'"
+                  ></app-select-option-field>
+                </div>
+
+                <!-- Product Category Subsection -->
+                <div class="subsection component-section">
+                  <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'productCategory'"
+                    [label]="'Product Category'"
+                    [isVertical]="true"
+                    [options]="productCategoryOptions"
+                    [tooltip]="'Category affects subcategories and tax multiplier'"
+                  ></app-select-option-field>
+                </div>
+
+                <!-- Subcategory Subsection -->
+                <div class="subsection component-section">
+                  <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'subCategory'"
+                    [label]="'Sub Category'"
+                    [isVertical]="true"
+                    [options]="getFilteredSubCategories()"
+                    [tooltip]="'Subcategory sets minimum amount requirements'"
+                  ></app-select-option-field>
+                </div>
+              </div>
+              <app-expansion-sub-panel-header
+              [isOpenSignal]="subPanel1"
+              [subPanelTitle]="'Calculated Fields'"
+            />
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ">
+              <!-- Tax Rate Subsection -->
+              <div class="subsection component-section">
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [controlName]="'taxRate'"
+                  [label]="'Tax Rate (%)'"
+                  [isReadonly]="true"
+                  [isVertical]="true"
+                  [tooltip]="'Calculated based on currency and product category'"
+                ></app-text-base-input>
+              </div>
+
+              <!-- Calculated Tax Subsection -->
+              <div class="subsection component-section">
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [controlName]="'calculatedTax'"
+                  [label]="'Tax Amount'"
+                  [isReadonly]="true"
+                  [isVertical]="true"
+                  [tooltip]="'Auto-calculated: Amount × Tax Rate'"
+                ></app-text-base-input>
+              </div>
+
+              <!-- Total Amount Subsection -->
+              <div class="subsection component-section">
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [controlName]="'totalAmount'"
+                  [label]="'Total Amount'"
+                  [isReadonly]="true"
+                  [isVertical]="true"
+                  [tooltip]="'Auto-calculated: Amount + Tax'"
+                ></app-text-base-input>
+              </div>
+            </div>
+            </section>
+
+            
+
+            <!-- Standard Fields Section -->
+            <section style="margin-top: 10px;" class="bg-gray-50 rounded-lg ">
+              <app-expansion-panel-header
+              [isOpenSignal]="businessHeaderPanel"
+              [panelTitle]="'Standard Fields'"
+            />
+              <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 p-2">
+                <!-- Priority Level Subsection -->
+                <div class="subsection component-section">
+                  <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'dropdown'"
+                    [label]="'Priority Level'"
+                    [isVertical]="true"
+                    [options]="dropdownOptions"
+                    [tooltip]="'Select transaction priority'"
+                    (onSelect)="handleCategorySelection($event)"
+                  ></app-select-option-field>
+                </div>
+
+                <!-- Additional Services Subsection -->
+                <div class="subsection component-section">
+                  <app-multi-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'multiSelect'"
+                    [label]="'Additional Services'"
+                    [isReadonly]="true"
+                    [isVertical]="true"
+                    [options]="dropdownOptions"
+                  ></app-multi-select-option-field>
+                </div>
+
+                <!-- Transaction Date Subsection -->
+                <div class="subsection component-section">
+                  <app-date-input
+                    [frmGroup]="frmGroup"
+                    [controlName]="'date'"
+                    [label]="'Transaction Date'"
+                    [isVertical]="true"
+                    [dateFormat]="'DD-MM-YYYY'"
+                    [maxYear]="2034"
+                    [enableYearRangeValidation]="false"
+                    (onBlurred)="onBlur($event)"
+                  ></app-date-input>
+                </div>
+
+                <!-- Reference Number Subsection -->
+                <div class="subsection component-section">
+                  <lds-number
+                    [frmGroup]="frmGroup"
+                    [controlName]="'number'"
+                    [label]="'Reference Number'"
+                    [isVertical]="true"
+                    [minValue]="1"
+                    [maxValue]="9999"
+                    [maxLen]="4"
+                    [placeholder]="'Auto-generated number'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onNumberChanged($event)"
+                  ></lds-number>
+                </div>
+
+                <!-- Office Code Subsection -->
+                <div class="subsection component-section">
+                  <lds-office-box
+                    [frmGroup]="frmGroup"
+                    [controlName]="'officeCode'"
+                    [labelText]="'Office Code'"
+                    [isVertical]="true"
+                    [enable]="true"
+                    [visible]="true"
+                    [maxLen]="4"
+                    [placeholder]="'Auto-suggested based on currency'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onOfficeBoxChanged($event)"
+                  ></lds-office-box>
+                </div>
+
+                <!-- Express Processing Subsection -->
+                <div class="subsection component-section">
+                  <lds-switch
+                    [frmGroup]="frmGroup"
+                    [controlName]="'switch'"
+                    [labelText]="'Express Processing'"
+                    (onSwitchChanged)="onSwitchToggled($event)"
+                    [isChecked]="frmGroup.get('switch')?.value || false"
+                  ></lds-switch>
+                  <div class="text-xs text-gray-600 mt-1">
+                    Express processing reduces validation requirements
+                  </div>
+                </div>
+              </div>
+
+              <!-- subsection -->
+              <app-expansion-sub-panel-header
+              [isOpenSignal]="subPanel1"
+              [subPanelTitle]="'Document upload'"
+            />
+            <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4 p-2">
+
+            <div class="component-section ">
+              <lds-file
+                #pdfFileInput
+                [id]="'pdf-upload'"
+                [multipleFile]="false"
+                [fileExtension]="'.pdf'"
+                [isVertical] ="false"
+                [labelText]="'Upload Supporting Document'"
+                [cssClass]="'border-purple-300 bg-purple-50'"
+                [savePath]="'documents/transactions'"
+                [customFileName]="'transaction-document'"
+                (selectedFilesChanged)="onPdfSelected($event)"
+                (onFileChanged)="onFileInputChanged('Transaction Document')"
+              />
+             
+            </div>
+
+            <div class="component-section">
+              <lds-txt-area
+              [frmGroup]="frmGroup"
+              [controlName]="'textArea'"
+              [labelText]="'Transaction Notes'"
+              [isVertical]="false"
+              [rows]="3"
+              [minRows]="2"
+              [maxRows]="10"
+              [maxCols]="80"
+              [placeholder]="'Enter transaction description and notes...'"
+              [showRowCount]="true"
+              [autoResize]="true"
+              (onChanged)="onTextAreaChanged($event)"
+            ></lds-txt-area>
+            </div>
+            </div>
+
+            </section>
+
+      
+
+      
+
+            <!-- Action Buttons Section -->
+            <!-- <section class="action-buttons-section rounded-lg p-4 mb-6 mt-6">
+              <div class="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded shadow"
+                  (click)="addCurrentFormToGrid()"
+                  [disabled]="frmGroup.invalid"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                  <span>Add to Grid</span>
+                </button>
+              </div>
+            </section> -->
+
+            <section class="action-buttons-section rounded-lg p-4 mb-6 mt-6">
+              <lds-btn
+              id="saveBtn"
+              value="save"
+              labelText="Save"
+              (onClick)="addCurrentFormToGrid()"
+             >
+            </lds-btn>
+            
+            </section>
+
+
+            <!-- Transaction Grid Section -->
+            <section class="transaction-grid-section bg-white rounded-lg shadow-sm">
+              <app-expansion-panel-header
+              [isOpenSignal]="businessHeaderPanel"
+              [panelTitle]="'Transaction Grid'"
+            />
+              
+              <div class="p-4">
+                <lds-data-grid
+                  [id]="'enhanced-transactions'"
+                  [dataSource]="sampleTransactions()"
+                  [initPageSize]="8"
+                  [enableSelection]="true"
+                  [showEditButton]="true"
+                  [showDeleteButton]="true"
+                  [showViewButton]="true"
+                  [showPrintButton]="true"
+                  [useInlineEdit]="true"
+                  [showPrintButton]="true"
+                  [useInlineEdit]="true"
+                  [editableColumns]="['amount', 'status', 'priority', 'currency', 'country', 'productCategory', 'subCategory', 'assignedRole']"
+                  [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
+                  [dropdownColumns]="transactionDropdownColumns()"
+                  [checkboxSelectAllColumns]="['status']"
+                  [checkboxColumns]="['status']"
+                  (onCheckboxValueChange)="handleCheckboxChange($event)"
+                  (onColumnSelectAll)="handleColumnSelectAll($event)"
+                  [dropdownOptions]="transactionDropdownOptions()"
+                  [selectedColumns]="['id', 'amount', 'currency', 'country', 'productCategory', 'subCategory', 'status', 'riskLevel', 'totalAmount', 'requiresApproval']"
+                  [rowDesignerList]="transactionRowDesigners()"
+                  
+                  [tblClass]="'enhanced-transaction-table'"
+                  (onFHEditClick)="onTransactionEdit($event)"
+                  (onFHDeleteClick)="onTransactionDelete($event)"
+                  (onFHViewClick)="onTransactionView($event)"
+                  (onPrint)="onTransactionPrint($event)"
+                  (onChecked)="onTransactionRowSelect($event)"
+                  (onSelectAllChange)="onTransactionSelectAll($event)"
+                  (dataSourceChanged)="onTransactionDataChanged($event)"
+                  
+                  ></lds-data-grid>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Data Selection Modal -->
+    <app-data-selection-modal
+      *ngIf="isDataSelectionModalOpen()"
+      (onFindClicked)="onFindClicked($event)"
+      (onRowDoubleClick)="onDataSelectionResult($event)"
+      (result)="onDataSelectionResult($event)"
+    ></app-data-selection-modal>
+  }
+</div>

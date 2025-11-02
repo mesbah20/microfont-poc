@@ -1,0 +1,58 @@
+<div class="sub-panel">
+  <app-sub-panel-header 
+    [subPanelTitle]="title"
+    [isOptional]="isOptional"
+  />
+  
+  <div class="form-grid-4-col">
+    <app-select-option-field
+      [frmGroup]="frmGroup"
+      [options]="priorityOptions"
+      [label]="'Instruction Priority'"
+      [controlName]="'InstrPrty'"
+    />
+
+    <app-select-option-field
+      [frmGroup]="frmGroup"
+      [options]="clearingChannelOptions"
+      [label]="'Clearing Channel'"
+      [controlName]="'ClrChanl'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Service Level Code'"
+      [controlName]="'SvcLvlCD'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Service Level Proprietary'"
+      [controlName]="'SvcLvlPrtry'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Local Instrument Code'"
+      [controlName]="'LclInstrmCD'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Local Instrument Proprietary'"
+      [controlName]="'LclInstrmPrtry'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Category Purpose Code'"
+      [controlName]="'CtgyPurpCd'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Category Purpose Proprietary'"
+      [controlName]="'CtgyPurpPrtry'"
+    />
+  </div>
+</div> 

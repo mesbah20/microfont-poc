@@ -1,0 +1,210 @@
+<div class="page-wrapper">
+  <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mx-8">
+    <!-- Filter Section -->
+    <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 py-6 border-b border-gray-200">
+      <!-- <div class="flex items-center mb-6">
+        <div class="w-1 h-8 bg-blue-600 rounded-full mr-4"></div>
+        <h2 class="text-gray-900 font-semibold text-xl">Search Filters</h2>
+      </div> -->
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+
+         <!-- Message Type Dropdown -->
+        <div class="lg:col-span-3">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Message Type</label>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-select [(ngModel)]="selectedMessageType">
+              <mat-option value="">All Types</mat-option>
+              <mat-option *ngFor="let type of messageTypes" [value]="type.value">
+                {{type.label}}
+              </mat-option>
+            </mat-select>
+            <mat-hint>Select message type to filter</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <!-- Status Dropdown -->
+        <div class="lg:col-span-3">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-select [(ngModel)]="selectedStatus">
+              <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+                {{status.label}}
+              </mat-option>
+            </mat-select>
+            <mat-hint>Select status to filter</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <!-- Date Range Picker -->
+        <div class="lg:col-span-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-date-range-input [rangePicker]="picker">
+              <input matStartDate [(ngModel)]="startDate" placeholder="Start date">
+              <input matEndDate [(ngModel)]="endDate" placeholder="End date">
+            </mat-date-range-input>
+            <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+
+       
+                 <!-- Action Buttons -->
+         <button mat-icon-button
+           (click)="onFindClick()"
+           class="custom-btn mb-6">
+           <mat-icon class="custom-icon">search</mat-icon>
+         </button>
+
+      </div>
+    </div>
+
+    <!-- Search Header -->
+    <div class="bg-white px-5 py-3 border-b border-gray-200">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center">
+          <div class="w-2 h- bg-blue-600 rounded-full mr-3"></div>
+          <h2 class="text-gray-900 font-medium text-lg">Outgoing Messages</h2>
+        </div>
+        <div class="relative w-full sm:w-auto">
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+            <input type="text" id="filterInput" placeholder="Search in table..."
+              class="pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm w-full sm:w-80 transition-all duration-200"
+              (keyup)="applyFilter($event)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-auto max-h-[105vh]">
+      <table class="w-full">
+        <thead class="bg-gradient-to-r from-slate-100 to-gray-100 border-b border-gray-200 sticky top-0 z-1">
+          <tr>
+            <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">SI</th>
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Message Ref No
+            </th>
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm w-50  tracking-wide">Message ID</th>
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Sender BIC</th>
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Made By</th>
+            <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Make Date</th>
+            <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Status</th>
+             <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Action</th>
+             <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Process</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100" id="tableBody">
+          <tr *ngFor="let data of dataSource; let i = index; trackBy: trackByFn"
+            class="hover:bg-blue-50 transition-colors duration-200">
+            <td class="py-4 px-6 text-sm text-gray-600 text-center font-medium">{{i + 1}}</td>
+           
+            <td class="py-4 text-left px-6 text-gray-900 font-mono">{{data?.msgRefNo}}</td>
+            <td class="py-4 px-6 text-gray-700 text-left font-mono bg-gray-50 rounded px-2 py-1">{{data?.mtId}}</td>
+            <td class="py-4 text-left px-6 text-gray-700 font-mono">{{data?.senderBic}}</td>
+            <td class="py-4 text-left px-6 text-gray-700">{{data?.makeBy}}</td>
+            <td class="py-4 px-6 text-gray-700 text-center text-sm">{{data?.makeDt}}</td>
+             <td class="py-4 px-6 text-center">
+              <span class="px-3 py-1 text-xs font-semibold rounded-full" 
+                [ngClass]="data?.status === 'ACK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                {{data?.status}}
+              </span>
+            </td>
+            <td class="py-4 px-6">
+              <div class="flex gap-2 justify-center">
+                <button mat-icon-button matTooltip="View details"
+                  class="hover:bg-blue-100 transition-colors duration-200 text-blue-600 hover:text-blue-700"
+                  (click)="viewDetails(data)">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Zm0-300Zm0 220q113 0 207.5-59.5T832-500q-50-101-144.5-160.5T480-720q-113 0-207.5 59.5T128-500q50 101 144.5 160.5T480-280Z"/></svg>
+                </button>
+                <button mat-icon-button matTooltip="Send Email"
+                  class="hover:bg-green-100 transition-colors duration-200 text-green-600 hover:text-green-700"
+                  (click)="sendEmail(data)">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm320-280L160-640v400h640v-400L480-440Zm0-80 320-200H160l320 200ZM160-640v-80 480-400Z"/></svg>
+
+                </button>
+                <button mat-icon-button matTooltip="Download PDF"
+                  class="hover:bg-red-100 transition-colors duration-200 text-red-600 hover:text-red-700"
+                  (click)="downloadPdf(data)">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M360-460h40v-80h40q17 0 28.5-11.5T480-580v-40q0-17-11.5-28.5T440-660h-80v200Zm40-120v-40h40v40h-40Zm120 120h80q17 0 28.5-11.5T640-500v-120q0-17-11.5-28.5T600-660h-80v200Zm40-40v-120h40v120h-40Zm120 40h40v-80h40v-40h-40v-40h40v-40h-80v200ZM320-240q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320Zm0-80h480v-480H320v480ZM160-80q-33 0-56.5-23.5T80-160v-560h80v560h560v80H160Zm160-720v480-480Z"/></svg>
+
+                </button>
+              </div>
+            </td>
+            <td class="py-4 px-6">
+              <div class="flex justify-center">
+                                 <button mat-icon-button matTooltip="Process"
+                   class="hover:bg-purple-100 transition-colors duration-200 text-purple-600 hover:text-purple-700"
+                   (click)="processData(data)">
+                   <svg xmlns="http://www.w3.org/2000/svg" height="34px" viewBox="0 -960 960 960" width="34px" fill="#000000"><path d="M480-480ZM370-80l-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-74 56q-22-11-45-18.5T714-558l63-48-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q17 17 36.5 30.5T400-275q1 57 23.5 107T484-80H370Zm41-279q6-20 14.5-38.5T445-433q-11-8-17-20.5t-6-26.5q0-25 17.5-42.5T482-540q14 0 27 6.5t21 17.5q17-11 35-19.5t38-13.5q-18-32-50-51.5T482-620q-59 0-99.5 41T342-480q0 38 18.5 70.5T411-359Zm269 199 120-120-120-120-28 28 72 72H560v40h163l-71 72 28 28Zm0 80q-83 0-141.5-58.5T480-280q0-83 58.5-141.5T680-480q83 0 141.5 58.5T880-280q0 83-58.5 141.5T680-80Z"/></svg>
+                 </button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Empty State -->
+          <tr *ngIf="dataSource.length === 0">
+            <td colspan="9" class="py-16 text-center text-gray-500">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                  <mat-icon class="text-2xl text-gray-400">inbox</mat-icon>
+                </div>
+                <div class="text-lg font-semibold text-gray-600 mb-2">No data found</div>
+                <div class="text-sm text-gray-500">Try adjusting your search filters or check back later</div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 pt-4 border-t border-gray-200">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="text-sm text-gray-800">
+          Showing <span class="font-medium">{{getStartIndex()}}</span> to
+          <span class="font-medium">{{getEndIndex()}}</span> of
+          <span class="font-medium">{{getTotalResults()}}</span> results
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <mat-form-field appearance="outline" class="text-sm w-full sm:w-auto">
+            <mat-select [(value)]="pageSize" (selectionChange)="onPageSizeChange()">
+              <mat-option [value]="5">5 per page</mat-option>
+              <mat-option [value]="10">10 per page</mat-option>
+              <mat-option [value]="20">20 per page</mat-option>
+              <mat-option [value]="50">50 per page</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <nav class="flex items-center gap-1">
+            <button mat-icon-button [disabled]="currentPage === 1" (click)="goToFirstPage()"
+              class="hover:bg-blue-100 transition-colors duration-200">
+              <mat-icon>first_page</mat-icon>
+            </button>
+            <button mat-icon-button [disabled]="currentPage === 1" (click)="goToPreviousPage()"
+              class="hover:bg-blue-100 transition-colors duration-200">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <div
+              class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg mx-2">
+              Page {{currentPage}} of {{getTotalPages()}}
+            </div>
+
+            <button mat-icon-button [disabled]="currentPage === getTotalPages()" (click)="goToNextPage()"
+              class="hover:bg-blue-100 transition-colors duration-200">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+            <button mat-icon-button [disabled]="currentPage === getTotalPages()" (click)="goToLastPage()"
+              class="hover:bg-blue-100 transition-colors duration-200">
+              <mat-icon>last_page</mat-icon>
+            </button>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

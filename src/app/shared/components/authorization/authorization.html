@@ -1,0 +1,234 @@
+<div class="page-wrapper">
+  <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+
+
+          <!-- Filter Section -->
+      <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-4 border-b border-gray-200">
+        <!-- Message Type Row -->
+        <div class="mb-3 border-b border-gray-200 pb-2 form-grid-3-col">
+          <app-select-option-field 
+            [frmGroup]="authorizationForm" 
+            controlName="messageType" 
+            label="Message Type"
+            [options]="messageTypes">
+          </app-select-option-field>
+        </div>
+      </div>
+
+    <!-- Authorization Data Section Header -->
+    <div class="bg-white px-5 py-3 border-b border-gray-200">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center">
+          <div class="w-2 h-6 bg-blue-600 rounded-full mr-3"></div>
+          <h2 class="text-gray-900 font-medium text-lg">List to authorize</h2>
+          @if (selectedLogs.length > 0) {
+            <span class="ml-3 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+              {{ selectedLogs.length }} selected
+            </span>
+          }
+        </div>
+        <div class="relative w-full sm:w-auto">
+          <div class="relative">
+             <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+
+            <input type="text" placeholder="Search messages..."
+                   class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm w-full sm:w-80 transition-all duration-200"
+                   (keyup)="applyFilter($event)" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    @if (isLoading) {
+      <div class="bg-white px-5 py-8 text-center">
+        <div class="flex flex-col items-center">
+         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
+          <div class="text-lg font-semibold text-gray-600 mb-2">
+            Loading authorization logs...
+          </div>
+          <div class="text-sm text-gray-500">
+            Please wait while we fetch your data
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Authorization Data Table -->
+    <div class="overflow-auto max-h-[70vh]">
+      <table class="w-full">
+        <thead class="bg-gradient-to-r from-slate-100 to-gray-100 border-b border-gray-200 sticky top-0 z-1">
+          <tr>
+            <th class="text-center py-4 px-4 font-semibold text-gray-700 text-sm tracking-wide">
+              <input type="checkbox" 
+                     class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                     [checked]="selectedLogs.length === authorizationDataSource.filteredData.length && authorizationDataSource.filteredData.length > 0"
+                     [indeterminate]="selectedLogs.length > 0 && selectedLogs.length < authorizationDataSource.filteredData.length"
+                     [disabled]="shouldShowIbtTransRestriction()"
+                     [title]="shouldShowIbtTransRestriction() ? 'Selection restricted: PACS009 with IbtTrans allows only one IbtTrans selection at a time' : 'Select/Deselect All'"
+                     (change)="toggleSelectAll()">
+            </th>
+            <th class="text-center py-4 px-4 font-semibold text-gray-700 text-sm tracking-wide">
+              SL#
+            </th>
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm tracking-wide">
+              Maker
+            </th>
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm tracking-wide">
+              Make Date
+            </th>
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm tracking-wide">
+              Remarks
+            </th>
+            <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm tracking-wide">
+              Action Status
+            </th>
+            <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm tracking-wide">
+              Select
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          @for (log of authorizationDataSource.filteredData; track trackByFn($index, log); let i = $index) {
+            <tr class="hover:bg-blue-50 transition-colors duration-200">
+              <!-- Selection Checkbox -->
+              <td class="py-4 px-4 text-center">
+                <input type="checkbox" 
+                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                       [checked]="isSelected(log)"
+                       (change)="onCheckboxChange($event, log)">
+              </td>
+              
+              <!-- Serial Number -->
+              <td class="py-4 px-4 text-sm text-gray-600 text-center font-medium">
+                {{ i + 1 }}
+              </td>
+              
+              <!-- Maker -->
+              <td class="py-4 px-6 text-gray-900">
+                <div class="font-medium">{{ log.makeBy }}</div>
+                <div class="text-sm text-gray-500 font-mono">{{ log.msgRefNo }}</div>
+              </td>
+              
+              <!-- Make Date -->
+              <td class="py-4 px-6 text-gray-700">
+                {{ log.makeDate | date:'MMM dd, yyyy HH:mm' }}
+              </td>
+              
+              <!-- Remarks -->
+              <td class="py-4 px-6 text-gray-700">
+                <div class="max-w-xs truncate" [title]="log.remarks || 'No remarks'">
+                  {{ log.remarks || 'No remarks' }}
+                </div>
+              </td>
+              
+              <!-- Action Status -->
+              <td class="py-4 px-6 text-center">
+                <span class="px-2 py-1 rounded-full text-xs font-medium" 
+                      [ngClass]="getAuthStatusClass(log.authStatusId)">
+                  {{ getAuthStatusText(log.authStatusId) }}
+                </span>
+              </td>
+              
+                             <!-- Actions -->
+               <td class="py-4 px-6">
+                 <div class="flex gap-2 justify-center">
+                   <!-- Preview Request JSON -->
+                   <button mat-icon-button
+                           class="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1 rounded-full transition-colors duration-200"
+                           matTooltip="Preview Request JSON" 
+                           (click)="previewRequestJson(log)"
+                           [disabled]="!log.requestBody">
+                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M320-240 80-480l240-240 57 57-184 184 183 183-56 56Zm320 0-57-57 184-184-183-183 56-56 240 240-240 240Z"/></svg>
+                   </button>
+                   
+                   <!-- Preview Response XML -->
+                   <button mat-icon-button
+                           class="text-green-600 hover:text-green-700 hover:bg-green-50 p-1 rounded-full transition-colors duration-200"
+                           matTooltip="Preview Response XML" 
+                           (click)="previewResponseXml(log)"
+                           [disabled]="!log.contentOfMsg">
+                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/></svg>
+                   </button>
+                 </div>
+               </td>
+            </tr>
+          }
+
+          <!-- Empty State -->
+          @if (authorizationDataSource.filteredData.length === 0 && !isLoading) {
+            <tr>
+              <td colspan="7" class="py-16 text-center text-gray-500">
+                <div class="flex flex-col items-center">
+                  <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-120H640q-30 38-71.5 59T480-240q-47 0-88.5-21T320-320H200v120Zm280-120q38 0 69-22t43-58h168v-360H200v360h168q12 36 43 58t69 22ZM200-200h560-560Z"/></svg>
+                  </div>
+                  <div class="text-lg font-semibold text-gray-600 mb-2">
+                    No unauthorized messages found
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    Try selecting a different message type or check back later
+                  </div>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Reason of Decline Section -->
+    <div class="bg-white px-5 py-3 border-b border-gray-200 border-t border-gray-200">
+      <form [formGroup]="authorizationForm">
+        <div class="flex flex-row sm:flex-row gap-4">
+          <div class="flex-1">
+            <lds-txt-area 
+              [labelText]="'Reason of Decline'"
+              [frmGroup]="authorizationForm"
+              controlName="remarks"
+              [rows]="2"
+              [placeholder]="'Enter decline reason (required for decline action)'">
+            </lds-txt-area>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="flex gap-3 justify-end">
+            <lds-btn 
+              type="button"
+              [cssClass]="getAuthorizeButtonClass()"
+              (click)="authorizeSelected()"
+              [labelText]="'Authorize'"
+              [enable]="selectedLogs.length > 0">
+            </lds-btn>
+            <lds-btn 
+              type="button"
+              [cssClass]="getDeclineButtonClass()"
+              (click)="declineSelected()"
+              [labelText]="'Decline'"
+              [enable]="selectedLogs.length > 0">
+            </lds-btn>
+             <lds-btn 
+               [cssClass]="'text-white bg-gray-500 hover:bg-gray-600'"
+               type="button"
+               (click)="clearFilters()"
+               [labelText]="'Reset'"
+               [enable]="true">
+             </lds-btn>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Material Design Paginator -->
+    <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 py-4 border-t border-gray-200">
+      <mat-paginator 
+        [length]="authorizationDataSource.filteredData.length" 
+        [pageSize]="10" 
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        [showFirstLastButtons]="true" 
+        [pageIndex]="0" 
+        aria-label="Select page of authorization logs">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

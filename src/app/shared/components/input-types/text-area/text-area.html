@@ -1,0 +1,32 @@
+<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'"> 
+  <label class="input-label">
+    {{ labelText() }}
+    @if (isRequired()) {
+      <span class="text-red-500">*</span>
+    }
+  </label>
+
+  <textarea
+    [id]="id()"
+    [formControlName]="controlName()"
+    [attr.controlName]="controlName()"
+    [rows]="textareaAttributes().rows"
+    [attr.cols]="textareaAttributes().cols || null"
+    [placeholder]="placeholder()"
+    [ngClass]="inputClasses()"
+    (input)="onInputChange($event)"
+    (paste)="onPaste($event)"
+    [matTooltip]="tooltip()"
+    [matTooltipPosition]="tooltipPosition()"
+    [matTooltipClass]="tooltipClass()"
+    [matTooltipDisabled]="!tooltip()"
+    class="custom-input transition-colors duration-200 placeholder-gray-400"
+    #textareaRef>
+  </textarea>
+
+  @if (isInvalidState() && errorMessage()) {
+    <div class="text-red-500 text-sm mt-1">
+      {{ errorMessage() }}
+    </div>
+  }
+</div>

@@ -1,0 +1,52 @@
+// Time input component styles - following existing custom controls pattern exactly
+.input-container-horizontal {
+  @apply w-full flex flex-col sm:flex-row justify-start items-start sm:items-center gap-2;
+}
+
+.input-container-vertical {
+  @apply w-full flex flex-col justify-start;
+}
+
+.input-label {
+  @apply block font-medium text-gray-900;
+  @apply text-sm md:text-base w-72 max-w-full;
+}
+
+// Custom input styling to match existing components exactly
+.custom-input {
+  /* Base styling - Standard width instead of full */
+  @apply w-90 max-w-full px-4 py-2 text-base leading-6; /* w-80 = 320px standard width */
+  @apply border border-slate-300 rounded-md;
+  @apply bg-slate-50 placeholder-slate-400 placeholder:text-sm;
+
+  /* Focus states */
+  @apply focus:outline-none focus:ring-1 focus:ring-slate-800 focus:border-slate-800;
+  @apply focus:bg-white;
+  @apply transition-all duration-200 ease-in-out;
+
+  /* Hover state */
+  @apply hover:border-slate-400 hover:bg-white;
+
+  /* Disabled states */
+  @apply disabled:bg-slate-100 disabled:cursor-not-allowed;
+  @apply disabled:border-slate-300 disabled:text-slate-500;
+  @apply disabled:placeholder-slate-300;
+
+  /* Responsive typography */
+  @apply text-sm sm:text-base;
+}
+
+.readonly-input {
+  background-color: #e5e7eb !important;
+  cursor: not-allowed;
+}
+
+// Time picker button styling - matches date-input pattern
+.time-picker-btn {
+  @apply bg-transparent border-none cursor-pointer p-1 rounded;
+  @apply hover:bg-gray-100 transition-colors duration-200;
+  
+  &:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+} 

@@ -1,0 +1,168 @@
+<div class="sub-panel">
+  <app-sub-panel-header 
+    [subPanelTitle]="title"
+    [isOptional]="isOptional"
+  />
+  
+  <div class="form-grid-4-col">
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Character Set'"
+      [controlName]="controlPrefix + 'CharSet'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Business Message Identifier'"
+      [controlName]="controlPrefix + 'BizMsgIdr'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Message Definition Identifier'"
+      [controlName]="controlPrefix + 'MsgDefIdr'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Business Service'"
+      [controlName]="controlPrefix + 'BizSvc'"
+    />
+
+    <app-date-input
+      [frmGroup]="frmGroup"
+      [label]="'Creation Date'"
+      [controlName]="controlPrefix + 'CreDt'"
+    />
+
+    <app-select-option-field
+      [frmGroup]="frmGroup"
+      [options]="duplicateOptions"
+      [label]="'Copy Duplicate'"
+      [controlName]="controlPrefix + 'CpyDplct'"
+    />
+
+    <app-select-option-field
+      [frmGroup]="frmGroup"
+      [options]="priorityOptions"
+      [label]="'Priority'"
+      [controlName]="controlPrefix + 'Prty'"
+    />
+  </div>
+
+  <!-- From Agent -->
+  <div class="sub-panel">
+    <app-sub-panel-header 
+      [subPanelTitle]="'From Agent'"
+      [isOptional]="true"
+    />
+    
+    <div class="form-grid-4-col">
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'From Agent BICFI'"
+        [controlName]="controlPrefix + 'FrBIcfi'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'From Agent Clearing System ID Code'"
+        [controlName]="controlPrefix + 'FrClrSysIdCd'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'From Agent Member ID'"
+        [controlName]="controlPrefix + 'FrMmbId'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'From Agent LEI'"
+        [controlName]="controlPrefix + 'FrLei'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'From Agent Name'"
+        [controlName]="controlPrefix + 'FrNm'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'From Agent Address Line 1'"
+        [controlName]="controlPrefix + 'FrAdrLine1'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'From Agent Address Line 2'"
+        [controlName]="controlPrefix + 'FrAdrLine2'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'From Agent Address Line 3'"
+        [controlName]="controlPrefix + 'FrAdrLine3'"
+      />
+    </div>
+  </div>
+
+  <!-- To Agent -->
+  <div class="sub-panel">
+    <app-sub-panel-header 
+      [subPanelTitle]="'To Agent'"
+      [isOptional]="true"
+    />
+    
+    <div class="form-grid-4-col">
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'To Agent BICFI'"
+        [controlName]="controlPrefix + 'ToBIcfi'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'To Agent Clearing System ID Code'"
+        [controlName]="controlPrefix + 'ToClrSysIdCd'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'To Agent Member ID'"
+        [controlName]="controlPrefix + 'ToMmbId'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'To Agent LEI'"
+        [controlName]="controlPrefix + 'ToLei'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'To Agent Name'"
+        [controlName]="controlPrefix + 'ToNm'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'To Agent Address Line 1'"
+        [controlName]="controlPrefix + 'ToAdrLine1'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'To Agent Address Line 2'"
+        [controlName]="controlPrefix + 'ToAdrLine2'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'To Agent Address Line 3'"
+        [controlName]="controlPrefix + 'ToAdrLine3'"
+      />
+    </div>
+  </div>
+</div> 

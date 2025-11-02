@@ -1,0 +1,69 @@
+.loader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.25); /* backdrop aaro visible */
+  z-index: 9999;
+}
+
+.loader {
+  transform: rotateZ(45deg);
+  perspective: 1000px;
+  border-radius: 50%;
+  width: 80px;   /* ✅ boro kora holo */
+  height: 80px;
+  color: #fff;
+  position: relative;
+}
+
+.loader:before,
+.loader:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: inherit;
+  height: inherit;
+  border-radius: 50%;
+  transform: rotateX(70deg);
+  animation: 1.2s spin linear infinite; /* aro smooth */
+}
+
+.loader:after {
+  color: #FF3D00;
+  transform: rotateY(70deg);
+  animation-delay: .5s;
+}
+
+@keyframes spin {
+  0%,100% {
+    box-shadow: .35em 0 0 .15em currentcolor;   /* ✅ line gulo mota/spaced */
+  }
+  12% {
+    box-shadow: .35em .35em 0 .15em currentcolor;
+  }
+  25% {
+    box-shadow: 0 .35em 0 .15em currentcolor;
+  }
+  37% {
+    box-shadow: -.35em .35em 0 .15em currentcolor;
+  }
+  50% {
+    box-shadow: -.35em 0 0 .15em currentcolor;
+  }
+  62% {
+    box-shadow: -.35em -.35em 0 .15em currentcolor;
+  }
+  75% {
+    box-shadow: 0 -.35em 0 .15em currentcolor;
+  }
+  87% {
+    box-shadow: .35em -.35em 0 .15em currentcolor;
+  }
+}

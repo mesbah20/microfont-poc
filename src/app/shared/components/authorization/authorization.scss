@@ -1,0 +1,157 @@
+// SWIFT Messaging Interface - Essential Styles
+// Most styling is now handled by Tailwind CSS classes
+
+// Compact form styling
+.grid.grid-cols-4 {
+  .app-select-option-field,
+  .app-date-input,
+  .app-text-base-input {
+    ::ng-deep .input-container-horizontal {
+      margin-bottom: 0;
+    }
+
+    ::ng-deep .custom-input,
+    ::ng-deep .mat-form-field {
+      height: 40px;
+      min-height: 40px;
+    }
+  }
+
+  // HTML date input styling
+  input[type="date"] {
+    height: 40px;
+    min-height: 40px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    &::-webkit-datetime-edit {
+      padding: 0;
+    }
+
+    &::-webkit-datetime-edit-fields-wrapper {
+      padding: 0;
+    }
+  }
+}
+
+// Material Design form field styling
+mat-form-field {
+  ::ng-deep .mat-form-field-wrapper {
+    padding-bottom: 0;
+  }
+
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+    top: 0;
+  }
+
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+    padding: 0.5rem 0;
+    border-top: 0.5rem solid transparent;
+  }
+
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix {
+    top: 0;
+  }
+
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+    color: #3b82f6;
+  }
+
+  ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+    color: #3b82f6;
+  }
+}
+
+// Label and input alignment
+label.block.text-sm.font-medium.text-gray-700 {
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+
+// Compact spacing for form sections
+.bg-gradient-to-r.from-slate-50.to-gray-50 {
+  .mb-3 {
+    margin-bottom: 0.75rem;
+  }
+
+  .mb-4 {
+    margin-bottom: 1rem;
+  }
+}
+
+// Custom button styles for consistency
+.find-btn {
+  background: #1976d2;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.find-btn:hover {
+  background: #1565c0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+// Material Design Overrides
+::ng-deep .mat-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: #ddd;
+}
+
+::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: #1976d2;
+}
+
+::ng-deep .mat-select-value {
+  color: #424242;
+}
+
+::ng-deep .mat-option {
+  color: #424242;
+}
+
+::ng-deep .mat-datepicker-toggle {
+  color: #666;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .page-wrapper {
+    margin: 0 16px;
+  }
+
+  .bg-white.rounded-xl.shadow-lg.border.border-gray-100.overflow-hidden.mx-8 {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .grid.grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid.grid-cols-4 {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}

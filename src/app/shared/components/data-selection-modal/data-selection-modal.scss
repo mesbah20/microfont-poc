@@ -1,0 +1,170 @@
+// Data Selection Modal Styles - Tailwind CSS Based
+// Clean and compact styling for the data selection modal
+
+// Modal overlay and container animations
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Modal overlay and container
+.modal-overlay {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-container {
+  animation: slideIn 0.2s ease-out;
+  border-radius: 24px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+// Custom scrollbar for table container
+.table-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+// Focus styles for accessibility
+.modal-container:focus {
+  outline: none;
+}
+
+.table-row:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: -2px;
+}
+
+// Custom checkbox styles
+input[type="checkbox"] {
+  @apply w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500;
+}
+
+// Custom select styles
+select {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+}
+
+// Custom input styles
+input[type="text"] {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+}
+
+// Custom button hover effects
+button {
+  @apply transition-all duration-200;
+  cursor: pointer !important;
+}
+
+// Loading spinner animation
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+// Responsive design adjustments
+@media (max-width: 768px) {
+  .modal-container {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+  }
+  
+  .table-cell {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+  }
+  
+  .button {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    min-height: 32px;
+  }
+}
+
+// Print styles
+@media print {
+  .modal-overlay {
+    position: static;
+    background: none;
+  }
+  
+  .modal-container {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .table-row:hover {
+    background-color: #000;
+    color: #fff;
+  }
+  
+  .table-row.selected {
+    background-color: #000;
+    color: #fff;
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay,
+  .modal-container {
+    animation: none;
+  }
+  
+  .animate-spin {
+    animation: none;
+  }
+}
+
+// Dark mode support (if needed)
+@media (prefers-color-scheme: dark) {
+  .modal-container {
+    background-color: #1f2937;
+    color: #f9fafb;
+  }
+  
+  .table-header {
+    color: #d1d5db;
+    border-bottom-color: #374151;
+  }
+  
+  .table-cell {
+    color: #d1d5db;
+  }
+  
+  .table-row:hover {
+    background-color: #374151;
+  }
+} 

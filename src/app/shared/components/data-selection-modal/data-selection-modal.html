@@ -1,0 +1,327 @@
+<div
+  class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2"
+  data-dialog="data-selection-modal"
+>
+  <div
+    class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[80vh] flex flex-col border-4 border-white overflow-hidden"
+  >
+    <!-- Dialog Header -->
+    <div
+      class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50 rounded-t-3xl"
+    >
+      <h2 class="text-lg font-semibold text-gray-900">Select Items</h2>
+      <button
+        (click)="dialogClose(null)"
+        tabindex="-1"
+        class="text-gray-400 hover:text-gray-600 cursor-pointer transition-colors duration-200 p-1 rounded-full hover:bg-gray-100"
+        aria-label="Close"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Dialog Content -->
+    <div class="flex-1 overflow-hidden flex flex-col">
+      <!-- Search and Filter Bar -->
+      <div class="p-3 border-b border-gray-200 bg-gray-50">
+        <div class="flex flex-wrap gap-3 items-center">
+          <!-- API Search Input and Find Button -->
+          <div class="flex-1 min-w-48">
+            <div class="flex gap-2 items-center">
+              <div class="relative flex-1">
+                <input
+                  type="text"
+                  [placeholder]="apiSearchPlaceholder"
+                  [(ngModel)]="apiSearchTerm"
+                  class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                />
+                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+
+              </div>
+              <lds-btn
+                [labelText]="isLoading ? loadingText : findButtonText"
+                [enable]="!isLoading"
+                (onClick)="onFindClicked.emit(apiSearchTerm)"
+              ></lds-btn>
+            </div>
+          </div>
+
+          <!-- Filter Input for existing data -->
+          <div class="flex-1 min-w-48">
+            <div class="flex gap-2 items-center">
+              <div class="relative flex-1">
+                <input
+                  type="text"
+                  placeholder="Filter existing results..."
+                  [(ngModel)]="searchTerm"
+                  (input)="onSearchChange(searchTerm)"
+                  class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                />
+                 <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+
+              </div>
+              <lds-btn
+                labelText="Clear"
+                icon="clear"
+                cssClass="text-red-600 bg-white border border-red-300 hover:bg-red-50 mt-1"
+                (onClick)="clearFilters()"
+              >
+              </lds-btn>
+            </div>
+          </div>
+
+          <!-- Clear Filters -->
+        </div>
+
+        <!-- Advanced Filters -->
+        <!--        <div class="mt-3 p-3 bg-white border border-gray-200 rounded-md">-->
+        <!--          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">-->
+        <!--            <div>-->
+        <!--              <label class="block text-sm font-medium text-gray-700 mb-1">Field</label>-->
+        <!--              <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">-->
+        <!--                <option value="">Select field</option>-->
+        <!--                <option value="name">Name</option>-->
+        <!--                <option value="category">Category</option>-->
+        <!--                <option value="status">Status</option>-->
+        <!--                <option value="price">Price</option>-->
+        <!--              </select>-->
+        <!--            </div>-->
+        <!--            <div>-->
+        <!--              <label class="block text-sm font-medium text-gray-700 mb-1">Operator</label>-->
+        <!--              <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">-->
+        <!--                <option value="contains">Contains</option>-->
+        <!--                <option value="equals">Equals</option>-->
+        <!--                <option value="startsWith">Starts with</option>-->
+        <!--                <option value="endsWith">Ends with</option>-->
+        <!--                <option value="greaterThan">Greater than</option>-->
+        <!--                <option value="lessThan">Less than</option>-->
+        <!--              </select>-->
+        <!--            </div>-->
+        <!--            <div>-->
+        <!--              <label class="block text-sm font-medium text-gray-700 mb-1">Value</label>-->
+        <!--              <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Enter value">-->
+        <!--            </div>-->
+        <!--            <div class="flex items-end">-->
+        <!--              <button class="w-full px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">-->
+        <!--                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
+        <!--                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>-->
+        <!--                </svg>-->
+        <!--                Add Filter-->
+        <!--              </button>-->
+        <!--            </div>-->
+        <!--          </div>-->
+
+        <!--          &lt;!&ndash; Active Filters &ndash;&gt;-->
+        <!--          <div class="mt-3">-->
+        <!--            <h4 class="text-sm font-medium text-gray-700 mb-2">Active Filters:</h4>-->
+        <!--            <div class="flex flex-wrap gap-2">-->
+        <!--                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800">-->
+        <!--                                    Name contains "Product"-->
+        <!--                                    <button class="ml-2 text-blue-600 hover:text-blue-800">-->
+        <!--                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
+        <!--                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>-->
+        <!--                                        </svg>-->
+        <!--                                    </button>-->
+        <!--                                </span>-->
+        <!--              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800">-->
+        <!--                                    Status equals "Active"-->
+        <!--                                    <button class="ml-2 text-blue-600 hover:text-blue-800">-->
+        <!--                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
+        <!--                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>-->
+        <!--                                        </svg>-->
+        <!--                                    </button>-->
+        <!--                                </span>-->
+        <!--            </div>-->
+        <!--          </div>-->
+        <!--        </div>-->
+      </div>
+
+      <!-- Data Table -->
+      <div class="flex-1 overflow-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <!-- Table Header -->
+          <thead class="bg-gray-50">
+            <tr>
+              @if(multiSelect) {
+              <th
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                <input
+                  type="checkbox"
+                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 opacity-50 cursor-not-allowed"
+                />
+              </th>
+              } @for (key of getOrderedColumnKeys(); track $index) {
+              <th
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+              >
+                <div class="flex items-center justify-between">
+                  <span>{{ getHead(key) }}</span>
+                  <svg
+                    class="w-4 h-4 ml-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 9l4-4 4 4m0 6l-4 4-4-4"
+                    ></path>
+                  </svg>
+                </div>
+              </th>
+              }
+
+              <th
+                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12"
+              >
+                Action
+              </th>
+            </tr>
+          </thead>
+
+          <!-- Table Body -->
+          <tbody class="bg-white divide-y divide-gray-200">
+            @if (paginatedDataSource.length > 0) { @for (row of
+            paginatedDataSource; track $index) {
+            <tr
+              class="hover:bg-gray-50 cursor-pointer"
+              (dblclick)="handleRowDoubleClick(row)"
+            >
+              @if(multiSelect) {
+              <td class="px-4 py-3 whitespace-nowrap">
+                <input
+                  type="checkbox"
+                  disabled
+                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 opacity-50 cursor-not-allowed"
+                />
+              </td>
+              } @for (key of getOrderedColumnKeys(); track $index) {
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                {{ row?.[key] }}
+              </td>
+              }
+
+              <td
+                (click)="dialogClose(row)"
+                class="px-4 py-3 whitespace-nowrap"
+              >
+                <button
+                  class="text-green-600 hover:text-green-600 p-2 rounded-md transition-colors duration-200 cursor-pointer"
+                >
+                  <svg height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
+                </button>
+              </td>
+            </tr>
+            } } @else {
+            <tr>
+              <td colspan="100%" class="px-4 py-8 text-center text-gray-500">
+                @if (isLoading) {
+                <div class="flex flex-col items-center gap-2">
+                  <div
+                    class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+                  ></div>
+                  <span>{{ loadingMessage }}</span>
+                </div>
+                } @else if (searchTerm) { No results found for "{{
+                  searchTerm
+                }}". Try a different search term. } @else {
+                {{ noDataMessage }}
+                }
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="p-3 border-t border-gray-200 bg-gray-50">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-sm text-gray-700">
+              {{ getPaginationInfo() }}
+            </span>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <select
+              [(ngModel)]="pageSize"
+              (change)="onPageSizeChange(pageSize)"
+              class="px-3 py-1 border border-gray-300 rounded-md text-sm"
+            >
+              @for (size of pageSizeOptions; track size) {
+              <option [value]="size">{{ size }}</option>
+              }
+            </select>
+
+            <div class="flex items-center space-x-1">
+              <button
+                (click)="previousPage()"
+                [disabled]="!canGoPrevious()"
+                [class.disabled:opacity-50]="!canGoPrevious()"
+                [class.disabled:cursor-not-allowed]="!canGoPrevious()"
+                class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Previous
+              </button>
+
+              <span class="px-3 py-1 text-sm text-gray-700">
+                Page {{ currentPage }} of {{ totalPages || 1 }}
+              </span>
+
+              <button
+                (click)="nextPage()"
+                [disabled]="!canGoNext()"
+                [class.disabled:opacity-50]="!canGoNext()"
+                [class.disabled:cursor-not-allowed]="!canGoNext()"
+                class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dialog Actions -->
+    <div
+      class="flex items-center justify-between p-4 border-t border-gray-200 bg-gray-50 rounded-b-3xl"
+    >
+      <div class="text-sm text-gray-600">
+        <span>
+          @if (searchTerm) {
+          {{ filteredDataSource.length }} of {{ dataSource.length }} items shown
+          }
+          <!--  @else {
+          {{ dataSource.length }} items • Click the action button to select
+          } -->
+        </span>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button
+          (click)="dialogClose(null)"
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,57 @@
+<div class="sub-panel">
+  <app-sub-panel-header 
+    [subPanelTitle]="title"
+    [isOptional]="isOptional"
+  />
+  
+  <div class="form-grid-4-col">
+    <app-select-option-field
+      [frmGroup]="frmGroup"
+      [options]="instructionForCreditorAgentOptions"
+      [label]="'Creditor Agent Code'"
+      [controlName]="'InstrForCdtrAgtCD'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Creditor Agent Info'"
+      [controlName]="'InstrForCdtrAgtInf'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Next Agent 1'"
+      [controlName]="'InstrForNxtAgt1'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Next Agent 2'"
+      [controlName]="'InstrForNxtAgt2'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Next Agent 3'"
+      [controlName]="'InstrForNxtAgt3'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Next Agent 4'"
+      [controlName]="'InstrForNxtAgt4'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Next Agent 5'"
+      [controlName]="'InstrForNxtAgt5'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Next Agent 6'"
+      [controlName]="'InstrForNxtAgt6'"
+    />
+  </div>
+</div> 

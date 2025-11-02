@@ -1,0 +1,2 @@
+interface Mx056Model {
+}

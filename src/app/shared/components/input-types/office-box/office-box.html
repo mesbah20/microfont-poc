@@ -1,0 +1,68 @@
+<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
+  <label class="input-label">
+    {{ labelText() }}
+    @if (isRequired()) {
+      <span class="text-red-500">*</span>
+    }
+  </label>
+
+  <div class="office-box-input-group input-wrapper">
+    <!-- Office Code Input -->
+    <input
+      [formControlName]="controlName()"
+      [attr.controlName]="controlName()"
+      [ngClass]="{'readonly-input': isReadonly() }"
+      [readonly]="isReadonly()"
+      [maxlength]="maxLen() || null"
+      [minlength]="minLen() || null"
+      matInput
+      [matTooltip]="tooltip()"
+      [matTooltipPosition]="tooltipPosition()"
+      [matTooltipClass]="tooltipClass()"
+      [matTooltipDisabled]="!tooltip()"
+      [placeholder]="placeholder() ?? 'Enter ' + labelText()"
+      class="custom-input office-box-input"
+      (keydown)="preventSpecialChars($event)"
+      (input)="onInput($event)"
+      (change)="onChange($event)"
+      (blur)="onBlur()"
+    />
+    @if (frmGroup().get(controlName())?.value && !isReadonly()) {
+      <button 
+        type="button"
+        class="clear-button"
+        (click)="clearInput()"
+        [attr.aria-label]="'Clear ' + labelText()">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+      </button>
+    }
+
+  </div>
+
+      <!-- Office Name Display -->
+      <span class="office-box-name" *ngIf="officeName()">
+        {{ officeName() }}
+      </span>
+
+  @if (frmGroup().get(controlName())?.errors && 
+      (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
+
+    <div class="text-red-500 text-sm mt-1">
+      @if (frmGroup().get(controlName())?.hasError('required')) {
+        {{ labelText() }} is required..!
+      }
+      @if (frmGroup().get(controlName())?.hasError('minlength')) {
+        {{ labelText() }} must be at least {{ frmGroup().get(controlName())?.errors?.['minlength']?.requiredLength }} characters.
+      }
+      @if (frmGroup().get(controlName())?.hasError('maxlength')) {
+        {{ labelText() }} cannot be more than {{ frmGroup().get(controlName())?.errors?.['maxlength']?.requiredLength }} characters.
+      }
+
+      @if (hasCustomErrors()) {
+        @for (errorKey of getCustomErrorKeys(); track errorKey) {
+          <div>{{ getCustomErrorMessage(errorKey) }}</div>
+        }
+      }
+    </div>
+  }
+</div>

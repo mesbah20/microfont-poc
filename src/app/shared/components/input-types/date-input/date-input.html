@@ -1,0 +1,41 @@
+<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
+  <label class="input-label">
+    {{ label() }}
+    @if (isRequired()) {
+      <span class="text-red-500">*</span>
+    }
+  </label>
+
+  <div class="relative select-date">
+    <input
+      [ngClass]="{'readonly-input': isReadonly()}"
+      matInput
+      [readonly]="isReadonly()"
+      [formControlName]="controlName()"
+      [attr.controlName]="controlName()"
+      [matDatepicker]="dobPicker"
+      [placeholder]="dateFormat()"
+      [matTooltip]="tooltip()"
+      [matTooltipPosition]="tooltipPosition()"
+      [matTooltipClass]="tooltipClass()"
+      [matTooltipDisabled]="!tooltip()"
+      (input)="onInputChange($event)"
+      (focus)="onFocus($event)"
+      (blur)="onBlur()"
+      (keydown)="onKeyDown($event)"
+      class="custom-input"
+    />
+    <mat-datepicker-toggle
+      [disabled]="isReadonly()"
+      matSuffix
+      [for]="dobPicker"
+      class="absolute top-1/2 right-2 -translate-y-1/2"
+    ></mat-datepicker-toggle>
+    <mat-datepicker #dobPicker (dateChange)="onDateSelected($event)"></mat-datepicker>
+  </div>
+   @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
+    <div class="text-red-500 text-xs mt-1">
+      {{ getDetailedErrorMessage() }}
+    </div>
+  }
+</div>

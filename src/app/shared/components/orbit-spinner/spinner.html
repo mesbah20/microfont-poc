@@ -1,0 +1,102 @@
+<!-- orbit-spinner.component.html -->
+<div 
+  [ngClass]="getContainerClasses()"
+  [ngStyle]="{
+    'background-color': showBackground() ? backgroundColor() : 'transparent',
+    'backdrop-filter': isOverlay() ? 'blur(10px)' : 'none'
+  }">
+  
+  <div class="spinner-wrapper" [ngClass]="'text-' + textPosition()">
+    
+    <!-- Text at top or left -->
+    @if (showText() && (textPosition() === 'top' || textPosition() === 'left')) {
+      <div 
+        [ngClass]="getTextClasses()"
+        [ngStyle]="{ color: textColor() }">
+        {{ text() }}
+      </div>
+    }
+    
+    <!-- Main Spinner -->
+    <div 
+      [ngClass]="getSpinnerClasses()"
+      [ngStyle]="{
+        width: getSizeInPixels() + 'px',
+        height: getSizeInPixels() + 'px',
+        '--animation-duration': getAnimationDuration() + 's'
+      }">
+      
+      <!-- Center Dot -->
+      @if (showCenter()) {
+        <div 
+          class="orbit-center"
+          [ngStyle]="{
+            'background-color': centerColor(),
+            width: (getSizeInPixels() * 0.25) + 'px',
+            height: (getSizeInPixels() * 0.25) + 'px'
+          }">
+        </div>
+      }
+      
+      <!-- Orbit Ring -->
+      @if (showOrbitRing()) {
+        <div 
+          class="orbit-ring"
+          [ngStyle]="{
+            'border-color': orbitColor(),
+            'animation-duration': getAnimationDuration() + 's'
+          }">
+          
+          <!-- Orbit Dots -->
+          @if (showDots()) {
+            @for (dotIndex of getDotsArray(); track dotIndex) {
+              <div 
+                class="orbit-dot"
+                [ngStyle]="{
+                  'background-color': dotColor(),
+                  'transform': 'rotate(' + getDotRotation(dotIndex) + 'deg) translateY(-50%)',
+                  width: (getSizeInPixels() * 0.133) + 'px',
+                  height: (getSizeInPixels() * 0.133) + 'px',
+                  top: '-' + (getSizeInPixels() * 0.067) + 'px'
+                }">
+              </div>
+            }
+          }
+        </div>
+      }
+      
+      <!-- Alternative: Dots without ring -->
+      @if (!showOrbitRing() && showDots()) {
+        @for (dotIndex of getDotsArray(); track dotIndex) {
+          <div 
+            class="orbit-dot-standalone"
+            [ngStyle]="{
+              'background-color': dotColor(),
+              'transform': 'rotate(' + getDotRotation(dotIndex) + 'deg)',
+              'animation-duration': getAnimationDuration() + 's',
+              width: (getSizeInPixels() * 0.133) + 'px',
+              height: (getSizeInPixels() * 0.133) + 'px'
+            }">
+            <div 
+              class="dot-element"
+              [ngStyle]="{
+                width: (getSizeInPixels() * 0.133) + 'px',
+                height: (getSizeInPixels() * 0.133) + 'px',
+                'background-color': dotColor()
+              }">
+            </div>
+          </div>
+        }
+      }
+    </div>
+    
+    <!-- Text at bottom or right -->
+    @if (showText() && (textPosition() === 'bottom' || textPosition() === 'right')) {
+      <div 
+        [ngClass]="getTextClasses()"
+        [ngStyle]="{ color: textColor() }">
+        {{ text() }}
+      </div>
+    }
+  </div>
+</div> 

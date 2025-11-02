@@ -1,0 +1,19 @@
+
+.custom-btn {
+  width: 50px;             
+  height: 50px;
+  background-color: #4cafef; 
+  border-radius: 50%;     
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+}
+
+.custom-btn:hover {
+  background-color: #379be0; 
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.custom-icon {
+  font-size: 28px; 
+  color: white;
+}

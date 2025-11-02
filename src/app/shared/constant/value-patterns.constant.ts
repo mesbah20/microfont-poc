@@ -1,0 +1,1 @@
+export const LEI_PATTERN = /^$|^[A-Z0-9]{18}[0-9]{2}$/;

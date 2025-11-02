@@ -1,0 +1,65 @@
+.lds-stepper {
+  display: flex;
+  flex-direction: column;
+
+  .stepper-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+
+    .step {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      &.active {
+        font-weight: bold;
+        color: #007bff;
+      }
+
+      .step-icon {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background-color: #007bff;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.5rem;
+      }
+
+      .step-label {
+        .step-title {
+          font-weight: bold;
+        }
+        .step-subtitle {
+          font-size: 0.8rem;
+          color: gray;
+        }
+      }
+    }
+  }
+
+  .stepper-content {
+    margin-bottom: 1rem;
+  }
+
+  .stepper-footer {
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      padding: 0.5rem 1rem;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+
+      &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+    }
+  }
+}

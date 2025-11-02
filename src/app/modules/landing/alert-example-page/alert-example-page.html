@@ -1,0 +1,506 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-7xl mx-auto px-4">
+    <!-- Page Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        SwiftFusion Component Library
+      </h1>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        A comprehensive collection of reusable Angular components with Material Design integration.
+        Each component is fully documented with usage examples and configuration options.
+      </p>
+    </div>
+
+    <!-- Alert Components Section -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Alert & Modal Components</h2>
+
+      <!-- Success Modal -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex items-start justify-between mb-6">
+          <div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">Success Modal</h3>
+            <p class="text-gray-600 mb-4">
+              Displays success messages with green styling and checkmark icon. Used for confirming successful operations,
+              form submissions, or positive user actions. Includes customizable title, message, and button text.
+            </p>
+            <div class="bg-gray-100 p-4 rounded-md mb-4">
+              <h4 class="font-semibold text-gray-800 mb-2">Usage:</h4>
+              <code class="text-sm text-gray-700">
+                &lt;app-alert-success [isOpen]="isSuccessModalOpen" [title]="'Success!'" [message]="message" (close)="closeModal()"&gt;&lt;/app-alert-success&gt;
+              </code>
+            </div>
+            <div class="bg-green-50 p-4 rounded-md">
+              <h4 class="font-semibold text-green-800 mb-2">Features:</h4>
+              <ul class="text-sm text-green-700 space-y-1">
+                <li>• Green color scheme with checkmark icon</li>
+                <li>• Customizable title and message</li>
+                <li>• Responsive design</li>
+                <li>• Keyboard accessibility (ESC to close)</li>
+                <li>• Event handling for close actions</li>
+              </ul>
+            </div>
+          </div>
+          <button
+            class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors duration-200 font-small text-sm cursor-pointer"
+            (click)="showSuccessModal()"
+          >
+            Success
+          </button>
+        </div>
+      </div>
+
+      <!-- Error Modal -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex items-start justify-between mb-6">
+          <div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">Error Modal</h3>
+            <p class="text-gray-600 mb-4">
+              Displays error messages with red styling and exclamation icon. Used for showing validation errors,
+              API failures, or critical issues that require user attention.
+            </p>
+            <div class="bg-gray-100 p-4 rounded-md mb-4">
+              <h4 class="font-semibold text-gray-800 mb-2">Usage:</h4>
+              <code class="text-sm text-gray-700">
+                &lt;app-alert-error [isOpen]="isErrorModalOpen" [title]="'Error!'" [message]="errorMessage" (close)="closeModal()"&gt;&lt;/app-alert-error&gt;
+              </code>
+            </div>
+            <div class="bg-red-50 p-4 rounded-md">
+              <h4 class="font-semibold text-red-800 mb-2">Features:</h4>
+              <ul class="text-sm text-red-700 space-y-1">
+                <li>• Red color scheme with warning icon</li>
+                <li>• Error message formatting</li>
+                <li>• Retry action support</li>
+                <li>• Detailed error information display</li>
+                <li>• Accessibility compliant</li>
+              </ul>
+            </div>
+          </div>
+          <button
+            class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-small text-sm cursor-pointer transition-colors duration-200"
+            (click)="showErrorModal()"
+          >
+            Error
+          </button>
+        </div>
+      </div>
+
+      <!-- Warning Modal -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex items-start justify-between mb-6">
+          <div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">Warning Modal</h3>
+            <p class="text-gray-600 mb-4">
+              Displays warning messages with yellow styling and triangle icon. Used for cautionary messages,
+              confirmation dialogs, or important notices that require user acknowledgment.
+            </p>
+            <div class="bg-gray-100 p-4 rounded-md mb-4">
+              <h4 class="font-semibold text-gray-800 mb-2">Usage:</h4>
+              <code class="text-sm text-gray-700">
+                &lt;app-alert-warning [isOpen]="isWarningModalOpen" [title]="'Warning!'" [message]="warningMessage" (close)="closeModal()"&gt;&lt;/app-alert-warning&gt;
+              </code>
+            </div>
+            <div class="bg-yellow-50 p-4 rounded-md">
+              <h4 class="font-semibold text-yellow-800 mb-2">Features:</h4>
+              <ul class="text-sm text-yellow-700 space-y-1">
+                <li>• Yellow color scheme with warning icon</li>
+                <li>• Confirmation dialog support</li>
+                <li>• Action buttons (Proceed/Cancel)</li>
+                <li>• Customizable warning levels</li>
+                <li>• User acknowledgment tracking</li>
+              </ul>
+            </div>
+          </div>
+          <button
+            class="bg-yellow-600 text-white px-6 py-3 font-small text-sm cursor-pointer rounded-lg hover:bg-yellow-700 transition-colors duration-200"
+            (click)="showWarningModal()"
+          >
+            Warning
+          </button>
+        </div>
+      </div>
+
+      <!-- Info Modal -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex items-start justify-between mb-6">
+          <div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">Info Modal</h3>
+            <p class="text-gray-600 mb-4">
+              Displays informational messages with blue styling and info icon. Used for helpful tips,
+              feature announcements, or general information that enhances user experience.
+            </p>
+            <div class="bg-gray-100 p-4 rounded-md mb-4">
+              <h4 class="font-semibold text-gray-800 mb-2">Usage:</h4>
+              <code class="text-sm text-gray-700">
+                &lt;app-alert-info [isOpen]="isInfoModalOpen" [title]="'Information'" [message]="infoMessage" (close)="closeModal()"&gt;&lt;/app-alert-info&gt;
+              </code>
+            </div>
+            <div class="bg-blue-50 p-4 rounded-md">
+              <h4 class="font-semibold text-blue-800 mb-2">Features:</h4>
+              <ul class="text-sm text-blue-700 space-y-1">
+                <li>• Blue color scheme with info icon</li>
+                <li>• Rich text content support</li>
+                <li>• Link embedding capability</li>
+                <li>• Dismissible notifications</li>
+                <li>• Auto-hide timer option</li>
+              </ul>
+            </div>
+          </div>
+          <button
+            class="bg-blue-600 text-white px-6 py-3 rounded-lg font-small text-sm cursor-pointer hover:bg-blue-700 transition-colors duration-200"
+            (click)="showInfoModal()"
+          >
+            Info
+          </button>
+        </div>
+      </div>
+
+      <!-- Delete Confirmation Modal -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex items-start justify-between mb-6">
+          <div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">Delete Confirmation Modal</h3>
+            <p class="text-gray-600 mb-4">
+              Displays delete confirmation messages with red styling and delete icon. Used for confirming
+              destructive actions like deleting records, files, or account data.
+            </p>
+            <div class="bg-gray-100 p-4 rounded-md mb-4">
+              <h4 class="font-semibold text-gray-800 mb-2">Usage:</h4>
+              <code class="text-sm text-gray-700">
+                &lt;app-delete-confirmation-dialogue [isOpen]="isDeleteModalOpen" [title]="'Delete Confirmation'" [message]="deleteMessage" (close)="closeModal()"&gt;&lt;/app-delete-confirmation-dialogue&gt;
+              </code>
+            </div>
+            <div class="bg-red-50 p-4 rounded-md">
+              <h4 class="font-semibold text-red-800 mb-2">Features:</h4>
+              <ul class="text-sm text-red-700 space-y-1">
+                <li>• Red color scheme with delete icon</li>
+                <li>• Two-step confirmation process</li>
+                <li>• Irreversible action warning</li>
+                <li>• Cancel/Confirm button options</li>
+                <li>• Keyboard shortcut prevention</li>
+              </ul>
+            </div>
+          </div>
+          <button
+            class="bg-red-600 text-white px-6 py-3 rounded-lg font-small text-sm cursor-pointer hover:bg-red-700 transition-colors duration-200"
+            (click)="showDeleteConfirmationModal()"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <!-- Data Selection Modal -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex items-start justify-between mb-6">
+          <div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">Data Selection Modal</h3>
+            <p class="text-gray-600 mb-4">
+              Advanced modal for selecting data from master tables with search, filtering, sorting, and pagination.
+              Built with Material Design components for consistent UI/UX across the application.
+            </p>
+            <div class="bg-gray-100 p-4 rounded-md mb-4">
+              <h4 class="font-semibold text-gray-800 mb-2">Usage:</h4>
+              <code class="text-sm text-gray-700">
+                &lt;app-data-selection-modal [isOpen]="isDataModalOpen" [config]="dataConfig" (result)="onDataSelected($event)"&gt;&lt;/app-data-selection-modal&gt;
+              </code>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-md">
+              <h4 class="font-semibold text-purple-800 mb-2">Features:</h4>
+              <ul class="text-sm text-purple-700 space-y-1">
+                <li>• Material Design table with sorting</li>
+                <li>• Advanced search and filtering</li>
+                <li>• Pagination with configurable page sizes</li>
+                <li>• Multi-select with checkboxes</li>
+                <li>• Responsive design for mobile/desktop</li>
+                <li>• Error handling with fallback data</li>
+                <li>• Loading states and progress indicators</li>
+                <li>• Keyboard navigation support</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flex flex-col gap-4">
+            <div class="flex flex-wrap gap-3">
+              <button
+                class="bg-blue-600 text-white px-6 py-3 font-small text-sm cursor-pointer rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                (click)="showCustomerSelectionModal()"
+              >
+                Select Customer
+              </button>
+              <button
+                class="bg-green-600 text-white px-6 py-3 font-small text-sm cursor-pointer rounded-lg hover:bg-green-700 transition-colors duration-200"
+                (click)="showAccountSelectionModal()"
+              >
+                Select Account
+              </button>
+              <button
+                class="bg-purple-600 text-white px-6 py-3 font-small text-sm cursor-pointer rounded-lg hover:bg-purple-700 transition-colors duration-200 font-medium"
+                (click)="showProductSelectionModal()"
+              >
+                Select Product
+              </button>
+            </div>
+
+            <!-- Selected Data Display -->
+            <div class="w-full">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Selected Data:</label>
+              <div class="relative">
+                <textarea
+                  [value]="getSelectedDataDisplay()"
+                  readonly
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 font-mono text-sm resize-none"
+                  rows="4"
+                  placeholder="No data selected yet. Use the buttons above to select data from the modal."
+                ></textarea>
+                              @if (selectedData() || selectedItems().length > 0) {
+                <div class="absolute top-2 right-2">
+                  <button
+                    (click)="clearSelectedData()"
+                    class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                    title="Clear selected data"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                </div>
+              }
+              </div>
+              @if (selectedData() || selectedItems().length > 0) {
+                <div class="mt-2 text-xs text-gray-500">
+                  @if (selectedItems().length > 0) {
+                    <span>{{ selectedItems().length }} item(s) selected at: {{ getSelectionTimestamp() }}</span>
+                  } @else {
+                    <span>Data selected at: {{ getSelectionTimestamp() }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Form Components Section -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Form Components</h2>
+
+      <!-- Text Area Component -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex items-start justify-between mb-6">
+          <div class="flex-1">
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">Text Area Component</h3>
+            <p class="text-gray-600 mb-4">
+              Enhanced text area component with character counting, validation, and responsive design.
+              Supports form integration, placeholder text, and custom styling.
+            </p>
+            <div class="bg-gray-100 p-4 rounded-md mb-4">
+              <h4 class="font-semibold text-gray-800 mb-2">Usage:</h4>
+              <code class="text-sm text-gray-700">
+                &lt;lds-txt-area [frmGroup]="frmGroup" [controlName]="'description'" [labelText]="'Description'" [maxLen]="500" [rows]="3"&gt;&lt;/lds-txt-area&gt;
+              </code>
+            </div>
+            <div class="bg-green-50 p-4 rounded-md">
+              <h4 class="font-semibold text-green-800 mb-2">Features:</h4>
+              <ul class="text-sm text-green-700 space-y-1">
+                <li>• Character count display</li>
+                <li>• Maximum length validation</li>
+                <li>• Form control integration</li>
+                <li>• Responsive design</li>
+                <li>• Custom placeholder support</li>
+                <li>• Validation error display</li>
+              </ul>
+            </div>
+          </div>
+          <div class="w-1/2 ml-8">
+            <lds-txt-area
+              [id]="'description'"
+              [frmGroup]="frmGroup"
+              [controlName]="'description'"
+              [labelText]="'Description'"
+              [placeholder]="'Enter description'"
+              [maxLen]="500"
+              [enable]="true"
+              [visible]="true"
+              [rows]="3"
+              (onChanged)="onTextAreaChanged($event)"
+            >
+            </lds-txt-area>
+          </div>
+        </div>
+      </div>
+
+      <!-- Label Component -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex items-start justify-between mb-6">
+          <div class="flex-1">
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">Label Component</h3>
+            <p class="text-gray-600 mb-4">
+              Flexible label component for form fields, sections, or standalone text display.
+              Supports dynamic content, visibility control, and custom styling.
+            </p>
+            <div class="bg-gray-100 p-4 rounded-md mb-4">
+              <h4 class="font-semibold text-gray-800 mb-2">Usage:</h4>
+              <code class="text-sm text-gray-700">
+                &lt;lds-label [labelValue]="'Field Label'" [visible]="true"&gt;&lt;/lds-label&gt;
+              </code>
+            </div>
+            <div class="bg-blue-50 p-4 rounded-md">
+              <h4 class="font-semibold text-blue-800 mb-2">Features:</h4>
+              <ul class="text-sm text-blue-700 space-y-1">
+                <li>• Dynamic label content</li>
+                <li>• Visibility control</li>
+                <li>• Custom styling support</li>
+                <li>• Accessibility compliant</li>
+                <li>• Form field association</li>
+              </ul>
+            </div>
+          </div>
+          <div class="w-1/2 ml-8 space-y-4">
+            <lds-label [labelValue]="'Username'"></lds-label>
+            <lds-label [labelValue]="getLabelText()"></lds-label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Switch Component -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex items-start justify-between mb-6">
+          <div class="flex-1">
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">Switch Component</h3>
+            <p class="text-gray-600 mb-4">
+              Toggle switch component for boolean values with smooth animations and form integration.
+              Perfect for settings, preferences, and feature toggles.
+            </p>
+            <div class="bg-gray-100 p-4 rounded-md mb-4">
+              <h4 class="font-semibold text-gray-800 mb-2">Usage:</h4>
+              <code class="text-sm text-gray-700">
+                &lt;lds-switch [frmGroup]="frmGroup" [controlName]="'notifications'" [labelText]="'Enable Notifications'"&gt;&lt;/lds-switch&gt;
+              </code>
+            </div>
+            <div class="bg-orange-50 p-4 rounded-md">
+              <h4 class="font-semibold text-orange-800 mb-2">Features:</h4>
+              <ul class="text-sm text-orange-700 space-y-1">
+                <li>• Smooth toggle animation</li>
+                <li>• Form control integration</li>
+                <li>• Custom label support</li>
+                <li>• Accessibility features</li>
+                <li>• Event handling</li>
+                <li>• Visual feedback</li>
+              </ul>
+            </div>
+          </div>
+          <div class="w-1/2 ml-8">
+            <lds-switch
+              [frmGroup]="frmGroup"
+              [controlName]="'notifications'"
+              [labelText]="'Enable Notifications'"
+              [id]="'notifications-switch'"
+              [isChecked]="true"
+              (isCheckedChanged)="onSwitchChanged($event)"
+            >
+            </lds-switch>
+          </div>
+        </div>
+      </div>
+
+      <!-- Amount to Word Input -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex items-start justify-between mb-6">
+          <div class="flex-1">
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">Amount to Word Input</h3>
+            <p class="text-gray-600 mb-4">
+              Specialized input component for currency amounts with automatic word conversion.
+              Includes validation, formatting, and localization support.
+            </p>
+            <div class="bg-gray-100 p-4 rounded-md mb-4">
+              <h4 class="font-semibold text-gray-800 mb-2">Usage:</h4>
+              <code class="text-sm text-gray-700">
+                &lt;app-amount-to-word-input [frmGroup]="frmGroup" [controlName]="'amount'" [label]="'Amount'"&gt;&lt;/app-amount-to-word-input&gt;
+              </code>
+            </div>
+            <div class="bg-yellow-50 p-4 rounded-md">
+              <h4 class="font-semibold text-yellow-800 mb-2">Features:</h4>
+              <ul class="text-sm text-yellow-700 space-y-1">
+                <li>• Currency formatting</li>
+                <li>• Word conversion display</li>
+                <li>• Validation rules</li>
+                <li>• Localization support</li>
+                <li>• Read-only mode</li>
+                <li>• Custom currency symbols</li>
+              </ul>
+            </div>
+          </div>
+          <div class="w-1/2 ml-8">
+            <app-amount-to-word-input
+              [frmGroup]="frmGroup"
+              [controlName]="'amount'"
+              [label]="'Amount'"
+              [isReadonly]="false"
+              [placeholder]="'Enter amount'"
+              (valueChange)="onAmountToWordInputValueChange($event)"
+            >
+            </app-amount-to-word-input>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Selection Modal -->
+<!--    @if (dataSelectionConfig()) {-->
+<!--      <app-data-selection-modal-->
+<!--        [isOpen]="isDataSelectionModalOpen()"-->
+<!--        [config]="dataSelectionConfig()!"-->
+<!--        (close)="closeDataSelectionModal()"-->
+<!--        (result)="onDataSelectionResult($event)"-->
+<!--      >-->
+<!--      </app-data-selection-modal>-->
+<!--    }-->
+
+    <!-- Alert Modals -->
+    <app-alert-success
+      [isOpen]="isSuccessModalOpen()"
+      [title]="successModalTitle()"
+      [message]="successModalMessage()"
+      (close)="closeSuccessModal()"
+      (buttonClick)="onSuccessModalButtonClick($event)"
+    >
+    </app-alert-success>
+
+    <app-alert-error
+      [isOpen]="isErrorModalOpen()"
+      [title]="errorModalTitle()"
+      [message]="errorModalMessage()"
+      (close)="closeErrorModal()"
+      (buttonClick)="onErrorModalButtonClick($event)"
+    >
+    </app-alert-error>
+
+    <app-alert-warning
+      [isOpen]="isWarningModalOpen()"
+      [title]="warningModalTitle()"
+      [message]="warningModalMessage()"
+      (close)="closeWarningModal()"
+      (buttonClick)="onWarningModalButtonClick($event)"
+    >
+    </app-alert-warning>
+
+    <app-alert-info
+      [isOpen]="isInfoModalOpen()"
+      [title]="infoModalTitle()"
+      [message]="infoModalMessage()"
+      (close)="closeInfoModal()"
+      (buttonClick)="onInfoModalButtonClick($event)"
+    >
+    </app-alert-info>
+
+    <app-delete-confirmation-dialogue
+      [isOpen]="isDeleteConfirmationModalOpen()"
+      [title]="'Delete Confirmation'"
+      [message]="'Are you sure you want to delete this item? This action cannot be undone.'"
+      (close)="closeDeleteConfirmationModal()"
+      (buttonClick)="onDeleteConfirmationModalButtonClick($event)"
+    >
+    </app-delete-confirmation-dialogue>
+  </div>
+</div>

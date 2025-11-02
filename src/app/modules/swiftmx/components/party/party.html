@@ -1,0 +1,243 @@
+<div class="sub-panel">
+  <app-sub-panel-header 
+    [subPanelTitle]="title"
+    [isOptional]="isOptional"
+  />
+  
+  <div class="form-grid-4-col">
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Name'"
+      [controlName]="controlPrefix + 'Nm'"
+    />
+
+    <app-text-base-input
+      [frmGroup]="frmGroup"
+      [label]="'Country of Residence'"
+      [controlName]="controlPrefix + 'CtryOfRes'"
+    />
+  </div>
+
+  <!-- Organization Identification -->
+  <div class="sub-panel">
+    <app-sub-panel-header 
+      [subPanelTitle]="'Organization Identification'"
+      [isOptional]="true"
+    />
+    
+    <div class="form-grid-4-col">
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Organization BIC'"
+        [controlName]="controlPrefix + 'OrgIdBic'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Organization LEI'"
+        [controlName]="controlPrefix + 'OrgIdLEI'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Organization Other ID'"
+        [controlName]="controlPrefix + 'OrgIdOthrID'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Organization Scheme Name Code'"
+        [controlName]="controlPrefix + 'OrgIdOthrScNmCD'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Organization Issuer'"
+        [controlName]="controlPrefix + 'OrgIdOthrIssr'"
+      />
+    </div>
+  </div>
+
+  <!-- Private Identification -->
+  <div class="sub-panel">
+    <app-sub-panel-header 
+      [subPanelTitle]="'Private Identification'"
+      [isOptional]="true"
+    />
+    
+    <div class="form-grid-4-col">
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Birth Date'"
+        [controlName]="controlPrefix + 'BirthDt'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Province of Birth'"
+        [controlName]="controlPrefix + 'PrvcOfBirth'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'City of Birth'"
+        [controlName]="controlPrefix + 'CityOfBirth'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Country of Birth'"
+        [controlName]="controlPrefix + 'CtryOfBirth'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Private Other ID 1'"
+        [controlName]="controlPrefix + 'PrvtOthId1'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Private Other ID Scheme Name Code 1'"
+        [controlName]="controlPrefix + 'PrvtOthIdSchNmCD1'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Private Other ID Issuer 1'"
+        [controlName]="controlPrefix + 'PrvtOthIdIssr1'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Private Other ID 2'"
+        [controlName]="controlPrefix + 'PrvtOthId2'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Private Other ID Scheme Name Code 2'"
+        [controlName]="controlPrefix + 'PrvtOthIdSchNmCD2'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Private Other ID Issuer 2'"
+        [controlName]="controlPrefix + 'PrvtOthIdIssr2'"
+      />
+    </div>
+  </div>
+
+  <!-- Address Details -->
+  <div class="sub-panel">
+    <app-sub-panel-header 
+      [subPanelTitle]="'Address Details'"
+      [divElement]="addressDetails"
+      [isOptional]="true"
+    />
+    
+    <div #addressDetails class="form-grid-4-col">
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Department'"
+        [controlName]="controlPrefix + 'AddressDept'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Sub Department'"
+        [controlName]="controlPrefix + 'AddressSubDept'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Street Name'"
+        [controlName]="controlPrefix + 'AddressStrtNm'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Building Number'"
+        [controlName]="controlPrefix + 'AddressBldgNb'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Building Name'"
+        [controlName]="controlPrefix + 'AddressBldgNm'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Floor'"
+        [controlName]="controlPrefix + 'AddressFlr'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Post Box'"
+        [controlName]="controlPrefix + 'AddressPstBx'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Room'"
+        [controlName]="controlPrefix + 'AddressRoom'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Post Code'"
+        [controlName]="controlPrefix + 'AddressPstCd'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Town Name'"
+        [controlName]="controlPrefix + 'AddressTwnNm'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Town Location Name'"
+        [controlName]="controlPrefix + 'AddressTwnLctnNm'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'District Name'"
+        [controlName]="controlPrefix + 'AddressDstrctNm'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Country Sub Division'"
+        [controlName]="controlPrefix + 'AddressCtrySubDvsn'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Country'"
+        [controlName]="controlPrefix + 'AddressCtry'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Address Line 1'"
+        [controlName]="controlPrefix + 'AddressAdrLine1'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Address Line 2'"
+        [controlName]="controlPrefix + 'AddressAdrLine2'"
+      />
+
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [label]="'Address Line 3'"
+        [controlName]="controlPrefix + 'AddressAdrLine3'"
+      />
+    </div>
+  </div>
+</div> 

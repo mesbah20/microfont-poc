@@ -1,0 +1,82 @@
+<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
+  <label class="input-label relative">
+    {{ label() }}
+    @if (isRequired()) {
+      <span class="text-red-500">*</span>
+    }
+  </label>
+
+  <div class="input-with-button-container">
+    <input
+      [formControlName]="controlName()"
+      [attr.controlName]="controlName()"
+      matInput
+      [ngClass]="{'readonly-input': isReadonly() }"
+      type="text" 
+      inputmode="numeric"
+      (keyup)="onChangeInput()"
+      [matTooltip]="tooltip()"
+      [matTooltipPosition]="tooltipPosition()"
+      [matTooltipClass]="tooltipClass()"
+      [matTooltipDisabled]="!tooltip()"
+      [placeholder]="placeholder() ?? 'Enter ' + label()"
+      [readonly]="isReadonly()"
+      class="custom-input"
+      (keydown)="preventSpecialChars($event)"
+      (input)="onInput($event)" 
+      (change)="onChange($event)"
+      (blur)="onBlur()"
+      />
+    
+    @if (isDotsVisible()) {
+      <button 
+        type="button"
+        class="dots-button"
+        (click)="onDotsClick()"
+        [disabled]="isReadonly()"
+        matRipple>
+        ...
+      </button>
+    }
+  </div>
+
+  @if (isInvalid()) {
+    <div class="text-red-500 text-sm mt-1">
+      <!-- Default error messages -->
+      @if (hasError('required')) {
+        <div>{{ label() }} is required!</div>
+      }
+
+      @if (hasError('min')) {
+        <div>Minimum value is {{ getErrorValue('min')?.min }}</div>
+      }
+
+      @if (hasError('max')) {
+        <div>Maximum value is {{ getErrorValue('max')?.max }}</div>
+      }
+
+      @if (hasError('minlength')) {
+        <div>Minimum length required is {{ getErrorValue('minlength')?.requiredLength }} characters</div>
+      }
+
+      @if (hasError('maxlength')) {
+        <div>Maximum length allowed is {{ getErrorValue('maxlength')?.requiredLength }} characters</div>
+      }
+
+      @if (hasError('pattern')) {
+        <div>{{ label() }} format is invalid</div>
+      }
+
+      @if (hasError('specialCharacterNotAllowed')) {
+        <div>{{ label() }} contains invalid characters</div>
+      }
+
+      <!-- Custom error messages for any other validation errors -->
+      @if (hasCustomErrors()) {
+        @for (errorKey of getCustomErrorKeys(); track errorKey) {
+          <div>{{ getCustomErrorMessage(errorKey) }}</div>
+        }
+      }
+    </div>
+  }
+</div>
