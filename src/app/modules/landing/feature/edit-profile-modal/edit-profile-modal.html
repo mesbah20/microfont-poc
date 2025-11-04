@@ -1,0 +1,60 @@
+<lds-modal
+  [isVisible]="isOpen"
+  [modalTitle]="'Edit Profile'"
+  [cssClass]="'modal-panel-right'"
+  [closeOnBackdropClick]="true"
+  (isVisibleChanged)="isOpenChange.emit($event)"
+  (modalClosed)="onClose()"
+>
+  <div bodyContent>
+    <form [formGroup]="frm" class="grid gap-3">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label>User ID</label>
+          <input class="inp" formControlName="user_id" />
+        </div>
+        <div>
+          <label>User Name</label>
+          <input class="inp" formControlName="user_nm" />
+        </div>
+      </div>
+
+      <div>
+        <label>Description</label>
+        <textarea class="inp" formControlName="user_descrip"></textarea>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label>Home Office ID</label>
+          <input class="inp" formControlName="home_office_id" />
+        </div>
+        <div>
+          <label>Email</label>
+          <input class="inp" formControlName="user_email_id" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label>Login ID</label>
+          <input class="inp" formControlName="login_id" />
+        </div>
+        <div>
+          <label>Mobile Number</label>
+          <input class="inp" formControlName="mobile_number" maxlength="30" />
+        </div>
+      </div>
+
+      <div>
+        <label>Profile Image URL</label>
+        <input class="inp" formControlName="user_img" />
+      </div>
+    </form>
+  </div>
+
+  <div slot="footer">
+    <button class="btn btn-secondary" type="button" (click)="onClose()">Cancel</button>
+    <button class="btn btn-primary" type="button" (click)="onSave()">Save</button>
+  </div>
+</lds-modal>
