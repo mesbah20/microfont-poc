@@ -28,17 +28,7 @@
   align-self: flex-start;
 }
 /* Select wrapper - matches your single-select design */
-.select-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  background: white;
-  border: 2px solid #d1d5db;
-  border-radius: 0.5rem;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
+
 
 .select-wrapper:hover:not(.readonly-input) {
   border-color: #9ca3af;
@@ -276,9 +266,9 @@
   background: #94a3b8;
 }
 
-.custom-select{
-  border: 1px solid rgb(99, 97, 97);
-}
+// .custom-select{
+//   border: 1px solid rgb(99, 97, 97);
+// }
 .custom-select:disabled::placeholder,
 .custom-select.readonly-input::placeholder {
   color: #56595e; /* slate-500 for better contrast on gray bg */
