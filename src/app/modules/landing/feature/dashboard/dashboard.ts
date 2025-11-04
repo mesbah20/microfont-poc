@@ -4,17 +4,53 @@ import Highcharts from 'highcharts';
 import 'highcharts/highcharts-3d';
 import {HighchartsChartModule} from 'highcharts-angular';
 import {BUTTON_VISIBILITY} from '../../../../shared/constant/button-signals.constant';
+import {LineChartComponent} from '../../../../shared/components/charts/line-chart/line-chart';
 
 @Component({
   selector: 'app-dashboard',
   imports: [
-    HighchartsChartModule
+    HighchartsChartModule,
+    LineChartComponent
   ],
   templateUrl: './dashboard.html',
   standalone: true,
   styleUrl: './dashboard.scss'
 })
 export class Dashboard implements OnInit {
+
+  // range: 'weekly' | 'monthly' | 'yearly' = 'weekly';
+
+
+
+  LineChartData = {
+    weekly : {
+      categories: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      series: [
+        { name: 'USD',  data: [1000,1200,900,1500,1700,1600,1800] },
+        { name: 'GBP',  data: [700,820,760,980,1100,1000,1150] },
+      ],
+      yMin: 0, yMax: 2000
+    },
+
+    monthly : {
+      categories: ['W1','W2','W3','W4'],
+      series: [
+        { name: 'USD',  data: [4200,4600,4800,5100] },
+        { name: 'GBP',  data: [3200,3300,3500,3700] },
+      ],
+      yMin: 0, yMax: 6000
+    },
+
+    yearly : {
+      categories: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      series: [
+        { name: 'USD', data: [9,8,10,11,12,13,12,12,11,10,9,8].map(x => x * 1000) },
+        { name: 'GBP', data: [7,7,8,9,10,11,10,10,9,8,7,7].map(x => x * 1000) },
+      ],
+      yMin: 0, yMax: 15000
+    }
+  };
+
 
   pieColors = [
     // Soft Neutrals & Calm Tones
