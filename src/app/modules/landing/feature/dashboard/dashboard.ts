@@ -1,4 +1,3 @@
-
 import {Component, OnInit} from '@angular/core';
 import Highcharts from 'highcharts';
 import 'highcharts/highcharts-3d';
@@ -21,36 +20,49 @@ export class Dashboard implements OnInit {
   // range: 'weekly' | 'monthly' | 'yearly' = 'weekly';
 
 
-
   LineChartData = {
-    weekly : {
-      categories: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    weekly: {
+      categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       series: [
-        { name: 'USD',  data: [1000,1200,900,1500,1700,1600,1800] },
-        { name: 'GBP',  data: [700,820,760,980,1100,1000,1150] },
+        {name: 'USD', data: [1000, 1200, 900, 1500, 1700, 1600, 1800]},
+        {name: 'GBP', data: [700, 820, 760, 980, 1100, 1000, 1150]},
       ],
       yMin: 0, yMax: 2000
     },
 
-    monthly : {
-      categories: ['W1','W2','W3','W4'],
+    monthly: {
+      categories: ['W1', 'W2', 'W3', 'W4'],
       series: [
-        { name: 'USD',  data: [4200,4600,4800,5100] },
-        { name: 'GBP',  data: [3200,3300,3500,3700] },
+        {name: 'USD', data: [4200, 4600, 4800, 5100]},
+        {name: 'GBP', data: [3200, 3300, 3500, 3700]},
       ],
       yMin: 0, yMax: 6000
     },
 
-    yearly : {
-      categories: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    yearly: {
+      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       series: [
-        { name: 'USD', data: [9,8,10,11,12,13,12,12,11,10,9,8].map(x => x * 1000) },
-        { name: 'GBP', data: [7,7,8,9,10,11,10,10,9,8,7,7].map(x => x * 1000) },
+        {
+          name: 'USD',
+          data: [90000, 80000, 100000, 110000, 120000, 130000, 120000, 120000, 110000, 100000, 90000, 80000]
+        },
+        {name: 'GBP', data: [70000, 70000, 80000, 90000, 100000, 110000, 100000, 10, 90000, 80000, 70000, 70000]},
       ],
-      yMin: 0, yMax: 15000
+      yMin: 0, yMax: 150000
     }
   };
 
+
+  lineColors: ['#4C6EF5', // Soft Indigo
+    '#6C8EBF', // Muted Blue
+    '#A0C4FF', // Soft Sky Blue
+    '#BDB2FF', // Muted Purple
+    '#FFDAC1', // Soft Peach
+    '#FFB5A7', // Light Coral
+    '#C8E6C9', // Minty Green
+    '#DDE5B6', // Light Olive
+    '#F0EFEB',  // Off-white Beige
+  ]
 
   pieColors = [
     // Soft Neutrals & Calm Tones
