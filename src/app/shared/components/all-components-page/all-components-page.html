@@ -45,11 +45,12 @@
                   [frmGroup]="frmGroup"
                   [controlName]="'id'"
                   [label]="'Account ID'"
-                  [isVertical]="true"
+                  
                   [isDotsVisible]="true"
                   [tooltip]="'Click to select account ID'"
                   [tooltipPosition]="'above'"
                   [tooltipDelay]="300"
+                  displayMode = "vertical"
                   (onBlurred)="onBlur($event)"
                   (dotsClicked)="openModal()"
                   (onChanged)="onIdBoxChanged($event)"

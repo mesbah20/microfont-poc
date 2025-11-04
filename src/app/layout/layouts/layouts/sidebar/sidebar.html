@@ -1,10 +1,14 @@
 <div class="flex h-[]  p-1 m-1" >
   
-  <div class="sidebar-container flex flex-col items-center relative z-20 border-r sidebar border-gray-100 transition-all duration-300"
+  <div class="sidebar-container flex flex-col items-center relative z-50 border-r sidebar border-gray-100 transition-all duration-300 md:flex"
+       [class.hidden]="!isMobileOpen && !sidebarService.isSidebarOpen()"
+       [class.fixed]="!sidebarService.isSidebarOpen()"
+       [class.inset-0]="!sidebarService.isSidebarOpen()"
        [class.w-21]="!sidebarExpanded"
-       [class.w-64]="sidebarExpanded">
+       [class.w-64]="sidebarExpanded"
+       [class.bg-white]="!sidebarService.isSidebarOpen()">
     
-  <div class="flex w-full ">
+  <div class="flex w-full">
       <!-- Arrow Toggle Button - Positioned on the right edge -->
 
 
