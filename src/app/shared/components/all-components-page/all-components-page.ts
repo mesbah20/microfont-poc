@@ -1,5 +1,5 @@
 // Enhanced TypeScript Component with Relatable Fields
-import { Component, effect, inject, OnInit, signal, TemplateRef, ViewChild, WritableSignal } from '@angular/core';
+import { Component, effect, inject, OnInit, signal, TemplateRef, ViewChild, WritableSignal, Type } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextBaseInput } from '../input-types/text-base-input/text-base-input';
 import { IdBoxComponent } from '../input-types/id-box/id-box';
@@ -23,8 +23,27 @@ import { BUTTON_VISIBILITY, ONCLICK_SAVE } from '../../constant/button-signals.c
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { DateInput } from '../input-types/date-input/date-input';
 import { LdsModalComponent } from '../lds-modal/lds-modal';
+import { OtherComponentsPage } from '../other-components-page/other-components-page';
 import { CommonModule } from '@angular/common';
 import { Button } from '../input-types/button/button';
+
+// Types for data selection modal
+export interface AccountData {
+  id: string;
+  name: string;
+  category: string;
+  amount: number;
+}
+
+export interface DataSelectionConfig {
+  pickTableDataSource: AccountData[];
+  pickTablePair: Map<string, string>;
+  apiSearchPlaceholder: string;
+  findButtonText: string;
+  loadingText: string;
+  noDataMessage: string;
+  loadingMessage: string;
+}
 
 @Component({
   selector: 'app-all-components-page',
@@ -50,7 +69,8 @@ import { Button } from '../input-types/button/button';
     DataGridComponent,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
-    DataSelectionModal
+  DataSelectionModal,
+  OtherComponentsPage
   ],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],
@@ -60,8 +80,48 @@ export class AllComponentsPage implements OnInit {
   toastr = inject(ToastrService);
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
   subPanel1: WritableSignal<boolean> = signal(true);
+  // Reference to this component's own class
+  static instance: Type<AllComponentsPage> = AllComponentsPage;
   isDataSelectionModalOpen = signal(false);
   onClickSave = ONCLICK_SAVE;
+  
+  // Methods for modal events
+  onModalClosed() {
+    this.isDataSelectionModalOpen.set(false);
+  }
+
+onModalResult(result: any) {
+  console.log('Modal result received:', result);
+
+  if (!result) return;
+
+  // If child sends { field, value }
+  if (result.field) {
+    this.frmGroup.get(result.field)?.setValue(result.value);
+  } else if (typeof result === 'object' && !Array.isArray(result)) {
+    const controlKeys = Object.keys(this.frmGroup.controls);
+    const patch: any = {};
+    controlKeys.forEach(key => {
+      if (result[key] !== undefined) {
+        patch[key] = result[key];
+      }
+    });
+    if (Object.keys(patch).length) {
+      console.log('Patching parent form with modal data:', patch);
+      this.frmGroup.patchValue(patch);
+    }
+  } else {
+    // Fallback: set a known control
+    this.frmGroup.get('textBox')?.setValue(result);
+  }
+
+  this.showModal = false;
+}
+
+  // openModal() {
+  //   this.isDataSelectionModalOpen.set(true);
+  // }
+  
   // Relatable field signals
   selectedCurrency = signal<string>('USD');
   selectedCountry = signal<string>('');
@@ -72,6 +132,30 @@ export class AllComponentsPage implements OnInit {
   relatedTransactions = signal<any[]>([]);
   showModal = false;  
   isTRUE = false;
+  modalComponent?: Type<any>;
+  OtherComponentsPageComponent: Type<any> = OtherComponentsPage;
+  modalComponentData?: any = null;
+
+  // Data Selection Modal Configuration
+  modalConfig: DataSelectionConfig = {
+    pickTableDataSource: [
+      { id: 'ACC001', name: 'Main Trading Account', category: 'Trading', amount: 50000.00 },
+      { id: 'ACC002', name: 'Investment Portfolio', category: 'Investment', amount: 75000.00 },
+      { id: 'ACC003', name: 'Operating Account', category: 'Business', amount: 25000.00 },
+      { id: 'ACC004', name: 'Reserve Fund', category: 'Savings', amount: 100000.00 }
+    ],
+    pickTablePair: new Map<string, string>([
+      ['id', 'ID'],
+      ['name', 'Name'],
+      ['category', 'Category'],
+      ['amount', 'Amount']
+    ]),
+    apiSearchPlaceholder: 'Search transactions...',
+    findButtonText: 'Find Transaction',
+    loadingText: 'Searching transactions...',
+    noDataMessage: 'No transactions found. Try different search terms.',
+    loadingMessage: 'Loading transaction data...'
+  };
   // Enhanced dropdown options with relationships
   currencyOptions = [
     { key: 'USD', value: 'US Dollar', rate: 1, taxRate: 0.05, country: 'US' },
@@ -559,12 +643,7 @@ private getDetailedFormErrors(): any {
 }
 
 
-openModal() {
-  this.showModal = false; // Reset first
-  setTimeout(() => {
-    this.showModal = true; // Then open
-  }, 0);
-}
+
  
   onModalClose(isVisible: boolean) {
     console.log('Modal visibility changed:', isVisible);
@@ -576,10 +655,39 @@ openModal() {
   }
 
   onModalVisibilityChange(isVisible: boolean) {
-  this.showModal = isVisible;
-  console.log('Modal visibility changed to:', isVisible);
-}
+    this.showModal = isVisible;
+    console.log('Modal visibility changed to:', isVisible);
+  }
 
+// Update the openModal method:
+// In all-components-page.ts
+openModal(componentToLoad?: Type<any>, data?: any) {
+  console.log('=== OPENING MODAL ===');
+  console.log('Component to load:', componentToLoad);
+  console.log('Component name:', componentToLoad?.name);
+  
+  // Reset modal state
+  this.showModal = false;
+  this.modalComponent = undefined;
+  
+  
+  setTimeout(() => {
+    this.modalComponent = componentToLoad || this.OtherComponentsPageComponent;
+   
+    const currentFieldData = this.frmGroup?.getRawValue ? this.frmGroup.getRawValue() : {};
+    this.modalComponentData = {
+      initialData: currentFieldData,
+      ...(data || {})
+    };
+    
+    console.log('Setting modal component:', this.modalComponent?.name);
+    console.log('Setting modal data:', this.modalComponentData);
+    
+    this.showModal = true;
+    
+    console.log('Modal should now be visible');
+  }, 50);
+}
 // Show specific validation errors
 private showFormValidationErrors(errors: any): void {
   const errorKeys = Object.keys(errors);
@@ -956,7 +1064,7 @@ debugFormState(): void {
     
     let effectiveTaxRate = taxRate;
     
-    // Apply category tax multiplier
+    // Apply category tax multiplier 
     if (categoryCode) {
       const category = this.productCategoryOptions.find(c => c.key === categoryCode);
       if (category) {
@@ -1686,90 +1794,44 @@ handleColumnSelectAll($event:any): void {
 
 
 
-  openDataSelectionModal(): void {
-    this.dataSelectionConfig.set({
-      title: 'Select Item',
-      service: this.mockItemService,
-      serviceMethod: 'getItems',
-      columns: [
-        { field: 'id', header: 'Item ID', width: '120px', sortable: true, filterable: true },
-        { field: 'name', header: 'Item Name', width: '200px', sortable: true, filterable: true },
-        { field: 'description', header: 'Description', width: '250px', sortable: true, filterable: true },
-        { field: 'category', header: 'Category', width: '120px', sortable: true, filterable: true }
-      ],
-      pageSize: 10,
-      enablePagination: true,
-      enableSorting: true,
-      enableFiltering: true,
-      enableSelection: true,
-      enableSearch: true,
-      searchPlaceholder: 'Search for items...',
-      showInsertButton: true,
-      insertButtonText: 'Select Item',
-      showCloseButton: true,
-      closeButtonText: 'Cancel'
-    });
-    this.isDataSelectionModalOpen.set(true);
-  }
 
-  closeDataSelectionModal(): void {
-    this.isDataSelectionModalOpen.set(false);
-  }
-
-  onDataSelectionResult(selectedItem: any): void {
-    console.log('Selected item:', selectedItem);
-    
-    if (selectedItem) {
-      this.frmGroup.patchValue({
-        id: selectedItem.id,
-        textBox: selectedItem.name
-      });
-      
-      this.toastr.success(`Selected: ${selectedItem.name}`, 'Item Selected');
-    }
-    
-    this.closeDataSelectionModal();
-  }
-
-  onFindClicked = (searchTerm: string): void => {
-    console.log('Search term:', searchTerm);
-    
-    setTimeout(() => {
-      const filteredData = this.generateSearchResults(searchTerm);
-      
-      this.dataSelectionConfig.update(config => ({
-        ...config,
-        pickTableDataSource: filteredData
-      }));
-      
-      this.toastr.info(`Found ${filteredData.length} results for "${searchTerm}"`, 'Search Complete');
-    }, 1500);
-  };
-
-  private generateSearchResults(searchTerm: string): any[] {
-    if (!searchTerm.trim()) {
-      return [
-        { id: 'ITEM001', name: 'Sample Item 1', description: 'First sample item', category: 'Electronics' },
-        { id: 'ITEM002', name: 'Sample Item 2', description: 'Second sample item', category: 'Books' },
-      ];
-    }
-    
-    const searchResults = [];
-    for (let i = 1; i <= 10; i++) {
-      searchResults.push({
-        id: `SEARCH${i.toString().padStart(3, '0')}`,
-        name: `${searchTerm} Result ${i}`,
-        description: `Search result ${i} for "${searchTerm}"`,
-        category: ['Electronics', 'Books', 'Clothing', 'Sports'][i % 4]
-      });
-    }
-    
-    return searchResults;
-  }
 
   onDotsClick(): void {
     console.log('Dots clicked - opening data selection modal');
-    this.openDataSelectionModal();
+    this.setupModalData();
+    this.isDataSelectionModalOpen.set(true);
+  }
+
+  private setupModalData(): void {
+    // Set up sample data for the modal
+    this.modalConfig.pickTableDataSource = [
+      { id: 'ACC001', name: 'John Doe', category: 'Individual', amount: 5000 },
+      { id: 'ACC002', name: 'ABC Corp', category: 'Corporate', amount: 15000 },
+      { id: 'ACC003', name: 'Jane Smith', category: 'Individual', amount: 7500 },
+      { id: 'ACC004', name: 'XYZ Ltd', category: 'Corporate', amount: 25000 }
+    ];
+  }
+
+  onFindClicked(searchTerm: string): void {
+    console.log('Searching for:', searchTerm);
+    // Filter the data based on search term
+    this.modalConfig.pickTableDataSource = this.modalConfig.pickTableDataSource.filter(item =>
+      Object.values(item).some(val => 
+        val.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+  }
+
+  onDataSelectionResult(result: AccountData | null): void {
+    if (result) {
+      console.log('Selected data:', result);
+  
+      this.frmGroup.patchValue({
+        id: result.id,
+        textBox: result.name
+      });
+    }
+    this.isDataSelectionModalOpen.set(false);
   }
 
   onBlur(value: string): void {

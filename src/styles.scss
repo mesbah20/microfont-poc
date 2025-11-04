@@ -661,7 +661,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 /* mat-select or other select inputs */
 .custom-select {
   @extend .custom-input;
-  @apply flex-1 max-w-full px-2 pe-8  text-lg border border-[#106ebe] border-slate-500 rounded-md;
+  @apply flex-1 max-w-full px-2 pe-8  text-sm border border-[#106ebe] border-slate-500 rounded-md;
 }
 
 .custom-select option {
@@ -728,7 +728,11 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 .input-wrapper {
    @apply flex items-center w-full;
    max-width: 250px;
-  position: relative;
+   position: relative;
+}
+
+.select-wrapper {
+  @extend .input-wrapper;
 }
 
 
