@@ -1,0 +1,243 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { MatIcon } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
+import { ThemeService } from '../../../../../../shared/services/theme.service';
+import { Subscription } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+
+interface ModuleItem {
+  id: string;
+  name: string;
+  icon: string;
+  route: string;
+  color: string;
+  isActive: boolean;
+  description?: string;
+}
+
+@Component({
+  selector: 'app-module-drawer',
+  imports: [
+    RouterLink,
+    MatIcon,
+    CommonModule
+  ],
+  templateUrl: './module-drawer.html',
+  styleUrl: './module-drawer.scss',
+  animations: [
+    trigger('expandCollapse', [
+      state('open', style({ height: '*', opacity: 1 })),
+      state('closed', style({ height: '0px', opacity: 0 })),
+      transition('open <=> closed', animate('300ms ease-in-out'))
+    ])
+  ]
+})
+export class ModuleDrawer implements OnInit {
+
+  modulesList: ModuleItem[] = [];
+  selectedModuleId: string | null = '1';
+  activeTheme: string = localStorage.getItem('selectedTheme') || '';
+  isLoading = true;
+  error: string | null = null;
+  private themeSub?: Subscription;
+
+  openSections: { [key: string]: boolean } = {
+    mxMessages: false,
+    messageList: true,
+  };
+
+  constructor(
+    private http: HttpClient,
+    private themeService: ThemeService
+  ) { }
+
+  ngOnInit(): void {
+    this.loadModulesList();
+    this.themeSub = this.themeService.currentTheme$.subscribe(themeId => {
+      this.activeTheme = themeId;
+    });
+  }
+
+  loadModulesList(): void {
+    // const apiUrl = 'http://192.168.20.93:8091/api/user-login/get-user-access-list';
+    // const params = {
+    //   userId: localStorage.getItem('userId'),
+    //   appId: '133',
+    //   itemType: 'F',
+    //   isHoUser: '0'
+    // };
+
+    // this.http.get<UserAccessItem[]>(apiUrl, { params: params as any })
+    //   .subscribe({
+    //     next: (data) => {
+    //       this.userAccessList = data;
+    //       localStorage.setItem('userAccessList', JSON.stringify(data));
+    //       this.isLoading = false;
+    //     },
+    //     error: (err) => {
+    //       console.error('Error loading user access list:', err);
+    //       this.error = 'Failed to load menu items';
+    //       this.isLoading = false;
+    //     }
+    //   });
+
+    //------------ testing with dummy data ------------
+    const dummyData: ModuleItem[] = [
+      {
+        id: '1',
+        name: 'Nexo',
+        icon: '🏦',
+        route: '/nexo',
+        color: 'from-blue-500 to-cyan-500',
+        isActive: true,
+        description: 'Manage stocks & warehouses'
+      },
+      {
+        id: '2',
+        name: 'Access Control',
+        icon: '🔐',
+        route: '/access-control',
+        color: 'from-gray-800 to-gray-600',
+        isActive: true,
+        description: 'Manage users, roles & permissions'
+      },
+      {
+        id: '3',
+        name: 'Recruitment',
+        icon: '📝',
+        route: '/recruitment',
+        color: 'from-pink-500 to-rose-500',
+        isActive: true,
+        description: 'Post jobs & manage applicants'
+      },
+      {
+        id: '4',
+        name: 'Employee',
+        icon: '👥',
+        route: '/employee',
+        color: 'from-indigo-500 to-purple-500',
+        isActive: true,
+        description: 'Employee directory & profiles'
+      },
+      {
+        id: '5',
+        name: 'Vehicle',
+        icon: '🚗',
+        route: '/vehicle-management',
+        color: 'from-yellow-500 to-orange-500',
+        isActive: true,
+        description: 'Track and manage your fleet operations'
+      },
+      {
+        id: '6',
+        name: 'Payroll',
+        icon: '💰',
+        route: '/payroll',
+        color: 'from-amber-500 to-yellow-500',
+        isActive: false,
+        description: 'Process salaries & deductions'
+      },
+      {
+        id: '7',
+        name: 'Leave',
+        icon: '🕒',
+        route: '/leave-attendance',
+        color: 'from-teal-500 to-green-500',
+        isActive: false,
+        description: 'Track employee leave & hours'
+      },
+      {
+        id: '8',
+        name: 'Procurement',
+        icon: '🛒',
+        route: '/procurement',
+        color: 'from-indigo-600 to-violet-500',
+        isActive: false,
+        description: 'Manage purchase orders and vendors'
+      },
+      {
+        id: '9',
+        name: 'Inventory',
+        icon: '📦',
+        route: '/inventory',
+        color: 'from-blue-500 to-cyan-500',
+        isActive: false,
+        description: 'Manage stocks & warehouses'
+      }
+    ];
+
+    // Use dummy data instead of API call
+    this.modulesList = dummyData;
+    // localStorage.setItem('userAccessList', JSON.stringify(dummyData));
+    this.isLoading = false;
+  }
+
+  // toggleSection(section: string): void {
+  //   this.openSections[section] = !this.openSections[section];
+  // }
+
+  // isSectionOpen(section: string): boolean {
+  //   return this.openSections[section];
+  // }
+
+  selectModule(moduleId: string): void {
+    if (this.selectedModuleId !== moduleId) {
+      this.selectedModuleId = moduleId;
+
+      // Optional: Navigate to the selected module route
+      const selectedModule = this.modulesList.find(m => m.id === moduleId);
+      if (selectedModule && selectedModule.isActive) {
+        this.selectedModuleId = moduleId;
+        // this.router.navigate([selectedModule.route]);
+        // console.log('Navigating to:', selectedModule.route);
+      }
+    }
+  }
+
+  // Check if module is selected
+  isModuleSelected(moduleId: string): boolean {
+    return this.selectedModuleId === moduleId;
+  }
+
+  // Check if module is clickable
+  isModuleClickable(module: ModuleItem): boolean {
+    return module.isActive && !this.isModuleSelected(module.id);
+  }
+
+  // Helper method to get CSS classes for module card
+  getModuleClasses(module: ModuleItem): string {
+    const baseClasses = 'bg-white rounded-xl shadow-md p-3 flex flex-col items-center text-center group relative transition-all duration-300';
+
+    if (this.isModuleSelected(module.id)) {
+      return `${baseClasses} border-2 border-green-500 cursor-default`;
+    } else if (this.isModuleClickable(module)) {
+      return `${baseClasses} cursor-pointer hover:shadow-lg hover:bg-gray-50`;
+    } else {
+      return `${baseClasses} opacity-60 cursor-not-allowed`;
+    }
+  }
+
+  // Helper method to get CSS classes for icon
+  getIconClasses(module: ModuleItem): string {
+    if (this.isModuleSelected(module.id)) {
+      return `${module.color} scale-110`; // Selected - bigger
+    } else if (this.isModuleClickable(module)) {
+      return `${module.color} group-hover:scale-105`; // Clickable - hover effect
+    } else {
+      return `${module.color} opacity-70`; // Disabled - no effects
+    }
+  }
+
+  // Get currently selected module
+  getSelectedModule(): ModuleItem | undefined {
+    return this.modulesList.find(m => m.id === this.selectedModuleId);
+  }
+
+  ngOnDestroy(): void {
+    this.themeSub?.unsubscribe();
+  }
+
+}

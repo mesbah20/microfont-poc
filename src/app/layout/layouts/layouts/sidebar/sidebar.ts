@@ -8,6 +8,7 @@ import { Search } from '../navbar/actions/search/search';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { SidebarService } from '../../../service/sidebar.service';
+import { ModuleDrawer } from './drawers/module-drawer/module-drawer';
 
 @Component({
   selector: 'app-sidebar',
@@ -15,6 +16,7 @@ import { SidebarService } from '../../../service/sidebar.service';
   imports: [
     MatIcon,
     MenuDrawer,
+    ModuleDrawer,
     TitleCasePipe,
     CommonModule,
     ProfileDrawer,
@@ -35,7 +37,9 @@ export class Sidebar {
   sidebarExpanded: boolean = false;
    private subs = new Subscription();
   private themeSub?: Subscription;
-  constructor(private themeService: ThemeService,
+
+  constructor(
+    private themeService: ThemeService,
     private sidebarService: SidebarService
   ) {}
   // Toggle sidebar expansion (Gmail-style)
