@@ -285,69 +285,68 @@
     <!-- Content Sections -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Pie Chart Area -->
-      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl text-gray-800">Incoming Messages</h3>
-          <div class="flex space-x-2">
-            <button
-              (click)="setPieChartFilter('weekly')"
-              [class]="pieChartFilter === 'weekly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">
-              Weekly
-            </button>
-            <button
-              (click)="setPieChartFilter('monthly')"
-              [class]="pieChartFilter === 'monthly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">
-              Monthly
-            </button>
-          </div>
-        </div>
-        <div
-          class="mt-10 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-200">
-          <div class="text-center w-full h-full">
-            <highcharts-chart
-              [Highcharts]="Highcharts"
-              [options]="chartOptionsPie"
-              style="width: 100%; height: 350px; display: block;">
-            </highcharts-chart>
-          </div>
-        </div>
-      </div>
+<!--      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">-->
+<!--        <div class="flex items-center justify-between mb-6">-->
+<!--          <h3 class="text-xl text-gray-800">Incoming Messages</h3>-->
+<!--          <div class="flex space-x-2">-->
+<!--            <button-->
+<!--              (click)="setPieChartFilter('weekly')"-->
+<!--              [class]="pieChartFilter === 'weekly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">-->
+<!--              Weekly-->
+<!--            </button>-->
+<!--            <button-->
+<!--              (click)="setPieChartFilter('monthly')"-->
+<!--              [class]="pieChartFilter === 'monthly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">-->
+<!--              Monthly-->
+<!--            </button>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div-->
+<!--          class="mt-10 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-200">-->
+<!--          <div class="text-center w-full h-full">-->
+<!--            <highcharts-chart-->
+<!--              [Highcharts]="Highcharts"-->
+<!--              [options]="chartOptionsPie"-->
+<!--              style="width: 100%; height: 350px; display: block;">-->
+<!--            </highcharts-chart>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <!-- Bar Chart Area -->
-      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl text-gray-800">Outgoing Messages</h3>
-          <div class="flex space-x-2">
-            <button
-              (click)="setBarChartFilter('weekly')"
-              [class]="barChartFilter === 'weekly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">
-              Weekly
-            </button>
-            <button
-              (click)="setBarChartFilter('monthly')"
-              [class]="barChartFilter === 'monthly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">
-              Monthly
-            </button>
-          </div>
-        </div>
-        <div
-          class="mt-10 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-200">
-          <div class="text-center w-full h-full">
-            <highcharts-chart
-              [Highcharts]="Highcharts"
-              [options]="chartOptionsBar"
-              style="width: 100%; height: 350px; display: block;">
-            </highcharts-chart>
-          </div>
-        </div>
-      </div>
+<!--      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">-->
+<!--        <div class="flex items-center justify-between mb-6">-->
+<!--          <h3 class="text-xl text-gray-800">Outgoing Messages</h3>-->
+<!--          <div class="flex space-x-2">-->
+<!--            <button-->
+<!--              (click)="setBarChartFilter('weekly')"-->
+<!--              [class]="barChartFilter === 'weekly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">-->
+<!--              Weekly-->
+<!--            </button>-->
+<!--            <button-->
+<!--              (click)="setBarChartFilter('monthly')"-->
+<!--              [class]="barChartFilter === 'monthly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">-->
+<!--              Monthly-->
+<!--            </button>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div-->
+<!--          class="mt-10 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-200">-->
+<!--          <div class="text-center w-full h-full">-->
+<!--            <highcharts-chart-->
+<!--              [Highcharts]="Highcharts"-->
+<!--              [options]="chartOptionsBar"-->
+<!--              style="width: 100%; height: 350px; display: block;">-->
+<!--            </highcharts-chart>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
         <common-line-chart
           [headerTitle]="'Transactions Trend'"
           [dataByRange]="LineChartData"
           [height]="350"
-          [colors]="lineColors"
           yTitle="Count"
           xTitle="Period"
           [curve]="'smooth'"
@@ -359,7 +358,39 @@
         </common-line-chart>
       </div>
 
+      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+        <common-stacked-column-chart
+          [headerTitle]="'Outgoing Messages'"
+          [dataByRange]="stackedData"
+          [height]="350"
+          [colors]="barColors"
+          yTitle="Message Count"
+          xTitle="Period"
+          [showLegend]="true"
+          [showWeekly]="true"
+          [showMonthly]="true"
+          [showYearly]="true"
+          [showToolbar]="false">
+        </common-stacked-column-chart>
+
+      </div>
+      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+        <common-gauge-chart
+          [headerTitle]="'Transaction Success Rate'"
+          [dataByRange]="gaugeData"
+          [height]="280"
+          [min]="0"
+          [max]="100"
+          [suffix]="'%'"
+          [gradient]="true"
+          [showWeekly]="true"
+          [showMonthly]="true"
+          [showYearly]="true">
+        </common-gauge-chart>
+      </div>
+
     </div>
+
   </div>
 
 </div>

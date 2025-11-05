@@ -33,10 +33,10 @@ export type LineChartAllRangesPartial = Partial<Record<RangeKey, LineChartRangeP
   selector: 'common-line-chart',
   standalone: true,
   imports: [CommonModule, NgApexchartsModule],
-  templateUrl: './line-chart.html',
-  styleUrls: ['./line-chart.scss'],
+  templateUrl: './common-line-chart.html',
+  styleUrls: ['./common-line-chart.scss'],
 })
-export class LineChartComponent implements OnChanges {
+export class CommonLineChartComponent implements OnChanges {
   /** Toggle buttons */
   @Input() showWeekly = false;
   @Input() showMonthly = false;
@@ -136,11 +136,21 @@ export class LineChartComponent implements OnChanges {
   private applyRangePack(r: RangeKey): void {
     const pack = this.dataByRange?.[r];
     if (!pack) return;
-    this.series = pack.series ?? [];
+
+    // keep original series but enforce color
+    const palette = (this.colors && this.colors.length ? this.colors : []) as string[];
+
+    this.series = (pack.series || []).map((s, i) => ({
+      ...s,
+      // Apex allows per-series color
+      color: palette.length ? palette[i % palette.length] : undefined,
+    }));
+
     this.categories = pack.categories ?? [];
     this.yMin = pack.yMin;
     this.yMax = pack.yMax;
   }
+
 
   private buildOptions(): void {
     this.chart = {
@@ -191,5 +201,18 @@ export class LineChartComponent implements OnChanges {
         stops: [0, 90, 100],
       },
     };
+
+    this.stroke = {
+      curve: this.curve,
+      width: 2,
+      colors: this.colors && this.colors.length ? this.colors : undefined,
+    };
+
+    this.markers = {
+      size: 3,
+      colors: this.colors && this.colors.length ? this.colors : undefined,
+      strokeColors: this.colors && this.colors.length ? this.colors : undefined,
+    };
+
   }
 }
