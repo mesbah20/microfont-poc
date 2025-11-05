@@ -53,15 +53,15 @@ export class Dashboard implements OnInit {
   };
 
 
-  lineColors: ['#4C6EF5', // Soft Indigo
-    '#6C8EBF', // Muted Blue
-    '#A0C4FF', // Soft Sky Blue
-    '#BDB2FF', // Muted Purple
-    '#FFDAC1', // Soft Peach
-    '#FFB5A7', // Light Coral
-    '#C8E6C9', // Minty Green
-    '#DDE5B6', // Light Olive
-    '#F0EFEB',  // Off-white Beige
+  lineColors: ['#052ed2',
+    '#6C8EBF',
+    '#A0C4FF',
+    '#BDB2FF',
+    '#FFDAC1',
+    '#FFB5A7',
+    '#C8E6C9',
+    '#DDE5B6',
+    '#F0EFEB',
   ]
 
   pieColors = [
