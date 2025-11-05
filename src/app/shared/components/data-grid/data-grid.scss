@@ -283,7 +283,7 @@
         position: sticky;
         right: 0;
         text-align: center;
-        background: #fff;
+        // background: #fff;
         z-index: 5;
         border-left: 1px solid #e9ecef;
 
@@ -356,6 +356,42 @@ th ::ng-deep .mat-mdc-checkbox .mdc-checkbox__native-control ~ .mdc-checkbox__ba
       color: #007bff;
       font-weight: 600;
     }
+  }
+  .even-row {
+    background-color: lightblue;
+    border: 1px solid gray;
+  }
+  .odd-row {
+    background-color: #ffffff;
+    border: 1px solid gray;
+  }
+  /* Make footer row distinct */
+  tr.header-style {
+    background-color: #f0f0f0;
+    /* light gray background */
+    font-weight: bold;
+    /* bold text */
+    color: #000;
+    /* text color */
+  }
+  tr.footer-row {
+    background-color: #f0f0f0;
+    /* light gray background */
+    font-weight: bold;
+    /* bold text */
+    color: #000;
+    /* text color */
+  }
+  /* Optional: style footer cells individually */
+  tr.footer-row td {
+    border-top: 2px solid #999;
+    /* top border to separate from data */
+    padding: 5px;
+  }
+  .button-container
+  {
+  display: flex !important;
+  align-items: center !important; /* vertical alignment */
   }
 }
 

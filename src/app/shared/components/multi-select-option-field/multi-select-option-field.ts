@@ -7,7 +7,9 @@ import {
   ElementRef, 
   ViewChild, 
   HostListener,
-  OnInit
+  OnInit,
+  Output,
+  EventEmitter
 } from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgClass, NgFor, NgIf} from '@angular/common';
@@ -55,7 +57,8 @@ export class MultiSelectOptionField implements OnInit {
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipDelay = input<number>(500);
   readonly tooltipClass = input<string>('custom-tooltip');
-
+  
+ @Output() selectionChange = new EventEmitter<Option[]>();
   // Component state
   isOpen = signal(false);
   selectedValues = signal<any[]>([]);
@@ -200,6 +203,9 @@ export class MultiSelectOptionField implements OnInit {
       control.setValue(currentValues);
       control.markAsTouched();
     }
+
+    // ✅ Emit the updated full option objects
+    this.selectionChange.emit(this.getSelectedOptions());
   }
 
   toggleOption(option: Option, event: Event): void {
@@ -225,6 +231,9 @@ export class MultiSelectOptionField implements OnInit {
       control.setValue(currentValues);
       control.markAsTouched();
     }
+
+     // ✅ Emit full selected options
+    this.selectionChange.emit(this.getSelectedOptions());
   }
 
   isOptionSelected(option: Option): boolean {

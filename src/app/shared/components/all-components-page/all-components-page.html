@@ -378,6 +378,7 @@
             />
               
               <div class="p-4">
+                <!-- summaryGridPosition : above/below -->
                 <lds-data-grid
                   [id]="'enhanced-transactions'"
                   [dataSource]="sampleTransactions()"
@@ -392,9 +393,14 @@
                   [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
                   [dropdownColumns]="transactionDropdownColumns()"
                   [dropdownOptions]="transactionDropdownOptions()"
-                  [selectedColumns]="['id', 'amount', 'currency']"
+                  [selectedColumns]="['id', 'amount', 'currency', 'country', 'productCategory', 'subCategory', 'status', 'riskLevel', 'totalAmount', 'requiresApproval']"
                   [rowDesignerList]="transactionRowDesigners()"
                   [tblClass]="'enhanced-transaction-table'"
+                  [groupOptionEnabled]="true"
+                  [summaryColumns]="['amount','calculatedTax']"
+                  [groupByColumns]="['currency', 'country','productCategory', 'subCategory']"
+                  [summaryGridPosition]="'above'"
+                  [gridTitle]="'Transaction Grid'"
                   (onFHEditClick)="onTransactionEdit($event)"
                   (onFHDeleteClick)="onTransactionDelete($event)"
                   (onFHViewClick)="onTransactionView($event)"
