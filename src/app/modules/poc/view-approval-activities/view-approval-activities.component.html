@@ -1,0 +1,158 @@
+<div class="flex flex-wrap justify-between gap-x-2">
+    <header class="sm:mb-8">
+        <h1 class="text-2xl font-bold text-gray-900">Approval History</h1>
+        <p class="text-gray-500">Track the progress with multiple approvers at each stage</p>
+    </header>
+    <div>
+        <button mat-dialog-close class="bg-red-700" mat-icon-button>
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-dialog-content class="pt-1">
+    <div class="mx-auto">
+
+        <section class="relative">
+            <div class="absolute sm:left-8 sm:top-16 bottom-0 w-0.5 bg-gray-200"></div>
+            <div class="sm:space-y-6">
+                <div *ngFor="let step of steps" class="relative">
+                    <div
+                        class="hidden absolute -left-1.5 md:left-5 w-8 h-8 rounded-full border-4 bg-white sm:flex items-center justify-center z-10"
+                        [ngClass]="{
+                                    'border-emerald-500 text-emerald-500': getStepStatus(step?.historyList) === 'SUBMITTED',
+                                    'border-emerald-500 text-teal-500': getStepStatus(step?.historyList) === 'APPROVED',
+                                    'border-amber-500 text-amber-500': getStepStatus(step?.historyList) === 'PENDING',
+                                    'border-red-500 text-red-500': getStepStatus(step?.historyList) === 'REJECTED',
+                                    'border-gray-300 text-gray-400': getStepStatus(step?.historyList) === 'CREATED'
+                                  }"
+                    >
+                        <ng-container [ngSwitch]="getStepStatus(step?.historyList)">
+                            <span *ngSwitchCase="'SUBMITTED'">✓</span>
+                            <span *ngSwitchCase="'APPROVED'">✓</span>
+                            <span *ngSwitchCase="'PENDING'">🕒</span>
+                            <span *ngSwitchCase="'REJECTED'">✗</span>
+                            <span *ngSwitchCase="'CREATED'">✓</span>
+                            <span *ngSwitchDefault>!</span>
+                        </ng-container>
+                    </div>
+
+                    <div
+                        class="ml-16 rounded-lg border-2 transition shadow-sm hover:shadow-md cursor-pointer"
+                        [ngClass]="{
+                                        'border-emerald-500 bg-emerald-50': getStepStatus(step?.historyList) === 'SUBMITTED',
+                                        'border-emerald-500 bg-teal-50': getStepStatus(step?.historyList) === 'APPROVED',
+                                        'border-amber-500 bg-amber-50': getStepStatus(step?.historyList) === 'PENDING',
+                                        'border-red-500 bg-red-50': getStepStatus(step?.historyList) === 'REJECTED',
+                                        'border-gray-300 bg-gray-50': getStepStatus(step?.historyList) === 'CREATED',
+                                        'scale-[1.01] shadow-lg': selectedStepId() === step?.stepOrder
+                                      }"
+                        (click)="toggleStep(step?.stepOrder)"
+                    >
+                        <div class="px-2 py-1">
+                            <div class="flex flex-wrap items-center justify-between mb-2">
+                                <h3 class="text-xl font-semibold text-gray-900">{{ step?.stepName }}</h3>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <span
+                                        class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium"
+                                        [ngClass]="{
+                                                        'bg-emerald-100 text-emerald-800': getStepStatus(step?.historyList) === 'SUBMITTED',
+                                                        'bg-emerald-200 text-emerald-800': getStepStatus(step?.historyList) === 'APPROVED',
+                                                        'bg-amber-100 text-amber-800': getStepStatus(step?.historyList) === 'PENDING',
+                                                        'bg-red-100 text-red-800': getStepStatus(step?.historyList) === 'REJECTED',
+                                                        'bg-gray-100 text-gray-800': getStepStatus(step?.historyList) === 'CREATED'
+                                                      }"
+                                    >
+                                      👥 {{ getStepStatus(step?.historyList) | uppercase }}
+                                    </span>
+                                    <span class="text-sm text-gray-500">
+                                      {{ step?.historyList?.length }}/{{ step?.minReqSupervisor }}
+                                    </span>
+                            </div>
+                        </div>
+                            <div *ngIf="step?.historyList?.length > 0" class="mt-6">
+                                <div *ngIf="selectedStepId() === step?.stepOrder">
+                                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Detailed Approver Status:</h4>
+                                    <div *ngFor="let a of step?.historyList" class="rounded-lg border p-4 mb-4 last:mb-0"
+                                         [ngClass]="{
+                                                 'bg-emerald-50 border-emerald-100': a?.status === 'APPROVED',
+                                                 'bg-red-50 border-red-100': a?.status === 'REJECTED',
+                                                 'bg-amber-50 border-amber-100': a?.status === 'PENDING',
+                                                 'bg-gray-50 border-gray-200': a?.status === 'CREATED'
+                                               }">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center gap-3">
+                                                <div>
+                                                    <div class="font-medium text-gray-900">{{ a?.performedBy }}</div>
+                                                    <div class="text-sm text-gray-500">{{ a?.role }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                            <span class="text-xl"
+                                                  [ngClass]="{
+                                                    'text-emerald-600': a?.status === 'APPROVED',
+                                                    'text-red-600': a?.status === 'REJECTED',
+                                                    'text-amber-600': a?.status === 'PENDING',
+                                                    'text-gray-400': a?.status === 'CREATED'
+                                                  }">
+                                              <ng-container [ngSwitch]="a?.status">
+                                                <span *ngSwitchCase="'APPROVED'">👍</span>
+                                                  <span *ngSwitchCase="'SUBMITTED'">📤</span>
+                                                <span *ngSwitchCase="'REJECTED'">👎</span>
+                                                <span *ngSwitchCase="'PENDING'">🕒</span>
+                                                <span *ngSwitchDefault>!</span>
+                                              </ng-container>
+                                            </span>
+
+                                                <span class="px-2 py-1 rounded text-[11px] font-medium"
+                                                      [ngClass]="{
+                                                                'bg-emerald-100 text-emerald-800': a?.status === 'APPROVED',
+                                                                'bg-red-100 text-red-800': a?.status === 'REJECTED',
+                                                                'bg-amber-100 text-amber-800': a?.status === 'PENDING',
+                                                                'bg-gray-100 text-gray-800': a?.status === 'CREATED'
+                                                              }">
+                                                {{ a?.status | uppercase }}
+                                            </span>
+                                            </div>
+                                        </div>
+
+                                        <div *ngIf="a?.performedTime" class="text-sm text-gray-500 mb-2">📅 {{ a?.performedTime | date: 'dd-MMM-yyyy, hh:mm a' }}
+                                        </div>
+
+                                        <div *ngIf="a?.comment" class="flex items-start text-gray-700">
+                                            <span class="mr-2">💬</span>
+                                            <span class="italic text-sm">"{{ a?.comment }}"</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!--<section class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div class="rounded-lg border p-4 bg-emerald-50 border-emerald-100">
+                <div class="text-2xl font-bold text-emerald-600">{{ SUBMITTEDStepsCount() }}</div>
+                <div class="text-sm text-gray-700">Steps Completed</div>
+            </div>
+            <div class="rounded-lg border p-4 bg-amber-50 border-amber-100">
+                <div class="text-2xl font-bold text-amber-600">{{ PENDINGStepsCount() }}</div>
+                <div class="text-sm text-gray-700">Steps In Progress</div>
+            </div>
+            <div class="rounded-lg border p-4 bg-gray-50 border-gray-200">
+                <div class="text-2xl font-bold text-gray-500">{{ createdStepsCount() }}</div>
+                <div class="text-sm text-gray-700">Steps Waiting</div>
+            </div>
+            <div class="rounded-lg border p-4 bg-blue-50 border-blue-100">
+                <div class="text-2xl font-bold text-blue-600">{{ totalApprovalsCount() }}</div>
+                <div class="text-sm text-gray-700">Total Approvals</div>
+            </div>
+            <div class="rounded-lg border p-4 bg-purple-50 border-purple-100">
+                <div class="text-2xl font-bold text-purple-600">{{ totalApproversCount() }}</div>
+                <div class="text-sm text-gray-700">Total Approvers</div>
+            </div>
+        </section>-->
+    </div>
+
+</mat-dialog-content>

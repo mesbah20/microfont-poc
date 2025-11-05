@@ -1,0 +1,64 @@
+<div class="page-wrapper">
+  <div class="panel p-1 my-4">
+    <div class="grid grid-cols-1 md:grid-cols-1 gap-0">
+      <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'Maker List'" />
+
+      <div class="container">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <app-select-option-field
+            [frmGroup]="frmGroup"
+            [controlName]="'functionId'"
+            [label]="'Function'"
+            [options]="functionOptions"
+            [tooltip]="'Select Function'"
+            [isVertical]="true">
+          </app-select-option-field>
+
+          <app-date-input
+            [frmGroup]="frmGroup" [controlName]="'fromDate'" [label]="'From Date'"
+            [isVertical]="true" [dateFormat]="'DD-MM-YYYY'" [maxYear]="2034" [enableYearRangeValidation]="false">
+          </app-date-input>
+
+          <app-date-input
+            [frmGroup]="frmGroup" [controlName]="'toDate'" [label]="'To Date'"
+            [isVertical]="true" [dateFormat]="'DD-MM-YYYY'" [maxYear]="2034" [enableYearRangeValidation]="false">
+          </app-date-input>
+        </div>
+
+        <div class="flex flex-wrap gap-3 justify-end items-end">
+          <lds-btn [labelText]="'Search'" (onClick)="loadMakerList()"></lds-btn>
+          <lds-btn [labelText]="'Clear'" [cssClass]="'bg-slate-500 text-white px-4'" (onClick)="resetMakerForm()"></lds-btn>
+        </div>
+
+        <div *ngIf="showmakerList">
+          <div class="component-section mt-3">
+            <lds-data-grid
+              [id]="'maker-list'"
+              [initPageSize]="5"
+              [enableSelection]="false"
+              [showProgressButton]="true"
+              [showEditButton]="false"
+              [showDeleteButton]="false"
+              [showViewButton]="true"
+              [showPrintButton]="false"
+              [useInlineEdit]="false"
+              [dataSource]="makerList"
+              [selectedColumns]="[
+                'setId','functionName','actionType','remarks','recordUserId','createDate'
+              ]"
+              [customColumnNames]="{
+                setId:'Set',
+                functionName:'Function',
+                actionType:'Last Action',
+                remarks:'Remarks',
+                recordUserId:'Record User',
+                createDate:'Created Date'
+              }"
+              (onFHProgressClick)="showApprovalSteps($event)">
+            </lds-data-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
