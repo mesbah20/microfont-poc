@@ -44,11 +44,6 @@ export class ModuleDrawer implements OnInit {
   error: string | null = null;
   private themeSub?: Subscription;
 
-  openSections: { [key: string]: boolean } = {
-    mxMessages: false,
-    messageList: true,
-  };
-
   constructor(
     private http: HttpClient,
     private themeService: ThemeService
@@ -171,30 +166,20 @@ export class ModuleDrawer implements OnInit {
 
     // Use dummy data instead of API call
     this.modulesList = dummyData;
-    // localStorage.setItem('userAccessList', JSON.stringify(dummyData));
     this.isLoading = false;
   }
 
-  // toggleSection(section: string): void {
-  //   this.openSections[section] = !this.openSections[section];
-  // }
-
-  // isSectionOpen(section: string): boolean {
-  //   return this.openSections[section];
-  // }
-
   selectModule(moduleId: string): void {
+    const selectedModule = this.modulesList.find(m => m.id === moduleId);
+
+    if (!selectedModule) return;
+    if (!selectedModule.isActive) return;
+
     if (this.selectedModuleId !== moduleId) {
       this.selectedModuleId = moduleId;
-
-      // Optional: Navigate to the selected module route
-      const selectedModule = this.modulesList.find(m => m.id === moduleId);
-      if (selectedModule && selectedModule.isActive) {
-        this.selectedModuleId = moduleId;
-        // this.router.navigate([selectedModule.route]);
-        // console.log('Navigating to:', selectedModule.route);
-      }
+      // this.router.navigate([selectedModule.route]);
     }
+
   }
 
   // Check if module is selected
@@ -223,14 +208,14 @@ export class ModuleDrawer implements OnInit {
   // Helper method to get CSS classes for icon
   getIconClasses(module: ModuleItem): string {
     if (this.isModuleSelected(module.id)) {
-      return `${module.color} scale-110`; // Selected - bigger
+      return `${module.color} scale-110`;
     } else if (this.isModuleClickable(module)) {
-      return `${module.color} group-hover:scale-105`; // Clickable - hover effect
+      return `${module.color} group-hover:scale-105`;
     } else {
-      return `${module.color} opacity-70`; // Disabled - no effects
+      return `${module.color} opacity-70`;
     }
   }
-
+  
   // Get currently selected module
   getSelectedModule(): ModuleItem | undefined {
     return this.modulesList.find(m => m.id === this.selectedModuleId);

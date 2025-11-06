@@ -104,7 +104,6 @@ export class Search implements OnInit {
         if (match) {
             this.router.navigate([match.AppRoute]);
         } else {
-            // alert("Invalid Route Number");
             this.toastr.warning('Invalid Route Number.', 'Invalid');
         }
 

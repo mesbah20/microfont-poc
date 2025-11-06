@@ -1,5 +1,4 @@
 <div *ngFor="let section of menuSections" class="border-b border-gray-200">
-
   <!-- Header -->
   <div
     class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
@@ -46,12 +45,11 @@
           <p class="text-xs text-gray-500">{{ item.ModuleName }}</p>
         </div>
 
-        <span *ngIf="item.QuickRouteNo" class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+        <span *ngIf="item.QuickRouteNo" class="text-xs bg-blue-100 text-blue-700 px-3 py-2 rounded">
           {{ item.QuickRouteNo }}
         </span>
 
       </div>
-
     </div>
   </div>
 </div>

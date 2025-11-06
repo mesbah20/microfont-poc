@@ -51,26 +51,14 @@ interface UserAccessItem {
 })
 export class MenuDrawer implements OnInit {
 
-  openSections: { [key: string]: boolean } = {
-    // mxMessages: false,
-    // messageList: true,
-  };
-
+  openSections: { [key: string]: boolean } = {};
   userAccessList: UserAccessItem[] = [];
   menuSections: any[] = [];
   groupedMenu: any = {};
-  secondMenuItemList: UserAccessItem[] = [];
-  firstMenuItemList: UserAccessItem[] = [];
   activeTheme: string = localStorage.getItem('selectedTheme') || '';
   isLoading = true;
   error: string | null = null;
   private themeSub?: Subscription;
-
-  //  menuSections = [
-  //   { key: 'configuration', label: 'Configuration', icon: 'settings' },
-  //   { key: 'operation', label: 'Operation', icon: 'work' }
-  // ];
-
 
   constructor(
     private http: HttpClient,
@@ -82,39 +70,6 @@ export class MenuDrawer implements OnInit {
     this.themeSub = this.themeService.currentTheme$.subscribe(themeId => {
       this.activeTheme = themeId;
     });
-  }
-
-  generateMenuFromAccess() {
-    const uniqueMenuNames = [...new Set(this.userAccessList.map(x => x.MenuName))];
-
-    this.menuSections = uniqueMenuNames.map(name => ({
-      key: name.toLowerCase().replace(/\s+/g, ''),
-      label: name,
-      icon: this.getIcon(name)
-    }));
-
-    this.groupedMenu = this.userAccessList.reduce((acc: { [key: string]: UserAccessItem[] }, item) => {
-      if (!acc[item.MenuName]) {
-        acc[item.MenuName] = [];
-      }
-      acc[item.MenuName].push(item);
-      return acc;
-    }, {});
-
-
-    uniqueMenuNames.forEach(name => {
-      const key = name.toLowerCase().replace(/\s+/g, '');
-      this.openSections[key] = false;
-    });
-  }
-
-  getIcon(name: string) {
-    const map: any = {
-      Configuration: 'settings',
-      Operation: 'work',
-      Dashboard: 'dashboard'
-    };
-    return map[name] || 'folder';
   }
 
   loadUserAccessList(): void {
@@ -206,7 +161,7 @@ export class MenuDrawer implements OnInit {
         MenuName: 'Configuration',
         ModuleId: 'M003',
         ModuleName: 'User Module',
-        AppRoute: '/mx/accountComponent',
+        AppRoute: '/dashboard',
         ItemType: 'F',
         QuickRouteNo: '10003',
         IsFinancial: '0'
@@ -233,34 +188,58 @@ export class MenuDrawer implements OnInit {
         ItemType: 'F',
         QuickRouteNo: '10004',
         IsFinancial: '0'
-      },
+      }
     ];
 
     // Use dummy data instead of API call
     this.isLoading = false;
     this.userAccessList = dummyData;
     this.generateMenuFromAccess();
-    this.firstMenuItemList = dummyData.filter(x => x.MenuName === 'Configuration');
-    this.secondMenuItemList = dummyData.filter(x => x.MenuName === 'Operation');
+    
+  }
+
+  generateMenuFromAccess() {
+
+    const uniqueMenuNames = [...new Set(this.userAccessList.map(x => x.MenuName))];
+
+    this.menuSections = uniqueMenuNames.map(name => ({
+      key: name.toLowerCase().replace(/\s+/g, ''),
+      label: name,
+      icon: this.getIcon(name)
+    }));
+
+    this.groupedMenu = this.userAccessList.reduce((acc: { [key: string]: UserAccessItem[] }, item) => {
+      if (!acc[item.MenuName]) {
+        acc[item.MenuName] = [];
+      }
+      acc[item.MenuName].push(item);
+      return acc;
+    }, {});
 
 
-    // localStorage.setItem('userAccessList', JSON.stringify(dummyData));
+    uniqueMenuNames.forEach(name => {
+      const key = name.toLowerCase().replace(/\s+/g, '');
+      this.openSections[key] = false;
+    });
 
+  }
+
+  getIcon(name: string) {
+    const map: any = {
+      Configuration: 'settings',
+      Operation: 'work',
+      Dashboard: 'dashboard'
+    };
+    return map[name] || 'folder';
   }
 
   toggleSection(section: string): void {
     this.openSections[section] = !this.openSections[section];
   }
 
-
-
   isSectionOpen(section: string): boolean {
     return this.openSections[section];
   }
-
-  // getItemsByMenu(menuName: string) {
-  //   return this.userAccessList.filter(x => x.MenuName === menuName);
-  // }
 
   getItemsByMenu(menuName: string) {
     return this.groupedMenu[menuName] || [];
