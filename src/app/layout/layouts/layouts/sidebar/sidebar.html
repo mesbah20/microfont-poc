@@ -95,13 +95,13 @@
         </div>
       </div>
 
-      <!-- Applications Menu -->
+      <!-- Module Item -->
       <div class="group"
       [class.flex]="!sidebarExpanded"
       [class.justify-center]="!sidebarExpanded"
       >
                    <!-- [class.bg-blue-100]="activeItem === 'application'" -->
-        <div (click)="setActiveItem('application')"
+        <div (click)="toggleDrawer('Modules'); setActiveItem('modules')"
              class="rounded-lg cursor-pointer transition-all duration-200 relative  flex items-center overflow-hidden"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
@@ -114,39 +114,41 @@
             @if(activeTheme === 'blue') {
             <img src="/asset/icons/application.svg" 
                class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+               [class.filter]="activeItem === 'modules'"/>
           } @else if(activeTheme === 'rose') {
             <img src="/asset/icons/roseApplication.svg" 
                class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+               [class.filter]="activeItem === 'modules'"/>
           } @else if(activeTheme === 'MidnightBlue') {
             <img src="/asset/icons/midnightApplication.svg" 
                class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+               [class.filter]="activeItem === 'modules'"/>
           } @else if(activeTheme === 'emerald') {
             <img src="/asset/icons/greenApplication.svg" 
                class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+               [class.filter]="activeItem === 'modules'"/>
           } @else if(activeTheme === 'purple') {
             <img src="/asset/icons/purpleApplication.svg" 
                class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+               [class.filter]="activeItem === 'modules'"/>
           } @else if(activeTheme === 'Lavendar') {
             <img src="/asset/icons/lavendarApplication.svg" 
                class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+               [class.filter]="activeItem === 'modules'"/>
           } @else if(activeTheme === 'dark') {
             <img src="/asset/icons/blackApplication.svg" 
                class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+               [class.filter]="activeItem === 'modules'"/>
           }
+          <!-- Label (shown when expanded) -->
           <span class="ml-4 text-sm font-medium text-gray-700 whitespace-nowrap transition-all duration-300"
                 [class.opacity-0]="!sidebarExpanded"
                 [class.opacity-100]="sidebarExpanded"
                 [class.hidden]="!sidebarExpanded">
              Modules
           </span>
-
+          
+          <!-- Tooltip (only shown when collapsed) -->
           <div class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap pointer-events-none z-50"
                [class.hidden]="sidebarExpanded">
              Application
@@ -505,6 +507,8 @@
       <app-profile-drawer></app-profile-drawer>
     } @else if (drawerType === 'Menu') {
       <app-menu-drawer></app-menu-drawer>
+    } @else if (drawerType === 'Modules') {
+      <app-module-drawer></app-module-drawer>
     }
   </div>
 
