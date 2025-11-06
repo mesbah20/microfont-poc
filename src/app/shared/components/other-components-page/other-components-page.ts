@@ -11,6 +11,7 @@ import { SelectOptionField } from '../input-types/select-option-field/select-opt
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ExpansionSubPanelHeader } from '../expansion-sub-panel-header/expansion-sub-panel-header';
 import { ExpansionPanelHeader } from '../expansion-panel-header/expansion-panel-header';
+import { DataGridComponent } from '../data-grid';
 
 @Component({
   selector: 'app-other-components-page',
@@ -28,6 +29,7 @@ import { ExpansionPanelHeader } from '../expansion-panel-header/expansion-panel-
         SelectOptionField,
           ExpansionPanelHeader,
             ExpansionSubPanelHeader,
+            DataGridComponent
 
   ],
   templateUrl: './other-components-page.html',
@@ -75,8 +77,189 @@ export class OtherComponentsPage implements OnInit {
       //     console.warn('Failed to apply initialData to modal form', e);
       //   }
       // }
+
   }
 
+      sampleTransactions = signal([
+    {
+      id: 'TXN001',
+      transactionType: 'PACS.008',
+      amount: 50000.00,
+      currency: 'USD',
+      country: 'US',
+      productCategory: 'financial',
+      subCategory: 'banking',
+      status: 'pending',
+      fromAccount: '1234567890',
+      toAccount: '0987654321',
+      date: '2024-01-15',
+      priority: 'high',
+      department: 'sales',
+      category: 'international',
+      taxRate: 0.10,
+      calculatedTax: 5000.00,
+      totalAmount: 55000.00,
+      riskLevel: 'medium',
+      requiresApproval: true,
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'approver', label: 'Transaction Approver' },
+        { value: 'viewer', label: 'View Only' }
+      ],
+      assignedRole: 'approver'
+    },
+    {
+      id: 'TXN002',
+      transactionType: 'PACS.008',
+      amount: 25000.00,
+      currency: 'EUR',
+      country: 'EU',
+      productCategory: 'electronics',
+      subCategory: 'computers',
+      status: 'completed',
+      fromAccount: '1111111111',
+      toAccount: '2222222222',
+      date: '2024-01-14',
+      priority: 'normal',
+      department: 'finance',
+      category: 'domestic',
+      taxRate: 0.096,
+      calculatedTax: 2400.00,
+      totalAmount: 27400.00,
+      riskLevel: 'low',
+      requiresApproval: false,
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'viewer', label: 'View Only' }
+      ],
+      assignedRole: 'viewer'
+    },
+    {
+      id: 'TXN003',
+      transactionType: 'PACS.008',
+      amount: 100000.00,
+      currency: 'GBP',
+      country: 'UK',
+      productCategory: 'automotive',
+      subCategory: 'vehicles',
+      status: 'failed',
+      fromAccount: '3333333333',
+      toAccount: '4444444444',
+      date: '2024-01-13',
+      priority: 'high',
+      department: 'operations',
+      category: 'urgent',
+      taxRate: 0.105,
+      calculatedTax: 10500.00,
+      totalAmount: 110500.00,
+      riskLevel: 'low',
+      requiresApproval: true,
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'approver', label: 'Transaction Approver' },
+        { value: 'specialist', label: 'Operations Specialist' }
+      ],
+      assignedRole: 'specialist'
+    },
+    {
+      id: 'TXN004',
+      transactionType: 'PACS.008',
+      amount: 100000.00,
+      currency: 'GBP',
+      country: 'UK',
+      productCategory: 'automotive',
+      subCategory: 'vehicles',
+      status: 'failed',
+      fromAccount: '3333333333',
+      toAccount: '4444444444',
+      date: '2024-01-13',
+      priority: 'high',
+      department: 'operations',
+      category: 'urgent',
+      taxRate: 0.105,
+      calculatedTax: 10500.00,
+      totalAmount: 110500.00,
+      riskLevel: 'low',
+      requiresApproval: true,
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'approver', label: 'Transaction Approver' },
+        { value: 'specialist', label: 'Operations Specialist' }
+      ],
+      assignedRole: 'specialist'
+    },
+    {
+      id: 'TXN004',
+      transactionType: 'PACS.008',
+      amount: 100000.00,
+      currency: 'GBP',
+      country: 'UK',
+      productCategory: 'automotive',
+      subCategory: 'vehicles',
+      status: 'failed',
+      fromAccount: '3333333333',
+      toAccount: '4444444444',
+      date: '2024-01-13',
+      priority: 'high',
+      department: 'operations',
+      category: 'urgent',
+      taxRate: 0.105,
+      calculatedTax: 10500.00,
+      totalAmount: 110500.00,
+      riskLevel: 'low',
+      requiresApproval: true,
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'approver', label: 'Transaction Approver' },
+        { value: 'specialist', label: 'Operations Specialist' }
+      ],
+      assignedRole: 'specialist'
+    },
+    {
+      id: 'TXN004',
+      transactionType: 'PACS.008',
+      amount: 100000.00,
+      currency: 'GBP',
+      country: 'UK',
+      productCategory: 'automotive',
+      subCategory: 'vehicles',
+      status: 'failed',
+      fromAccount: '3333333333',
+      toAccount: '4444444444',
+      date: '2024-01-13',
+      priority: 'high',
+      department: 'operations',
+      category: 'urgent',
+      taxRate: 0.105,
+      calculatedTax: 10500.00,
+      totalAmount: 110500.00,
+      riskLevel: 'low',
+      requiresApproval: true,
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'approver', label: 'Transaction Approver' },
+        { value: 'specialist', label: 'Operations Specialist' }
+      ],
+      assignedRole: 'specialist'
+    }
+    ]);
 
 
+    
+
+
+
+  onRowDblClick(serialized: string): void {
+    try {
+      const row: any = JSON.parse(serialized);
+      const pickedId = row?.id ;
+      if (pickedId) {
+        this.modalResult.emit({ field: 'id', value: pickedId });
+      } else {
+        this.modalResult.emit(null);
+      }
+    } catch {
+      this.modalResult.emit(null);
+    }
+  }
 } 

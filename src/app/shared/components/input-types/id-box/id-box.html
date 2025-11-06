@@ -1,48 +1,128 @@
-<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
-  <label class="input-label relative">
-    {{ label() }}
-    @if (isRequired()) {
-      <span class="text-red-500">*</span>
-    }
-  </label>
+<!-- idbox.component.html -->
+<div
+  [formGroup]="frmGroup()"
+  [ngClass]="{
+    'input-container-vertical' : displayMode() === 'vertical',
+    'input-container-horizontal' : displayMode() === 'horizontal',
+    'input-container-outline' : displayMode() === 'outline'
+  }">
 
-  <div class="input-with-button-container">
-    <input
-      [formControlName]="controlName()"
-      [attr.controlName]="controlName()"
-      matInput
-      [ngClass]="{'readonly-input': isReadonly() }"
-      type="text" 
-      inputmode="numeric"
-      (keyup)="onChangeInput()"
-      [matTooltip]="tooltip()"
-      [matTooltipPosition]="tooltipPosition()"
-      [matTooltipClass]="tooltipClass()"
-      [matTooltipDisabled]="!tooltip()"
-      [placeholder]="placeholder() ?? 'Enter ' + label()"
-      [readonly]="isReadonly()"
-      class="custom-input"
-      (keydown)="preventSpecialChars($event)"
-      (input)="onInput($event)" 
-      (change)="onChange($event)"
-      (blur)="onBlur()"
-      />
-    
-    @if (isDotsVisible()) {
-      <button 
-        type="button"
-        class="dots-button"
-        (click)="onDotsClick()"
-        [disabled]="isReadonly()"
-        matRipple>
-        ...
-      </button>
-    }
-  </div>
+  <!-- ======================== OUTLINE MODE ======================== -->
+  @if (displayMode() === 'outline') {
+    <div class="input-wrapper relative">
+      <input
+        id="idbox_outlined"
+        [formControlName]="controlName()"
+        [attr.controlName]="controlName()"
+        [ngClass]="{'readonly-input': isReadonly()}"
+        [readonly]="isReadonly()"
+        matInput
+        [placeholder]="' '"
+        type="text"
+        inputmode="numeric"
+        [matTooltip]="tooltip()"
+        [matTooltipPosition]="tooltipPosition()"
+        [matTooltipClass]="tooltipClass()"
+        [matTooltipDisabled]="!tooltip()"
+        class="custom-input"
+        (keyup)="onChangeInput()"
+        (keydown)="preventSpecialChars($event)"
+        (input)="onInput($event)"
+        (change)="onChange($event)"
+        (blur)="onBlur()" />
 
+      <!-- FLOATING LABEL -->
+      <label
+        for="idbox_outlined"
+        class="floating-input-label absolute text-sm text-gray-700 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2
+               peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2
+               peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-600 start-1">
+        {{ label() }}
+        @if (isRequired()) { <span class="text-red-500">*</span> }
+      </label>
+
+      <!-- CLEAR BUTTON -->
+      @if (frmGroup().get(controlName())?.value && !isReadonly()) {
+        <button type="button" class="clear-button" (click)="clearInput()">
+           <mat-icon fontIcon="close"></mat-icon>
+        </button>
+      }
+
+      <!-- DOTS BUTTON -->
+      @if (isDotsVisible()) {
+        <button
+          type="button"
+          class="dots-button"
+          (click)="onDotsClick()"
+          [disabled]="isReadonly()"
+          matRipple>
+          ...
+        </button>
+      }
+    </div>
+  }
+
+  <!-- ======================== HORIZONTAL / VERTICAL ======================== -->
+  @else {
+    @if (displayMode() === 'vertical') {
+      <label class="input-label block mb-1">
+        {{ label() }}
+        @if (isRequired()) { <span class="text-red-500">*</span> }
+      </label>
+    }
+
+    @if (displayMode() === 'horizontal') {
+      <label class="input-label">
+        {{ label() }}
+        @if (isRequired()) { <span class="text-red-500">*</span> }
+      </label>
+    }
+
+    <div class="input-wrapper">
+      <input
+        [formControlName]="controlName()"
+        [attr.controlName]="controlName()"
+        [ngClass]="{'readonly-input': isReadonly()}"
+        [readonly]="isReadonly()"
+        matInput
+        [placeholder]="placeholder() ?? 'Enter ' + label()"
+        type="text"
+        inputmode="numeric"
+        [matTooltip]="tooltip()"
+        [matTooltipPosition]="tooltipPosition()"
+        [matTooltipClass]="tooltipClass()"
+        [matTooltipDisabled]="!tooltip()"      
+        class="custom-input"
+        (keyup)="onChangeInput()"
+        (keydown)="preventSpecialChars($event)"
+        (input)="onInput($event)"
+        (change)="onChange($event)"
+        (blur)="onBlur()" />
+
+      <!-- CLEAR BUTTON -->
+      @if (frmGroup().get(controlName())?.value && !isReadonly()) {
+        <button type="button" class="clear-button" (click)="clearInput()">
+          <mat-icon fontIcon="close"></mat-icon>
+        </button>
+      }
+
+      <!-- DOTS BUTTON -->
+      @if (isDotsVisible()) {
+        <button
+          type="button"
+          class="dots-button"
+          (click)="onDotsClick()"
+          [disabled]="isReadonly()"
+          matRipple>
+          ...
+        </button>
+      }
+    </div>
+  }
+
+  <!-- ======================== VALIDATION ======================== -->
   @if (isInvalid()) {
     <div class="text-red-500 text-sm mt-1">
-      <!-- Default error messages -->
       @if (hasError('required')) {
         <div>{{ label() }} is required!</div>
       }
@@ -71,7 +151,6 @@
         <div>{{ label() }} contains invalid characters</div>
       }
 
-      <!-- Custom error messages for any other validation errors -->
       @if (hasCustomErrors()) {
         @for (errorKey of getCustomErrorKeys(); track errorKey) {
           <div>{{ getCustomErrorMessage(errorKey) }}</div>

@@ -149,6 +149,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly onChecked = output<{ data: string, checked: boolean }>();
   readonly onPrint = output<string>();
   readonly dataSourceChanged = output<T[]>();
+  readonly onRowDoubleClick = output<string>();
 
   // Enhanced Checkbox Outputs
   readonly onCheckboxValueChange = output<CheckboxChangeEvent>();
@@ -718,6 +719,11 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
     return columns;
   }
 
+  // Row double-click handler (template binds directly, but helper for clarity)
+  emitRowDoubleClick(item: T): void {
+    this.onRowDoubleClick.emit(JSON.stringify(item));
+  }
+
   // Enhanced public methods for checkbox functionality
 
   // Get all checked items for a specific column
@@ -762,6 +768,14 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
       this.applyFilters();
       this.dataSourceChanged.emit(updatedData);
     }
+  }
+
+  // Mobile detection utility for responsive design
+  isMobileView(): boolean {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth <= 768;
+    }
+    return false;
   }
 
   // Math utility for template
