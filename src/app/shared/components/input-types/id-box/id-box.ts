@@ -51,7 +51,7 @@ export class IdBoxComponent {
   readonly isVertical = input<boolean>(false);
   // Custom error messages support
   readonly customErrorMessages = input<{ [key: string]: string }>({});
-  readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('horizontal');
+  readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
   // Outputs
   readonly valueChanged = output<string>();
   readonly onChanged = output<any>();

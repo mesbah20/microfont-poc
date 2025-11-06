@@ -112,7 +112,7 @@ onModalResult(result: any) {
     }
   } else {
     // Fallback: set a known control
-    this.frmGroup.get('textBox')?.setValue(result);
+    // this.frmGroup.get('textBox')?.setValue(result);
   }
 
   this.showModal = false;
@@ -648,7 +648,7 @@ private getDetailedFormErrors(): any {
   onModalClose(isVisible: boolean) {
     console.log('Modal visibility changed:', isVisible);
     this.showModal = isVisible;
-    
+      
     if (!isVisible) {
       console.log('Modal closed');
     }
