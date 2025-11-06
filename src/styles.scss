@@ -637,7 +637,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 
 .custom-input {
   /* Base styling - Standard width instead of full */
-  @apply flex-1 max-w-full px-2 pe-8 py-1 text-lg border border-[#106ebe] border-slate-500 rounded-md; 
+  @apply flex-1 max-w-full px-2 pe-8 py-1 text-lg border border-[#106ebe] border-slate-500 rounded-md;
   @apply border border-[#106ebe] border-slate-500 rounded-md;
   @apply bg-slate-50 placeholder-slate-400 placeholder:text-sm;
 
@@ -661,7 +661,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 /* mat-select or other select inputs */
 .custom-select {
   @extend .custom-input;
-  @apply flex-1 max-w-full px-2 pe-8  text-lg border border-[#106ebe] border-slate-500 rounded-md;
+  @apply flex-1 max-w-full px-2 pe-8  text-sm border border-[#106ebe] border-slate-500 rounded-md;
 }
 
 .custom-select option {
@@ -728,7 +728,11 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 .input-wrapper {
    @apply flex items-center w-full;
    max-width: 250px;
-  position: relative;
+   position: relative;
+}
+
+.select-wrapper {
+  @extend .input-wrapper;
 }
 
 
@@ -777,7 +781,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 //       color: #1e293b;
 //       text-decoration: none;
 //       min-width: 90px;
-//       position: relative;   
+//       position: relative;
 //       padding: 0.600rem 0.9rem 0.600rem 2.9rem;
 //       border: none;
 //       border-radius: 12px;
@@ -789,7 +793,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 //       gap: 0.5rem;
 //       outline: none;
 //       overflow: hidden;
-//       box-shadow: 
+//       box-shadow:
 //         0 10px 25px rgba(0, 0, 0, 0.15),
 //         0 4px 10px rgba(0, 0, 0, 0.1),
 //         inset 0 1px 0 rgba(255, 255, 255, 1);
@@ -835,7 +839,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 
 //     .btn_elevated:active {
 //       transform: translateY(-1px);
-//       box-shadow: 
+//       box-shadow:
 //         0 5px 15px rgba(0, 0, 0, 0.15),
 //         0 2px 5px rgba(0, 0, 0, 0.1);
 //     }
@@ -897,7 +901,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   height: 20px;
 
   background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="white"><path d="M840-680v480q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h480l160 160Zm-80 34L646-760H200v560h560v-446ZM480-240q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM240-560h360v-160H240v160Zm-40-86v446-560 114Z"/></svg>') center/contain no-repeat transparent;
- 
+
 
 }
 
@@ -906,3 +910,22 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 	margin-top:-5px;
 	box-shadow: inset 0px 1px 0px #827066, 0px 3px 0px #19120f, 0px 6px 3px #382e29;
 }
+
+.modal-wrapper {
+  position: fixed !important;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; justify-content: center; align-items: center;
+  z-index: 12000 !important;
+  pointer-events: auto !important;
+  overflow: visible !important;
+  transform: none !important;  /* critical for hit-testing */
+}
+
+.modal-content {
+  z-index: 12001 !important;
+  pointer-events: auto !important;
+  overflow: visible !important;  /* allow dropdown to escape container */
+  position: relative;
+  transform: none !important;
+}
+
