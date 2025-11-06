@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { MenuDrawer } from './drawers/menu-drawer/menu-drawer';
 import { CommonModule, TitleCasePipe } from '@angular/common';
@@ -8,6 +8,7 @@ import { Search } from '../navbar/actions/search/search';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '../../../../shared/services/theme.service';
 import { SidebarService } from '../../../service/sidebar.service';
+import { ModuleDrawer } from './drawers/module-drawer/module-drawer';
 
 @Component({
   selector: 'app-sidebar',
@@ -15,6 +16,7 @@ import { SidebarService } from '../../../service/sidebar.service';
   imports: [
     MatIcon,
     MenuDrawer,
+    ModuleDrawer,
     TitleCasePipe,
     CommonModule,
     ProfileDrawer,
@@ -33,20 +35,29 @@ export class Sidebar {
 
   // New property for sidebar expansion
   sidebarExpanded: boolean = false;
+  isMobileOpen: boolean = false;
    private subs = new Subscription();
   private themeSub?: Subscription;
-  constructor(private themeService: ThemeService,
-    private sidebarService: SidebarService
+
+  constructor(
+    private themeService: ThemeService,
+    public sidebarService: SidebarService
   ) {}
   // Toggle sidebar expansion (Gmail-style)
     toggleSidebar(): void {
     this.sidebarExpanded = !this.sidebarExpanded;
+    this.sidebarService.setSidebarState(this.sidebarExpanded);
     }
 
+  toggleMobileSidebar(): void {
+    this.isMobileOpen = !this.isMobileOpen;
+  }
+
   ngOnInit(): void {
-    // ✅ Subscribe to theme changes
+    //  Subscribe to theme changes
     this.themeSub = this.themeService.currentTheme$.subscribe(themeId => {
       this.activeTheme = themeId;
+      
     });
 
     this.subs.add(
@@ -55,9 +66,16 @@ export class Sidebar {
         console.log('Sidebar expanded:', expanded);
       })
     );
+    this.handleResize();
     console.log('Active Theme in Sidebar:', this.activeTheme);
   }
 
+
+  @HostListener('window:resize')
+  handleResize(): void {
+    const width = window.innerWidth;
+    this.isMobileOpen = width < 768; 
+  }
   ngOnDestroy(): void {
     this.themeSub?.unsubscribe();
   }
