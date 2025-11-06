@@ -341,6 +341,20 @@
 <!--          </div>-->
 <!--        </div>-->
 <!--      </div>-->
+      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+        <common-gauge-chart
+          [headerTitle]="'Transaction Success Rate'"
+          [dataByRange]="gaugeData"
+          [height]="280"
+          [min]="0"
+          [max]="100"
+          [suffix]="'%'"
+          [gradient]="true"
+          [showWeekly]="true"
+          [showMonthly]="true"
+          [showYearly]="true">
+        </common-gauge-chart>
+      </div>
 
       <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
         <common-line-chart
@@ -374,20 +388,61 @@
         </common-stacked-column-chart>
 
       </div>
+
       <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
-        <common-gauge-chart
-          [headerTitle]="'Transaction Success Rate'"
-          [dataByRange]="gaugeData"
-          [height]="280"
-          [min]="0"
-          [max]="100"
-          [suffix]="'%'"
-          [gradient]="true"
+        <common-histogram
+          [headerTitle]="'Processing Time Distribution'"
+          [dataByRange]="histogramData"
+          [tooltipLabel]="'Avg Processing Time:'"
+          [height]="350"
+          [barColor]="'#3b82f6'"
           [showWeekly]="true"
           [showMonthly]="true"
           [showYearly]="true">
-        </common-gauge-chart>
+        </common-histogram>
       </div>
+
+      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+        <common-bar-chart
+          [headerTitle]="'Department Performance'"
+          [tooltipLabel]="'Performance Score'"
+          [dataByRange]="barData"
+          [height]="350"
+          [barColor]="'#06b6d4'"
+          [colors]="barColors"
+          [showWeekly]="true"
+          [showMonthly]="true"
+          [showYearly]="true"
+          [horizontal]="true">
+        </common-bar-chart>
+      </div>
+      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+        <common-pie-chart
+          [headerTitle]="'Revenue Breakdown'"
+          [tooltipLabel]="'Revenue Share'"
+          [dataByRange]="pieData"
+          [colors]="['#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444']"
+          [height]="340"
+          [showLegend]="true"
+          [showWeekly]="true"
+          [showMonthly]="true"
+          [showYearly]="true">
+        </common-pie-chart>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+        <common-donut-chart
+          [headerTitle]="'Revenue Share'"
+          [dataByRange]="donutData"
+          [showWeekly]="true"
+          [showMonthly]="true"
+          [showYearly]="true"
+          [colors]="['#3b82f6', '#06b6d4', '#10b981', '#f59e0b']">
+        </common-donut-chart>
+      </div>
+
+
+
 
     </div>
 

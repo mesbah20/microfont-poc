@@ -8,6 +8,10 @@ import {
   CommonStackedColumnChart
 } from '../../../../shared/components/charts/common-stacked-column-chart/common-stacked-column-chart';
 import {CommonGaugeChart} from '../../../../shared/components/charts/common-gauge-chart/common-gauge-chart';
+import {CommonHistogram} from '../../../../shared/components/charts/common-histogram/common-histogram';
+import {CommonBarChart} from '../../../../shared/components/charts/common-bar-chart/common-bar-chart';
+import {CommonPieChart} from '../../../../shared/components/charts/common-pie-chart/common-pie-chart';
+import {CommonDonutChart} from '../../../../shared/components/charts/common-donut-chart/common-donut-chart';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,6 +20,10 @@ import {CommonGaugeChart} from '../../../../shared/components/charts/common-gaug
     CommonLineChartComponent,
     CommonStackedColumnChart,
     CommonGaugeChart,
+    CommonHistogram,
+    CommonBarChart,
+    CommonPieChart,
+    CommonDonutChart,
 
 
   ],
@@ -256,15 +264,78 @@ export class Dashboard implements OnInit {
 
   histogramData = {
     weekly: {
-      data: Array.from({ length: 150 }, () => Math.random() * 8),
+      categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      data: [200000, 100000, 500000, 900000, 300000, 400000, 250000],
     },
     monthly: {
-      data: Array.from({ length: 400 }, () => Math.random() * 8),
+      categories: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+      data: [1000000, 1200000, 800000, 600000],
     },
     yearly: {
-      data: Array.from({ length: 1000 }, () => Math.random() * 8),
+      categories: ['Q1', 'Q2', 'Q3', 'Q4'],
+      data: [2400000, 1800000, 1600000, 2200000],
     },
   };
+
+  barData = {
+    weekly: {
+      categories: ['Sales', 'Marketing', 'HR', 'Finance', 'IT'],
+      series: [
+        {
+          name: 'Performance',
+          data: [80, 65, 90, 70, 85],
+        },
+      ],
+    },
+    monthly: {
+      categories: ['Sales', 'Marketing', 'HR', 'Finance', 'IT'],
+      series: [
+        {
+          name: 'Performance',
+          data: [75, 80, 68, 85, 90],
+        },
+      ],
+    },
+    yearly: {
+      categories: ['Sales', 'Marketing', 'HR', 'Finance', 'IT'],
+      series: [
+        {
+          name: 'Performance',
+          data: [78, 82, 88, 91, 95],
+        },
+      ],
+    },
+  };
+
+  pieData = {
+    weekly: {
+    labels: ['RTGS', 'i-Life', 'FinBook', 'CenterPoint'],
+    data: [44, 55, 13, 33],
+    },
+    monthly: {
+      labels: ['RTGS', 'i-Life', 'FinBook', 'CenterPoint'],
+      data: [30, 40, 20, 10],
+    },
+    yearly: {
+      labels: ['RTGS', 'i-Life', 'FinBook', 'CenterPoint'],
+      data: [400, 300, 200, 100],
+    },
+  };
+
+  donutData = {
+    weekly: {
+          labels: ['RTGS', 'i-Life', 'FinBook', 'CenterPoint'],
+      series: [30, 40, 15, 15]
+    },
+    monthly: {
+          labels: ['RTGS', 'i-Life', 'FinBook', 'CenterPoint'],
+      series: [25, 35, 20, 20]
+    },
+    yearly: {
+          labels: ['RTGS', 'i-Life', 'FinBook', 'CenterPoint'],
+      series: [20, 45, 15, 20]},
+  };
+
 
 
 
