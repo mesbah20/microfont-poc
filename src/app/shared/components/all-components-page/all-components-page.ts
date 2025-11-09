@@ -26,6 +26,7 @@ import { LdsModalComponent } from '../lds-modal/lds-modal';
 import { OtherComponentsPage } from '../other-components-page/other-components-page';
 import { CommonModule } from '@angular/common';
 import { Button } from '../input-types/button/button';
+import {ToastHelperService} from '../../services/toast-helper.service';
 
 // Types for data selection modal
 export interface AccountData {
@@ -49,7 +50,7 @@ export interface DataSelectionConfig {
   selector: 'app-all-components-page',
   standalone: true,
   imports: [
-    ReactiveFormsModule,  
+    ReactiveFormsModule,
     TextBaseInput,
     IdBoxComponent,
     AmountInput,
@@ -77,14 +78,14 @@ export interface DataSelectionConfig {
 })
 export class AllComponentsPage implements OnInit {
   frmGroup: FormGroup;
-  toastr = inject(ToastrService);
+  toastr = inject(ToastHelperService);
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
   subPanel1: WritableSignal<boolean> = signal(true);
   // Reference to this component's own class
   static instance: Type<AllComponentsPage> = AllComponentsPage;
   isDataSelectionModalOpen = signal(false);
   onClickSave = ONCLICK_SAVE;
-  
+
   // Methods for modal events
   onModalClosed() {
     this.isDataSelectionModalOpen.set(false);
@@ -121,7 +122,7 @@ onModalResult(result: any) {
   // openModal() {
   //   this.isDataSelectionModalOpen.set(true);
   // }
-  
+
   // Relatable field signals
   selectedCurrency = signal<string>('USD');
   selectedCountry = signal<string>('');
@@ -130,7 +131,7 @@ onModalResult(result: any) {
   calculatedTaxRate = signal<number>(0);
   isHighValueTransaction = signal<boolean>(false);
   relatedTransactions = signal<any[]>([]);
-  showModal = false;  
+  showModal = false;
   isTRUE = false;
   modalComponent?: Type<any>;
   OtherComponentsPageComponent: Type<any> = OtherComponentsPage;
@@ -192,27 +193,27 @@ onModalResult(result: any) {
     { key: 'mobile', value: 'Mobile Devices', parentCategory: 'electronics', minAmount: 100 },
     { key: 'computers', value: 'Computers', parentCategory: 'electronics', minAmount: 500 },
     { key: 'accessories', value: 'Accessories', parentCategory: 'electronics', minAmount: 10 },
-    
+
     // Automotive
     { key: 'parts', value: 'Auto Parts', parentCategory: 'automotive', minAmount: 50 },
     { key: 'services', value: 'Auto Services', parentCategory: 'automotive', minAmount: 100 },
     { key: 'vehicles', value: 'Vehicles', parentCategory: 'automotive', minAmount: 5000 },
-    
+
     // Healthcare
     { key: 'equipment', value: 'Medical Equipment', parentCategory: 'healthcare', minAmount: 1000 },
     { key: 'supplies', value: 'Medical Supplies', parentCategory: 'healthcare', minAmount: 50 },
     { key: 'pharmaceuticals', value: 'Pharmaceuticals', parentCategory: 'healthcare', minAmount: 100 },
-    
+
     // Financial
     { key: 'banking', value: 'Banking Services', parentCategory: 'financial', minAmount: 1000 },
     { key: 'insurance', value: 'Insurance', parentCategory: 'financial', minAmount: 500 },
     { key: 'investment', value: 'Investment', parentCategory: 'financial', minAmount: 10000 },
-    
+
     // Retail
     { key: 'clothing', value: 'Clothing', parentCategory: 'retail', minAmount: 20 },
     { key: 'food', value: 'Food & Beverages', parentCategory: 'retail', minAmount: 5 },
     { key: 'home', value: 'Home & Garden', parentCategory: 'retail', minAmount: 25 },
-    
+
     // Construction
     { key: 'materials', value: 'Building Materials', parentCategory: 'construction', minAmount: 100 },
     { key: 'tools', value: 'Construction Tools', parentCategory: 'construction', minAmount: 50 },
@@ -467,14 +468,14 @@ onModalResult(result: any) {
     { accountId: 'ACC004', accountName: 'Investment Account', accountType: 'Investment', balance: 75000.00 },
     { accountId: 'ACC005', accountName: 'Foreign Currency Account', accountType: 'FC', balance: 30000.00 }
   ];
-  
+
   filteredAccounts = [...this.accountsData];
    filterAccounts(searchTerm: string) {
     if (!searchTerm.trim()) {
       this.filteredAccounts = [...this.accountsData];
       return;
     }
-    
+
     const term = searchTerm.toLowerCase();
     this.filteredAccounts = this.accountsData.filter(account =>
       account.accountId.toLowerCase().includes(term) ||
@@ -482,7 +483,7 @@ onModalResult(result: any) {
       account.accountType.toLowerCase().includes(term)
     );
   }
-  
+
   // Create new account handler
   createNewAccount() {
     // You can implement account creation logic here
@@ -491,7 +492,7 @@ onModalResult(result: any) {
   }
   constructor(
     private formBuilder: FormBuilder,
-   
+
   ) {
     BUTTON_VISIBILITY.set({
       save: true,
@@ -513,40 +514,40 @@ onModalResult(result: any) {
 
 save(): void {
   console.log('=== STARTING SAVE PROCESS ===');
-  
+
   // First, let's see what the form actually contains
   console.log('Form valid status:', this.frmGroup.valid);
   console.log('Form value:', this.frmGroup.value);
   console.log('Form errors:', this.getFormErrors());
-  
+
   // Check if form is invalid
   if (this.frmGroup.invalid) {
     console.log('❌ Form is invalid');
-    
+
     // Get detailed error information
     const errors = this.getDetailedFormErrors();
     console.log('Detailed form errors:', errors);
-    
+
     // Show specific error messages
     this.showFormValidationErrors(errors);
     return;
   }
-  
+
   // Additional custom validation
   if (!this.validateRequiredFields()) {
     console.log('❌ Custom validation failed');
     return;
   }
-  
+
   // If we reach here, form is valid
   console.log('✅ Form is valid, proceeding with save...');
-  
+
   // Get all form data including calculated values
   const completeFormData = this.getCompleteFormData();
-  
+
   console.log('=== COMPLETE FORM DATA ===');
   console.log(JSON.stringify(completeFormData, null, 2));
-  
+
   this.toastr.success('Data saved successfully! Check console for complete data.', 'Save Successful');
 }
 
@@ -555,7 +556,7 @@ validateRequiredFields(): boolean {
   // Define required fields based on your form
   const requiredFields = [
     'textBox',
-    'id', 
+    'id',
     'amount',
     'dropdown',
     'currency',
@@ -566,41 +567,41 @@ validateRequiredFields(): boolean {
     'number'
     // Remove 'textArea' from required if express processing is enabled
   ];
-  
+
   // Check if express processing is enabled (switch is on)
   const isExpressProcessing = this.frmGroup.get('switch')?.value;
-  
+
   // Add textArea as required only if not in express processing mode
   if (!isExpressProcessing) {
     requiredFields.push('textArea');
   }
-  
+
   let hasErrors = false;
-  
+
   for (const fieldName of requiredFields) {
     const control = this.frmGroup.get(fieldName);
-    
+
     if (!control) {
       console.log(`⚠️ Control '${fieldName}' not found in form`);
       continue;
     }
-    
+
     const value = control.value;
-    const isEmpty = value === null || value === undefined || value === '' || 
+    const isEmpty = value === null || value === undefined || value === '' ||
                    (Array.isArray(value) && value.length === 0);
-    
+
     if (isEmpty || control.invalid) {
       console.log(`❌ Field '${fieldName}' is invalid or empty:`, {
         value: value,
         errors: control.errors,
         valid: control.valid
       });
-      
+
       this.toastr.error(`Please fill in: ${this.getFieldDisplayName(fieldName)}`, 'Required Field');
       hasErrors = true;
     }
   }
-  
+
   return !hasErrors;
 }
 
@@ -619,14 +620,14 @@ private getFieldDisplayName(fieldName: string): string {
     officeCode: 'Office Code',
     number: 'Reference Number'
   };
-  
+
   return fieldNames[fieldName] || fieldName;
 }
 
 // Get detailed form errors
 private getDetailedFormErrors(): any {
   const formErrors: any = {};
-  
+
   Object.keys(this.frmGroup.controls).forEach(key => {
     const control = this.frmGroup.get(key);
     if (control && control.errors) {
@@ -638,17 +639,17 @@ private getDetailedFormErrors(): any {
       };
     }
   });
-  
+
   return formErrors;
 }
 
 
 
- 
+
   onModalClose(isVisible: boolean) {
     console.log('Modal visibility changed:', isVisible);
     this.showModal = isVisible;
-      
+
     if (!isVisible) {
       console.log('Modal closed');
     }
@@ -665,43 +666,43 @@ openModal(componentToLoad?: Type<any>, data?: any) {
   console.log('=== OPENING MODAL ===');
   console.log('Component to load:', componentToLoad);
   console.log('Component name:', componentToLoad?.name);
-  
+
   // Reset modal state
   this.showModal = false;
   this.modalComponent = undefined;
-  
-  
+
+
   setTimeout(() => {
     this.modalComponent = componentToLoad || this.OtherComponentsPageComponent;
-   
+
     const currentFieldData = this.frmGroup?.getRawValue ? this.frmGroup.getRawValue() : {};
     this.modalComponentData = {
       initialData: currentFieldData,
       ...(data || {})
     };
-    
+
     console.log('Setting modal component:', this.modalComponent?.name);
     console.log('Setting modal data:', this.modalComponentData);
-    
+
     this.showModal = true;
-    
+
     console.log('Modal should now be visible');
   }, 50);
 }
 // Show specific validation errors
 private showFormValidationErrors(errors: any): void {
   const errorKeys = Object.keys(errors);
-  
+
   if (errorKeys.length === 0) {
     this.toastr.error('Form has validation errors but no specific errors found', 'Validation Error');
     return;
   }
-  
+
   // Show first few errors to avoid spam
   errorKeys.slice(0, 3).forEach(key => {
     const fieldError = errors[key];
     const fieldName = this.getFieldDisplayName(key);
-    
+
     if (fieldError.errors.required) {
       this.toastr.error(`${fieldName} is required`, 'Required Field');
     } else if (fieldError.errors.minlength) {
@@ -720,7 +721,7 @@ private showFormValidationErrors(errors: any): void {
       this.toastr.error(`${fieldName} has validation errors`, 'Validation Error');
     }
   });
-  
+
   if (errorKeys.length > 3) {
     this.toastr.warning(`${errorKeys.length - 3} more validation errors found. Check form fields.`, 'Additional Errors');
   }
@@ -729,7 +730,7 @@ private showFormValidationErrors(errors: any): void {
 // Get complete form data including calculated values
 private getCompleteFormData(): any {
   const formValues = this.frmGroup.value;
-  
+
   // Include disabled field values
   const disabledValues = {
     taxRate: this.frmGroup.get('taxRate')?.value,
@@ -738,7 +739,7 @@ private getCompleteFormData(): any {
     riskLevel: this.frmGroup.get('riskLevel')?.value,
     requiresApproval: this.frmGroup.get('requiresApproval')?.value
   };
-  
+
   return {
     timestamp: new Date().toISOString(),
     formData: {
@@ -774,14 +775,14 @@ private getCompleteFormData(): any {
 // Updated getFormErrors method
 private getFormErrors(): any {
   const formErrors: any = {};
-  
+
   Object.keys(this.frmGroup.controls).forEach(key => {
     const control = this.frmGroup.get(key);
     if (control && !control.valid && control.errors) {
       formErrors[key] = control.errors;
     }
   });
-  
+
   return formErrors;
 }
 
@@ -795,7 +796,7 @@ markAllFieldsAsTouched(): void {
 // Debug method to check current form state
 debugFormState(): void {
   console.log('=== FORM DEBUG INFO ===');
-  
+
   Object.keys(this.frmGroup.controls).forEach(key => {
     const control = this.frmGroup.get(key);
     console.log(`${key}:`, {
@@ -827,7 +828,7 @@ debugFormState(): void {
       number: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       officeCode: ['', [Validators.required, Validators.maxLength(10), Validators.minLength(3)]],
       fileUpload: [null],
-      
+
       // New relatable fields
       currency: ['USD', Validators.required],
       country: ['', Validators.required],
@@ -842,7 +843,7 @@ debugFormState(): void {
 
     this.setupFieldRelationships();
 
-      
+
   }
 
   private setupFieldRelationships(): void {
@@ -895,7 +896,7 @@ debugFormState(): void {
 
   onTextBoxChanged(value: string): void {
     console.log('TextBox changed:', value);
-  }  
+  }
 
   onTextAreaChanged(value: string): void {
     console.log('TextArea changed:', value);
@@ -920,23 +921,23 @@ debugFormState(): void {
     const currency = this.currencyOptions.find(c => c.key === currencyCode);
     if (currency) {
       this.selectedCurrency.set(currencyCode);
-      
+
       // Auto-select related country
       this.frmGroup.patchValue({
         country: currency.country
       }, { emitEvent: false });
-      
+
       // Update tax rate
       this.frmGroup.patchValue({
         taxRate: currency.taxRate
       });
-      
+
       // Recalculate amounts
       this.recalculateAmounts();
-      
+
       // Filter related transactions in grid
       this.filterRelatedTransactions();
-      
+
       this.toastr.info(`Currency changed to ${currency.value}. Auto-selected ${currency.country}`, 'Currency Update');
     }
   }
@@ -945,21 +946,21 @@ debugFormState(): void {
     const country = this.countryOptions.find(c => c.key === countryCode);
     if (country) {
       this.selectedCountry.set(countryCode);
-      
+
       // Update risk level
       this.frmGroup.patchValue({
         riskLevel: country.riskLevel
       });
-      
+
       // Update approval requirements based on risk
       const requiresApproval = country.riskLevel === 'high' || country.riskLevel === 'medium';
       this.frmGroup.patchValue({
         requiresApproval: requiresApproval
       });
-      
+
       // Update validation rules based on risk level
       this.updateValidationRules(country.riskLevel);
-      
+
       this.toastr.info(`Country set to ${country.value}. Risk level: ${country.riskLevel}`, 'Country Update');
     }
   }
@@ -968,30 +969,30 @@ debugFormState(): void {
     const category = this.productCategoryOptions.find(c => c.key === categoryCode);
     if (category) {
       this.selectedProductCategory.set(categoryCode);
-      
+
       // Filter subcategories
       const filteredSubs = this.subCategoryOptions.filter(sub => sub.parentCategory === categoryCode);
       this.filteredSubCategories.set(filteredSubs);
-      
+
       // Update dropdown options for subcategory in grid
       this.transactionDropdownOptions.update(options => ({
         ...options,
         subCategory: filteredSubs.map(sub => ({ value: sub.key, label: sub.value }))
       }));
-      
+
       // Reset subcategory selection
       this.frmGroup.patchValue({
         subCategory: ''
       });
-      
+
       // Update approval requirements
       this.frmGroup.patchValue({
         requiresApproval: category.requiresApproval
       });
-      
+
       // Recalculate tax with category multiplier
       this.recalculateAmounts();
-      
+
       this.toastr.info(`Product category changed to ${category.value}`, 'Category Update');
     }
   }
@@ -1001,23 +1002,23 @@ debugFormState(): void {
       // Check if high value transaction
       const isHighValue = amount > 50000;
       this.isHighValueTransaction.set(isHighValue);
-      
+
       // Update approval requirements for high value
       if (isHighValue) {
         this.frmGroup.patchValue({
           requiresApproval: true
         });
       }
-      
+
       // Recalculate tax and total
       this.recalculateAmounts();
-      
+
       // Update amount to words field
       this.frmGroup.patchValue({
         amountToWord: amount
 
       });
-      
+
       if (isHighValue) {
         this.toastr.warning('High value transaction - Approval required', 'High Value Alert');
       }
@@ -1033,7 +1034,7 @@ debugFormState(): void {
         this.frmGroup.get('amount')?.setErrors({ minAmount: subCategory.minAmount });
         this.toastr.error(`Minimum amount for ${subCategory.value} is ${subCategory.minAmount}`, 'Validation Error');
       }
-      
+
       // Update amount field minimum validator
       this.frmGroup.get('amount')?.setValidators([
         Validators.required,
@@ -1061,22 +1062,22 @@ debugFormState(): void {
     const amount = this.frmGroup.get('amount')?.value || 0;
     const taxRate = this.frmGroup.get('taxRate')?.value || 0;
     const categoryCode = this.frmGroup.get('productCategory')?.value;
-    
+
     let effectiveTaxRate = taxRate;
-    
-    // Apply category tax multiplier 
+
+    // Apply category tax multiplier
     if (categoryCode) {
       const category = this.productCategoryOptions.find(c => c.key === categoryCode);
       if (category) {
         effectiveTaxRate = taxRate * category.taxMultiplier;
       }
     }
-    
+
     const calculatedTax = amount * effectiveTaxRate;
     const totalAmount = amount + calculatedTax;
-    
+
     this.calculatedTaxRate.set(effectiveTaxRate);
-    
+
     this.frmGroup.patchValue({
       taxRate: effectiveTaxRate,
       calculatedTax: calculatedTax,
@@ -1089,25 +1090,25 @@ debugFormState(): void {
     if (riskLevel === 'high') {
       // High risk requires more documentation
       this.frmGroup.get('textArea')?.setValidators([
-        Validators.required, 
-        Validators.minLength(50), 
+        Validators.required,
+        Validators.minLength(50),
         Validators.maxLength(500)
       ]);
       this.frmGroup.get('fileUpload')?.setValidators([Validators.required]);
     } else if (riskLevel === 'medium') {
       this.frmGroup.get('textArea')?.setValidators([
-        Validators.required, 
-        Validators.minLength(20), 
+        Validators.required,
+        Validators.minLength(20),
         Validators.maxLength(500)
       ]);
     } else {
       // Low risk - standard validation
       this.frmGroup.get('textArea')?.setValidators([
-        Validators.required, 
+        Validators.required,
         Validators.maxLength(500)
       ]);
     }
-    
+
     // Update validity
     this.frmGroup.get('textArea')?.updateValueAndValidity();
     this.frmGroup.get('fileUpload')?.updateValueAndValidity();
@@ -1116,15 +1117,15 @@ debugFormState(): void {
   private filterRelatedTransactions(): void {
     const currentCurrency = this.frmGroup.get('currency')?.value;
     const currentCategory = this.frmGroup.get('productCategory')?.value;
-    
+
     // Filter transactions in grid based on current form values
     const allTransactions = this.sampleTransactions();
-    const filtered = allTransactions.filter(t => 
+    const filtered = allTransactions.filter(t =>
       t.currency === currentCurrency || t.productCategory === currentCategory
     );
-    
+
     this.relatedTransactions.set(filtered);
-    
+
     // Update grid data if needed
     // You can emit this to update the grid component
   }
@@ -1132,7 +1133,7 @@ debugFormState(): void {
   // Enhanced event handlers with relatable field logic
   handleCategorySelection(event: { selectedOption: any; selectedKey: string; selectedValue: string }): void {
     console.log('Selected option:', event.selectedOption);
-    
+
     // Update priority based on selection
     if (event.selectedKey === 'option1' || event.selectedKey === 'option4') {
       // High priority or urgent
@@ -1146,7 +1147,7 @@ debugFormState(): void {
   // Enhanced grid event handlers
   onTransactionEdit(serializedData: string): void {
     const transaction = JSON.parse(serializedData);
-    
+
     // Pre-populate form with transaction data for editing
     this.frmGroup.patchValue({
       amount: transaction.amount,
@@ -1157,13 +1158,13 @@ debugFormState(): void {
       textBox: transaction.id,
       textArea: `Editing transaction ${transaction.id}`
     });
-    
+
     this.toastr.info(`Editing transaction: ${transaction.id}`, 'Edit Mode');
   }
 
 onTransactionDataChanged(newData: any[]): void {
   console.log('Transaction data changed:', newData);
-  
+
   // Validate amounts in the updated data
   const validatedData = newData.map(transaction => {
     if (transaction.amount) {
@@ -1175,46 +1176,46 @@ onTransactionDataChanged(newData: any[]): void {
         transaction.amount = 1000000;
         this.toastr.warning(`Maximum amount of 1,000,000 applied to transaction ${transaction.id}`, 'Validation');
       }
-      
+
       // Validate against subcategory minimum
       const subCategory = this.subCategoryOptions.find(s => s.key === transaction.subCategory);
       if (subCategory && transaction.amount < subCategory.minAmount) {
         transaction.amount = subCategory.minAmount;
         this.toastr.warning(`Minimum amount of ${subCategory.minAmount} applied for ${subCategory.value}`, 'Validation');
       }
-      
+
       // Recalculate related fields
       transaction = this.recalculateTransactionAmounts(transaction);
     }
     return transaction;
   });
-  
+
   // Update with validated data
   this.sampleTransactions.set(validatedData);
   this.filterRelatedTransactions();
-  
+
   this.toastr.success('Transaction data updated with validation', 'Data Updated');
 }
 
 private recalculateTransactionAmounts(transaction: any): any {
   const amount = Number(transaction.amount) || 0;
   let taxRate = 0.05; // Default tax rate
-  
+
   // Get currency-specific tax rate
   const currency = this.currencyOptions.find(c => c.key === transaction.currency);
   if (currency) {
     taxRate = currency.taxRate;
   }
-  
+
   // Apply category multiplier
   const category = this.productCategoryOptions.find(c => c.key === transaction.productCategory);
   if (category) {
     taxRate *= category.taxMultiplier;
   }
-  
+
   const calculatedTax = amount * taxRate;
   const totalAmount = amount + calculatedTax;
-  
+
   return {
     ...transaction,
     amount: amount,
@@ -1230,13 +1231,13 @@ private recalculateTransactionAmounts(transaction: any): any {
     if (currency && currency.country !== transaction.country) {
       this.toastr.warning(`Currency-Country mismatch in ${transaction.id}`, 'Validation Warning');
     }
-    
+
     // Validate category-subcategory relationship
     const subCategory = this.subCategoryOptions.find(s => s.key === transaction.subCategory);
     if (subCategory && subCategory.parentCategory !== transaction.productCategory) {
       this.toastr.error(`Invalid subcategory for ${transaction.id}`, 'Validation Error');
     }
-    
+
     // Validate minimum amount for subcategory
     if (subCategory && transaction.amount < subCategory.minAmount) {
       this.toastr.error(`Amount below minimum for ${transaction.subCategory} in ${transaction.id}`, 'Amount Error');
@@ -1272,7 +1273,7 @@ private recalculateTransactionAmounts(transaction: any): any {
   // Export current form as transaction
   addCurrentFormToGrid(): void {
     const formValue = this.frmGroup.value;
-    
+
     if (this.frmGroup.valid) {
       const newTransaction = {
         id: `TXN${Date.now().toString().slice(-6)}`,
@@ -1301,14 +1302,14 @@ private recalculateTransactionAmounts(transaction: any): any {
         ],
         assignedRole: formValue.requiresApproval ? 'approver' : 'viewer'
       };
-      
+
       // Add to grid data
       const currentTransactions = this.sampleTransactions();
       this.sampleTransactions.set([...currentTransactions, newTransaction]);
-      
+
       // Reset form
       this.resetFormWithDefaults();
-      
+
       this.toastr.success(`Transaction ${newTransaction.id} added to grid`, 'Transaction Added');
     } else {
       this.toastr.error('Please fix form errors before adding to grid', 'Validation Error');
@@ -1319,9 +1320,9 @@ private recalculateTransactionAmounts(transaction: any): any {
   private resetFormWithDefaults(): void {
     const currentCurrency = this.frmGroup.get('currency')?.value;
     const currentCountry = this.frmGroup.get('country')?.value;
-    
+
     this.frmGroup.reset();
-    
+
     // Restore some values to maintain context
     this.frmGroup.patchValue({
       currency: currentCurrency,
@@ -1340,18 +1341,18 @@ private recalculateTransactionAmounts(transaction: any): any {
       this.toastr.warning('Please select a product category first', 'Bulk Update');
       return;
     }
-    
+
     const currentTransactions = this.sampleTransactions();
     const updatedTransactions = currentTransactions.map(transaction => {
       if (transaction.productCategory === selectedCategory) {
         const category = this.productCategoryOptions.find(c => c.key === selectedCategory);
         if (category) {
           // Recalculate tax for matching category
-          const newTaxRate = transaction.currency === 'USD' ? 0.05 * category.taxMultiplier : 
+          const newTaxRate = transaction.currency === 'USD' ? 0.05 * category.taxMultiplier :
                            transaction.currency === 'EUR' ? 0.08 * category.taxMultiplier :
                            0.06 * category.taxMultiplier;
           const newTax = transaction.amount * newTaxRate;
-          
+
           return {
             ...transaction,
             taxRate: newTaxRate,
@@ -1363,7 +1364,7 @@ private recalculateTransactionAmounts(transaction: any): any {
       }
       return transaction;
     });
-    
+
     this.sampleTransactions.set(updatedTransactions);
     this.toastr.success(`Updated all transactions in category: ${selectedCategory}`, 'Bulk Update Complete');
   }
@@ -1377,22 +1378,22 @@ private recalculateTransactionAmounts(transaction: any): any {
       minAmount: this.frmGroup.get('amount')?.value || 0,
       riskLevel: this.frmGroup.get('riskLevel')?.value
     };
-    
+
     // This would typically be handled by the grid component's filtering mechanism
     // For now, we'll update a filtered signal that the grid can use
     const allTransactions = this.sampleTransactions();
     const filtered = allTransactions.filter(transaction => {
       let matches = true;
-      
+
       if (criteria.currency && transaction.currency !== criteria.currency) matches = false;
       if (criteria.country && transaction.country !== criteria.country) matches = false;
       if (criteria.productCategory && transaction.productCategory !== criteria.productCategory) matches = false;
       if (criteria.minAmount && transaction.amount < criteria.minAmount) matches = false;
       if (criteria.riskLevel && transaction.riskLevel !== criteria.riskLevel) matches = false;
-      
+
       return matches;
     });
-    
+
     // You would pass this filtered data to your grid component
     console.log('Filtered transactions:', filtered);
     this.toastr.info(`Found ${filtered.length} matching transactions`, 'Filter Applied');
@@ -1403,28 +1404,28 @@ private recalculateTransactionAmounts(transaction: any): any {
     const currency = this.frmGroup.get('currency')?.value;
     const category = this.frmGroup.get('productCategory')?.value;
     const amount = this.frmGroup.get('amount')?.value || 0;
-    
+
     const suggestions = {
       suggestedOfficeCode: currency === 'USD' ? 'US01' : currency === 'EUR' ? 'EU01' : 'INTL',
       suggestedTextBox: `${currency}_${category}_${Date.now().toString().slice(-4)}`,
       suggestedDate: new Date().toISOString().split('T')[0],
       suggestedNumber: Math.floor(amount / 1000) || 1
     };
-    
+
     return suggestions;
   }
 
   // Auto-populate suggested values
   applySuggestedValues(): void {
     const suggestions = this.getSuggestedValues();
-    
+
     this.frmGroup.patchValue({
       officeCode: suggestions.suggestedOfficeCode,
       textBox: suggestions.suggestedTextBox,
       date: suggestions.suggestedDate,
       number: suggestions.suggestedNumber
     });
-    
+
     this.toastr.info('Applied suggested values based on current selections', 'Auto-Complete');
   }
 
@@ -1432,30 +1433,30 @@ private recalculateTransactionAmounts(transaction: any): any {
   validateAllRelationships(): boolean {
     const errors = [];
     const formValue = this.frmGroup.value;
-    
+
     // Currency-Country relationship
     const currency = this.currencyOptions.find(c => c.key === formValue.currency);
     if (currency && currency.country !== formValue.country) {
       errors.push('Currency and Country do not match');
     }
-    
+
     // Category-Subcategory relationship
     const subCategory = this.subCategoryOptions.find(s => s.key === formValue.subCategory);
     if (subCategory && subCategory.parentCategory !== formValue.productCategory) {
       errors.push('Product Category and Subcategory do not match');
     }
-    
+
     // Amount-Subcategory minimum
     if (subCategory && formValue.amount < subCategory.minAmount) {
       errors.push(`Amount must be at least ${subCategory.minAmount} for selected subcategory`);
     }
-    
+
     // Display errors
     if (errors.length > 0) {
       errors.forEach(error => this.toastr.error(error, 'Relationship Validation'));
       return false;
     }
-    
+
     this.toastr.success('All relationships are valid', 'Validation Passed');
     return true;
   }
@@ -1477,17 +1478,17 @@ private recalculateTransactionAmounts(transaction: any): any {
       riskLevel: transaction.riskLevel,
       requiresApproval: transaction.requiresApproval
     });
-    
+
     this.toastr.info(`Form synced with transaction ${transaction.id}`, 'Form Sync');
   }
 
   // Enhanced transaction view handler
   onTransactionView(serializedData: string): void {
     const transaction = JSON.parse(serializedData);
-    
+
     // Sync form with selected transaction
     this.syncFormWithGridRow(transaction);
-    
+
     // Show detailed information
     const details = `
       Transaction: ${transaction.id}
@@ -1497,7 +1498,7 @@ private recalculateTransactionAmounts(transaction: any): any {
       Risk Level: ${transaction.riskLevel}
       Requires Approval: ${transaction.requiresApproval ? 'Yes' : 'No'}
     `;
-    
+
     console.log('Transaction Details:', details);
     this.toastr.info(`Viewing transaction: ${transaction.id}`, 'View Mode');
   }
@@ -1537,7 +1538,7 @@ private recalculateTransactionAmounts(transaction: any): any {
   }
 
   // Existing methods from your original code...
-  
+
   dataSelectionConfig = signal<any>({
     pickTableDataSource: [
       { id: 'ITEM001', name: 'Sample Item 1', description: 'First sample item', category: 'Electronics' },
@@ -1546,14 +1547,14 @@ private recalculateTransactionAmounts(transaction: any): any {
       { id: 'ITEM004', name: 'Sample Item 4', description: 'Fourth sample item', category: 'Electronics' },
       { id: 'ITEM005', name: 'Sample Item 5', description: 'Fifth sample item', category: 'Sports' },
     ],
-    
+
     pickTablePair: new Map<string, string>([
       ['id', 'Item ID'],
       ['name', 'Item Name'],
       ['description', 'Description'],
       ['category', 'Category']
     ]),
-    
+
     apiSearchPlaceholder: 'Search for items...',
     findButtonText: 'Search',
     loadingText: 'Searching...',
@@ -1564,7 +1565,7 @@ private recalculateTransactionAmounts(transaction: any): any {
   private mockItemService = {
     getItems: async (params: any) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const items = [
         { id: 'ITEM001', name: 'Sample Item 1', description: 'First sample item', category: 'Electronics' },
         { id: 'ITEM002', name: 'Sample Item 2', description: 'Second sample item', category: 'Books' },
@@ -1576,7 +1577,7 @@ private recalculateTransactionAmounts(transaction: any): any {
       let filteredItems = items;
       if (params?.search) {
         const searchTerm = params.search.toLowerCase();
-        filteredItems = items.filter(item => 
+        filteredItems = items.filter(item =>
           item.name.toLowerCase().includes(searchTerm) ||
           item.description.toLowerCase().includes(searchTerm) ||
           item.category.toLowerCase().includes(searchTerm)
@@ -1659,7 +1660,7 @@ private recalculateTransactionAmounts(transaction: any): any {
   ]);
 
   transactionDynamicDropdownSources = signal<Record<string, string>>({
-    assignedRole: 'availableRoles' 
+    assignedRole: 'availableRoles'
   });
 
   bicTableHeaders = new Map<string, string>([
@@ -1751,13 +1752,13 @@ private recalculateTransactionAmounts(transaction: any): any {
 
   onTransactionRowSelect(event: { data: string, checked: boolean }): void {
   const rowData = JSON.parse(event.data);
-  
+
   if (event.checked) {
     console.log('Row CHECKED:', rowData);
-   
+
   } else {
     console.log('Row UNCHECKED:', rowData);
-    
+
   }
 }
 
@@ -1769,15 +1770,15 @@ onTransactionSelectAll(event: { isSelectAll: boolean, selectedRows: any[], count
   console.log('Select all:', event.isSelectAll);
   console.log('Selected rows:', event.selectedRows);
   console.log('Count:', event.count);
-  
+
   if (event.isSelectAll) {
     // All rows on current page are selected
     console.log(`Selected ${event.count} transactions`);
-    
+
     // Calculate totals
     const totalAmount = event.selectedRows.reduce((sum, row) => sum + (row.amount || 0), 0);
     console.log('Total amount:', totalAmount);
-    
+
 
   } else {
     console.log('All selections cleared');
@@ -1816,7 +1817,7 @@ handleColumnSelectAll($event:any): void {
     console.log('Searching for:', searchTerm);
     // Filter the data based on search term
     this.modalConfig.pickTableDataSource = this.modalConfig.pickTableDataSource.filter(item =>
-      Object.values(item).some(val => 
+      Object.values(item).some(val =>
         val.toString().toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
@@ -1825,7 +1826,7 @@ handleColumnSelectAll($event:any): void {
   onDataSelectionResult(result: AccountData | null): void {
     if (result) {
       console.log('Selected data:', result);
-  
+
       this.frmGroup.patchValue({
         id: result.id,
         textBox: result.name
