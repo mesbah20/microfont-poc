@@ -47,7 +47,8 @@ export class ViewApprovalActivitiesComponent {
   selectedStepId = signal<number | null>(null);
 
   // Hardcoded demo JSON (replace with real API response if needed)
-  rawData: RawApproval[] = [
+  //senario 1
+  rawData1: RawApproval[] = [
     {
       queueId: 224, setId: 245, approveLevel: 1, approverNo: 2,
       approveFlag: 'PENDING', userId: 'checker_manager', remarks: null, actionTime: null
@@ -67,6 +68,46 @@ export class ViewApprovalActivitiesComponent {
     {
       queueId: 228, setId: 245, approveLevel: 3, approverNo: 1,
       approveFlag: 'DEFAULT', userId: 'checker_ceo', remarks: null, actionTime: null
+    }
+  ];
+  //senario 2
+  rawData: RawApproval[] = [
+    // --- Level 1: Manager Review ---
+    {
+      queueId: 224, setId: 245, approveLevel: 1, approverNo: 2,
+      approveFlag: 'APPROVED', userId: 'checker_manager',
+      remarks: 'Reviewed and verified', actionTime: '2025-11-07T09:45:00Z'
+    },
+    {
+      queueId: 225, setId: 245, approveLevel: 1, approverNo: 2,
+      approveFlag: 'APPROVED', userId: 'checker_manager2',
+      remarks: 'All documents are valid', actionTime: '2025-11-07T10:00:00Z'
+    },
+
+    // --- Level 2: General Manager Approval ---
+    {
+      queueId: 226, setId: 245, approveLevel: 2, approverNo: 1,
+      approveFlag: 'PENDING', userId: 'checker_gm',
+      remarks: 'Awaiting GM confirmation', actionTime: null
+    },
+    {
+      queueId: 227, setId: 245, approveLevel: 2, approverNo: 1,
+      approveFlag: 'DEFAULT', userId: 'checker_gm2',
+      remarks: null, actionTime: null
+    },
+
+    // --- Level 3: CEO Final Approval ---
+    {
+      queueId: 228, setId: 245, approveLevel: 3, approverNo: 1,
+      approveFlag: 'DEFAULT', userId: 'checker_ceo',
+      remarks: null, actionTime: null
+    },
+
+    // --- Level 4: Rejected Example ---
+    {
+      queueId: 229, setId: 245, approveLevel: 4, approverNo: 1,
+      approveFlag: 'REJECTED', userId: 'checker_audit',
+      remarks: 'Insufficient backup documents', actionTime: '2025-11-08T14:25:00Z'
     }
   ];
 
