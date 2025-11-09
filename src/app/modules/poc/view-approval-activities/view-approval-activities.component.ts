@@ -1,8 +1,9 @@
-import { Component, Inject, signal, computed } from '@angular/core';
+import {Component, Inject, signal, computed, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose} from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
 
 // Raw JSON structure from your approval service
 interface RawApproval {
@@ -39,11 +40,12 @@ interface ApprovalStep {
     MatDialogContent,
     MatIconModule,
     MatButtonModule,
-    MatDialogClose
+    MatDialogClose,
+    MatTooltip
   ],
   templateUrl: './view-approval-activities.component.html',
 })
-export class ViewApprovalActivitiesComponent {
+export class ViewApprovalActivitiesComponent implements OnInit{
   selectedStepId = signal<number | null>(null);
 
   // Hardcoded demo JSON (replace with real API response if needed)
@@ -126,6 +128,14 @@ export class ViewApprovalActivitiesComponent {
     public dialogRef: MatDialogRef<ViewApprovalActivitiesComponent>
   ) {}
 
+  ngOnInit(): void {
+    // @ts-ignore
+    const activeStep = this.steps.find(s =>
+      ['PENDING', 'CREATED'].includes(this.getStepStatus(s.historyList))
+    );
+    if (activeStep) this.selectedStepId.set(activeStep.stepOrder);
+  }
+
   // --- Transform JSON → Step model ---
   private transformToSteps(json: RawApproval[]): ApprovalStep[] {
     const grouped = json.reduce((acc: Record<number, RawApproval[]>, item: RawApproval) => {
@@ -203,4 +213,27 @@ export class ViewApprovalActivitiesComponent {
   toggleStep(id: number) {
     this.selectedStepId.update(cur => (cur === id ? null : id));
   }
+
+  //Step Summay Dashboard
+  approvedStepsCount() {
+    return this.steps.filter(s => this.getStepStatus(s.historyList) === 'APPROVED').length;
+  }
+
+  pendingStepsCount() {
+    return this.steps.filter(s => this.getStepStatus(s.historyList) === 'PENDING').length;
+  }
+
+  createdStepsCount() {
+    return this.steps.filter(s => this.getStepStatus(s.historyList) === 'CREATED').length;
+  }
+
+  totalApprovalsCount() {
+    return this.steps.reduce((sum, s) => sum + this.getApprovedCount(s.historyList), 0);
+  }
+
+  totalApproversCount() {
+    return this.steps.reduce((sum, s) => sum + s.historyList.length, 0);
+  }
+
+
 }
