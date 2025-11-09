@@ -6,24 +6,30 @@
     </button>
   </div>
 
+  <!--  TIMELINE CONTAINER-->
   <mat-dialog-content class="max-h-[550px] overflow-y-auto">
-    <div class="relative pl-6">
-      <!-- timeline line -->
-      <div
-        class="absolute left-3 top-4 bottom-4 w-0.5 rounded-full"
-        [ngClass]="{
-          'bg-emerald-500': timelineStatus() === 'APPROVED',
-          'bg-amber-400': timelineStatus() === 'PENDING',
-          'bg-red-500': timelineStatus() === 'REJECTED',
-          'bg-gray-200': timelineStatus() === 'CREATED'
-        }"
-      ></div>
+    <div class="relative pl-12">
 
-      @for (step of steps; track step.stepOrder) {
-        <div class="relative mb-6">
-          <!-- dot -->
+      @for (step of steps; track step.stepOrder; let index = $index; let last = $last) {
+        <div class="relative mb-6 flex items-start">
+
+          <!-- Vertical line segment - only between steps, not for the last one -->
+          @if (!last) {
+            <div
+              class="absolute left-6 top-8 w-0.5 rounded-full transition-colors duration-300"
+              style="height: calc(100% + 24px)"
+              [ngClass]="{
+                'bg-emerald-500': getStepStatus(step.historyList) === 'APPROVED',
+                'bg-amber-400': getStepStatus(step.historyList) === 'PENDING',
+                'bg-red-500': getStepStatus(step.historyList) === 'REJECTED',
+                'bg-gray-200': getStepStatus(step.historyList) === 'CREATED'
+              }"
+            ></div>
+          }
+
+          <!-- Timeline Dot -->
           <div
-            class="absolute -left-1 w-7 h-7 rounded-full border-4 bg-white flex items-center justify-center"
+            class="absolute left-3 w-8 h-8 rounded-full border-4 bg-white flex items-center justify-center z-10 shadow-sm"
             [ngClass]="{
               'border-emerald-500 text-emerald-600': getStepStatus(step.historyList) === 'APPROVED',
               'border-amber-500 text-amber-600': getStepStatus(step.historyList) === 'PENDING',
@@ -32,91 +38,90 @@
             }"
           >
             @switch (getStepStatus(step.historyList)) {
-              @case ('APPROVED') {<mat-icon>check</mat-icon>}
-              @case ('PENDING') {<mat-icon>schedule</mat-icon>}
-              @case ('REJECTED') {<mat-icon>close</mat-icon>}
-              @default {<mat-icon>lens</mat-icon>}
+              @case ('APPROVED') {<mat-icon class="text-base">check</mat-icon>}
+              @case ('PENDING') {<mat-icon class="text-base">schedule</mat-icon>}
+              @case ('REJECTED') {<mat-icon class="text-base">close</mat-icon>}
+              @default {<mat-icon class="text-base">lens</mat-icon>}
             }
           </div>
 
-          <!-- card -->
+          <!-- Card Section -->
           <div
-            class="ml-10 rounded-lg border p-3 cursor-pointer transition hover:shadow-sm"
+            class="ml-16 flex-1 rounded-lg border transition-all duration-200 cursor-pointer hover:shadow-md"
             [ngClass]="{
-              'border-emerald-400': getStepStatus(step.historyList) === 'APPROVED',
+              'border-emerald-500': getStepStatus(step.historyList) === 'APPROVED',
               'border-amber-400': getStepStatus(step.historyList) === 'PENDING',
-              'border-red-400': getStepStatus(step.historyList) === 'REJECTED',
-              'border-gray-200': getStepStatus(step.historyList) === 'CREATED',
+              'border-red-500': getStepStatus(step.historyList) === 'REJECTED',
+              'border-gray-300': getStepStatus(step.historyList) === 'CREATED',
               'ring-2 ring-blue-400': selectedStepId() === step.stepOrder
             }"
             (click)="toggleStep(step.stepOrder)"
           >
-            <div class="flex justify-between items-center mb-1">
-              <h3 class="font-semibold text-gray-800">{{ step.stepName }}</h3>
-              <span class="text-xs text-gray-500">
-                {{ getApprovedCount(step.historyList) }}/{{ step.minReqSupervisor }}
-              </span>
-            </div>
-
-            <div class="text-xs text-gray-500" *ngIf="step.historyList?.length && selectedStepId() !== step.stepOrder">
-              Click to view {{ step.historyList.length }} approvers
-            </div>
-
-            @if (selectedStepId() === step.stepOrder) {
-              <div class="mt-3 border-t border-gray-100 pt-2 space-y-2">
-                @for (a of step.historyList; track a.performedBy) {
-                  <div
-                    class="p-3 rounded-lg border bg-white transition-colors flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2"
-                    [ngClass]="{
-      'border-emerald-200 bg-emerald-50/50': a.status === 'APPROVED',
-      'border-red-200 bg-red-50/50': a.status === 'REJECTED',
-      'border-amber-200 bg-amber-50/50': a.status === 'PENDING',
-      'border-gray-200 bg-gray-50/50': a.status === 'CREATED'
-    }"
-                  >
-                    <!-- Left side: user info -->
-                    <div class="flex-1">
-                      <div class="font-medium text-sm text-gray-800">{{ a.performedBy }}</div>
-                      <div class="text-xs text-gray-500">{{ a.role }}</div>
-
-                      <!-- Optional remarks -->
-                      @if (a.comment) {
-                        <div class="mt-1 text-xs italic text-gray-700 bg-gray-50 p-1.5 rounded border border-gray-100">
-                          💬 "{{ a.comment }}"
-                        </div>
-                      }
-
-                      <!-- Optional time -->
-                      @if (a.performedTime) {
-                        <div class="mt-1 flex items-center gap-1 text-[11px] text-gray-500">
-                          <mat-icon class="text-[14px]">schedule</mat-icon>
-                          <span>{{ a.performedTime | date: 'dd-MMM-yyyy, hh:mm a' }}</span>
-                        </div>
-                      }
-                    </div>
-
-                    <!-- Right side: status badge -->
-                    <div class="flex-shrink-0">
-      <span
-        class="px-2 py-0.5 rounded text-[10px] font-bold uppercase"
-        [ngClass]="{
-          'bg-emerald-100 text-emerald-800': a.status === 'APPROVED',
-          'bg-red-100 text-red-800': a.status === 'REJECTED',
-          'bg-amber-100 text-amber-800': a.status === 'PENDING',
-          'bg-gray-100 text-gray-700': a.status === 'CREATED'
-        }"
-      >
-        {{ a.status }}
-      </span>
-                    </div>
-                  </div>
-                }
-
+            <div class="p-3">
+              <div class="flex justify-between items-center mb-1">
+                <h3 class="font-semibold text-gray-800">{{ step.stepName }}</h3>
+                <span class="text-xs text-gray-500">
+                  {{ getApprovedCount(step.historyList) }}/{{ step.minReqSupervisor }}
+                </span>
               </div>
-            }
+
+              <div class="text-xs text-gray-500" *ngIf="step.historyList?.length && selectedStepId() !== step.stepOrder">
+                Click to view {{ step.historyList.length }} approver(s)
+              </div>
+
+              @if (selectedStepId() === step.stepOrder) {
+                <div class="mt-3 border-t border-gray-100 pt-2 space-y-2">
+                  @for (a of step.historyList; track a.performedBy) {
+                    <div
+                      class="p-2 rounded border bg-white flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2"
+                      [ngClass]="{
+                        'border-emerald-200 bg-emerald-50/50': a.status === 'APPROVED',
+                        'border-red-200 bg-red-50/50': a.status === 'REJECTED',
+                        'border-amber-200 bg-amber-50/50': a.status === 'PENDING',
+                        'border-gray-200 bg-gray-50/50': a.status === 'CREATED'
+                      }"
+                    >
+                      <div class="flex-1">
+                        <div class="font-medium text-sm text-gray-800">{{ a.performedBy }}</div>
+                        <div class="text-xs text-gray-500">{{ a.role }}</div>
+
+                        @if (a.comment) {
+                          <div class="mt-1 text-xs italic text-gray-700 bg-gray-50 p-1.5 rounded border border-gray-100">
+                            💬 "{{ a.comment }}"
+                          </div>
+                        }
+
+                        @if (a.performedTime) {
+                          <div class="mt-1 flex items-center gap-1 text-[11px] text-gray-500">
+                            <mat-icon class="text-[14px]">schedule</mat-icon>
+                            <span>{{ a.performedTime | date: 'dd-MMM-yyyy, hh:mm a' }}</span>
+                          </div>
+                        }
+                      </div>
+
+                      <div class="flex-shrink-0">
+                        <span
+                          class="px-2 py-0.5 rounded text-[10px] font-bold uppercase"
+                          [ngClass]="{
+                            'bg-emerald-100 text-emerald-800': a.status === 'APPROVED',
+                            'bg-red-100 text-red-800': a.status === 'REJECTED',
+                            'bg-amber-100 text-amber-800': a.status === 'PENDING',
+                            'bg-gray-100 text-gray-700': a.status === 'CREATED'
+                          }"
+                        >
+                          {{ a.status }}
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
           </div>
         </div>
       }
     </div>
+
   </mat-dialog-content>
+
 </div>
