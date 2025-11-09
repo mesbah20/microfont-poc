@@ -16,7 +16,7 @@
           <!-- Vertical line segment - only between steps, not for the last one -->
           @if (!last) {
             <div
-              class="absolute left-6 top-8 w-0.5 rounded-full transition-colors duration-300"
+              class="absolute left-6.5 top-8 w-0.5 rounded-full transition-colors duration-300"
               style="height: calc(100% + 24px)"
               [ngClass]="{
                 'bg-emerald-500': getStepStatus(step.historyList) === 'APPROVED',
