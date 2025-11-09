@@ -15,27 +15,72 @@ export const QUILL_EDITOR_FOR_SPECS = {
   toolbar: [
 
     ['bold', 'italic', 'underline'],              // custom button values
-    // [{'header': [1, 2, 3, 4, 5, 6, false]}],
-    // [{'font': []}],
-    // [{'color': []}, {'background': []}],          // dropdown with defaults from theme
-    // [{align: []}, {list: 'ordered'}, {list: 'bullet'}],
-    // [{'script': 'sub'}, {'script': 'super'}],
+    [{'header': [1, 2, 3, 4, 5, 6, false]}],
+    [{'font': []}],
+    [{'color': []}, {'background': []}],          // dropdown with defaults from theme
+    [{align: []}, {list: 'ordered'}, {list: 'bullet'}],
+    [{'script': 'sub'}, {'script': 'super'}],
 
   ]
 };
 
 export const MEDIUM_EDITOR_CONFIG = {
   toolbar: [
-    ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'Insert', 'RemoveFormat', 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-',
-      'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language', 'Link', 'Unlink', 'Anchor', 'Table', 'Styles', 'Image', 'Format', 'Font', 'FontSize', 'TextColor', 'BGColor', 'Maximize']
+    // Text formatting
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ script: 'sub' }, { script: 'super' }], // Subscript/Superscript
+
+    // Lists, indentation
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    [{ indent: '-1' }, { indent: '+1' }],
+
+    // Alignment
+    [{ align: [] }],
+
+    // Headers and block types
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    ['blockquote', 'code-block'],
+
+    // Colors and fonts
+    [{ color: [] }, { background: [] }],
+    [{ font: [] }, { size: ['small', false, 'large', 'huge'] }],
+
+    // Direction, links, and media
+    [{ direction: 'rtl' }],
+    ['link', 'image', 'video'],
+
+    // Clear formatting
+    ['clean']
   ],
 };
 
+
 export const MIN_EDITOR_CONFIG = {
   toolbar: [
-    ['Bold', 'Italic', 'Underline', 'NumberedList', 'BulletedList', 'Indent', 'line_height', 'Outdent', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', 'Subscript', 'Superscript', 'Styles', 'Image', 'Format', 'Font', 'FontSize', 'SpecialChar'],
+    // Basic text styling
+    ['bold', 'italic', 'underline'],
+
+    // Lists and indentation
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    [{ indent: '-1' }, { indent: '+1' }],
+
+    // Alignment
+    [{ align: [] }],
+
+    // Subscript / Superscript
+    [{ script: 'sub' }, { script: 'super' }],
+
+    // Fonts and formatting
+    [{ font: [] }, { size: [] }, { color: [] }],
+
+    // Links and images (light media)
+    ['link', 'image'],
+
+    // Remove formatting
+    ['clean']
   ],
 };
+
 
 export const QUILL_MAX_EDITOR = {
   toolbar: [
