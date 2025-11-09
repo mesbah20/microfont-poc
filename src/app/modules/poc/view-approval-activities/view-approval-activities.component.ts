@@ -1,8 +1,35 @@
-import { Component, computed, EventEmitter, Inject, signal } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
-import { MatIcon } from '@angular/material/icon';
+import { Component, Inject, signal, computed } from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose} from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+
+// Raw JSON structure from your approval service
+interface RawApproval {
+  queueId: number;
+  setId: number;
+  approveLevel: number;
+  approverNo: number;
+  approveFlag: string;
+  userId: string;
+  remarks: string | null;
+  actionTime: string | null;
+}
+
+interface ApproverDetail {
+  performedBy: string;
+  role: string;
+  status: 'APPROVED' | 'REJECTED' | 'PENDING' | 'CREATED';
+  performedTime: Date | null;
+  comment: string | null;
+}
+
+interface ApprovalStep {
+  stepOrder: number;
+  stepName: string;
+  minReqSupervisor: number;
+  historyList: ApproverDetail[];
+}
 
 @Component({
   selector: 'app-view-approval-activities',
@@ -10,160 +37,107 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [
     CommonModule,
     MatDialogContent,
-    MatIcon,
-    MatButtonModule
+    MatIconModule,
+    MatButtonModule,
+    MatDialogClose
   ],
   templateUrl: './view-approval-activities.component.html',
-  styleUrl: './view-approval-activities.component.scss'
 })
 export class ViewApprovalActivitiesComponent {
-  closeEventEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
   selectedStepId = signal<number | null>(null);
 
-  approvalStepsJson = [
+  // Hardcoded demo JSON (replace with real API response if needed)
+  rawData: RawApproval[] = [
     {
-      "queueId": 224,
-      "setId": 245,
-      "approveLevel": 1,
-      "approverNo": 2,
-      "approveFlag": "PENDING",
-      "userId": "checker_manager",
-      "appId": 901,
-      "functionId": 901003,
-      "remarks": "Waiting manager review",
-      "actionTime": null
+      queueId: 224, setId: 245, approveLevel: 1, approverNo: 2,
+      approveFlag: 'PENDING', userId: 'checker_manager', remarks: null, actionTime: null
     },
     {
-      "queueId": 225,
-      "setId": 245,
-      "approveLevel": 1,
-      "approverNo": 2,
-      "approveFlag": "PENDING",
-      "userId": "checker_manager2",
-      "appId": 901,
-      "functionId": 901003,
-      "remarks": null,
-      "actionTime": null
+      queueId: 225, setId: 245, approveLevel: 1, approverNo: 2,
+      approveFlag: 'PENDING', userId: 'checker_manager2', remarks: null, actionTime: null
     },
     {
-      "queueId": 226,
-      "setId": 245,
-      "approveLevel": 2,
-      "approverNo": 1,
-      "approveFlag": "DEFAULT",
-      "userId": "checker_gm",
-      "appId": 901,
-      "functionId": 901003,
-      "remarks": null,
-      "actionTime": null
+      queueId: 226, setId: 245, approveLevel: 2, approverNo: 1,
+      approveFlag: 'DEFAULT', userId: 'checker_gm', remarks: null, actionTime: null
     },
     {
-      "queueId": 227,
-      "setId": 245,
-      "approveLevel": 2,
-      "approverNo": 1,
-      "approveFlag": "DEFAULT",
-      "userId": "checker_gm2",
-      "appId": 901,
-      "functionId": 901003,
-      "remarks": null,
-      "actionTime": null
+      queueId: 227, setId: 245, approveLevel: 2, approverNo: 1,
+      approveFlag: 'DEFAULT', userId: 'checker_gm2', remarks: null, actionTime: null
     },
     {
-      "queueId": 228,
-      "setId": 245,
-      "approveLevel": 3,
-      "approverNo": 1,
-      "approveFlag": "DEFAULT",
-      "userId": "checker_ceo",
-      "appId": 901,
-      "functionId": 901003,
-      "remarks": null,
-      "actionTime": null
+      queueId: 228, setId: 245, approveLevel: 3, approverNo: 1,
+      approveFlag: 'DEFAULT', userId: 'checker_ceo', remarks: null, actionTime: null
     }
   ];
 
-  steps: any[] = [];
+  steps: ApprovalStep[] = this.transformToSteps(this.rawData);
+
+  // overall computed timeline status
+  timelineStatus = computed(() => {
+    if (this.steps.some(s => this.getStepStatus(s.historyList) === 'REJECTED')) return 'REJECTED';
+    if (this.steps.some(s => this.getStepStatus(s.historyList) === 'PENDING')) return 'PENDING';
+    if (this.steps.every(s => this.getStepStatus(s.historyList) === 'APPROVED')) return 'APPROVED';
+    return 'CREATED';
+  });
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<ViewApprovalActivitiesComponent>
-  ) {
-    //this.getHistorySteps(data.recordUuid, data.approvalConfigId);
-    this.transformApprovalData();
-  }
+  ) {}
 
-  ngOnInit(): void {
-
-  }
-
-  transformApprovalData() {
-    // Group by approveLevel
-    const groupedByLevel = this.approvalStepsJson.reduce((acc, item) => {
-      if (!acc[item.approveLevel]) {
-        acc[item.approveLevel] = [];
-      }
-      acc[item.approveLevel].push(item);
+  // --- Transform JSON → Step model ---
+  private transformToSteps(json: RawApproval[]): ApprovalStep[] {
+    const grouped = json.reduce((acc: Record<number, RawApproval[]>, item: RawApproval) => {
+      (acc[item.approveLevel] ||= []).push(item);
       return acc;
-    }, {} as Record<number, any[]>);
+    }, {});
 
-    // Transform to steps structure
-    this.steps = Object.keys(groupedByLevel).map((level) => {
-      const levelNum = parseInt(level);
-      const approvers = groupedByLevel[levelNum];
-      const minReqSupervisor = approvers[0].approverNo;
-
-      return {
-        stepOrder: levelNum,
-        stepName: this.getStepName(levelNum),
-        minReqSupervisor: minReqSupervisor,
-        historyList: approvers.map(approver => ({
-          performedBy: approver.userId,
-          role: this.getRoleName(approver.userId),
-          status: this.mapApproveFlag(approver.approveFlag),
-          performedTime: approver.actionTime ? new Date(approver.actionTime) : null,
-          comment: approver.remarks
-        }))
-      };
-    });
+    return Object.keys(grouped)
+      .map(levelStr => Number(levelStr))
+      .sort((a, b) => a - b)
+      .map(level => {
+        const approvers = grouped[level];
+        return {
+          stepOrder: level,
+          stepName: this.getStepName(level),
+          minReqSupervisor: Math.max(...approvers.map((a: RawApproval) => a.approverNo ?? 1)),
+          historyList: approvers.map((a: RawApproval) => ({
+            performedBy: a.userId,
+            role: this.getRoleName(a.userId),
+            status: this.mapFlag(a.approveFlag),
+            performedTime: a.actionTime ? new Date(a.actionTime) : null,
+            comment: a.remarks
+          }))
+        };
+      });
   }
 
-  // getHistorySteps(recordId, currentStepId){
-  //     this.approvalHistoryService.getHistoryByStep({currentApprovalStateId: currentStepId, recordId: recordId}).subscribe(res =>{
-  //         this.steps = res.payload;
-  //     })
-  // }
+  // --- Helper methods ---
+  getStepStatus(approvers: ApproverDetail[]): 'APPROVED' | 'REJECTED' | 'PENDING' | 'CREATED' {
+    const approved = approvers.filter(a => a.status === 'APPROVED').length;
+    const rejected = approvers.filter(a => a.status === 'REJECTED').length;
+    const pending = approvers.filter(a => a.status === 'PENDING').length;
 
-  confirm(value: boolean): void {
-    this.closeEventEmitter.emit(value);
-    this.dialogRef.close();
-  }
+    if (rejected > 0) return 'REJECTED';
+    if (pending > 0) return 'PENDING';
 
-  // --- helpers ---
-  getStepStatus(approvers: any[]): 'SUBMITTED' | 'PENDING' | 'REJECTED' | 'CREATED' | 'APPROVED' {
-    if (!approvers || approvers.length === 0) {
-      return 'CREATED';
-    }
+    // @ts-ignore
+    const parent = this.steps.find(s => s.historyList === approvers);
+    if (approved >= (parent?.minReqSupervisor ?? 1)) return 'APPROVED';
 
-    const APPROVED = approvers?.filter(a => a.status === 'APPROVED')?.length;
-    const REJECTED = approvers?.filter(a => a.status === 'REJECTED')?.length;
-    const PENDING = approvers?.filter(a => a.status === 'PENDING')?.length;
-    const SUBMITTED = approvers?.filter(a => a.status === 'SUBMITTED')?.length;
-
-    if (REJECTED > 0) return 'REJECTED';
-    if (PENDING > 0) return 'PENDING';
-    if (SUBMITTED > 0) return 'SUBMITTED';
-    if (APPROVED === approvers.length) return 'APPROVED';
     return 'CREATED';
   }
 
+  getApprovedCount(list: ApproverDetail[]): number {
+    return list.filter(a => a.status === 'APPROVED').length;
+  }
+
   getStepName(level: number): string {
-    const stepNames: Record<number, string> = {
+    return {
       1: 'Manager Review',
       2: 'General Manager Approval',
-      3: 'CEO Final Approval'
-    };
-    return stepNames[level] || `Level ${level} Approval`;
+      3: 'CEO Approval'
+    }[level] || `Level ${level}`;
   }
 
   getRoleName(userId: string): string {
@@ -176,43 +150,16 @@ export class ViewApprovalActivitiesComponent {
     return 'Approver';
   }
 
-  mapApproveFlag(flag: string): string {
-    const flagMapping: Record<string, string> = {
-      'PENDING': 'PENDING',
-      'DEFAULT': 'CREATED',
-      'APPROVED': 'APPROVED',
-      'REJECTED': 'REJECTED',
-      'SUBMITTED': 'SUBMITTED'
-    };
-    return flagMapping[flag] || 'CREATED';
-  }
-
-  getApprovedCount(approvers: any[]) {
-    return approvers?.filter(a => a.status === 'APPROVED')?.length || 0;
+  mapFlag(flag: string): 'APPROVED' | 'REJECTED' | 'PENDING' | 'CREATED' {
+    switch (flag) {
+      case 'APPROVED': return 'APPROVED';
+      case 'REJECTED': return 'REJECTED';
+      case 'PENDING': return 'PENDING';
+      default: return 'CREATED';
+    }
   }
 
   toggleStep(id: number) {
     this.selectedStepId.update(cur => (cur === id ? null : id));
   }
-
-  // Computed properties (uncomment if you need them for the stats section)
-  // submittedStepsCount = computed(() =>
-  //     this.steps.filter(s => this.getStepStatus(s.historyList) === 'SUBMITTED').length
-  // );
-
-  // PENDINGStepsCount = computed(() =>
-  //     this.steps.filter(s => this.getStepStatus(s.historyList) === 'PENDING').length
-  // );
-
-  // createdStepsCount = computed(() =>
-  //     this.steps.filter(s => this.getStepStatus(s.historyList) === 'CREATED').length
-  // );
-
-  // totalApprovalsCount = computed(() =>
-  //     this.steps.reduce((sum, step) => sum + this.getApprovedCount(step.historyList), 0)
-  // );
-
-  // totalApproversCount = computed(() =>
-  //     this.steps.reduce((sum, step) => sum + (step.historyList?.length || 0), 0)
-  // );
 }
