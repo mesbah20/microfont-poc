@@ -14,7 +14,7 @@
 
           <div class="form-grid-col-1">
             <!-- Primary Fields Section -->
-            <section class="primary-fields-section bg-gray-50 rounded-lg  mb-6 grid grid-cols-3">
+            <section class="primary-fields-section bg-gray-50 rounded-lg  mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
          
               <!-- Transaction Reference Subsection -->
               <div class=" component-section">
@@ -45,16 +45,31 @@
                   [frmGroup]="frmGroup"
                   [controlName]="'id'"
                   [label]="'Account ID'"
-                  [isVertical]="true"
+                  [allowSpecialChars]="true"
                   [isDotsVisible]="true"
                   [tooltip]="'Click to select account ID'"
                   [tooltipPosition]="'above'"
                   [tooltipDelay]="300"
+                  displayMode = "vertical"
                   (onBlurred)="onBlur($event)"
                   (dotsClicked)="openModal()"
                   (onChanged)="onIdBoxChanged($event)"
                 ></lds-id-box>
               </div>
+
+ <div class=" component-section">
+                    <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'currency'"
+                    [label]="'Currency'"
+                    [isVertical]="true"
+                    [options]="currencyOptions"
+                    [tooltip]="'Currency selection affects country and tax rate'"
+                    [searchable]="false"
+                    (onSelect)="handleCategorySelection($event)"
+                  ></app-select-option-field>
+ </div>
+
 
               <!-- Account Selection Modal Subsection -->
                <!-- @if(showModal){
@@ -378,6 +393,7 @@
             />
               
               <div class="p-4">
+                <!-- summaryGridPosition : above/below -->
                 <lds-data-grid
                   [id]="'enhanced-transactions'"
                   [dataSource]="sampleTransactions()"
@@ -392,9 +408,14 @@
                   [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
                   [dropdownColumns]="transactionDropdownColumns()"
                   [dropdownOptions]="transactionDropdownOptions()"
-                  [selectedColumns]="['id', 'amount', 'currency']"
+                  [selectedColumns]="['id', 'amount', 'currency', 'country', 'productCategory', 'subCategory', 'status', 'riskLevel', 'totalAmount', 'requiresApproval']"
                   [rowDesignerList]="transactionRowDesigners()"
                   [tblClass]="'enhanced-transaction-table'"
+                  [groupOptionEnabled]="true"
+                  [summaryColumns]="['amount','calculatedTax']"
+                  [groupByColumns]="['currency', 'country','productCategory', 'subCategory']"
+                  [summaryGridPosition]="'above'"
+                  [gridTitle]="'Transaction Grid'"
                   (onFHEditClick)="onTransactionEdit($event)"
                   (onFHDeleteClick)="onTransactionDelete($event)"
                   (onFHViewClick)="onTransactionView($event)"
@@ -416,6 +437,7 @@
   [isVisible]="showModal"
   [modalTitle]="'Account Selection'"
   [cssClass]="'modal-sm'"
+  [okButtonText]="'Process'"
   [modalComponent]="modalComponent"
   [modalComponentData]="modalComponentData"
   (modalClosed)="onModalClose(false)"

@@ -1,6 +1,6 @@
-import { Component, input, output, signal, computed, OnInit, OnDestroy, effect } from '@angular/core';
+import { Component, input, output, signal, computed, OnInit, OnDestroy, effect, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -11,6 +11,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MultiSelectOptionField } from '../multi-select-option-field/multi-select-option-field';
+import { ExpansionPanelHeader } from '../expansion-panel-header/expansion-panel-header';
+import { Button } from '../input-types/button/button';
 
 export interface TableRowDesigner {
   condition: (item: any) => boolean;
@@ -64,10 +67,16 @@ export interface ColumnSelectAllEvent {
   checked: boolean;
 }
 
+export interface Option {
+  key: string;
+  value: string;
+}
+
 @Component({
   selector: 'lds-data-grid',
   standalone: true,
   imports: [
+    ReactiveFormsModule,
     CommonModule,
     FormsModule,
     MatTableModule,
@@ -79,12 +88,17 @@ export interface ColumnSelectAllEvent {
     MatInputModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MultiSelectOptionField,
+    ExpansionPanelHeader,
+    Button
   ],
   templateUrl: './data-grid.html',
   styleUrl: './data-grid.scss'
 })
 export class DataGridComponent<T extends Record<string, any> = any> implements OnInit, OnDestroy {
+  frmGroup: FormGroup;
+
   // Basic Inputs
   readonly id = input<string>('');
   readonly showEditButton = input<boolean>(false);
@@ -103,6 +117,9 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly initPageSize = input<number>(5);
   readonly useInlineEdit = input<boolean>(true);
   readonly searchEnabled = input<boolean>(false);
+  readonly groupOptionEnabled = input<boolean>(false);
+  readonly gridTitle = input<string>('');
+  readonly summaryGridPosition = input<string>('above');
 
   // Dropdown Inputs
   readonly dropdownColumns = input<string[]>([]);
@@ -114,6 +131,10 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly checkboxColumns = input<string[]>([]);
   readonly checkboxSelectAllColumns = input<string[]>([]); // Columns that should show select all
   readonly readOnlyCheckboxColumns = input<string[]>([]); // Columns that should be read-only
+
+  // Summary
+  readonly summaryColumns = input<string[]>([]);
+  readonly groupByColumns = input<string[]>([]);
 
   // Basic Outputs
   readonly onSelectAllChange = output<{
@@ -128,7 +149,8 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly onChecked = output<{ data: string, checked: boolean }>();
   readonly onPrint = output<string>();
   readonly dataSourceChanged = output<T[]>();
-  readonly isDarkMode = input<boolean>(false);
+  readonly onRowDoubleClick = output<string>();
+
   // Enhanced Checkbox Outputs
   readonly onCheckboxValueChange = output<CheckboxChangeEvent>();
   readonly onColumnSelectAll = output<ColumnSelectAllEvent>();
@@ -145,6 +167,25 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   public _selectAll = signal<boolean>(false);
   public _editingRow = signal<number | null>(null);
   public _editingData = signal<Partial<T>>({});
+  public _allSummary = signal<Record<string, number>>({});
+  public _summaryOption = signal<{ key: string; value: string }[]>([]);
+  public _groupByOption = signal<{ key: string; value: string }[]>([]);
+  public _gridSummaryColumns = signal<string[]>([]);
+  public _gridGroupColumns = signal<string[]>([]);
+  public _selectedSummaryColumns = signal<string[]>([]);
+  public _selectedGroupColumns = signal<string[]>([]);
+  public _panelTitle = signal<string>('');
+  businessHeaderPanel: WritableSignal<boolean> = signal(true);
+
+  //Grouped summary (per group)
+  public _groupedSummary = signal<any[]>([]);
+  private _initialized = false;
+
+  //Overall summary
+  public _totalSummary = signal<{ totalCount: number; totals: Record<string, number> }>({
+    totalCount: 0,
+    totals: {}
+  });
 
   // Computed values
   columns = computed(() => this.buildColumns());
@@ -155,7 +196,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   selectedCount = computed(() => this._selectedRows().size);
   isAllSelected = computed(() => this._selectedRows().size === this.displayedData().length && this.displayedData().length > 0);
 
-  constructor() {
+  constructor(private formBuilder: FormBuilder) {
     // Data source effect
     effect(() => {
       const data = this.dataSource();
@@ -176,9 +217,28 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
         this._pageSize.set(pageSize);
       }
     });
+
+    //Group Summary, Count
+    effect(() => {
+      if (this._initialized) return; // skip re-run
+      this._initialized = true;
+      this.allGroupSummary();
+    });
   }
 
   ngOnInit() {
+    this.frmGroup = this.formBuilder.group({
+      summaryColumn: [[]],
+      groupColumn: [[]],
+    });
+
+    this.loadSummaryOption();
+    this.loadGroupOption();
+
+    // Child Panel Title
+    const gridTitle = this.gridTitle();
+    this._panelTitle.set(`${gridTitle} Summary`);
+
     console.log('Enhanced DataGridComponent initialized');
   }
 
@@ -379,7 +439,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
     return widthMap[property] || '150px'; // Default width
   }
 
-  private formatColumnHeader(property: string): string {
+  public formatColumnHeader(property: string): string {
     return property
       .replace(/([A-Z])/g, ' $1')
       .replace(/^./, str => str.toUpperCase())
@@ -659,6 +719,11 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
     return columns;
   }
 
+  // Row double-click handler (template binds directly, but helper for clarity)
+  emitRowDoubleClick(item: T): void {
+    this.onRowDoubleClick.emit(JSON.stringify(item));
+  }
+
   // Enhanced public methods for checkbox functionality
 
   // Get all checked items for a specific column
@@ -705,6 +770,179 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
     }
   }
 
+  // Mobile detection utility for responsive design
+  isMobileView(): boolean {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth <= 768;
+    }
+    return false;
+  }
+
   // Math utility for template
   Math = Math;
+
+  private loadSummaryOption() {
+    //this.selectedSummaryColumns.set(this.summaryColumns());
+    const cols = this.summaryColumns();
+    //const cols = this.selectedSummaryColumns();
+
+    if (cols && cols.length > 0) {
+      const options: Option[] = cols.map(col => ({
+        key: col,
+        value: this.formatColumnHeader(col)
+      }));
+
+      this._summaryOption.set(options);
+    }
+    else {
+      this._summaryOption.set([]);
+    }
+  }
+
+  private loadGroupOption() {
+    //this.selectedGroupColumns.set(this.groupByColumns());
+    //const groupCols = this.selectedGroupColumns();
+
+    const groupCols = this.groupByColumns();
+
+    if (groupCols && groupCols.length > 0) {
+      const options: Option[] = groupCols.map(col => ({
+        key: col,
+        value: this.formatColumnHeader(col)
+      }));
+
+      this._groupByOption.set(options);
+    }
+    else {
+      this._groupByOption.set([]);
+    }
+  }
+
+  onSummaryChange(value: any[]) {
+    const keysOnly = value.map(v => v.key ?? v);
+    this._selectedSummaryColumns.set(keysOnly);
+    console.log(this._selectedSummaryColumns());
+  }
+
+  onGroupChange(value: any[]) {
+    const keysOnly = value.map(v => v.key ?? v);
+    this._selectedGroupColumns.set(keysOnly);
+    console.log(this._selectedGroupColumns());
+  }
+
+  private selectedGroupSummary() {
+    // this._groupedSummary.set([]);
+    // this._totalSummary.set({
+    //   totalCount: 0,
+    //   totals: {}
+    // });
+
+    const data = this._dataSource();
+    const sumCols = this._selectedSummaryColumns();
+    const groupCols = this._selectedGroupColumns();
+
+    this._gridSummaryColumns.set(sumCols);
+    this._gridGroupColumns.set(groupCols);
+
+    // Reset if data or grouping not available
+    if (!data.length || !groupCols.length) {
+      this._groupedSummary.set([]);
+      this._totalSummary.set({ totalCount: 0, totals: {} });
+      return;
+    }
+
+    const groupedMap = new Map<string, any>();
+    const totalTotals: Record<string, number> = {};
+    sumCols.forEach(c => (totalTotals[c] = 0));
+    let totalCount = 0;
+
+    // GROUP + SUM
+    data.forEach(row => {
+      const key = groupCols.map(c => row[c] ?? '').join('|');
+      if (!groupedMap.has(key)) {
+        const newObj: any = {};
+        groupCols.forEach(c => (newObj[c] = row[c]));
+        sumCols.forEach(s => (newObj[s] = 0));
+        newObj['count'] = 0;
+        groupedMap.set(key, newObj);
+      }
+
+      const groupItem = groupedMap.get(key);
+      groupItem['count'] += 1;
+      totalCount++;
+
+      // Add to group totals and overall totals
+      sumCols.forEach(s => {
+        const val = Number(row[s]) || 0;
+        groupItem[s] += val;
+        totalTotals[s] += val;
+      });
+    });
+
+    // Set computed results
+    this._groupedSummary.set(Array.from(groupedMap.values()));
+    this._totalSummary.set({ totalCount, totals: totalTotals });
+
+  }
+
+  public allGroupSummary() {
+    const data = this._dataSource();
+    const groupCols = this.groupByColumns();
+    const sumCols = this.summaryColumns();
+
+    this._gridGroupColumns.set(groupCols);
+    this._gridSummaryColumns.set(sumCols);
+
+    // Reset if data or grouping not available
+    if (!data.length || !groupCols.length) {
+      this._groupedSummary.set([]);
+      this._totalSummary.set({ totalCount: 0, totals: {} });
+      return;
+    }
+
+    const groupedMap = new Map<string, any>();
+    const totalTotals: Record<string, number> = {};
+    sumCols.forEach(c => (totalTotals[c] = 0));
+    let totalCount = 0;
+
+    // GROUP + SUM
+    data.forEach(row => {
+      const key = groupCols.map(c => row[c]).join('|');
+      if (!groupedMap.has(key)) {
+        const newObj: any = {};
+        groupCols.forEach(c => (newObj[c] = row[c]));
+        sumCols.forEach(s => (newObj[s] = 0));
+        newObj['count'] = 0;
+        groupedMap.set(key, newObj);
+      }
+
+      const groupItem = groupedMap.get(key);
+      groupItem['count'] += 1;
+      totalCount++;
+
+      // Add to group totals and overall totals
+      sumCols.forEach(s => {
+        const val = Number(row[s]) || 0;
+        groupItem[s] += val;
+        totalTotals[s] += val;
+      });
+    });
+
+    // Set computed results
+    this._groupedSummary.set(Array.from(groupedMap.values()));
+    this._totalSummary.set({ totalCount, totals: totalTotals });
+  }
+
+  generateSelectedGroupSummary(): void {
+    this.selectedGroupSummary();
+  }
+  // Returns all columns for mat-table including count
+  getDisplayedColumnsWithCount(): string[] {
+    return [...this.getDisplayedGroupColumns(), 'count'];
+  }
+
+  // Example: getDisplayedColumns() returns group + summary columns
+  getDisplayedGroupColumns(): string[] {
+    return [...this._gridGroupColumns(), ...this._gridSummaryColumns()];
+  }
 }

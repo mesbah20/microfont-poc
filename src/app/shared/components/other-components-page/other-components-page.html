@@ -51,12 +51,6 @@
                 
                 ></lds-id-box>
               </div>
-
-             
-            
-
-           
-
               <!-- Amount in Words Subsection -->
               <div class=" component-section">
                 <app-amount-to-word-input
@@ -70,6 +64,19 @@
                   [tooltip]="'Automatically synced with amount field'"
             
                 ></app-amount-to-word-input>
+              </div>
+
+                <div class="p-4">
+                <lds-data-grid
+                  [id]="'enhanced-transactions'"
+                  [dataSource]="sampleTransactions()"
+                  [initPageSize]="8"
+                  [useInlineEdit]="true"
+                  [editableColumns]="['amount', 'status', 'priority', 'currency', 'country', 'productCategory', 'subCategory', 'assignedRole']"
+                  [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
+                  [selectedColumns]="['id', 'amount', 'currency']"
+                  (onRowDoubleClick)="onRowDblClick($event)"
+                  ></lds-data-grid>
               </div>
             </section>
          </div>

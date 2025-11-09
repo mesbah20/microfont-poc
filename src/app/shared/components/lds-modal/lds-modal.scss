@@ -16,20 +16,20 @@
     }
     
     /* Modal Wrapper */
-    .modal-wrapper {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1050;
-      padding: 1.5rem;
-      animation: modalAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      perspective: 1000px;
-    }
+    // .modal-wrapper {
+    //   position: fixed;
+    //   top: 0;
+    //   left: 0;
+    //   width: 100%;
+    //   height: 100%;
+    //   display: flex;
+    //   align-items: center;
+    //   justify-content: center;
+    //   z-index: 1050;
+    //   padding: 1.5rem;
+    //   animation: modalAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    //   perspective: 1000px;
+    // }
     
     /* Modal Dialog */
     .modal-dialog {
@@ -42,9 +42,9 @@
       transform-style: preserve-3d;
 
         &.modal-sm { max-width: 600px; height: 90vh; }
-  &.modal-lg { max-width: 900px; height: 85vh; }
-  &.modal-xl { max-width: 1240px; height: 100vh; }
-  &.modal-fullscreen { 
+        &.modal-lg { max-width: 900px; height: 85vh; }
+         &.modal-xl { max-width: 1240px; height: 100vh; }
+          &.modal-fullscreen { 
     max-width: calc(100vw - 4rem); 
     height: calc(100vh - 4rem);
     
@@ -93,7 +93,7 @@
     
     /* Modal Header */
     .modal-header {
-      padding: 1.5rem 2rem;
+      padding: 0.5rem 0.5rem;
       border-bottom: 1px solid rgba(226, 232, 240, 0.8);
       display: flex;
       justify-content: space-between;
@@ -220,8 +220,8 @@
     
     /* Modal Footer */
     .modal-footer {
-      padding: 1.5rem 2rem;
-      border-top: 1px solid rgba(226, 232, 240, 0.8);
+      padding: 0.7rem 0.7rem;
+      border-top: 1px solid rgba(193, 198, 204, 0.8);
       display: flex;
       gap: 1rem;
       justify-content: flex-end;
@@ -236,55 +236,84 @@
       gap: 1rem;
     }
     
-    /* Button Styles */
-    .btn {
-      padding: 0.75rem 1.75rem;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.9375rem;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      border: none;
-      position: relative;
-      overflow: hidden;
-      letter-spacing: 0.01em;
-    }
-    
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      transform: translate(-50%, -50%);
-      transition: width 0.4s, height 0.4s;
-    }
-    
-    .btn:hover::before {
-      width: 300px;
-      height: 300px;
-    }
-    
-    .btn-secondary {
-      background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-      color: white;
-      box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
-    }
-    
-    .btn-secondary:hover {
-      background: linear-gradient(135deg, #475569 0%, #334155 100%);
-      box-shadow: 0 6px 20px rgba(100, 116, 139, 0.4);
-      transform: translateY(-2px);
-    }
-    
-    .btn-secondary:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 8px rgba(100, 116, 139, 0.3);
-    }
-    
+    /* 🔹 Base Button */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: linear-gradient(135deg, #4f46e5, #3b82f6);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+  transition: all 0.25s ease;
+  overflow: hidden;
+  isolation: isolate; 
+}
+
+/* 🔸 Ripple effect */
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.45s ease, height 0.45s ease;
+  z-index: 0;
+}
+
+.btn:hover::before {
+  width: 320px;
+  height: 320px;
+}
+
+/* 🔹 Hover and Active States */
+.btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.45);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 3px 10px rgba(59, 130, 246, 0.35);
+}
+
+
+.btn-secondary {
+  background: linear-gradient(135deg, #64748b, #475569);
+  box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, #475569, #334155);
+  box-shadow: 0 8px 20px rgba(100, 116, 139, 0.45);
+}
+
+
+
+
+.btn svg,
+.btn img {
+  margin-right: 0.5rem;
+  height: 10px;
+  width: 12px;
+  z-index: 1;
+}
+
+.btn span {
+  position: relative;
+  z-index: 1;
+}
+
     /* Animations */
     @keyframes fadeIn {
       from { 
@@ -346,7 +375,7 @@
       }
       
       .modal-footer {
-        padding: 1.25rem 1.5rem;
+        padding: 0.7rem 0.7rem;
         flex-direction: column;
       }
       
@@ -388,28 +417,4 @@
         background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
       }
       
-      .modal-header {
-        background: linear-gradient(to bottom, 
-          rgba(30, 41, 59, 0.9) 0%, 
-          rgba(15, 23, 42, 0.8) 100%);
-        border-bottom-color: rgba(51, 65, 85, 0.8);
-      }
-      
-      .modal-title {
-        background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      
-      .modal-body {
-        background: #0f172a;
-      }
-      
-      .modal-footer {
-        background: linear-gradient(to top, 
-          rgba(15, 23, 42, 0.8) 0%, 
-          rgba(30, 41, 59, 0.9) 100%);
-        border-top-color: rgba(51, 65, 85, 0.8);
-      }
     }

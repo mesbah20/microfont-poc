@@ -1,16 +1,18 @@
 // multi-select-option-field.component.ts
 import {
-  Component, 
-  input, 
-  signal, 
-  effect, 
-  ElementRef, 
-  ViewChild, 
+  Component,
+  input,
+  signal,
+  effect,
+  ElementRef,
+  ViewChild,
   HostListener,
-  OnInit
+  OnInit,
+  Output,
+  EventEmitter
 } from '@angular/core';
-import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {NgClass, NgFor, NgIf} from '@angular/common';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { MatPseudoCheckboxModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -48,13 +50,16 @@ export class MultiSelectOptionField implements OnInit {
   readonly isVertical = input<boolean>(false);
   readonly placeholder = input<string>('');
   readonly showSelectAll = input<boolean>(true);
-  readonly searchable = input<boolean>(true); // New input to control search functionality
+  readonly searchable = input<boolean>(true);
   readonly searchPlaceholder = input<string>('Search options...');
-  readonly minSearchLength = input<number>(0); // Minimum characters before filtering
+  readonly minSearchLength = input<number>(0);
   readonly tooltip = input<string>('Select options');
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipDelay = input<number>(500);
   readonly tooltipClass = input<string>('custom-tooltip');
+
+
+  @Output() selectionChange = new EventEmitter<Option[]>();
 
   // Component state
   isOpen = signal(false);
@@ -76,11 +81,11 @@ export class MultiSelectOptionField implements OnInit {
     effect(() => {
       const opts = this.options() || [];
       const search = this.searchTerm().toLowerCase().trim();
-      
+
       if (!search || search.length < this.minSearchLength()) {
         this.filteredOptions.set(opts);
       } else {
-        const filtered = opts.filter(option => 
+        const filtered = opts.filter(option =>
           option.value.toLowerCase().includes(search)
         );
         this.filteredOptions.set(filtered);
@@ -89,14 +94,11 @@ export class MultiSelectOptionField implements OnInit {
   }
 
   ngOnInit() {
-    // Initialize with form control value
     const control = this.frmGroup().get(this.controlName());
     if (control && control.value) {
       const controlValue = Array.isArray(control.value) ? control.value : [];
       this.selectedValues.set(controlValue);
     }
-
-    // Initialize filtered options
     this.filteredOptions.set(this.options() || []);
   }
 
@@ -134,30 +136,21 @@ export class MultiSelectOptionField implements OnInit {
   getDisplayText(): string {
     const selectedOptions = this.getSelectedOptions();
     const totalOptions = this.options()?.length || 0;
-    
-    if (selectedOptions.length === 0) {
-      return '';
-    }
 
-    if (selectedOptions.length === totalOptions && totalOptions > 0) {
+    if (selectedOptions.length === 0) return '';
+    if (selectedOptions.length === totalOptions && totalOptions > 0)
       return 'All selected';
-    }
-
-    if (selectedOptions.length <= 2) {
+    if (selectedOptions.length <= 2)
       return selectedOptions.map(opt => opt.value).join(', ');
-    }
-    
     return `${selectedOptions.length} items selected`;
   }
 
-  // Check if all filtered options are selected
   isAllFilteredSelected(): boolean {
     const filtered = this.filteredOptions();
     const selected = this.selectedValues();
     return filtered.length > 0 && filtered.every(option => selected.includes(option.key));
   }
 
-  // Check if some (but not all) filtered options are selected
   isFilteredIndeterminate(): boolean {
     const filtered = this.filteredOptions();
     const selected = this.selectedValues();
@@ -165,47 +158,42 @@ export class MultiSelectOptionField implements OnInit {
     return selectedCount > 0 && selectedCount < filtered.length;
   }
 
-  // Handle select all for filtered results
   toggleSelectAllFiltered(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    
+
     if (this.isReadonly()) return;
 
     const filtered = this.filteredOptions();
     const currentValues = [...this.selectedValues()];
-    
+
     if (this.isAllFilteredSelected()) {
-      // Deselect all filtered options
       filtered.forEach(option => {
         const index = currentValues.indexOf(option.key);
-        if (index !== -1) {
-          currentValues.splice(index, 1);
-        }
+        if (index !== -1) currentValues.splice(index, 1);
       });
     } else {
-      // Select all filtered options
       filtered.forEach(option => {
-        if (!currentValues.includes(option.key)) {
-          currentValues.push(option.key);
-        }
+        if (!currentValues.includes(option.key)) currentValues.push(option.key);
       });
     }
 
     this.selectedValues.set(currentValues);
-    
-    // Update form control
+
     const control = this.frmGroup().get(this.controlName());
     if (control) {
       control.setValue(currentValues);
       control.markAsTouched();
     }
+
+    // ✅ Emit the updated full option objects
+    this.selectionChange.emit(this.getSelectedOptions());
   }
 
   toggleOption(option: Option, event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    
+
     if (this.isReadonly()) return;
 
     const currentValues = [...this.selectedValues()];
@@ -218,13 +206,15 @@ export class MultiSelectOptionField implements OnInit {
     }
 
     this.selectedValues.set(currentValues);
-    
-    // Update form control
+
     const control = this.frmGroup().get(this.controlName());
     if (control) {
       control.setValue(currentValues);
       control.markAsTouched();
     }
+
+    // ✅ Emit full selected options
+    this.selectionChange.emit(this.getSelectedOptions());
   }
 
   isOptionSelected(option: Option): boolean {
@@ -232,9 +222,7 @@ export class MultiSelectOptionField implements OnInit {
   }
 
   onTriggerClick(): void {
-    if (!this.isReadonly()) {
-      this.toggleDropdown();
-    }
+    if (!this.isReadonly()) this.toggleDropdown();
   }
 
   onInputClick(event: Event): void {
@@ -249,107 +237,73 @@ export class MultiSelectOptionField implements OnInit {
     event.stopPropagation();
     if (!this.isReadonly()) {
       this.toggleDropdown();
-      // Focus the input when opening via toggle button
       if (this.isOpen() && this.searchable()) {
-        setTimeout(() => {
-          if (this.searchInput) {
-            this.searchInput.nativeElement.focus();
-          }
-        });
+        setTimeout(() => this.searchInput?.nativeElement.focus());
       }
     }
   }
 
   onInputFocus(): void {
-    if (!this.isReadonly() && this.searchable()) {
-      this.openDropdown();
-    }
+    if (!this.isReadonly() && this.searchable()) this.openDropdown();
   }
 
   onInputBlur(): void {
-    // Delay closing to allow option clicks
     setTimeout(() => {
       this.closeDropdown();
-      // Reset search term when closing if searchable
-      if (this.searchable()) {
-        this.clearSearch();
-      }
+      if (this.searchable()) this.clearSearch();
     }, 200);
   }
 
   onKeyDown(event: KeyboardEvent): void {
     if (this.isReadonly()) return;
 
-    const filteredOpts = this.filteredOptions();
-
     switch (event.key) {
       case 'Enter':
       case ' ':
         if (!this.searchable() || event.key === 'Enter') {
           event.preventDefault();
-          if (!this.isOpen()) {
-            this.toggleDropdown();
-          }
+          if (!this.isOpen()) this.toggleDropdown();
         }
         break;
       case 'Escape':
         if (this.isOpen()) {
           event.preventDefault();
           this.closeDropdown();
-          if (this.searchInput) {
-            this.searchInput.nativeElement.blur();
-          }
+          this.searchInput?.nativeElement.blur();
         }
         break;
       case 'ArrowDown':
         event.preventDefault();
-        if (!this.isOpen()) {
-          this.openDropdown();
-        }
+        if (!this.isOpen()) this.openDropdown();
         break;
       case 'ArrowUp':
         event.preventDefault();
-        if (this.isOpen()) {
-          this.closeDropdown();
-        }
+        if (this.isOpen()) this.closeDropdown();
         break;
     }
   }
 
   onSearchInput(event: Event): void {
     if (!this.searchable()) return;
-    
     const input = event.target as HTMLInputElement;
     this.searchTerm.set(input.value);
-    
-    if (!this.isOpen()) {
-      this.openDropdown();
-    }
+    if (!this.isOpen()) this.openDropdown();
   }
 
   onSearchKeyDown(event: KeyboardEvent): void {
-    // This method is no longer needed since search is in the main input
-    // Keeping for backward compatibility but functionality moved to onKeyDown
     event.stopPropagation();
   }
 
   clearSearch(): void {
     this.searchTerm.set('');
-    if (this.searchInput) {
-      this.searchInput.nativeElement.value = '';
-    }
+    if (this.searchInput) this.searchInput.nativeElement.value = '';
   }
 
   openDropdown(): void {
     if (!this.isReadonly()) {
       this.isOpen.set(true);
-      // Focus search input after dropdown opens only if searchable
       if (this.searchable()) {
-        setTimeout(() => {
-          if (this.searchInput) {
-            this.searchInput.nativeElement.focus();
-          }
-        });
+        setTimeout(() => this.searchInput?.nativeElement.focus());
       }
     }
   }
@@ -360,11 +314,7 @@ export class MultiSelectOptionField implements OnInit {
   }
 
   toggleDropdown(): void {
-    if (this.isOpen()) {
-      this.closeDropdown();
-    } else {
-      this.openDropdown();
-    }
+    this.isOpen() ? this.closeDropdown() : this.openDropdown();
   }
 
   hasSearchResults(): boolean {
