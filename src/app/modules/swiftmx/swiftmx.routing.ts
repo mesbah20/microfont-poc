@@ -4,14 +4,14 @@ import { PersonFormComponent } from './components/person-form/person-form.compon
 import { ActivityTrackerTogglePage } from './activity-tracker-toggle/activity-tracker-toggle.page';
 import { FormPageComponent } from './components/form-page/form-page.component';
 import { NotificationCenterComponent } from './components/notification-center/notification-center.component';
+import { AccountComponent } from './components/account/account';
 
 
 export const SwiftmxRouting: Routes = [
-  
 
   {path: 'components', component: AllComponentsPage},
   {path: 'person-form', component: PersonFormComponent},
   {path: 'activity-tracker-toggle', component: ActivityTrackerTogglePage},
-  { path: 'form', component: FormPageComponent },
   { path: 'notifications', component: NotificationCenterComponent },
-];
+  
+]

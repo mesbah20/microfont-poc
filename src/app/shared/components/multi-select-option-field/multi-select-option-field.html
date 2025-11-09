@@ -7,7 +7,7 @@
     {{ label() }}
   </label>
 
-  <div class="select-container">
+  <div class="select-wrapper">
     <div class="select-wrapper" [ngClass]="{'readonly-input': isReadonly()}">
       <!-- Search Input -->
       <input
@@ -122,7 +122,7 @@
         <span>No options available</span>
       </div>
     </div>
-
+</div>
 
   <!-- Validation Error -->
   <div *ngIf="frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)" class="text-red-500 text-xs mt-1">

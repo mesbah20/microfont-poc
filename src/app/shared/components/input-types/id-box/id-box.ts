@@ -4,6 +4,7 @@ import {FormGroup, FormsModule, ReactiveFormsModule, Validators, AbstractControl
 import {NgClass} from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatRippleModule } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'lds-id-box',
@@ -15,6 +16,7 @@ import { MatRippleModule } from '@angular/material/core';
     MatRippleModule,
     ReactiveFormsModule,
     NgClass,
+    MatIconModule,
   ],
   templateUrl: './id-box.html',
   standalone: true,
@@ -49,7 +51,7 @@ export class IdBoxComponent {
   readonly isVertical = input<boolean>(false);
   // Custom error messages support
   readonly customErrorMessages = input<{ [key: string]: string }>({});
-
+  readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
   // Outputs
   readonly valueChanged = output<string>();
   readonly onChanged = output<any>();
@@ -220,6 +222,16 @@ export class IdBoxComponent {
     this.onBlurred.emit(value);  
   }
 
+  clearInput(): void {
+  const control = this.frmGroup().get(this.controlName());
+  console.log(control);
+  if (control) {
+    control.setValue('');
+    control.markAsTouched();
+    this.valueChanged.emit('');
+    this.onChanged.emit('');
+  }
+}
 
   onDotsClick() {
     this.dotsClicked.emit();

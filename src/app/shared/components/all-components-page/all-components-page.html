@@ -14,7 +14,7 @@
 
           <div class="form-grid-col-1">
             <!-- Primary Fields Section -->
-            <section class="primary-fields-section bg-gray-50 rounded-lg  mb-6 grid grid-cols-1">
+            <section class="primary-fields-section bg-gray-50 rounded-lg  mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
          
               <!-- Transaction Reference Subsection -->
               <div class=" component-section">
@@ -23,7 +23,7 @@
                   [controlName]="'textBox'"
                   [label]="'Transaction Reference'"
                   [isReadonly]="false"
-                  displayMode="horizontal"
+                  displayMode = "vertical"
                   [tooltip]="'Auto-generated based on currency and category'"
                   [tooltipPosition]="'above'"
                   [tooltipDelay]="300"
@@ -39,7 +39,70 @@
                 ></app-text-base-input>
               </div>
 
+              <!-- Account ID Subsection -->
+              <div class=" component-section">
+                <lds-id-box
+                  [frmGroup]="frmGroup"
+                  [controlName]="'id'"
+                  [label]="'Account ID'"
+                  [allowSpecialChars]="true"
+                  [isDotsVisible]="true"
+                  [tooltip]="'Click to select account ID'"
+                  [tooltipPosition]="'above'"
+                  [tooltipDelay]="300"
+                  displayMode = "vertical"
+                  (onBlurred)="onBlur($event)"
+                  (dotsClicked)="openModal()"
+                  (onChanged)="onIdBoxChanged($event)"
+                ></lds-id-box>
+              </div>
+
+ <div class=" component-section">
+                    <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'currency'"
+                    [label]="'Currency'"
+                    [isVertical]="true"
+                    [options]="currencyOptions"
+                    [tooltip]="'Currency selection affects country and tax rate'"
+                    [searchable]="false"
+                    (onSelect)="handleCategorySelection($event)"
+                  ></app-select-option-field>
+ </div>
+
+
+              <!-- Account Selection Modal Subsection -->
+               <!-- @if(showModal){
+                <div class=" component-section">
+                  <lds-modal
+                    [isVisible]="showModal"
+                    [modalTitle]="'Modal Title'"
+                    [cssClass]="'modal-sm'"
+                      [modalComponent]="OtherComponentsPageComponent"
+                      [modalComponentData]="modalComponentData || modalConfig"
+                    (modalClosed)="onModalClose(false)"
+                  ></lds-modal>
+                </div>
+               } -->
             
+
+           
+
+              <!-- Amount in Words Subsection -->
+              <div class=" component-section">
+                <app-amount-to-word-input
+                  [frmGroup]="frmGroup"
+                  [controlName]="'amountToWord'"
+                  [label]="'Amount in Words'"
+                  [isVertical]="true"
+                  [currency]="selectedCurrency()"
+                  [decimalPlaces]="2"
+                  [maxLen]="12"
+                  [tooltip]="'Automatically synced with amount field'"
+                  (onBlurred)="onBlur($event)"
+                  (onChanged)="onAmountToWordChanged($event)"
+                ></app-amount-to-word-input>
+              </div>
             </section>
 
             <section class="sub-panel">
@@ -171,7 +234,6 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'multiSelect'"
                     [label]="'Additional Services'"
-                    [isReadonly]="true"
                     [isVertical]="true"
                     [options]="dropdownOptions"
                   ></app-multi-select-option-field>
@@ -184,8 +246,9 @@
                     [controlName]="'date'"
                     [label]="'Transaction Date'"
                     [isVertical]="true"
-                    [dateFormat]="'DD-MM-YYYY'"
+                    [dateFormat]="'YYYY-MM-DD'"
                     [maxYear]="2034"
+                    [includeTime]=2
                     [enableYearRangeValidation]="false"
                     (onBlurred)="onBlur($event)"
                   ></app-date-input>
@@ -229,7 +292,6 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'switch'"
                     [labelText]="'Express Processing'"
-                    (onSwitchChanged)="onSwitchToggled($event)"
                     [isChecked]="frmGroup.get('switch')?.value || false"
                   ></lds-switch>
                   <div class="text-xs text-gray-600 mt-1">
@@ -304,14 +366,22 @@
             </section> -->
 
             <section class="action-buttons-section rounded-lg p-4 mb-6 mt-6">
-              <lds-btn
-              id="saveBtn"
-              value="save"
-              labelText="Save"
-              (onClick)="addCurrentFormToGrid()"
-             >
-            </lds-btn>
-            
+              <div class="flex gap-4">
+                <lds-btn
+                  id="saveBtn"
+                  value="save"
+                  labelText="Save"
+                  (onClick)="addCurrentFormToGrid()"
+                >
+                </lds-btn>
+                <lds-btn
+                  id="openSelfBtn"
+                  value="open"
+                  labelText="Open in Modal"
+                  (onClick)="openModal()"
+                >
+                </lds-btn>
+              </div>
             </section>
 
 
@@ -323,6 +393,7 @@
             />
               
               <div class="p-4">
+                <!-- summaryGridPosition : above/below -->
                 <lds-data-grid
                   [id]="'enhanced-transactions'"
                   [dataSource]="sampleTransactions()"
@@ -333,20 +404,18 @@
                   [showViewButton]="true"
                   [showPrintButton]="true"
                   [useInlineEdit]="true"
-                  [showPrintButton]="true"
-                  [useInlineEdit]="true"
                   [editableColumns]="['amount', 'status', 'priority', 'currency', 'country', 'productCategory', 'subCategory', 'assignedRole']"
                   [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
                   [dropdownColumns]="transactionDropdownColumns()"
-                  [checkboxSelectAllColumns]="['status']"
-                  [checkboxColumns]="['status']"
-                  (onCheckboxValueChange)="handleCheckboxChange($event)"
-                  (onColumnSelectAll)="handleColumnSelectAll($event)"
                   [dropdownOptions]="transactionDropdownOptions()"
                   [selectedColumns]="['id', 'amount', 'currency', 'country', 'productCategory', 'subCategory', 'status', 'riskLevel', 'totalAmount', 'requiresApproval']"
                   [rowDesignerList]="transactionRowDesigners()"
-                  
                   [tblClass]="'enhanced-transaction-table'"
+                  [groupOptionEnabled]="true"
+                  [summaryColumns]="['amount','calculatedTax']"
+                  [groupByColumns]="['currency', 'country','productCategory', 'subCategory']"
+                  [summaryGridPosition]="'above'"
+                  [gridTitle]="'Transaction Grid'"
                   (onFHEditClick)="onTransactionEdit($event)"
                   (onFHDeleteClick)="onTransactionDelete($event)"
                   (onFHViewClick)="onTransactionView($event)"
@@ -364,11 +433,15 @@
     </form>
 
     <!-- Data Selection Modal -->
-    <app-data-selection-modal
-      *ngIf="isDataSelectionModalOpen()"
-      (onFindClicked)="onFindClicked($event)"
-      (onRowDoubleClick)="onDataSelectionResult($event)"
-      (result)="onDataSelectionResult($event)"
-    ></app-data-selection-modal>
+<lds-modal
+  [isVisible]="showModal"
+  [modalTitle]="'Account Selection'"
+  [cssClass]="'modal-sm'"
+  [okButtonText]="'Process'"
+  [modalComponent]="modalComponent"
+  [modalComponentData]="modalComponentData"
+  (modalClosed)="onModalClose(false)"
+  (modalResult)="onModalResult($event)"
+></lds-modal>
   }
 </div>
