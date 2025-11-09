@@ -74,7 +74,6 @@ export class CommonHistogram implements OnChanges {
     return hasData && enabled;
   }
 
-  /** ✅ fallback like gauge component */
   private firstAvailable(): RangeKey | null {
     for (const r of this.order) if (this.has(r)) return r;
     return null;
