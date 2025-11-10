@@ -869,7 +869,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 .icon {
   content: "";
   position: absolute;
-  left:10px; 
+  left:10px;
   top: 50%;
   transform: translateY(-50%);
   width: 18px;
@@ -918,5 +918,12 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   overflow: visible !important;  /* allow dropdown to escape container */
   position: relative;
   transform: none !important;
+}
+
+/* custom-toast-position */
+.custom-toast-position {
+  top: 70px !important;
+  right: 20px !important;
+  left: auto !important;
 }
 
