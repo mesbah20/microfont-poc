@@ -56,6 +56,18 @@
               }"
               (onFHProgressClick)="showApprovalSteps($event)">
             </lds-data-grid>
+
+            <lds-modal
+              [isVisible]="isModalVisible"
+              [modalTitle]="modalTitle"
+              [modalComponent]="modalComponent"
+              [modalComponentData]="modalComponentData"
+              [cssClass]="'modal-lg'"
+              [showOkButton]="false"
+              (isVisibleChanged)="onModalVisibilityChange($event)"
+              (modalResult)="onModalResult($event)">
+            </lds-modal>
+
           </div>
         </div>
       </div>

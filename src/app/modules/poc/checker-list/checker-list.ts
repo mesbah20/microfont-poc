@@ -6,16 +6,30 @@ import { DataGridComponent } from '../../../shared/components/data-grid';
 import { ExpansionPanelHeader } from '../../../shared/components/expansion-panel-header/expansion-panel-header';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {ViewApprovalActivitiesComponent} from '../view-approval-activities/view-approval-activities.component';
+import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
+
 @Component({
   selector: 'app-checker-list',
   standalone: true,
-  imports: [CommonModule, DataGridComponent, ExpansionPanelHeader],
+  imports: [CommonModule, DataGridComponent, ExpansionPanelHeader, LdsModalComponent],
   templateUrl: './checker-list.html',
   styleUrl: './checker-list.scss'
 })
 export class CheckerList implements OnInit {
   router = inject(Router);
   dialog = inject(MatDialog);
+  // Modal controls
+  isModalVisible: boolean = false;
+  modalTitle: string = '';
+  modalComponent: any = null;
+  modalComponentData: any = null;
+  cssClass: string = 'modal-lg';
+  modalSize: 'sm' | 'md' | 'lg' | 'xl' | 'fullscreen' | 'auto' = 'md';
+  modalMaxHeight?: string | number;
+  modalMaxWidth?: string | number;
+  modalMinHeight?: string | number;
+  modalMinWidth?: string | number;
+
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
 
   selectedColumns = ['setId', 'functionName', 'actionType', 'remarks', 'recordUserId', 'currentUxContent'];
@@ -142,11 +156,30 @@ export class CheckerList implements OnInit {
   }
 
   showApprovalSteps(row: any): void {
-    this.dialog.open(ViewApprovalActivitiesComponent, {
-      width: '600px',
-      data: row
-    });
+    this.modalTitle = 'Approval Activities';
+    this.modalComponent = ViewApprovalActivitiesComponent;
+    this.modalComponentData = row;
+    this.modalSize = 'lg';
+    this.modalMaxHeight = '85%';
+    this.modalMaxWidth = '70%';
+    this.isModalVisible = true;
   }
+
+  onModalVisibilityChange(visible: boolean): void {
+    this.isModalVisible = visible;
+    if (!visible) {
+      // Reset sizing when closed
+      this.modalMaxHeight = undefined;
+      this.modalMaxWidth = undefined;
+      this.modalMinHeight = undefined;
+      this.modalMinWidth = undefined;
+    }
+  }
+
+  onModalResult(result: any): void {
+    //console.log('Modal Result:', result);
+  }
+
 
   private parseJson(jsonStr: string): any {
     try {

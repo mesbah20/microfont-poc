@@ -9,6 +9,7 @@ import { Button } from '../../../shared/components/input-types/button/button';
 import { DateInput } from '../../../shared/components/input-types/date-input/date-input';
 import { SelectOptionField } from '../../../shared/components/input-types/select-option-field/select-option-field';
 import {ViewApprovalActivitiesComponent} from '../view-approval-activities/view-approval-activities.component';
+import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
 
 @Component({
   selector: 'app-maker-list',
@@ -20,7 +21,8 @@ import {ViewApprovalActivitiesComponent} from '../view-approval-activities/view-
     ExpansionPanelHeader,
     Button,
     DateInput,
-    SelectOptionField
+    SelectOptionField,
+    LdsModalComponent
   ],
   templateUrl: './maker-list.html',
   styleUrl: './maker-list.scss'
@@ -28,6 +30,14 @@ import {ViewApprovalActivitiesComponent} from '../view-approval-activities/view-
 export class MakerList implements OnInit {
   fb = inject(FormBuilder);
   dialog = inject(MatDialog);
+
+  // Modal controls
+  isModalVisible: boolean = false;
+  modalTitle: string = '';
+  modalComponent: any = null;
+  modalComponentData: any = null;
+  cssClass: string = 'modal-lg';
+
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
 
   frmGroup!: FormGroup;
@@ -116,11 +126,21 @@ export class MakerList implements OnInit {
   }
 
   showApprovalSteps(row: any): void {
-    this.dialog.open(ViewApprovalActivitiesComponent, {
-      width: '600px',
-      data: row
-    });
+    this.modalTitle = 'Approval Activities';
+    this.modalComponent = ViewApprovalActivitiesComponent;
+    this.modalComponentData = row;
+    this.cssClass = 'modal-lg'; // or 'modal-xl' for even larger
+    this.isModalVisible = true;
   }
+
+  onModalVisibilityChange(visible: boolean): void {
+    this.isModalVisible = visible;
+  }
+
+  onModalResult(result: any): void {
+    //console.log('Modal Result:', result);
+  }
+
 
   private safeJson(s: string) { try { return JSON.parse(s || '{}'); } catch { return {}; } }
 

@@ -28,6 +28,22 @@
             (onFHViewClick)="view($event)"
             (onFHProgressClick)="showApprovalSteps($event)">
           </lds-data-grid>
+
+          <lds-modal
+            [isVisible]="isModalVisible"
+            [modalTitle]="modalTitle"
+            [modalComponent]="modalComponent"
+            [modalComponentData]="modalComponentData"
+            [modalSize]="modalSize"
+            [maxHeight]="modalMaxHeight"
+            [maxWidth]="modalMaxWidth"
+            [minHeight]="modalMinHeight"
+            [minWidth]="modalMinWidth"
+            [showOkButton]="false"
+            (isVisibleChanged)="onModalVisibilityChange($event)"
+            (modalResult)="onModalResult($event)">
+          </lds-modal>
+
         </div>
       </div>
     </div>

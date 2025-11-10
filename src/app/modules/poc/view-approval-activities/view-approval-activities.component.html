@@ -1,13 +1,6 @@
 <div class="p-4">
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-xl font-bold text-gray-800">Approval History</h2>
-    <button mat-dialog-close mat-icon-button>
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
-
   <!--  TIMELINE CONTAINER-->
-  <mat-dialog-content class="max-h-[550px] overflow-y-auto">
+  <div class="h-full overflow-y-auto">
     <div class="relative pl-1">
 
       @if (!steps?.length) {
@@ -140,7 +133,7 @@
       }
     </div>
 
-  </mat-dialog-content>
+  </div>
 
   <!-- STEP SUMMARY DASHBOARD -->
   <section class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">

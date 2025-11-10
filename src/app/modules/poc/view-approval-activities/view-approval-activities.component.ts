@@ -1,5 +1,4 @@
-import {Component, Inject, signal, computed, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogClose} from '@angular/material/dialog';
+import {Component, Inject, signal, computed, OnInit, Input} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -37,15 +36,18 @@ interface ApprovalStep {
   standalone: true,
   imports: [
     CommonModule,
-    MatDialogContent,
     MatIconModule,
     MatButtonModule,
-    MatDialogClose,
     MatTooltip
   ],
   templateUrl: './view-approval-activities.component.html',
 })
 export class ViewApprovalActivitiesComponent implements OnInit{
+  /** Data coming from modalComponentData */
+  @Input() data: any;
+  /**  Provided automatically by <lds-modal> for closing / emitting results */
+  modalParent?: { close: (result?: any) => void };
+
   selectedStepId = signal<number | null>(null);
 
   // Hardcoded demo JSON (replace with real API response if needed)
@@ -124,8 +126,6 @@ export class ViewApprovalActivitiesComponent implements OnInit{
   });
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<ViewApprovalActivitiesComponent>
   ) {}
 
   ngOnInit(): void {
@@ -235,5 +235,8 @@ export class ViewApprovalActivitiesComponent implements OnInit{
     return this.steps.reduce((sum, s) => sum + s.historyList.length, 0);
   }
 
+  close() {
+    this.modalParent?.close();
+  }
 
 }
