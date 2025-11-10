@@ -13,8 +13,7 @@
        tabindex="-1"
        (click)="onBackdropClick()">
     <div class="modal-dialog"
-         [class]="computedModalClass"
-         [ngStyle]="modalDialogStyles"
+         [class]="cssClass"
          role="document"
          (click)="$event.stopPropagation()">
       <div class="modal-content">

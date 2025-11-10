@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, WritableSignal } from '@angular/core';
+import {Component, OnInit, inject, signal, WritableSignal, Type} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,6 +10,7 @@ import { DateInput } from '../../../shared/components/input-types/date-input/dat
 import { SelectOptionField } from '../../../shared/components/input-types/select-option-field/select-option-field';
 import {ViewApprovalActivitiesComponent} from '../view-approval-activities/view-approval-activities.component';
 import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
+import {OtherComponentsPage} from '../../../shared/components/other-components-page/other-components-page';
 
 @Component({
   selector: 'app-maker-list',
@@ -36,7 +37,6 @@ export class MakerList implements OnInit {
   modalTitle: string = '';
   modalComponent: any = null;
   modalComponentData: any = null;
-  cssClass: string = 'modal-lg';
 
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
 
@@ -125,12 +125,30 @@ export class MakerList implements OnInit {
     this.showmakerList = false;
   }
 
-  showApprovalSteps(row: any): void {
-    this.modalTitle = 'Approval Activities';
-    this.modalComponent = ViewApprovalActivitiesComponent;
-    this.modalComponentData = row;
-    this.cssClass = 'modal-lg'; // or 'modal-xl' for even larger
-    this.isModalVisible = true;
+  handleProgressClick(rowDataString: string): void {
+    try {
+      const rowData = JSON.parse(rowDataString);
+      // Pass the component and data to openModal
+      this.openModal(
+        ViewApprovalActivitiesComponent,
+        rowData,
+        'Approval Activities'
+      );
+    } catch (e) {
+      console.error('Failed to parse row data for modal:', e);
+    }
+  }
+
+  openModal(componentToLoad: Type<any>, data: any, title: string = 'Modal') {
+    this.isModalVisible = false;
+    this.modalComponent = undefined;
+
+    setTimeout(() => {
+      this.modalTitle = title;
+      this.modalComponent = componentToLoad;
+      this.modalComponentData = data;
+      this.isModalVisible = true;
+    }, 50);
   }
 
   onModalVisibilityChange(visible: boolean): void {

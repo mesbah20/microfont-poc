@@ -26,7 +26,7 @@
               recordUserId:'Record User'
             }"
             (onFHViewClick)="view($event)"
-            (onFHProgressClick)="showApprovalSteps($event)">
+            (onFHProgressClick)="handleProgressClick($event)">
           </lds-data-grid>
 
           <lds-modal
@@ -34,11 +34,7 @@
             [modalTitle]="modalTitle"
             [modalComponent]="modalComponent"
             [modalComponentData]="modalComponentData"
-            [modalSize]="modalSize"
-            [maxHeight]="modalMaxHeight"
-            [maxWidth]="modalMaxWidth"
-            [minHeight]="modalMinHeight"
-            [minWidth]="modalMinWidth"
+            [cssClass]="'modal-sm'"
             [showOkButton]="false"
             (isVisibleChanged)="onModalVisibilityChange($event)"
             (modalResult)="onModalResult($event)">
