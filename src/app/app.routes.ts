@@ -27,6 +27,26 @@ export const routes: Routes = [
       },
     ]
   },
+  {path: '', redirectTo: 'usernote', pathMatch: 'full'},
+  {
+    path: '',
+    redirectTo: 'usernote',
+    pathMatch: 'full'
+  },
+  {
+    path: '**',
+    redirectTo: 'usernote'
+  },
+  {
+    path: '', component: Layout,
+    data: {
+      layout: 'empty'
+    },
+    children: [
+      {path: '', loadChildren: () => import('./features/feature.routing').then(m => m.featureRoutes)},
+    ]
+  },
+
   {
     path: 'config', component: Layout,
     data: {

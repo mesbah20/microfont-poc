@@ -11,6 +11,9 @@ import { ConnectedPosition, Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { NotificationPopoverComponent } from '../../../../../../modules/swiftmx/components/notification/notification-popover.component';
 import { NotificationDetailModalComponent } from "../../../../../../modules/swiftmx/components/notification/notification-detail-modal.component";
+import { Router, RouterModule } from '@angular/router';
+
+
 import { LdsModalComponent } from '../../../../../../shared/components/lds-modal/lds-modal';
 import { EditProfileModal } from '../../../../../../modules/landing/feature/edit-profile-modal/edit-profile-modal';
 
@@ -23,6 +26,7 @@ import { EditProfileModal } from '../../../../../../modules/landing/feature/edit
     AsyncPipe,
     RouterLink,
     NotificationDetailModalComponent,
+    RouterModule,
     CommonModule,
     LdsModalComponent,
     EditProfileModal
@@ -44,23 +48,28 @@ export class ProfileDrawer {
 
   isChatOpen = signal(false);
   chatWith: string;
-private popoverOverlayRef: OverlayRef | null = null;    // your popover overlay (existing)
+  private popoverOverlayRef: OverlayRef | null = null;    // your popover overlay (existing)
   private detailOverlayRef: OverlayRef | null = null;     // new for detail modal
   private overlayRef: OverlayRef | null = null;
-selectedNotification: InAppNotification | null = null;
-showDetailModal = false;
+  selectedNotification: InAppNotification | null = null;
+  showDetailModal = false;
 
   openSections: { [key: string]: boolean } = {
     notifications: false,
     messaging: false
   };
 
-  constructor(public notificationService: NotificationService,public novuService: NovuService, private overlay: Overlay, private ngZone: NgZone) {}
-    showEditProfileModal = false;
+  constructor(public notificationService: NotificationService,
+    private router: Router,
+    public novuService: NovuService, private overlay: Overlay, private ngZone: NgZone) { }
+
+
+
+  showEditProfileModal = false;
   modalComponent?: Type<any>;
   modalData?: any;
 
-   openEditProfileModal() {
+  openEditProfileModal() {
     this.modalComponent = EditProfileModal;
     this.modalData = {
       initialData: {
@@ -126,6 +135,7 @@ showDetailModal = false;
     return this.openSections[section];
   }
 
+
   toggleNotificationsPopover(event: MouseEvent) {
     if (this.overlayRef?.hasAttached()) {
       this.overlayRef.dispose();
@@ -136,26 +146,26 @@ showDetailModal = false;
 
     // ---- 1. Build a *connected* position that points to the **right** ----
     const positionStrategy = this.overlay.position()
-  .flexibleConnectedTo(trigger)
-  .withPositions([
-    {
-      originX: 'end',
-      originY: 'bottom',
-      overlayX: 'end',
-      overlayY: 'top',
-      offsetY: -8,
-    },
-    {
-      originX: 'end',
-      originY: 'top',
-      overlayX: 'end',
-      overlayY: 'bottom',
-      offsetY: 120,
-      offsetX: 400
-    }
-  ])
-  .withFlexibleDimensions(false)
-  .withPush(true);
+      .flexibleConnectedTo(trigger)
+      .withPositions([
+        {
+          originX: 'end',
+          originY: 'bottom',
+          overlayX: 'end',
+          overlayY: 'top',
+          offsetY: -8,
+        },
+        {
+          originX: 'end',
+          originY: 'top',
+          overlayX: 'end',
+          overlayY: 'bottom',
+          offsetY: 120,
+          offsetX: 400
+        }
+      ])
+      .withFlexibleDimensions(false)
+      .withPush(true);
 
 
     // ---- 2. Create overlay ------------------------------------------------
@@ -171,7 +181,7 @@ showDetailModal = false;
     const compRef = this.overlayRef.attach(portal);
 
     // ---- 4. When a notification is clicked → open detail modal ------------
-     compRef.instance.openDetail.subscribe((notif: InAppNotification) => {
+    compRef.instance.openDetail.subscribe((notif: InAppNotification) => {
       // ensure Angular zone
       this.ngZone.run(() => {
         // close the popover
@@ -240,4 +250,9 @@ showDetailModal = false;
     this.overlayRef?.dispose();
     this.detailOverlayRef?.dispose();
   }
+  goToNotes() {
+    this.router.navigate(['/usernote']);
+  }
+
+
 }

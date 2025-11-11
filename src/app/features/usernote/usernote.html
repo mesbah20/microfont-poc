@@ -1,0 +1,91 @@
+<div class="page-wrapper">
+    @if(frmUserNote) {
+    <form [formGroup]="frmUserNote" class="userNote-form">
+        <div class="panel">
+            <div class="transaction-grid-container mb-5">
+                <section class="header-section">
+                    <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'Add New Note'" />
+                </section>
+                <div class="form-grid-col-1">
+                    <!-- <section class="primary-fields-section bg-gray-50 rounded-lg  mb-6 grid grid-cols-1"> -->
+                    <div class="component-section">
+                        <app-text-base-input [frmGroup]="frmUserNote" [controlName]="'title'" [label]="'Note Title'"
+                            [isReadonly]="false" displayMode="vertical" [tooltip]="'Note Title'"
+                            [tooltipPosition]="'above'" [tooltipDelay]="300"
+                            [tooltipClass]="'success-tooltip'"></app-text-base-input>
+                    </div>
+                    <div class="component-section">
+                        <lds-txt-area [frmGroup]="frmUserNote" [controlName]="'content'" [labelText]="'Content'"
+                            [isVertical]="true" [rows]="3" [cols]="20" [maxRows]="10" [maxCols]="80"
+                            [placeholder]="'Enter Note Content'" [showRowCount]="true"
+                            [autoResize]="true"></lds-txt-area>
+                    </div>
+                    <div class="component-section">
+                        <lds-switch [frmGroup]="frmUserNote" [controlName]="'isPinned'" [labelText]="'Pinned Note'"
+                            [isChecked]="frmUserNote.get('switch')?.value || false"></lds-switch>
+                        <div class="text-xs text-gray-600 mt-1">
+                            Pinned notes are shown at the top of the list.
+                        </div>
+                    </div>
+                    <div class="component-section">
+                        <lds-switch [frmGroup]="frmUserNote" [controlName]="'isReminder'" [labelText]="'Reminder ?'"
+                            [isChecked]="frmUserNote.get('switch')?.value || false"></lds-switch>
+                        <div class="text-xs text-gray-600 mt-1">
+                            Enable this if you want to be notified.
+                        </div>
+                    </div>
+                    <div class="component-section">
+                        <app-date-input [frmGroup]="frmUserNote" [controlName]="'reminderDate'"
+                            [label]="'Reminder Date'" [isVertical]="true" [dateFormat]="'YYYY-MM-DD'" [maxYear]="2034"
+                            [includeTime]=2 [enableYearRangeValidation]="false"
+                            (onBlurred)="onBlur($event)"></app-date-input>
+                    </div>
+
+                    <div class="component-section">
+                        <lds-btn id="saveBtn" value="save" [labelText]="saveButtonText" (onClick)="createNote()">
+                        </lds-btn>
+                        &nbsp;&nbsp;
+                        <lds-btn id="resetBtn" value="reset" labelText="Reset" (onClick)="onReset()">
+                        </lds-btn>
+                    </div>
+                    <!-- </section> -->
+                </div>
+            </div>
+            <div class="transaction-grid-container mb-5">
+                <section class="header-section">
+                    <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'All Notes'" />
+                </section>
+                <div class="form-grid-col-1">
+                    <mat-grid-list [cols]="cols" rowHeight="300px" gutterSize="16px">
+                        <mat-grid-tile *ngFor="let note of userNoteList">
+                            <div class="note">
+                                <div class="note_toolbar">
+                                    <!-- <mat-icon class="icon-box" (click)="onDeleteNote(note.noteId!)"
+                                        matTooltip="Delete note">close</mat-icon> -->
+                                    <mat-icon *ngIf="note.isReminder" class="icon-box" matTooltip="Reminder already set">alarm</mat-icon>
+                                    <mat-icon *ngIf="note.isPinned" class="icon-box" matTooltip="Note is pinned">push_pin</mat-icon>
+                                </div>
+                                <div class="note-content">
+                                    <div class="content-color note-header">{{ note.noteTitle }}</div>
+                                    <mat-divider></mat-divider>
+                                    <div class="content-color mt-2">{{ note.noteContent }}</div>
+                                </div>
+                                <div class="note-footer">
+                                    <button mat-icon-button aria-label="Edit" matTooltip="Update Note"
+                                        (click)="onUpdateNote(note)">
+                                        <mat-icon class="icon-box">edit</mat-icon>
+                                    </button>
+                                    <button mat-icon-button aria-label="Edit" matTooltip="Delete Note"
+                                        (click)="onDeleteNote(note.noteId!)">
+                                        <mat-icon class="icon-box">delete</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </mat-grid-tile>
+                    </mat-grid-list>
+                </div>
+            </div>
+        </div>
+    </form>
+    }
+</div>
