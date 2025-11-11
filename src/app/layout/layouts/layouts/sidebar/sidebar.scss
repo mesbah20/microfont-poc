@@ -180,3 +180,59 @@
     border-radius: 2px;
   }
 }
+
+/* Profile icon badges */
+.profile-icon-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* base badge */
+.icon-badge {
+  position: absolute;
+  min-width: 18px;
+  height: 18px;
+  line-height: 18px;
+  padding: 0 5px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  color: #fff;
+  z-index: 60;
+  transform: translate(0, 0);
+  white-space: nowrap;
+}
+
+/* notification (top-right) - red */
+.notification-badge {
+  background-color: #ef4444; /* red-500 */
+  top: -6px;
+  right: -8px;
+  font-size: 11px;
+  padding: 0 6px;
+}
+
+/* message (top-left) - blue */
+.message-badge {
+  background-color: #2563eb; /* blue-600 */
+  top: -6px;
+  left: -8px;
+  font-size: 11px;
+  padding: 0 5px;
+}
+
+/* keep badges small on extremely small screens */
+@media (max-width: 420px) {
+  .icon-badge {
+    min-width: 16px;
+    height: 16px;
+    line-height: 16px;
+    font-size: 10px;
+  }
+}
