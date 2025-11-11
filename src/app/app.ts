@@ -18,6 +18,15 @@ export class App implements OnInit {
 
   async ngOnInit() {
     // Theme service will automatically initialize the saved theme
-    await this.novuService.init('employee_create', 'oH9Vf1VWV7s8');
+    const userId = localStorage.getItem('userId');
+    debugger;
+    if (userId) {
+      console.log('Novu initializing for user:', userId);
+      await this.novuService.init(userId, 'oH9Vf1VWV7s8');
+    } else {
+      console.warn('No userId found in localStorage. Novu not initialized.');
+      // অপশনাল: লগইন পেজে রিডাইরেক্ট করুন
+      // this.router.navigate(['/login']);
+    }
   }
 }

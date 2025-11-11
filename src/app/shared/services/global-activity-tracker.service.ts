@@ -10,6 +10,8 @@ export class GlobalActivityTrackerService {
   private previousFunctionId: string | null = null;
   private currentRoute: string | null = null;
   private initialized = false;
+  private readonly BRANCH_ID = 'BR001';  // Dummy
+  private readonly ORG_ID = 'ORG001';    // Dummy
 
   constructor(private router: Router, rendererFactory: RendererFactory2) {
     this.renderer = rendererFactory.createRenderer(null, null);
@@ -49,6 +51,8 @@ export class GlobalActivityTrackerService {
           previousFunctionId: this.previousFunctionId,
           currentRoute: newRoute,
           functionId: this.getCurrentFunctionId(),
+          branchId: this.BRANCH_ID,
+          orgId: this.ORG_ID,
           timestamp: new Date(),
         };
 
@@ -78,11 +82,13 @@ export class GlobalActivityTrackerService {
         const label = this.getButtonLabel(buttonEl);
         const payload = {
           eventType: 'BUTTON_CLICK',
-          page: this.currentRoute,
+          currentRoute: this.currentRoute,
           functionId: this.getCurrentFunctionId(),
           label: label,
           id: buttonEl.id,
           cls: buttonEl.className,
+          branchId: this.BRANCH_ID,
+          orgId: this.ORG_ID,
           timestamp: new Date(),
         };
 
@@ -122,11 +128,13 @@ export class GlobalActivityTrackerService {
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
         const payload = {
           eventType: 'FIELD_INTERACTION',
-          page: this.currentRoute,
+          currentRoute: this.currentRoute,
           functionId: this.getCurrentFunctionId(),
           tag,
           id: target.id || target.getAttribute('formControlName') || '',
           cls: target.className,
+          branchId: this.BRANCH_ID,
+          orgId: this.ORG_ID,
           value: (target as any).value,
           timestamp: new Date(),
         };
@@ -147,11 +155,13 @@ export class GlobalActivityTrackerService {
       if (tag === 'SELECT') {
         const payload = {
           eventType: 'SELECT_CHANGE',
-          page: this.currentRoute,
+          currentRoute: this.currentRoute,
           functionId: this.getCurrentFunctionId(),
           id: target.id || target.getAttribute('formControlName') || '',
           cls: target.className,
           value: target.value,
+          branchId: this.BRANCH_ID,
+          orgId: this.ORG_ID,
           timestamp: new Date(),
         };
 
@@ -163,12 +173,12 @@ export class GlobalActivityTrackerService {
 
   // 🌐 Send payload to backend (use HttpClient later if needed)
   private sendToBackend(payload: any) {
-    if (!this.trackingEnabled) return;
+    // if (!this.trackingEnabled) return;
 
-    fetch('http://localhost:8085/api/activity/save', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    }).catch(err => console.error('Tracking error:', err));
+    // fetch('http://localhost:8085/api/activity/save', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(payload),
+    // }).catch(err => console.error('Tracking error:', err));
   }
 }

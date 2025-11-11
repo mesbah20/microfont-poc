@@ -1,9 +1,9 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { MenuDrawer } from './drawers/menu-drawer/menu-drawer';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { ProfileDrawer } from './drawers/profile-drawer/profile-drawer';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Search } from '../navbar/actions/search/search';
 import { Observable, Subscription } from 'rxjs';
 import { ThemeService } from '../../../../shared/services/theme.service';
@@ -11,6 +11,9 @@ import { SidebarService } from '../../../service/sidebar.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { NovuService } from '../../../../shared/services/novu.service';
 import { ModuleDrawer } from './drawers/module-drawer/module-drawer';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { FormBuilder } from '@angular/forms';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-sidebar',
@@ -33,6 +36,13 @@ export class Sidebar {
   activeItem: string = '';
   drawerOpen: boolean = false;
   drawerType: string = '';
+   http = inject(HttpClient);
+  fb = inject(FormBuilder);
+  router = inject(Router);
+  errorMessage: string = '';
+  logoutError: boolean = false;
+  isLoading: boolean = false;
+  coreBaseUrl = environment.logoutUrl;
   activeTheme: string = localStorage.getItem('selectedTheme') || '';
   public notifications$: Observable<number>;
 public messages$: Observable<number>;
@@ -85,10 +95,74 @@ public messages$: Observable<number>;
   ngOnDestroy(): void {
     this.themeSub?.unsubscribe();
   }
+  doLogout() {
+    this.logoutError = false;
+    this.errorMessage = '';
+    this.isLoading = true;
+ 
+    // Get the token from storage
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+ 
+    if (!token) {
+      console.warn('No token found, clearing storage and redirecting');
+      this.clearStorageAndRedirect();
+      return;
+    }
+ 
+    // Create the logout payload with session information
+    const logoutPayload = this.generatePayload();
+    
+    // Create headers with Bearer token
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+ 
+    console.log('Logout request with token:', token);
+    console.log('Logout payload:', logoutPayload);
+ 
+    // Make POST request to logout endpoint with payload
+    this.http.post(this.coreBaseUrl, logoutPayload, { headers }).subscribe({
+      next: (response: any) => {
+        this.isLoading = false;
+        console.log('Logout response', response);
+ 
+        // Clear storage and redirect after successful logout
+        this.clearStorageAndRedirect();
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Logout error:', error);
+ 
+        // Even if the API call fails, clear local storage and redirect
+        // This ensures user can't access protected routes with stale token
+        this.clearStorageAndRedirect();
+ 
+        // Optional: Show error message if needed
+        this.logoutError = true;
+        this.errorMessage = 'Logout completed (with possible server error)';
+      }
+    });
+  }
+    private clearStorageAndRedirect() {
+    // Clear all storage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Navigate to login page
+    this.router.navigateByUrl('/login');
+
+    // Optional: Reload the page to ensure clean state
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
+  }
   // Existing methods
   setActiveItem(item: string): void {
+    if(item=='logout') this.doLogout();
     this.activeItem = item;
   }
+
 
   toggleDrawer(type: string): void {
     if (this.drawerType === type && this.drawerOpen) {
@@ -97,5 +171,27 @@ public messages$: Observable<number>;
       this.drawerType = type;
       this.drawerOpen = true;
     }
+  }
+   generatePayload(): any {
+    const currentDateTime = new Date().toISOString();
+    console.log("session ID", sessionStorage.getItem('sessionId'));
+
+    return {
+      "userId": sessionStorage.getItem('userId'),
+      "terminalIp": "192.168.20.69",
+      "browser": this.getBrowserName(),
+      "sessionId": sessionStorage.getItem('sessionId'),
+      "sessionTerminalIp": "192.168.10.127",
+      "loginAt": "2025-08-21T10:30:00",
+      "logOutAt": currentDateTime
+    };
+  }
+  private getBrowserName(): string {
+    const userAgent = navigator.userAgent;
+    if (userAgent.includes('Chrome')) return 'Chrome';
+    if (userAgent.includes('Firefox')) return 'Firefox';
+    if (userAgent.includes('Safari')) return 'Safari';
+    if (userAgent.includes('Edge')) return 'Edge';
+    return 'Unknown';
   }
 }

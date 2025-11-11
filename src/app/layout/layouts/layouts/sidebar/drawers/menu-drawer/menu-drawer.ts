@@ -240,6 +240,13 @@ export class MenuDrawer implements OnInit {
   isSectionOpen(section: string): boolean {
     return this.openSections[section];
   }
+
+  onMenuItemClick(item: UserAccessItem): void {
+  // Step 1: Save FunctionId to localStorage
+  localStorage.setItem('currentFunctionId', item.FunctionId);
+
+  // Optional: Log for debug
+}
  
   getItemsByMenu(menuName: string) {
     return this.groupedMenu[menuName] || [];

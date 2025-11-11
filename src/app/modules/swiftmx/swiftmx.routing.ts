@@ -13,5 +13,6 @@ export const SwiftmxRouting: Routes = [
   {path: 'person-form', component: PersonFormComponent},
   {path: 'activity-tracker-toggle', component: ActivityTrackerTogglePage},
   { path: 'notifications', component: NotificationCenterComponent },
+  { path: 'form', component: FormPageComponent },
   
 ]

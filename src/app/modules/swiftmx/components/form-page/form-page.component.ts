@@ -36,31 +36,38 @@ export class FormPageComponent implements OnInit {
   ngOnInit() {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
       age: [null, [Validators.required, Validators.min(1), Validators.max(120)]]
     });
   }
 
   onSave() {
-    if (this.form.invalid || this.isSaving) return;
+    debugger;
+  if (this.form.invalid || this.isSaving) return;
 
-    this.isSaving = true;
-    this.localStatus = 'Saving...';
-    this.responseMessage = '';
+  this.isSaving = true;
+  this.localStatus = 'Saving...';
+  this.responseMessage = '';
 
-    const payload = this.form.value;
-    this.demoService.saveData(payload).subscribe({
-      next: (res) => {
-        this.responseMessage = res.message || 'Saved successfully!';
-        this.localStatus = 'Saved! Notification coming...';
-        this.isSaving = false;
-        setTimeout(() => this.localStatus = '', 3000);
-      },
-      error: () => {
-        this.responseMessage = 'Error occurred!';
-        this.localStatus = '';
-        this.isSaving = false;
-      }
-    });
-  }
+  const loggedInUserId = localStorage.getItem('userId') || 'unknown';
+
+  const payload = {
+    name: this.form.value.name,
+    age: this.form.value.age,
+    loggedInUserId // ← এটা পাঠান
+  };
+
+  this.demoService.saveData(payload).subscribe({
+    next: (res) => {
+      this.responseMessage = res.message || 'Saved successfully!';
+      this.localStatus = 'Saved! Notification coming...';
+      this.isSaving = false;
+      setTimeout(() => this.localStatus = '', 3000);
+    },
+    error: () => {
+      this.responseMessage = 'Error occurred!';
+      this.localStatus = '';
+      this.isSaving = false;
+    }
+  });
+}
 }

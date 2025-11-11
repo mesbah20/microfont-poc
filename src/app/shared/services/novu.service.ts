@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
 import { Novu } from '@novu/js';
+import { HttpClient } from '@angular/common/http';
 
 export interface InAppNotification {
   _id: string;
@@ -16,9 +17,17 @@ export class NovuService {
   private novu: Novu | null = null;
   private notifications$ = new BehaviorSubject<InAppNotification[]>([]);
   private unreadCount$ = new BehaviorSubject<number>(0);
+  private backendUrl = 'http://localhost:8080/api/demo';
+
+  constructor(private http: HttpClient) {}
 
   async init(subscriberId: string, appId: string): Promise<void> {
-    if (this.novu) return;
+    if (this.novu) {
+      console.log('Novu already initialized for:', this.novu.subscriberId);
+      return;
+    }
+
+    console.log('Novu init STARTED for:', subscriberId);
 
     this.novu = new Novu({
       applicationIdentifier: appId,
@@ -27,9 +36,13 @@ export class NovuService {
       socketUrl: 'https://ws.novu.co'
     });
 
+    // WebSocket কানেক্ট
     this.novu.socket?.connect();
+    console.log('WebSocket CONNECTED');
 
+    // === WebSocket Listener ===
     this.novu.on('notifications.notification_received', (payload: any) => {
+      console.log('NOTIFICATION RECEIVED:', payload); // ← এটা দেখুন
       if (payload?.result) {
         const incoming: InAppNotification = {
           _id: payload.result.id,
@@ -50,7 +63,9 @@ export class NovuService {
       }
     });
 
-    await this.refresh();
+    // === প্রথমবার লোড ===
+    await this.refresh(); // ← এটা এখানে থাকবে
+    console.log('Novu init COMPLETED');
   }
 
   private async refresh(): Promise<void> {
@@ -112,4 +127,23 @@ export class NovuService {
       await this.refresh();
     }
   }
+
+  async deleteNotification(id: string) {
+    if (!this.novu) return;
+
+    try {
+      // ✅ Call your backend instead of Novu directly
+      await firstValueFrom(this.http.delete(`${this.backendUrl}/notification/${id}`));
+
+      // ✅ Locally update notification list
+      const updated = this.notifications$.value.filter(n => n._id !== id);
+      this.notifications$.next(updated);
+      this.unreadCount$.next(updated.filter(n => !n.read).length);
+
+      console.log('Notification deleted successfully from backend!');
+    } catch (err) {
+      console.error('Delete notification failed:', err);
+    }
+  }
+
 }

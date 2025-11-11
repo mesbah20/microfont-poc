@@ -49,7 +49,7 @@
     <!-- Notification -->
 <div class="border-b border-gray-200 pb-2">
   <div class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
-       routerLink="/mx/notifications">
+       (click)="toggleNotificationsPopover($event)">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
         <mat-icon class="text-blue-600">notifications</mat-icon>
@@ -177,4 +177,10 @@
     <div
       class="absolute right-0 top-0 h-full w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize transition-colors duration-200"></div>
   </div>
+  <app-notification-detail-modal
+  *ngIf="showDetailModal && selectedNotification"
+  [notification]="selectedNotification!"
+  (close)="closeDetailModal()">
+</app-notification-detail-modal>
+
 </div>
