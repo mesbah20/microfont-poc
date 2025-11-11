@@ -21,38 +21,38 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
   @Input() okButtonText: string = 'OK';
   @Input() modalComponent?: Type<any>;
   @Input() modalComponentData?: any;
-  
+
   @Output() isVisibleChanged = new EventEmitter<boolean>();
   @Output() modalClosed = new EventEmitter<void>();
   @Output() modalOpened = new EventEmitter<void>();
   @Output() modalResult = new EventEmitter<any>();
-  
+
   @ContentChild('bodyContent', { read: TemplateRef }) bodyContentTemplate?: TemplateRef<any>;
   @ContentChild('[slot=footer]', { read: TemplateRef }) footerContentTemplate?: TemplateRef<any>;
   @ViewChild('modalContainer', { read: ViewContainerRef, static: false }) modalContainer!: ViewContainerRef;
-  
+
   private originalBodyOverflow: string = '';
   private componentRef: any;
-  
+
   ngOnInit() {
     document.addEventListener('keydown', this.handleEscapeKey.bind(this));
   }
-  
+
   ngOnDestroy() {
     document.removeEventListener('keydown', this.handleEscapeKey.bind(this));
     if (this.isVisible) {
       this.restoreBodyScroll();
     }
   }
-  
+
   ngOnChanges(changes: SimpleChanges) {
     console.log('Modal ngOnChanges:', changes);
     console.log('Current isVisible value:', this.isVisible);
     console.log('Modal component:', this.modalComponent);
-    
+
     if (changes['isVisible']) {
       console.log('Visibility changed from', changes['isVisible'].previousValue, 'to', changes['isVisible'].currentValue);
-      
+
       if (this.isVisible) {
         console.log('Opening modal...');
         this.handleModalOpen();
@@ -73,7 +73,7 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
         this.handleModalClose();
       }
     }
-    
+
     if (changes['modalComponent'] && this.isVisible && this.modalComponent) {
       console.log('Modal component changed while modal is open');
       setTimeout(() => {
@@ -81,52 +81,52 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
       }, 0);
     }
   }
-  
+
   get hasFooterContent(): boolean {
     return this.showDefaultFooter || !!this.footerContentTemplate;
   }
-  
+
   get hasCustomFooter(): boolean {
     return !!this.footerContentTemplate;
   }
-  
+
   openModal(): void {
     if (!this.isVisible) {
       this.isVisible = true;
       this.handleModalOpen();
     }
   }
-  
+
   closeModal(): void {
     if (this.isVisible) {
       this.isVisible = false;
       this.handleModalClose();
     }
   }
-  
+
   private handleModalOpen(): void {
     this.preventBodyScroll();
     this.isVisibleChanged.emit(true);
     this.modalOpened.emit();
-    
+
     setTimeout(() => {
       const closeButton = document.querySelector('.btn-close') as HTMLElement;
       closeButton?.focus();
     }, 150);
   }
-  
+
   private handleModalClose(): void {
     this.restoreBodyScroll();
     this.isVisibleChanged.emit(false);
     this.modalClosed.emit();
   }
-  
+
   onBackdropClick(): void {
     if (this.closeOnBackdropClick) {
       this.closeModal();
     }
   }
-  
+
   private handleEscapeKey(event: KeyboardEvent) {
     if (event.key === 'Escape' && this.isVisible) {
       this.closeModal();
@@ -162,7 +162,7 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
 
     if (!this.modalContainer) {
       console.error('Modal container not found!');
-      
+
       if (retryCount < 3) {
         console.log(`Retrying in ${(retryCount + 1) * 200}ms...`);
         setTimeout(() => {
@@ -182,13 +182,13 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
 
     try {
       this.modalContainer.clear();
-      
+
       console.log('Creating component...');
       this.componentRef = this.modalContainer.createComponent(this.modalComponent);
-      
+
       console.log('Component created successfully:', this.componentRef);
       console.log('Component instance:', this.componentRef.instance);
-      
+
       if (this.modalComponentData && this.componentRef.instance) {
         Object.keys(this.modalComponentData).forEach(key => {
           if (this.componentRef.instance.hasOwnProperty(key) || key in this.componentRef.instance) {
@@ -197,12 +197,12 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
         });
         console.log('Data assigned to component:', this.modalComponentData);
       }
-      
+
       this.componentRef.changeDetectorRef.detectChanges();
-      
+
       console.log('✅ Component loaded successfully');
       console.log('Component element:', this.componentRef.location.nativeElement);
-    
+
       // Provide the modalParent API to the child component so it can close the modal
       try {
         if (this.componentRef && this.componentRef.instance) {
@@ -242,7 +242,7 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
       } catch (subAllErr) {
         console.warn('Error while subscribing to child outputs', subAllErr);
       }
-      
+
     } catch (error) {
       console.error('❌ Error loading component:', error);
       this.addErrorContent(error);
@@ -252,7 +252,7 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
   private addFallbackContent() {
     if (this.modalContainer) {
       this.modalContainer.clear();
-      
+
       const element = document.createElement('div');
       element.innerHTML = `
         <div style="padding: 2rem; text-align: center; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border: 2px solid #cbd5e1; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
@@ -268,7 +268,7 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
           <p style="font-size: 0.875rem; color: #64748b; margin: 0;">The modal container could not be initialized properly.</p>
         </div>
       `;
-      
+
       if (this.modalContainer.element?.nativeElement) {
         this.modalContainer.element.nativeElement.appendChild(element);
       }
@@ -278,7 +278,7 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
   private addErrorContent(error: any) {
     if (this.modalContainer) {
       this.modalContainer.clear();
-      
+
       const element = document.createElement('div');
       element.innerHTML = `
         <div style="padding: 2rem; background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border: 2px solid #fca5a5; border-radius: 16px; color: #991b1b; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);">
@@ -300,18 +300,18 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
           </details>
         </div>
       `;
-      
+
       if (this.modalContainer.element?.nativeElement) {
         this.modalContainer.element.nativeElement.appendChild(element);
       }
     }
   }
-  
+
   private preventBodyScroll(): void {
     this.originalBodyOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
   }
-  
+
   private restoreBodyScroll(): void {
     document.body.style.overflow = this.originalBodyOverflow;
   }
