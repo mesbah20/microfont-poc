@@ -14,6 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MultiSelectOptionField } from '../multi-select-option-field/multi-select-option-field';
 import { ExpansionPanelHeader } from '../expansion-panel-header/expansion-panel-header';
 import { Button } from '../input-types/button/button';
+import { LoaderService } from '../../services/loader.service';
 
 export interface TableRowDesigner {
   condition: (item: any) => boolean;
@@ -198,7 +199,9 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   selectedCount = computed(() => this._selectedRows().size);
   isAllSelected = computed(() => this._selectedRows().size === this.displayedData().length && this.displayedData().length > 0);
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder,
+    public loaderService: LoaderService
+  ) {    
     // Data source effect
     effect(() => {
       const data = this.dataSource();
@@ -937,8 +940,10 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
     this._totalSummary.set({ totalCount, totals: totalTotals });
   }
 
-  generateSelectedGroupSummary(): void {
+  generateSelectedGroupSummary(): void {    
+    this.loaderService.showLoader();   
     this.selectedGroupSummary();
+    //this.loaderService.hideLoader();
   }
   // Returns all columns for mat-table including count
   getDisplayedColumnsWithCount(): string[] {

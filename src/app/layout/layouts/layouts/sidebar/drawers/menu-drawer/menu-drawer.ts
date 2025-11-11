@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from '../../../../../../shared/services/theme.service';
 import { Subscription } from 'rxjs';
-
+ 
 interface UserAccessItem {
   FunctionId: string;
   FunctionName: string;
@@ -30,7 +30,7 @@ interface UserAccessItem {
   QuickRouteNo: string;
   IsFinancial: string;
 }
-
+ 
 @Component({
   selector: 'app-menu-drawer',
   imports: [
@@ -50,7 +50,7 @@ interface UserAccessItem {
   ]
 })
 export class MenuDrawer implements OnInit {
-
+ 
   openSections: { [key: string]: boolean } = {};
   userAccessList: UserAccessItem[] = [];
   menuSections: any[] = [];
@@ -59,19 +59,19 @@ export class MenuDrawer implements OnInit {
   isLoading = true;
   error: string | null = null;
   private themeSub?: Subscription;
-
+ 
   constructor(
     private http: HttpClient,
     private themeService: ThemeService
   ) { }
-
+ 
   ngOnInit(): void {
     this.loadUserAccessList();
     this.themeSub = this.themeService.currentTheme$.subscribe(themeId => {
       this.activeTheme = themeId;
     });
   }
-
+ 
   loadUserAccessList(): void {
     // const apiUrl = 'http://192.168.20.93:8091/api/user-login/get-user-access-list';
     // const params = {
@@ -80,7 +80,7 @@ export class MenuDrawer implements OnInit {
     //   itemType: 'F',
     //   isHoUser: '0'
     // };
-
+ 
     // this.http.get<UserAccessItem[]>(apiUrl, { params: params as any })
     //   .subscribe({
     //     next: (data) => {
@@ -94,7 +94,7 @@ export class MenuDrawer implements OnInit {
     //       this.isLoading = false;
     //     }
     //   });
-
+ 
     //------------ testing with dummy data ------------
     const dummyData: UserAccessItem[] = [
       {
@@ -145,7 +145,7 @@ export class MenuDrawer implements OnInit {
       },
       {
         FunctionId: 'F003',
-        FunctionName: 'Account Management',
+        FunctionName: 'Activity Tracker Toggle',
         HOFunctionFlag: '1',
         AllowMaintAddFlag: '1',
         AllowMaintEditFlag: '1',
@@ -161,14 +161,14 @@ export class MenuDrawer implements OnInit {
         MenuName: 'Configuration',
         ModuleId: 'M003',
         ModuleName: 'User Module',
-        AppRoute: '/dashboard',
+        AppRoute: '/mx/activity-tracker-toggle',
         ItemType: 'F',
         QuickRouteNo: '10003',
         IsFinancial: '0'
       },
       {
         FunctionId: 'F004',
-        FunctionName: 'Management',
+        FunctionName: 'Form For Notification',
         HOFunctionFlag: '1',
         AllowMaintAddFlag: '1',
         AllowMaintEditFlag: '1',
@@ -184,30 +184,30 @@ export class MenuDrawer implements OnInit {
         MenuName: 'Configuration',
         ModuleId: 'M004',
         ModuleName: 'Admin Module',
-        AppRoute: '/mx/components',
+        AppRoute: '/mx/form',
         ItemType: 'F',
         QuickRouteNo: '10004',
         IsFinancial: '0'
       }
     ];
-
+ 
     // Use dummy data instead of API call
     this.isLoading = false;
     this.userAccessList = dummyData;
     this.generateMenuFromAccess();
-    
+   
   }
-
+ 
   generateMenuFromAccess() {
-
+ 
     const uniqueMenuNames = [...new Set(this.userAccessList.map(x => x.MenuName))];
-
+ 
     this.menuSections = uniqueMenuNames.map(name => ({
       key: name.toLowerCase().replace(/\s+/g, ''),
       label: name,
       icon: this.getIcon(name)
     }));
-
+ 
     this.groupedMenu = this.userAccessList.reduce((acc: { [key: string]: UserAccessItem[] }, item) => {
       if (!acc[item.MenuName]) {
         acc[item.MenuName] = [];
@@ -215,15 +215,15 @@ export class MenuDrawer implements OnInit {
       acc[item.MenuName].push(item);
       return acc;
     }, {});
-
-
+ 
+ 
     uniqueMenuNames.forEach(name => {
       const key = name.toLowerCase().replace(/\s+/g, '');
       this.openSections[key] = false;
     });
-
+ 
   }
-
+ 
   getIcon(name: string) {
     const map: any = {
       Configuration: 'settings',
@@ -232,18 +232,25 @@ export class MenuDrawer implements OnInit {
     };
     return map[name] || 'folder';
   }
-
+ 
   toggleSection(section: string): void {
     this.openSections[section] = !this.openSections[section];
   }
-
+ 
   isSectionOpen(section: string): boolean {
     return this.openSections[section];
   }
 
+  onMenuItemClick(item: UserAccessItem): void {
+  // Step 1: Save FunctionId to localStorage
+  localStorage.setItem('currentFunctionId', item.FunctionId);
+
+  // Optional: Log for debug
+}
+ 
   getItemsByMenu(menuName: string) {
     return this.groupedMenu[menuName] || [];
   }
-
-
+ 
+ 
 }

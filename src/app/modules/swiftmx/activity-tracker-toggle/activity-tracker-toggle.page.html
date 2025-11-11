@@ -1,0 +1,14 @@
+<div class="p-6 max-w-md mx-auto">
+  <h2 class="text-xl font-bold mb-4">Activity Tracker</h2>
+
+ <lds-switch
+  [frmGroup]="frm"
+  [controlName]="switchControlName"
+  [labelText]="'Enable Activity Tracker'"
+  [isChecked]="frm.get(switchControlName)?.value"
+></lds-switch>
+
+  <p class="mt-4 text-gray-600">
+    Switch ON to enable tracker, OFF to disable.
+  </p>
+</div>

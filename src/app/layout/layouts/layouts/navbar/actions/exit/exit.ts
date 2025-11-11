@@ -23,6 +23,7 @@ export class Exit {
   }
 
     exit() {
+      const functionId = localStorage.getItem('currentFunctionId') || 'UNKNOWN';
       ONCLICK_DELETE.set(true);
     }
 }
