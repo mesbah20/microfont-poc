@@ -437,7 +437,7 @@ onModalResult(result: any) {
   country: [
     { value: 'US', label: 'United States' },
     { value: 'EU', label: 'European Union' },
-    { value: 'UK', label: 'United Kingdom' },
+    { value: 'UK', label: 'United Kingdom ' },
     { value: 'JP', label: 'Japan' },
     { value: 'CA', label: 'Canada' },
     { value: 'AU', label: 'Australia' },

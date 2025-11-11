@@ -17,7 +17,12 @@
 
 .file-input-wrapper {
   position: relative;
-  width: 50%
+  @apply flex items-center w-full;
+  max-width: 300px;
+  
+  @media (max-width: 640px) {
+    max-width: 100%;
+  }
 }
 
 .file-input-group {

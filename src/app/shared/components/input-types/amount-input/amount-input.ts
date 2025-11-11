@@ -44,7 +44,7 @@ export class AmountInput {
   readonly onBlurred = output<any>();
 
   readonly customErrorMessages = input<{ [key: string]: string }>({});
-
+  readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
   // Outputs
   readonly valueChanged = output<string>();
   readonly onChanged = output<any>();

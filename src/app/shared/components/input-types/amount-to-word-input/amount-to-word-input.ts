@@ -49,7 +49,7 @@ export class AmountToWordInput {
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipDelay = input<number>(500);
   readonly tooltipClass = input<string>('custom-tooltip');
-
+  readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
   // Custom error messages
   readonly customErrorMessages = input<{ [key: string]: string }>({});
 

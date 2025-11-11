@@ -43,7 +43,7 @@ export class NumberInput {
 
   // Option to allow leading zeros (default: false)
   readonly allowLeadingZeros = input<boolean>(false);
-
+  readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
   // Outputs
   readonly valueChanged = output<string>();
   readonly onChanged = output<any>();

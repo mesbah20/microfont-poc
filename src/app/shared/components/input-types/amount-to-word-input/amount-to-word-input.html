@@ -1,105 +1,153 @@
-<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
-  <!-- Label -->
-  <label class="input-label relative flex items-center gap-1">
-    {{ label() }}
-    @if (isRequired()) {
-      <span class="text-red-500">*</span>
-    }
-    <!-- Currency indicator -->
-    <span class="text-xs text-gray-500 ml-2">({{ getCurrencyConfig().code }})</span>
-  </label>
+<!-- currency-input.html -->
+<div
+  [formGroup]="frmGroup()"
+  [ngClass]="{
+    'input-container-vertical': displayMode() === 'vertical',
+    'input-container-horizontal': displayMode() === 'horizontal',
+    'input-container-outline': displayMode() === 'outline'
+  }">
 
-  <div class="flex flex-col">
-    <!-- Input with currency symbol -->
-    <div class="input-wrapper">
+  <!-- ======================== OUTLINE MODE ======================== -->
+  @if (displayMode() === 'outline') {
+    <div class="input-wrapper relative">
       <input
+        id="currency_outlined"
         [formControlName]="controlName()"
         [attr.controlName]="controlName()"
+        [readonly]="isReadonly()"
         [ngClass]="{ 'readonly-input': isReadonly(), 'pl-8': true }"
         type="number"
-        (input)="onChangeInput($event)"
-        (keypress)="onKeyPress($event)"
-        (paste)="onPaste($event)"
-        [readonly]="isReadonly()"
         matInput
         [matTooltip]="tooltip()"
         [matTooltipPosition]="tooltipPosition()"
         [matTooltipClass]="tooltipClass()"
         [matTooltipDisabled]="!tooltip()"
-        [placeholder]="placeholder() ?? 'Enter ' + label()"
-        class="custom-input"
+        [placeholder]="' '"
         [step]="getStepValue()"
         [min]="allowNegative() ? null : 0"
         [max]="maxAmt() || null"
-        (input)="onInput($event)"
+        class="custom-input peer block px-3 pt-4 pb-2  text-gray-900 bg-transparent border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 transition-all duration-200"
+        (input)="onChangeInput($event); onInput($event)"
         (change)="onChange($event)"
+        (keypress)="onKeyPress($event)"
+        (paste)="onPaste($event)"
         (blur)="onBlur()"
       />
-          @if (frmGroup().get(controlName())?.value && !isReadonly()) {
-      <button
-        type="button"
-        class="clear-button"
-        (click)="clearInput()"
-        [attr.aria-label]="'Clear ' + label()">
-       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
-      </button>
-    }
 
+      <!-- FLOATING LABEL -->
+      <label
+        for="currency_outlined"
+        class="floating-input-label ">
+        {{ label() }}
+        @if (isRequired()) { <span class="text-red-500">*</span> }
+        <span class="text-xs text-gray-500 ml-2">({{ getCurrencyConfig().code }})</span>
+      </label>
+
+      <!-- CLEAR BUTTON -->
+      @if (frmGroup().get(controlName())?.value && !isReadonly()) {
+        <button
+          type="button"
+          class="clear-button"
+          (click)="clearInput()"
+          [attr.aria-label]="'Clear ' + label()">
+          <mat-icon fontIcon="close"></mat-icon>
+        </button>
+      }
     </div>
 
-    <!-- Amount in words with currency -->
+    <!-- AMOUNT IN WORDS -->
     <div class="text-sm mt-1 text-gray-600 amount-in-words w-80">
       {{ amountToWord() }}
     </div>
-  </div>
+  }
 
-  <!-- Error messages -->
+  <!-- ======================== HORIZONTAL / VERTICAL ======================== -->
+  @else {
+    @if (displayMode() === 'vertical') {
+      <label class="input-label block mb-1 flex items-center gap-1">
+        {{ label() }}
+        @if (isRequired()) { <span class="text-red-500">*</span> }
+        <span class="text-xs text-gray-500 ml-2">({{ getCurrencyConfig().code }})</span>
+      </label>
+    }
+
+    @if (displayMode() === 'horizontal') {
+      <label class="input-label relative flex items-center gap-1">
+        {{ label() }}
+        @if (isRequired()) { <span class="text-red-500">*</span> }
+        <span class="text-xs text-gray-500 ml-2">({{ getCurrencyConfig().code }})</span>
+      </label>
+    }
+
+    <div class="flex flex-col">
+      <div class="input-wrapper relative">
+        <input
+          [formControlName]="controlName()"
+          [attr.controlName]="controlName()"
+          [readonly]="isReadonly()"
+          [ngClass]="{ 'readonly-input': isReadonly(), 'pl-8': true }"
+          type="number"
+          matInput
+          [matTooltip]="tooltip()"
+          [matTooltipPosition]="tooltipPosition()"
+          [matTooltipClass]="tooltipClass()"
+          [matTooltipDisabled]="!tooltip()"
+          [placeholder]="placeholder() ?? 'Enter ' + label()"
+          [step]="getStepValue()"
+          [min]="allowNegative() ? null : 0"
+          [max]="maxAmt() || null"
+          class="custom-input"
+          (input)="onChangeInput($event); onInput($event)"
+          (change)="onChange($event)"
+          (keypress)="onKeyPress($event)"
+          (paste)="onPaste($event)"
+          (blur)="onBlur()"
+        />
+
+        @if (frmGroup().get(controlName())?.value && !isReadonly()) {
+          <button
+            type="button"
+            class="clear-button"
+            (click)="clearInput()"
+            [attr.aria-label]="'Clear ' + label()">
+            <mat-icon fontIcon="close"></mat-icon>
+          </button>
+        }
+      </div>
+
+      <!-- AMOUNT IN WORDS -->
+      <div class="text-sm mt-1 text-gray-600 amount-in-words w-80">
+        {{ amountToWord() }}
+      </div>
+    </div>
+  }
+
+  <!-- ======================== VALIDATION ======================== -->
   @if (isInvalid()) {
-    <div class="text-red-500 text-sm validation">
+    <div class="text-red-500 text-sm mt-1 validation">
       @if (hasError('required')) {
-        <ng-container>
-          {{ label() }} is required..!
-        </ng-container>
+        {{ label() }} is required..!
       }
-
       @if (hasError('min')) {
-        <ng-container>
-          Minimum amount required is {{ getCurrencyConfig().symbol }}{{ getErrorValue('min') }}
-        </ng-container>
+        Minimum amount required is {{ getCurrencyConfig().symbol }}{{ getErrorValue('min') }}
       }
-
       @if (hasError('max')) {
-        <ng-container>
-          Maximum amount allowed is {{ getCurrencyConfig().symbol }}{{ getErrorValue('max') }}
-        </ng-container>
+        Maximum amount allowed is {{ getCurrencyConfig().symbol }}{{ getErrorValue('max') }}
       }
-
       @if (hasError('maxLengthNumber')) {
-        <ng-container>
-          Maximum {{ getErrorValue('maxLengthNumber').requiredLength }} digits allowed
-        </ng-container>
+        Maximum {{ getErrorValue('maxLengthNumber').requiredLength }} digits allowed
       }
-
       @if (hasError('leadingZeros')) {
-        <ng-container>
-          Leading zeros are not allowed (e.g., 0987 should be 987)
-        </ng-container>
+        Leading zeros are not allowed (e.g., 0987 should be 987)
       }
-
       @if (hasError('invalidAmount')) {
-        <ng-container>
-          Invalid amount format. Maximum {{ getErrorValue('invalidAmount').maxDecimals }} decimal places allowed
-        </ng-container>
+        Invalid amount format. Maximum {{ getErrorValue('invalidAmount').maxDecimals }} decimal places allowed
       }
-
       @if (hasError('negativeNotAllowed')) {
-        <ng-container>
-          Negative amounts are not allowed
-        </ng-container>
+        Negative amounts are not allowed
       }
 
-
-     @if (hasCustomErrors()) {
+      @if (hasCustomErrors()) {
         @for (errorKey of getCustomErrorKeys(); track errorKey) {
           <div>{{ getCustomErrorMessage(errorKey) }}</div>
         }

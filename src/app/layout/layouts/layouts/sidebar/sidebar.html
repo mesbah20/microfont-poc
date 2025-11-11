@@ -1,7 +1,7 @@
 <div class="flex h-[]  p-1 m-1" >
 
       <div
-  class="sidebar-container flex flex-col items-center relative z-[60] md:z-50 md:border-r sidebar md:border-gray-100 bg-white md:bg-transparent transition-all duration-300 ease-in-out transform md:transform-none fixed md:relative  md:top-auto left-0 h-[calc(100vh-4rem)] md:h-auto md:left-auto md:flex  max-w-[320px]  shadow-2xl md:shadow-none border-none md:border "
+  class="sidebar-container flex flex-col items-center relative z-[60] md:z-50 md:border-r sidebar md:border-gray-100 bg-white md:bg-transparent transition-all duration-300 ease-in-out transform md:transform-none fixed md:relative  md:top-auto left-0 h-[calc(100vh-8rem)] md:h-auto md:left-auto md:flex  max-w-[320px]  shadow-2xl md:shadow-none border-none md:border "
   [class.hidden]="!sidebarExpanded && isMobileOpen"
   [class.translate-x-0]="sidebarExpanded && isMobileOpen"
   [class.w-21]="!sidebarExpanded && !isMobileOpen"
@@ -18,21 +18,10 @@
      >
       <app-search></app-search>
     </div>
-
-        <!-- <button  (click)="toggleSidebar()"
-  class="absolute -right-1 top-1.5 z-50 w-5 h-7 rounded shadow-lg
-         flex items-center justify-center transition-all duration-300 group theme-btn">
-
-  <svg class="w-5 h-5 text-white transition-transform duration-300"
-       [class.rotate-180]="sidebarExpanded"
-       fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6l6 6-6 6"/>
-  </svg>
-</button> -->
   </div>
 
   <!-- Mobile backdrop for sidebar overlay -->
-  <!-- <div *ngIf="sidebarExpanded && isMobileOpen" class="fixed inset-0 top-16 h-[calc(100vh-4rem)] z-40 bg-black/40 md:hidden" (click)="toggleSidebar()"></div> -->
+  <div *ngIf="sidebarExpanded && isMobileOpen"  (click)="toggleSidebar()"></div>
 
 
     <!-- Navigation Items -->
@@ -44,6 +33,7 @@
       [class.justify-center]="!sidebarExpanded"
       >
         <div (click)="toggleDrawer('Menu'); setActiveItem('menu')"
+             data-drawer-trigger="Menu"
              class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
@@ -106,8 +96,8 @@
       [class.flex]="!sidebarExpanded"
       [class.justify-center]="!sidebarExpanded"
       >
-                   <!-- [class.bg-blue-100]="activeItem === 'application'" -->
         <div (click)="toggleDrawer('Modules'); setActiveItem('modules')"
+             data-drawer-trigger="Modules"
              class="rounded-lg cursor-pointer transition-all duration-200 relative  flex items-center overflow-hidden"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
@@ -353,10 +343,11 @@
                 [class.flex]="!sidebarExpanded"
                 [class.justify-center]="!sidebarExpanded">
             <div (click)="toggleDrawer('Profile'); setActiveItem('profile')"
-             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
+             data-drawer-trigger="Profile"
+             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden hover:bg-[var(--theme-accent)]"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
-             [class.hover:bg-gray-700]="activeItem !== 'security'"
+             
              [class.px-4]="sidebarExpanded"
              [class.py-3]="sidebarExpanded"
              [class.justify-center]="!sidebarExpanded"
@@ -415,10 +406,10 @@
               [class.flex]="!sidebarExpanded"
               [class.justify-center]="!sidebarExpanded">
             <div (click)="setActiveItem('logout')"
-             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
+             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden hover:bg-[var(--theme-accent)]" 
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
-             [class.hover:bg-gray-700]="activeItem !== 'logout'"
+            
              [class.px-4]="sidebarExpanded"
              [class.py-3]="sidebarExpanded"
              [class.justify-center]="!sidebarExpanded"
@@ -474,24 +465,37 @@
   </div>
 </div>
 
-<!-- Drawer code  -->
+<!-- Drawer code with FIXED RESPONSIVE POSITIONING -->
 
 <div
   *ngIf="drawerOpen"
-  class="fixed inset-0 z-[9] bg-black/30 transition-opacity duration-300"
-  (click)="drawerOpen = false">
+  class="fixed inset-0 z-[55] bg-black/30 transition-opacity duration-300"
+  [class.md:left-auto]="true"
+   [style.backgoundRadius]="'10px'"
+  [class.md:w-auto]="true"
+  (click)="closeDrawer()">
 </div>
 
-<!-- Drawer -->
+<!-- Drawer - NOW RESPONSIVE! -->
 <div
-  class="fixed z-10 top-[73px] h-full w-[350px] bg-white shadow-2xl border-r rounded border-gray-200 transition-all duration-300"
-  [style.left]="drawerOpen ? (sidebarExpanded ? '180px' : '80px') : '-480px'"
+  class="drawer-container fixed  z-[60] lg:z-[10] md:z-[10] bg-white shadow-2xl rounded  transition-all duration-300"
+  [class.left-0]="isMobile && drawerOpen"
+  [class.top-[73px]]="drawerOpen"
+  [class.w-full]="isMobile && drawerOpen"
+  [class.h-[calc(100vh-73px)]="drawerOpen"
+  [class.max-w-full]="isMobile"
+  [class.md:w-[350px]]="drawerOpen"
+  [class.md:left-[80px]]="!sidebarExpanded && drawerOpen"
+  [class.md:left-[180px]]="sidebarExpanded && drawerOpen"
+  [style.left]="!isMobile && drawerOpen ? (sidebarExpanded ? '185px' : '85px') : (drawerOpen ? '0' : '-480px')"
   [style.opacity]="drawerOpen ? '1' : '0'"
   [style.visibility]="drawerOpen ? 'visible' : 'hidden'"
+  [style.borderRadius]="'10px'"
+ 
   (click)="$event.stopPropagation()">
 
   <!-- Header -->
-  <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-[var(--theme-background)]">
+  <div class="flex justify-between items-center p-4 border-b rounded border-gray-200 bg-[var(--theme-background)]"[style.borderRadius]="'10px'">
     <h2 class="text-lg font-medium text-gray-800 flex items-center">
       <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -499,8 +503,8 @@
       </svg>
       {{ drawerType | titlecase }}
     </h2>
-    <button
-      (click)="drawerOpen = false"
+    <button     
+      (click)="closeDrawer()"
       class="text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full p-2 transition-all duration-200 ease-in-out transform hover:scale-110">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -519,6 +523,8 @@
     }
   </div>
 
-  <!-- Resize Handle -->
-  <div class="absolute right-0 top-0 h-full w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize transition-colors duration-200"></div>
+  <!-- Resize Handle (desktop only) -->
+  <!-- <div class="hidden md:block absolute right-0 top-0 h-full w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize transition-colors duration-200"></div> -->
+
+
 </div>

@@ -62,6 +62,10 @@ export class TextArea implements OnInit, OnChanges, AfterViewInit {
   readonly showRowCount = input<boolean>(false);
   readonly enforceRowLimits = input<boolean>(true);
   readonly isVertical = input<boolean>(false);
+  readonly width = input<string>('100%'); // Custom width (e.g., '300px', '50%', 'auto')
+  readonly maxWidth = input<string>(''); // Maximum width
+  readonly minWidth = input<string>(''); // Minimum width
+  readonly widthClass = input<string>(''); // CSS class for width control (e.g., 'w-1/2', 'w-96')
   // Outputs
   readonly valueChanged = output<string>();
   readonly onChanged = output<any>();
@@ -196,11 +200,22 @@ export class TextArea implements OnInit, OnChanges, AfterViewInit {
   private getEffectiveStyles(): string {
     let styles = this.styles() || '';
     
-    if (this.maxCols()) {
-      // Set max-width based on character width (approximate)
+    // Add width styles
+    if (this.width() !== '100%') {
+      styles += `; width: ${this.width()};`;
+    }
+    
+    if (this.maxWidth()) {
+      styles += `; max-width: ${this.maxWidth()};`;
+    } else if (this.maxCols()) {
+      // Set max-width based on character width (approximate) if no explicit maxWidth
       const charWidth = 8; // approximate character width in pixels
       const maxWidth = this.maxCols()! * charWidth + 24; // +24 for padding
       styles += `; max-width: ${maxWidth}px;`;
+    }
+    
+    if (this.minWidth()) {
+      styles += `; min-width: ${this.minWidth()};`;
     }
     
     return styles;
