@@ -57,7 +57,7 @@ export class MultiSelectOptionField implements OnInit {
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipDelay = input<number>(500);
   readonly tooltipClass = input<string>('custom-tooltip');
-
+  readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
 
   @Output() selectionChange = new EventEmitter<Option[]>();
 

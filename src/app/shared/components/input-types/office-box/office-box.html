@@ -1,59 +1,139 @@
-<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
-  <label class="input-label">
-    {{ labelText() }}
-    @if (isRequired()) {
-      <span class="text-red-500">*</span>
+<div
+  [formGroup]="frmGroup()"
+  [ngClass]="{
+    'input-container-vertical': displayMode() === 'vertical',
+    'input-container-horizontal': displayMode() === 'horizontal',
+    'input-container-outline': displayMode() === 'outline'
+  }">
+
+  <!-- ======================== OUTLINE MODE ======================== -->
+  @if (displayMode() === 'outline') {
+    <div class="input-wrapper relative">
+      <!-- Input Field -->
+      <input
+        id="office_box_outlined"
+        [formControlName]="controlName()"
+        [attr.controlName]="controlName()"
+        [readonly]="isReadonly()"
+        [ngClass]="{ 'readonly-input': isReadonly() }"
+        [maxlength]="maxLen() || null"
+        [minlength]="minLen() || null"
+        matInput
+        [placeholder]="' '"
+        [matTooltip]="tooltip()"
+        [matTooltipPosition]="tooltipPosition()"
+        [matTooltipClass]="tooltipClass()"
+        [matTooltipDisabled]="!tooltip()"
+        class="custom-input peer block px-3 pt-4 pb-2 text-gray-900 bg-transparent border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 transition-all duration-200"
+        (keydown)="preventSpecialChars($event)"
+        (input)="onInput($event)"
+        (change)="onChange($event)"
+        (blur)="onBlur()"
+      />
+
+      <!-- FLOATING LABEL -->
+      <label
+        for="office_box_outlined"
+        class="floating-input-label">
+        {{ labelText() }}
+        @if (isRequired()) { <span class="text-red-500">*</span> }
+      </label>
+
+      <!-- CLEAR BUTTON -->
+      @if (frmGroup().get(controlName())?.value && !isReadonly()) {
+        <button
+          type="button"
+          class="clear-button"
+          (click)="clearInput()"
+          [attr.aria-label]="'Clear ' + labelText()">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" class="mat-icon" viewBox="0 -960 960 960" width="24px" fill="#000000">
+            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+          </svg>
+        </button>
+      }
+
+      <!-- Office Name -->
+      @if (officeName()) {
+        <span class="office-box-name absolute left-3 -bottom-5 text-xs text-gray-600">
+          {{ officeName() }}
+        </span>
+      }
+    </div>
+  }
+
+  <!-- ======================== HORIZONTAL / VERTICAL ======================== -->
+  @else {
+    @if (displayMode() === 'vertical') {
+      <label class="input-label block mb-1">
+        {{ labelText() }}
+        @if (isRequired()) { <span class="text-red-500">*</span> }
+      </label>
     }
-  </label>
 
-  <div class="office-box-input-group input-wrapper">
-    <!-- Office Code Input -->
-    <input
-      [formControlName]="controlName()"
-      [attr.controlName]="controlName()"
-      [ngClass]="{'readonly-input': isReadonly() }"
-      [readonly]="isReadonly()"
-      [maxlength]="maxLen() || null"
-      [minlength]="minLen() || null"
-      matInput
-      [matTooltip]="tooltip()"
-      [matTooltipPosition]="tooltipPosition()"
-      [matTooltipClass]="tooltipClass()"
-      [matTooltipDisabled]="!tooltip()"
-      [placeholder]="placeholder() ?? 'Enter ' + labelText()"
-      class="custom-input office-box-input"
-      (keydown)="preventSpecialChars($event)"
-      (input)="onInput($event)"
-      (change)="onChange($event)"
-      (blur)="onBlur()"
-    />
-    @if (frmGroup().get(controlName())?.value && !isReadonly()) {
-      <button 
-        type="button"
-        class="clear-button"
-        (click)="clearInput()"
-        [attr.aria-label]="'Clear ' + labelText()">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
-      </button>
+    @if (displayMode() === 'horizontal') {
+      <label class="input-label relative">
+        {{ labelText() }}
+        @if (isRequired()) { <span class="text-red-500">*</span> }
+      </label>
     }
 
-  </div>
+    <div class="office-box-input-group input-wrapper relative">
+      <!-- Input Field -->
+      <input
+        [formControlName]="controlName()"
+        [attr.controlName]="controlName()"
+        [readonly]="isReadonly()"
+        [ngClass]="{ 'readonly-input': isReadonly() }"
+        [maxlength]="maxLen() || null"
+        [minlength]="minLen() || null"
+        matInput
+        [matTooltip]="tooltip()"
+        [matTooltipPosition]="tooltipPosition()"
+        [matTooltipClass]="tooltipClass()"
+        [matTooltipDisabled]="!tooltip()"
+        [placeholder]="placeholder() ?? 'Enter ' + labelText()"
+        class="custom-input office-box-input"
+        (keydown)="preventSpecialChars($event)"
+        (input)="onInput($event)"
+        (change)="onChange($event)"
+        (blur)="onBlur()"
+      />
 
-      <!-- Office Name Display -->
-      <span class="office-box-name" *ngIf="officeName()">
+      <!-- CLEAR BUTTON -->
+      @if (frmGroup().get(controlName())?.value && !isReadonly()) {
+        <button
+          type="button"
+          class="clear-button"
+          (click)="clearInput()"
+          [attr.aria-label]="'Clear ' + labelText()">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" class="mat-icon" viewBox="0 -960 960 960" width="24px" fill="#000000">
+            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+          </svg>
+        </button>
+      }
+    </div>
+
+    <!-- Office Name Display -->
+    @if (officeName()) {
+      <span class="office-box-name text-sm text-gray-700 mt-1 block">
         {{ officeName() }}
       </span>
+    }
+  }
 
-  @if (frmGroup().get(controlName())?.errors && 
+  <!-- ======================== VALIDATION ======================== -->
+  @if (frmGroup().get(controlName())?.errors &&
       (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
 
     <div class="text-red-500 text-sm mt-1">
       @if (frmGroup().get(controlName())?.hasError('required')) {
         {{ labelText() }} is required..!
       }
+
       @if (frmGroup().get(controlName())?.hasError('minlength')) {
         {{ labelText() }} must be at least {{ frmGroup().get(controlName())?.errors?.['minlength']?.requiredLength }} characters.
       }
+
       @if (frmGroup().get(controlName())?.hasError('maxlength')) {
         {{ labelText() }} cannot be more than {{ frmGroup().get(controlName())?.errors?.['maxlength']?.requiredLength }} characters.
       }

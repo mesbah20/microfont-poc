@@ -12,10 +12,12 @@
           <p class="text-sm text-gray-600">saikat.gmail.com</p>
         </div>
       </div>
-      <button class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center">
-        <mat-icon class="mr-2">edit</mat-icon>
-        Edit Profile
-      </button>
+     <button
+  class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
+  (click)="openEditProfileModal()">
+  <mat-icon class="mr-2">edit</mat-icon>
+  Edit Profile
+</button>
     </div>
 
     <!-- Service Request -->
@@ -182,5 +184,18 @@
   [notification]="selectedNotification!"
   (close)="closeDetailModal()">
 </app-notification-detail-modal>
+<lds-modal
+  [isVisible]="showEditProfileModal"
+  [modalTitle]="'Edit Profile'"
+  [modalComponent]="modalComponent"
+  [modalComponentData]="modalData"
+  (isVisibleChanged)="showEditProfileModal = $event"
+  (modalResult)="onProfileUpdated($event)"
+  (modalClosed)="closeEditProfileModal()"
+  [cssClass]="'modal-lg'"
+  [showOkButton]="true"  
+  [showDefaultFooter]="true"
+></lds-modal>
+
 
 </div>

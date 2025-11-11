@@ -27,6 +27,18 @@ export const routes: Routes = [
       },
     ]
   },
+  {
+    path: 'config', component: Layout,
+    data: {
+      layout: 'empty'
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting)
+      },
+    ]
+  },
   // {
   //   path: 'mx', component: Layout,
   //   data: {

@@ -1,40 +1,29 @@
 <div class="flex h-[]  p-1 m-1" >
-  
+
       <div
-  class="sidebar-container flex flex-col items-center relative z-[60] md:z-50 md:border-r sidebar md:border-gray-100 bg-white md:bg-transparent transition-all duration-300 ease-in-out transform md:transform-none fixed md:relative  md:top-auto left-0 h-[calc(100vh-4rem)] md:h-auto md:left-auto md:flex  max-w-[320px]  shadow-2xl md:shadow-none border-none md:border "
+  class="sidebar-container flex flex-col items-center relative z-[60] md:z-50 md:border-r sidebar md:border-gray-100 bg-white md:bg-transparent transition-all duration-300 ease-in-out transform md:transform-none fixed md:relative  md:top-auto left-0 h-[calc(100vh-8rem)] md:h-auto md:left-auto md:flex  max-w-[320px]  shadow-2xl md:shadow-none border-none md:border "
   [class.hidden]="!sidebarExpanded && isMobileOpen"
   [class.translate-x-0]="sidebarExpanded && isMobileOpen"
   [class.w-21]="!sidebarExpanded && !isMobileOpen"
   [class.w-44]="sidebarExpanded && !isMobileOpen"
   [class.w-43]="sidebarExpanded && isMobileOpen"
->   
+>
   <div class="flex w-full">
-      
+
     <!-- Logo/Search Section -->
     <div class="sidebar-brand flex space-x-1 justify-start items-center shadow-xl/30 mb-2 h-10 rounded px-2 transition-transform duration-300  "
     [class.w-21]="!sidebarExpanded"
     [class.w-63]="sidebarExpanded"
-     
+
      >
       <app-search></app-search>
     </div>
-
-        <!-- <button  (click)="toggleSidebar()"
-  class="absolute -right-1 top-1.5 z-50 w-5 h-7 rounded shadow-lg 
-         flex items-center justify-center transition-all duration-300 group theme-btn">
-
-  <svg class="w-5 h-5 text-white transition-transform duration-300"
-       [class.rotate-180]="sidebarExpanded"
-       fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6l6 6-6 6"/>
-  </svg>
-</button> -->
   </div>
 
   <!-- Mobile backdrop for sidebar overlay -->
-  <!-- <div *ngIf="sidebarExpanded && isMobileOpen" class="fixed inset-0 top-16 h-[calc(100vh-4rem)] z-40 bg-black/40 md:hidden" (click)="toggleSidebar()"></div> -->
+  <div *ngIf="sidebarExpanded && isMobileOpen"  (click)="toggleSidebar()"></div>
 
-    
+
     <!-- Navigation Items -->
     <div class="flex-1 flex flex-col space-y-2 w-full px-2">
 
@@ -44,9 +33,10 @@
       [class.justify-center]="!sidebarExpanded"
       >
         <div (click)="toggleDrawer('Menu'); setActiveItem('menu')"
+             data-drawer-trigger="Menu"
              class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
              [class.w-10]="!sidebarExpanded"
-             [class.h-10]="!sidebarExpanded"             
+             [class.h-10]="!sidebarExpanded"
              [class.hover:bg-gray-100]="activeItem !== 'menu'"
              [class.px-4]="sidebarExpanded"
              [class.py-3]="sidebarExpanded"
@@ -54,36 +44,36 @@
              [class.justify-start]="sidebarExpanded">
 
           @if(activeTheme === 'blue') {
-            <img src="/asset/icons/menu1.svg" 
+            <img src="/asset/icons/menu1.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'rose') {
-            <img src="/asset/icons/roseMenu.svg" 
+            <img src="/asset/icons/roseMenu.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'MidnightBlue') {
-            <img src="/asset/icons/menu_midnight.svg" 
+            <img src="/asset/icons/menu_midnight.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'emerald') {
-            <img src="/asset/icons/greenMenu.svg" 
+            <img src="/asset/icons/greenMenu.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'purple') {
-            <img src="/asset/icons/purpleMenu.svg" 
+            <img src="/asset/icons/purpleMenu.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'Lavendar') {
-            <img src="/asset/icons/lavendarMenu.svg" 
+            <img src="/asset/icons/lavendarMenu.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'dark') {
-            <img src="/asset/icons/blackMenu.svg" 
+            <img src="/asset/icons/blackMenu.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           }
-          
-          
+
+
           <!-- Label (shown when expanded) -->
           <span class="ml-4 text-sm font-medium text-gray-700 whitespace-nowrap transition-all duration-300 "
                 [class.opacity-0]="!sidebarExpanded"
@@ -106,43 +96,43 @@
       [class.flex]="!sidebarExpanded"
       [class.justify-center]="!sidebarExpanded"
       >
-                   <!-- [class.bg-blue-100]="activeItem === 'application'" -->
         <div (click)="toggleDrawer('Modules'); setActiveItem('modules')"
+             data-drawer-trigger="Modules"
              class="rounded-lg cursor-pointer transition-all duration-200 relative  flex items-center overflow-hidden"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
-             [class.hover:bg-gray-100]="activeItem !== 'application'"     
+             [class.hover:bg-gray-100]="activeItem !== 'application'"
              [class.px-4]="sidebarExpanded"
              [class.py-3]="sidebarExpanded"
              [class.justify-center]="!sidebarExpanded"
              [class.justify-start]="sidebarExpanded">
-          
+
             @if(activeTheme === 'blue') {
-            <img src="/asset/icons/application.svg" 
+            <img src="/asset/icons/application.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'modules'"/>
           } @else if(activeTheme === 'rose') {
-            <img src="/asset/icons/roseApplication.svg" 
+            <img src="/asset/icons/roseApplication.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'modules'"/>
           } @else if(activeTheme === 'MidnightBlue') {
-            <img src="/asset/icons/midnightApplication.svg" 
+            <img src="/asset/icons/midnightApplication.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'modules'"/>
           } @else if(activeTheme === 'emerald') {
-            <img src="/asset/icons/greenApplication.svg" 
+            <img src="/asset/icons/greenApplication.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'modules'"/>
           } @else if(activeTheme === 'purple') {
-            <img src="/asset/icons/purpleApplication.svg" 
+            <img src="/asset/icons/purpleApplication.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'modules'"/>
           } @else if(activeTheme === 'Lavendar') {
-            <img src="/asset/icons/lavendarApplication.svg" 
+            <img src="/asset/icons/lavendarApplication.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'modules'"/>
           } @else if(activeTheme === 'dark') {
-            <img src="/asset/icons/blackApplication.svg" 
+            <img src="/asset/icons/blackApplication.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'modules'"/>
           }
@@ -153,7 +143,7 @@
                 [class.hidden]="!sidebarExpanded">
              Modules
           </span>
-          
+
           <!-- Tooltip (only shown when collapsed) -->
           <div class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap pointer-events-none z-50"
                [class.hidden]="sidebarExpanded">
@@ -176,37 +166,37 @@
              [class.py-3]="sidebarExpanded"
              [class.justify-center]="!sidebarExpanded"
              [class.justify-start]="sidebarExpanded">
-          
+
           @if(activeTheme === 'blue') {
-            <img src="/asset/icons/dashboard1.svg" 
+            <img src="/asset/icons/dashboard1.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'rose') {
-            <img src="/asset/icons/roseDashboard.svg" 
+            <img src="/asset/icons/roseDashboard.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'MidnightBlue') {
-            <img src="/asset/icons/midnightDashboard.svg" 
+            <img src="/asset/icons/midnightDashboard.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'emerald') {
-            <img src="/asset/icons/greenDashboard.svg" 
+            <img src="/asset/icons/greenDashboard.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'purple') {
-            <img src="/asset/icons/purpleDashboard.svg" 
+            <img src="/asset/icons/purpleDashboard.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'Lavendar') {
-            <img src="/asset/icons/lavendarDashboard.svg" 
+            <img src="/asset/icons/lavendarDashboard.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'dark') {
-            <img src="/asset/icons/blackDashboard.svg" 
+            <img src="/asset/icons/blackDashboard.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           }
-          
+
           <span class="ml-4 text-sm font-medium text-gray-700 whitespace-nowrap transition-all duration-300"
                 [class.opacity-0]="!sidebarExpanded"
                 [class.opacity-100]="sidebarExpanded"
@@ -235,37 +225,37 @@
              [class.py-3]="sidebarExpanded"
              [class.justify-center]="!sidebarExpanded"
              [class.justify-start]="sidebarExpanded">
-          
+
             @if(activeTheme === 'blue') {
-            <img src="/asset/icons/report.svg" 
+            <img src="/asset/icons/report.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'rose') {
-            <img src="/asset/icons/roseReport.svg" 
+            <img src="/asset/icons/roseReport.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'MidnightBlue') {
-            <img src="/asset/icons/midnightReport.svg" 
+            <img src="/asset/icons/midnightReport.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'emerald') {
-            <img src="/asset/icons/greenReport.svg" 
+            <img src="/asset/icons/greenReport.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'purple') {
-            <img src="/asset/icons/purpleReport.svg" 
+            <img src="/asset/icons/purpleReport.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'Lavendar') {
-            <img src="/asset/icons/lavendarReport.svg" 
+            <img src="/asset/icons/lavendarReport.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'dark') {
-            <img src="/asset/icons/blackReport.svg" 
+            <img src="/asset/icons/blackReport.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           }
-          
+
           <span class="ml-4 text-sm font-medium text-gray-700 whitespace-nowrap transition-all duration-300"
                 [class.opacity-0]="!sidebarExpanded"
                 [class.opacity-100]="sidebarExpanded"
@@ -278,7 +268,7 @@
             Reports
             <div class="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800 rotate-45"></div>
           </div>
-        </div>            
+        </div>
       </div>
 
       <!-- Security Menu -->
@@ -286,6 +276,7 @@
       [class.flex]="!sidebarExpanded"
       [class.justify-center]="!sidebarExpanded">
         <div (click)="setActiveItem('security')"
+             routerLink="config/approval-items"
              class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
@@ -294,37 +285,37 @@
              [class.py-3]="sidebarExpanded"
              [class.justify-center]="!sidebarExpanded"
              [class.justify-start]="sidebarExpanded">
-          
+
             @if(activeTheme === 'blue') {
-            <img src="/asset/icons/security.svg" 
+            <img src="/asset/icons/security.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'rose') {
-            <img src="/asset/icons/roseSecurity.svg" 
+            <img src="/asset/icons/roseSecurity.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'MidnightBlue') {
-            <img src="/asset/icons/midnightSecurity.svg" 
+            <img src="/asset/icons/midnightSecurity.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'emerald') {
-            <img src="/asset/icons/greenSecurity.svg" 
+            <img src="/asset/icons/greenSecurity.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'purple') {
-            <img src="/asset/icons/purpleSecurity.svg" 
+            <img src="/asset/icons/purpleSecurity.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'Lavendar') {
-            <img src="/asset/icons/lavendarSecurity.svg" 
+            <img src="/asset/icons/lavendarSecurity.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'dark') {
-            <img src="/asset/icons/blackSecurity.svg" 
+            <img src="/asset/icons/blackSecurity.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           }
-          
+
           <span class="ml-4 text-sm font-medium text-gray-700 whitespace-nowrap transition-all duration-300"
                 [class.opacity-0]="!sidebarExpanded"
                 [class.opacity-100]="sidebarExpanded"
@@ -352,53 +343,46 @@
                 [class.flex]="!sidebarExpanded"
                 [class.justify-center]="!sidebarExpanded">
             <div (click)="toggleDrawer('Profile'); setActiveItem('profile')"
-             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
+             data-drawer-trigger="Profile"
+             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden hover:bg-[var(--theme-accent)]"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
-             [class.hover:bg-gray-700]="activeItem !== 'security'"
+             
              [class.px-4]="sidebarExpanded"
              [class.py-3]="sidebarExpanded"
              [class.justify-center]="!sidebarExpanded"
              [class.justify-start]="sidebarExpanded">
-          
-            <!-- profile icon with top-left (notifications) and top-right (messages) badges -->
-<div class="relative flex items-center">
-  <!-- theme-based image (keeps your @if-theme logic) -->
-  @if(activeTheme === 'blue') {
-    <img src="/asset/icons/profile3.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
-  } @else if(activeTheme === 'rose') {
-    <img src="/asset/icons/roseProfile.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
-  } @else if(activeTheme === 'MidnightBlue') {
-    <img src="/asset/icons/midnightProfile.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
-  } @else if(activeTheme === 'emerald') {
-    <img src="/asset/icons/greenProfile.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
-  } @else if(activeTheme === 'purple') {
-    <img src="/asset/icons/purpleProfile.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
-  } @else if(activeTheme === 'Lavendar') {
-    <img src="/asset/icons/lavendarProfile.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
-  } @else if(activeTheme === 'dark') {
-    <img src="/asset/icons/blackProfile.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
-  }
 
-  <!-- notification badge (top-left over icon) -->
-  <ng-container *ngIf="(notifications$ | async) as n">
-    <span *ngIf="n > 0"
-          class="absolute -top-1 -left-1 text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-red-600 text-white shadow z-50">
-      {{ n > 99 ? '99+' : n }}
-    </span>
-  </ng-container>
+            @if(activeTheme === 'blue') {
+            <img src="/asset/icons/profile3.svg"
+               class="flex-shrink-0"
+               [class.filter]="activeItem === 'menu'"/>
+          } @else if(activeTheme === 'rose') {
+            <img src="/asset/icons/roseProfile.svg"
+               class="flex-shrink-0"
+               [class.filter]="activeItem === 'menu'"/>
+          } @else if(activeTheme === 'MidnightBlue') {
+            <img src="/asset/icons/midnightProfile.svg"
+               class="flex-shrink-0"
+               [class.filter]="activeItem === 'menu'"/>
+          } @else if(activeTheme === 'emerald') {
+            <img src="/asset/icons/greenProfile.svg"
+               class="flex-shrink-0"
+               [class.filter]="activeItem === 'menu'"/>
+          } @else if(activeTheme === 'purple') {
+            <img src="/asset/icons/purpleProfile.svg"
+               class="flex-shrink-0"
+               [class.filter]="activeItem === 'menu'"/>
+          } @else if(activeTheme === 'Lavendar') {
+            <img src="/asset/icons/lavendarProfile.svg"
+               class="flex-shrink-0"
+               [class.filter]="activeItem === 'menu'"/>
+          } @else if(activeTheme === 'dark') {
+            <img src="/asset/icons/blackProfile.svg"
+               class="flex-shrink-0"
+               [class.filter]="activeItem === 'menu'"/>
+          }
 
-  <!-- message badge (top-right over icon) -->
-  <ng-container *ngIf="(messages$ | async) as m">
-    <span *ngIf="m > 0"
-          class="absolute -top-1 -right-1 text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-blue-600 text-white shadow z-50">
-      {{ m > 99 ? '99+' : m }}
-    </span>
-  </ng-container>
-  
-</div>
-
-          
           <span class="ml-4 text-sm font-medium text-white whitespace-nowrap transition-all duration-300"
                 [class.opacity-0]="!sidebarExpanded"
                 [class.opacity-100]="sidebarExpanded"
@@ -412,55 +396,55 @@
             <div class="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800 rotate-45"></div>
           </div>
         </div>
-    
-    
+
+
       </div>
 
       <!-- Logout -->
-      
+
             <div class="group " routerLink="/login"
               [class.flex]="!sidebarExpanded"
               [class.justify-center]="!sidebarExpanded">
             <div (click)="setActiveItem('logout')"
-             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
+             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden hover:bg-[var(--theme-accent)]" 
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
-             [class.hover:bg-gray-700]="activeItem !== 'logout'"
+            
              [class.px-4]="sidebarExpanded"
              [class.py-3]="sidebarExpanded"
              [class.justify-center]="!sidebarExpanded"
              [class.justify-start]="sidebarExpanded">
-          
+
             @if(activeTheme === 'blue') {
-            <img src="/asset/icons/logout1.svg" 
+            <img src="/asset/icons/logout1.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'rose') {
-            <img src="/asset/icons/roseLogout.svg" 
+            <img src="/asset/icons/roseLogout.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'MidnightBlue') {
-            <img src="/asset/icons/midnightLogout.svg" 
+            <img src="/asset/icons/midnightLogout.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'emerald') {
-            <img src="/asset/icons/greenLogout.svg" 
+            <img src="/asset/icons/greenLogout.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'purple') {
-            <img src="/asset/icons/purpleLogout.svg" 
+            <img src="/asset/icons/purpleLogout.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'Lavendar') {
-            <img src="/asset/icons/lavendarLogout.svg" 
+            <img src="/asset/icons/lavendarLogout.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'dark') {
-            <img src="/asset/icons/blackLogout.svg" 
+            <img src="/asset/icons/blackLogout.svg"
                class="flex-shrink-0"
                [class.filter]="activeItem === 'menu'"/>
           }
-          
+
           <span class="ml-4 text-sm font-medium text-white whitespace-nowrap transition-all duration-300"
                 [class.opacity-0]="!sidebarExpanded"
                 [class.opacity-100]="sidebarExpanded"
@@ -474,31 +458,44 @@
             <div class="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800 rotate-45"></div>
           </div>
         </div>
-      </div>   
-      
+      </div>
+
 
     </div>
   </div>
 </div>
 
-<!-- Drawer code  -->
+<!-- Drawer code with FIXED RESPONSIVE POSITIONING -->
 
 <div
   *ngIf="drawerOpen"
-  class="fixed inset-0 z-[9] bg-black/30 transition-opacity duration-300"
-  (click)="drawerOpen = false">
+  class="fixed inset-0 z-[55] bg-black/30 transition-opacity duration-300"
+  [class.md:left-auto]="true"
+   [style.backgoundRadius]="'10px'"
+  [class.md:w-auto]="true"
+  (click)="closeDrawer()">
 </div>
 
-<!-- Drawer -->
+<!-- Drawer - NOW RESPONSIVE! -->
 <div
-  class="fixed z-10 top-[73px] h-full w-[350px] bg-white shadow-2xl border-r rounded border-gray-200 transition-all duration-300"
-  [style.left]="drawerOpen ? (sidebarExpanded ? '180px' : '80px') : '-480px'"
+  class="drawer-container fixed  z-[60] lg:z-[10] md:z-[10] bg-white shadow-2xl rounded  transition-all duration-300"
+  [class.left-0]="isMobile && drawerOpen"
+  [class.top-[73px]]="drawerOpen"
+  [class.w-full]="isMobile && drawerOpen"
+  [class.h-[calc(100vh-73px)]="drawerOpen"
+  [class.max-w-full]="isMobile"
+  [class.md:w-[350px]]="drawerOpen"
+  [class.md:left-[80px]]="!sidebarExpanded && drawerOpen"
+  [class.md:left-[180px]]="sidebarExpanded && drawerOpen"
+  [style.left]="!isMobile && drawerOpen ? (sidebarExpanded ? '185px' : '85px') : (drawerOpen ? '0' : '-480px')"
   [style.opacity]="drawerOpen ? '1' : '0'"
   [style.visibility]="drawerOpen ? 'visible' : 'hidden'"
+  [style.borderRadius]="'10px'"
+ 
   (click)="$event.stopPropagation()">
-  
+
   <!-- Header -->
-  <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-[var(--theme-background)]">
+  <div class="flex justify-between items-center p-4 border-b rounded border-gray-200 bg-[var(--theme-background)]"[style.borderRadius]="'10px'">
     <h2 class="text-lg font-medium text-gray-800 flex items-center">
       <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -506,8 +503,8 @@
       </svg>
       {{ drawerType | titlecase }}
     </h2>
-    <button
-      (click)="drawerOpen = false"
+    <button     
+      (click)="closeDrawer()"
       class="text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full p-2 transition-all duration-200 ease-in-out transform hover:scale-110">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -526,6 +523,8 @@
     }
   </div>
 
-  <!-- Resize Handle -->
-  <div class="absolute right-0 top-0 h-full w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize transition-colors duration-200"></div>
+  <!-- Resize Handle (desktop only) -->
+  <!-- <div class="hidden md:block absolute right-0 top-0 h-full w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize transition-colors duration-200"></div> -->
+
+
 </div>

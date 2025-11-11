@@ -1,47 +1,30 @@
-<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'"> 
-  <label class="input-label"> 
-    {{ label() }} 
-    @if (isRequired()) { 
-      <span class="text-red-500">*</span> 
-    } 
-  </label> 
- 
+<div [formGroup]="frmGroup" class="w-full max-w-[12rem] mx-auto">
+  <!-- class="w-full sm:max-w-[12rem] md:max-w-[16rem] lg:max-w-[20rem] mx-auto" -->
+  <label [for]="controlName" class="block mb-2 text-sm md:text-base font-medium text-gray-900 dark:text-white">
+    {{ label }}
+  </label>
+
   <div class="relative">
-    <input
-      [ngClass]="{'readonly-input': isReadonly() }"
-      matInput
-      [readonly]="isReadonly()"
-      [formControlName]="controlName()"
-      [placeholder]="placeholder()"
-      [maxlength]="23"
-      class="custom-input"
-      (input)="onTimeChange($event)"
-    />
-    <button
-      type="button"
-      [disabled]="isReadonly()"
-      class="absolute top-1/2 right-2 -translate-y-1/2 time-picker-btn"
-      (click)="openTimePicker()"
-    >
-      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+      <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor" viewBox="0 0 24 24">
+        <path fill-rule="evenodd" d="M2 12C2 6.477..." clip-rule="evenodd" />
       </svg>
-    </button>
-  </div>
-          
-  @if (frmGroup().get(controlName())?.errors &&  
-      (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) { 
+    </div>
 
-  <div class="text-red-500 text-sm mt-1"> 
-    @if (frmGroup().get(controlName())?.hasError('required')) { 
-      {{ label() }} is required..! 
-    } 
-  </div> 
-} 
-
-@if (frmGroup().get(controlName())?.value && !validateTimeFormat(frmGroup().get(controlName())?.value)) {
-  <div class="text-orange-500 text-xs mt-1">
-    Invalid time format. Expected: HH:MM:SS.sss±HH:MM
+    <input type="time" [id]="controlName" [formControlName]="controlName" [readonly]="isReadonly"
+      [disabled]="isReadonly" [min]="minTime" [max]="maxTime" [placeholder]="placeholder" class="bg-gray-50 border leading-none border-gray-300 text-gray-900 
+             text-sm md:text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 
+             block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 
+             dark:placeholder-gray-400 dark:text-white 
+             dark:focus:ring-blue-500 dark:focus:border-blue-500" (change)="onChange($event)" (blur)="onBlur()" />
   </div>
-}
-</div> 
+
+  <div *ngIf="
+      frmGroup.get(controlName)?.errors &&
+      (frmGroup.get(controlName)?.touched || frmGroup.get(controlName)?.dirty)" class="text-red-500 text-sm mt-1">
+    <span *ngIf="frmGroup.get(controlName)?.hasError('required')">
+      {{ label }} is required!
+    </span>
+  </div>
+</div>

@@ -15,18 +15,18 @@
         
         <!-- Switch Track -->
         <div 
-          class="relative w-11 h-6 bg-gray-200 rounded-full cursor-pointer transition-all duration-300 ease-in-out shadow-inner"
+          class="relative w-11 h-6 bg-gray-200 border border-gray-300 rounded-full cursor-pointer  duration-300"
           [ngClass]="{
             'bg-gray-200': !currentValue,
-            'bg-gradient-to-r from-blue-500 to-blue-600': currentValue,
-            'opacity-50 cursor-not-allowed': isDisabled,
+            'bg-[var(--theme-secondary)]': currentValue,
+            ' cursor-not-allowed': isDisabled,
             'ring-2 ring-red-300 ring-offset-2': isInvalidState()
           }"
           (click)="!isDisabled && toggleSwitch()">
           
           <!-- Switch Thumb -->
           <div 
-            class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-lg transform transition-all duration-300 ease-in-out flex items-center justify-center"
+            class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-lg  transition-all duration-300  flex items-center justify-center"
             [ngClass]="{'translate-x-5': currentValue, 'translate-x-0': !currentValue}">
             
             <!-- Check Icon (only visible when checked) -->
@@ -52,9 +52,9 @@
           
           <!-- Ripple Effect -->
           @if (currentValue) {
-            <div 
+            <!-- <div 
               class="absolute inset-0 rounded-full bg-blue-200 opacity-20 animate-pulse">
-            </div>
+            </div> -->
           }
         </div>
       </div>

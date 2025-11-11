@@ -51,7 +51,7 @@ export class DateInput {
   readonly enableYearRangeValidation = input<boolean>(true);
   readonly onBlurred = output<any>();
   readonly includeTime = input<number>(1);
-
+ readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
   constructor() { 
     // Add custom validator when component initializes
     effect(() => {
@@ -126,6 +126,14 @@ export class DateInput {
   getActualDateFormat(): DateFormat {
     return this.dateFormat();
   }
+
+    clearInput(): void {
+  const control = this.frmGroup().get(this.controlName());
+  if (control) {
+    control.setValue('');
+    control.markAsTouched();
+  }
+}
 
   getDateSeparator(): string {
     if (this.dateFormat() === 'DD MMM, YYYY') {
