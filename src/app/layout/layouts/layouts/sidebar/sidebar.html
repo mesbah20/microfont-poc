@@ -271,16 +271,16 @@
         </div>
       </div>
 
-      <!-- Security Menu -->
+      <!-- Approval Menu -->
       <div class="group "
       [class.flex]="!sidebarExpanded"
       [class.justify-center]="!sidebarExpanded">
-        <div (click)="setActiveItem('security')"
+        <div (click)="setActiveItem('approval')"
              routerLink="config/approval-items"
              class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
-             [class.hover:bg-gray-100]="activeItem !== 'security'"
+             [class.hover:bg-gray-100]="activeItem !== 'approval'"
              [class.px-4]="sidebarExpanded"
              [class.py-3]="sidebarExpanded"
              [class.justify-center]="!sidebarExpanded"
@@ -325,7 +325,7 @@
 
           <div class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap pointer-events-none z-50"
                [class.hidden]="sidebarExpanded">
-            Security
+            Approval
             <div class="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800 rotate-45"></div>
           </div>
         </div>
@@ -347,7 +347,7 @@
              class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden hover:bg-[var(--theme-accent)]"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
-             
+
              [class.px-4]="sidebarExpanded"
              [class.py-3]="sidebarExpanded"
              [class.justify-center]="!sidebarExpanded"
@@ -406,10 +406,10 @@
               [class.flex]="!sidebarExpanded"
               [class.justify-center]="!sidebarExpanded">
             <div (click)="setActiveItem('logout')"
-             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden hover:bg-[var(--theme-accent)]" 
+             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden hover:bg-[var(--theme-accent)]"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
-            
+
              [class.px-4]="sidebarExpanded"
              [class.py-3]="sidebarExpanded"
              [class.justify-center]="!sidebarExpanded"
@@ -491,7 +491,7 @@
   [style.opacity]="drawerOpen ? '1' : '0'"
   [style.visibility]="drawerOpen ? 'visible' : 'hidden'"
   [style.borderRadius]="'10px'"
- 
+
   (click)="$event.stopPropagation()">
 
   <!-- Header -->
@@ -503,7 +503,7 @@
       </svg>
       {{ drawerType | titlecase }}
     </h2>
-    <button     
+    <button
       (click)="closeDrawer()"
       class="text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full p-2 transition-all duration-200 ease-in-out transform hover:scale-110">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
