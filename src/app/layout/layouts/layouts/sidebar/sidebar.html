@@ -276,7 +276,7 @@
       [class.flex]="!sidebarExpanded"
       [class.justify-center]="!sidebarExpanded">
         <div (click)="setActiveItem('approval')"
-             routerLink="config/approval-items"
+             routerLink="/config/approval-items"
              class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
@@ -320,12 +320,12 @@
                 [class.opacity-0]="!sidebarExpanded"
                 [class.opacity-100]="sidebarExpanded"
                 [class.hidden]="!sidebarExpanded">
-            Approval
+            Approval Steps
           </span>
 
           <div class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap pointer-events-none z-50"
                [class.hidden]="sidebarExpanded">
-            Approval
+            Approval Steps
             <div class="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800 rotate-45"></div>
           </div>
         </div>

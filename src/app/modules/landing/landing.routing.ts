@@ -6,6 +6,6 @@ import {ApprovalItems} from '../poc/approval-items/approval-items';
 
 export const landingRouting: Routes = [
   {path: 'dashboard', component: Dashboard},
-  {path: 'config/approval', component: ApprovalItems},
+  {path: 'config/approval-items', component: ApprovalItems},
   {path: 'alert-example-page', component: AlertExamplePage}
 ];
