@@ -1,70 +1,82 @@
 @if (isVisible) {
-  <div class="modal-backdrop"
-       [class.show]="isVisible"
-       (click)="onBackdropClick()">
+  <!-- Modal Backdrop -->
+  <div 
+    class="modal-backdrop"
+    [class.show]="isVisible"
+    (click)="onBackdropClick()">
   </div>
 
-  <!-- Modal Dialog -->
-  <div class="modal-wrapper"
-       [class.show]="isVisible"
-       role="dialog"
-       [attr.aria-labelledby]="modalTitle"
-       [attr.aria-modal]="true"
-       tabindex="-1"
-       (click)="onBackdropClick()">
-    <div class="modal-dialog"
-         [class]="cssClass"
-         role="document"
-         (click)="$event.stopPropagation()">
+  <!-- Modal Wrapper -->
+  <div 
+    class="modal-wrapper"
+    [class.show]="isVisible"
+    role="dialog"
+    [attr.aria-labelledby]="modalTitle"
+    [attr.aria-modal]="true"
+    tabindex="-1"
+    (click)="onBackdropClick()">
+
+    <!-- Modal Dialog -->
+    <div 
+      class="modal-dialog"
+      [class]="cssClass"
+      role="document"
+      (click)="$event.stopPropagation()">
+
       <div class="modal-content">
-        <!-- Rest of your modal content -->
+        
+        <!-- Modal Header -->
         <div class="modal-header">
           <div class="header-content">
             <div class="title-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg 
+                width="24" height="24" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                stroke-width="2">
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
                 <path d="M3 9h18"/>
               </svg>
             </div>
-            
-            <!-- Modal Body -->
-            <div class="modal-body">
-              <!-- Dynamic Component Container -->
-              <div class="component-wrapper">
-                <ng-container #modalContainer></ng-container>
-              </div>
-              
-              <!-- Fallback Content -->
-              @if (!modalComponent) {
-                <ng-content></ng-content>
-                @if (bodyContentTemplate) {
-                  <ng-container *ngTemplateOutlet="bodyContentTemplate"></ng-container>
-                }
-              }
-            </div>
-            
-            <!-- Modal Footer -->
-            @if (hasFooterContent) {
-              <div class="modal-footer">
-                <ng-content select="[slot=footer]"></ng-content>
-                @if (!hasCustomFooter) {
-                  <div class="default-footer">
-                    @if (showOkButton) {
-                      <lds-btn
-                        type="button"
-                        class=""
-                        labelText={{okButtonText}}
-                        (click)="onOkClick()">
-                       
-                      </lds-btn>
-                    }
-                  </div>
+          </div>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+          <!-- Dynamic Component Container -->
+          <div class="component-wrapper">
+            <ng-container #modalContainer></ng-container>
+          </div>
+
+          <!-- Fallback Content -->
+          @if (!modalComponent) {
+            <ng-content></ng-content>
+            @if (bodyContentTemplate) {
+              <ng-container *ngTemplateOutlet="bodyContentTemplate"></ng-container>
+            }
+          }
+        </div>
+
+        <!-- Modal Footer -->
+        @if (hasFooterContent) {
+          <div class="modal-footer">
+            <ng-content select="[slot=footer]"></ng-content>
+            @if (!hasCustomFooter) {
+              <div class="default-footer">
+                @if (showOkButton) {
+                  <lds-btn
+                    type="button"
+                    labelText="{{ okButtonText }}"
+                    (click)="onOkClick()">
+                  </lds-btn>
                 }
               </div>
             }
           </div>
         }
-      </div>
-    </div>
-  </div>
+
+      </div> 
+    </div> 
+  </div> 
 }
