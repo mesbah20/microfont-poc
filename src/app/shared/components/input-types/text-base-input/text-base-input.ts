@@ -33,7 +33,7 @@ export class TextBaseInput {
   readonly placeholder = input<any>();
   readonly minLength = input<number>();
   readonly maxLength = input<number>();
-  readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('horizontal');
+  readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
 
   readonly onDoubleClick = output<void>();
   readonly isVertical = input<boolean>(false);

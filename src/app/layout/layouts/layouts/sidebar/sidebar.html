@@ -1,18 +1,21 @@
 <div class="flex h-[]  p-1 m-1" >
   
-  <div class="sidebar-container flex flex-col items-center relative z-20 border-r sidebar border-gray-100 transition-all duration-300"
-       [class.w-21]="!sidebarExpanded"
-       [class.w-64]="sidebarExpanded">
-    
-  <div class="flex w-full ">
-      <!-- Arrow Toggle Button - Positioned on the right edge -->
-
-
-    
+      <div
+  class="sidebar-container flex flex-col items-center relative z-[60] md:z-50 md:border-r sidebar md:border-gray-100 bg-white md:bg-transparent transition-all duration-300 ease-in-out transform md:transform-none fixed md:relative  md:top-auto left-0 h-[calc(100vh-4rem)] md:h-auto md:left-auto md:flex  max-w-[320px]  shadow-2xl md:shadow-none border-none md:border "
+  [class.hidden]="!sidebarExpanded && isMobileOpen"
+  [class.translate-x-0]="sidebarExpanded && isMobileOpen"
+  [class.w-21]="!sidebarExpanded && !isMobileOpen"
+  [class.w-44]="sidebarExpanded && !isMobileOpen"
+  [class.w-43]="sidebarExpanded && isMobileOpen"
+>   
+  <div class="flex w-full">
+      
     <!-- Logo/Search Section -->
     <div class="sidebar-brand flex space-x-1 justify-start items-center shadow-xl/30 mb-2 h-10 rounded px-2 transition-transform duration-300  "
     [class.w-21]="!sidebarExpanded"
-     [class.w-63]="sidebarExpanded">
+    [class.w-63]="sidebarExpanded"
+     
+     >
       <app-search></app-search>
     </div>
 
@@ -28,12 +31,15 @@
 </button> -->
   </div>
 
+  <!-- Mobile backdrop for sidebar overlay -->
+  <!-- <div *ngIf="sidebarExpanded && isMobileOpen" class="fixed inset-0 top-16 h-[calc(100vh-4rem)] z-40 bg-black/40 md:hidden" (click)="toggleSidebar()"></div> -->
+
     
     <!-- Navigation Items -->
     <div class="flex-1 flex flex-col space-y-2 w-full px-2">
 
       <!-- Menu Item -->
-      <div class="group   "
+      <div class="group"
       [class.flex]="!sidebarExpanded"
       [class.justify-center]="!sidebarExpanded"
       >
@@ -477,8 +483,8 @@
 
 <!-- Drawer -->
 <div
-  class="fixed z-10 top-[73px] h-full w-[400px] bg-white shadow-2xl border-r rounded border-gray-200 transition-all duration-300"
-  [style.left]="drawerOpen ? (sidebarExpanded ? '256px' : '80px') : '-480px'"
+  class="fixed z-10 top-[73px] h-full w-[350px] bg-white shadow-2xl border-r rounded border-gray-200 transition-all duration-300"
+  [style.left]="drawerOpen ? (sidebarExpanded ? '180px' : '80px') : '-480px'"
   [style.opacity]="drawerOpen ? '1' : '0'"
   [style.visibility]="drawerOpen ? 'visible' : 'hidden'"
   (click)="$event.stopPropagation()">
