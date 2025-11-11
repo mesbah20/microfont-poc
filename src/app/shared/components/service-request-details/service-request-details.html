@@ -1,0 +1,213 @@
+<div class="service-request-page-wrapper p-4">
+  @if(selectedRequest) {
+
+  <mat-tab-group
+    [selectedIndex]="tabIndex()"
+    (selectedIndexChange)="onTabChange($event)"
+  >
+    <mat-tab label="View Details">
+      <ng-template matTabContent>
+        <!-- Display selected service request details -->
+        <section
+          class="service-request-details bg-white rounded-lg shadow-sm p-6 mb-4"
+        >
+          <app-expansion-panel-header
+            [isOpenSignal]="businessHeaderPanel"
+            [panelTitle]="'Request Information'"
+          />
+
+          @if(businessHeaderPanel()) {
+          <div class="grid grid-cols-2 gap-4 p-4">
+            <div class="detail-item">
+              <label class="font-semibold text-gray-700">Full Name:</label>
+              <p class="text-gray-900">{{ getFullName() }}</p>
+            </div>
+
+            <div class="detail-item">
+              <label class="font-semibold text-gray-700">Email:</label>
+              <p class="text-gray-900">{{ getEmail() }}</p>
+            </div>
+
+            <div class="detail-item">
+              <label class="font-semibold text-gray-700">Department:</label>
+              <p class="text-gray-900">{{ getDepartment() }}</p>
+            </div>
+
+            <div class="detail-item">
+              <label class="font-semibold text-gray-700">Request Type:</label>
+              <p class="text-gray-900">
+                {{
+                  getRequestTypeValue(
+                    selectedRequest.requestTypeId || selectedRequest.requestType
+                  )
+                }}
+              </p>
+            </div>
+
+            <div class="detail-item">
+              <label class="font-semibold text-gray-700">Priority:</label>
+              <p class="text-gray-900">{{ getPriority() }}</p>
+            </div>
+
+            <div class="detail-item">
+              <label class="font-semibold text-gray-700">Status:</label>
+              <span
+                [class]="
+                  'px-3 py-1 rounded-full text-sm ' +
+                  getStatusClass(getStatus())
+                "
+              >
+                {{ getStatus() }}
+              </span>
+            </div>
+
+            <div class="detail-item">
+              <label class="font-semibold text-gray-700">Created Date:</label>
+              <p class="text-gray-900">
+                {{
+                  getCreatedDate()
+                    ? (getCreatedDate() | date : "medium")
+                    : "N/A"
+                }}
+              </p>
+            </div>
+
+            <div class="detail-item" *ngIf="getUpdatedDate()">
+              <label class="font-semibold text-gray-700">Last Updated:</label>
+              <p class="text-gray-900">
+                {{ getUpdatedDate() | date : "medium" }}
+              </p>
+            </div>
+
+            <div class="detail-item col-span-2">
+              <label class="font-semibold text-gray-700">Remarks:</label>
+              <p
+                class="text-gray-900 whitespace-pre-wrap bg-gray-50 p-3 rounded border border-gray-200"
+              >
+                {{ getRemarks() }}
+              </p>
+            </div>
+
+            <div
+              class="detail-item col-span-2"
+              *ngIf="selectedRequest?.resolverRemarks"
+            >
+              <label class="font-semibold text-gray-700">HR/IT Response:</label>
+              <p
+                class="text-gray-900 whitespace-pre-wrap bg-blue-50 p-3 rounded border border-blue-200"
+              >
+                {{ selectedRequest.resolverRemarks }}
+              </p>
+            </div>
+
+            <div class="detail-item col-span-2">
+              <label class="font-semibold text-gray-700"
+                >Attached Document:</label
+              >
+              @if(getFileName()) {
+              <div class="flex items-center gap-2 mt-2">
+                <svg
+                  class="w-5 h-5 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                  ></path>
+                </svg>
+                <a
+                  (click)="viewDocument()"
+                  class="text-blue-600 hover:underline cursor-pointer"
+                >
+                  {{ getFileName() }}
+                </a>
+                <button
+                  (click)="downloadDocument()"
+                  class="ml-2 text-green-600 hover:text-green-700 flex items-center gap-1"
+                  title="Download Document"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    ></path>
+                  </svg>
+                  Download
+                </button>
+              </div>
+              } @else {
+              <p class="text-gray-500 mt-2 italic">No attachment available</p>
+              }
+            </div>
+          </div>
+          }
+        </section>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="HR/IT Response">
+      <ng-template matTabContent>
+        <!-- HR Response Section -->
+        <section
+          class="hr-response-section bg-white rounded-lg shadow-sm p-6 mb-4"
+        >
+          <app-expansion-panel-header
+            [isOpenSignal]="subPanel1"
+            [panelTitle]="'HR/IT Response'"
+          />
+
+          <form [formGroup]="responseForm" class="p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <!-- Status Dropdown -->
+              <div class="form-group">
+                <app-select-option-field
+                  [frmGroup]="responseForm"
+                  [controlName]="'status'"
+                  [label]="'Update Status'"
+                  [isVertical]="true"
+                  [options]="statusOptions"
+                  [tooltip]="'Change the status of this service request'"
+                  (onSelect)="handleStatusChange($event)"
+                >
+                </app-select-option-field>
+              </div>
+            </div>
+
+            <!-- Comment Text Area -->
+            <div class="form-group mb-4">
+              <lds-txt-area
+                [frmGroup]="responseForm"
+                [controlName]="'resolverRemarks'"
+                [labelText]="'Comment to Employee'"
+                [isVertical]="true"
+                [rows]="4"
+                [minRows]="0"
+                [maxRows]="10"
+                [placeholder]="
+                  'Enter your comment or instructions for the employee...'
+                "
+                [showRowCount]="true"
+                [autoResize]="true"
+                (onChanged)="onCommentChanged($event)"
+              >
+              </lds-txt-area>
+            </div>
+          </form>
+        </section>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+  <!-- End Tab Content -->
+  }
+</div>
