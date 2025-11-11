@@ -2,6 +2,7 @@ import {Routes} from '@angular/router';
 import {Dashboard} from './feature/dashboard/dashboard';
 import { AlertExamplePage } from './alert-example-page/alert-example-page';
 import {Login} from '../../core/auth/login/login';
+import { Landing } from './landing/landing';
 
 export const landingRouting: Routes = [
   {path: 'dashboard', component: Dashboard},

@@ -1,11 +1,13 @@
 import {Routes} from '@angular/router';
 import {Layout} from './layout/layout';
 import {Login} from './core/auth/login/login';
+import { Landing } from './modules/landing/landing/landing';
 
 export const routes: Routes = [
 
   {path: '', redirectTo: 'login', pathMatch: 'full'},
   {path: 'login', component: Login},
+  {path: 'landing', component: Landing},
   {
     path: '', component: Layout,
     data: {

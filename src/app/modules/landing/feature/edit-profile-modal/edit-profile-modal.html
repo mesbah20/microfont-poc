@@ -1,44 +1,51 @@
 <div class="other-page-wrapper p-6 space-y-4">
 
-  <!-- 🔹 Profile Image Section (Top) -->
-  <div class="flex flex-col items-center justify-center gap-3 mb-6">
-    <div class="relative">
-      <!-- Profile Preview -->
-      <div
-        class="w-24 h-24 rounded-full overflow-hidden ring-2 ring-blue-400 flex items-center justify-center bg-gray-100 shadow-md"
-      >
+<!-- 🔹 Profile Image Section (Top) -->
+<div class="flex flex-col items-center justify-center gap-3 mb-6">
+  <div class="relative">
+    <!-- Profile Preview -->
+    <div
+      class="w-24 h-24 rounded-full overflow-hidden ring-2 ring-blue-400 flex items-center justify-center bg-gray-100 shadow-md">
+
+      <!-- if has imgPreviewUrl -->
+      <ng-container *ngIf="imgPreviewUrl; else noImage">
         <img
-          *ngIf="imgPreviewUrl; else noimg"
           [src]="imgPreviewUrl"
           alt="Profile Preview"
           class="w-full h-full object-cover text-sm"
         />
-        <ng-template #noimg>
-          <span class="text-xs text-gray-500">No Image</span>
-        </ng-template>
-      </div>
+      </ng-container>
 
-      <!-- Edit Icon Button -->
-      <label
-        class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full cursor-pointer shadow-md transition"
-        title="Change Profile Photo"
-      >
-        <mat-icon fontIcon="edit" class="text-sm"></mat-icon>
-        <input
-          type="file"
-          accept=".png,.jpg,.jpeg"
-          (change)="onProfilePicSelected($event)"
-          hidden
+      <!-- if not fallback image -->
+      <ng-template #noImage>
+        <img
+          src="asset/icons/blackProfile.svg"
+          alt="Default Profile"
+          class="w-full h-full object-cover opacity-80"
         />
-      </label>
+      </ng-template>
     </div>
-<p class="text-sm text-gray-500 mt-2 text-center font-medium tracking-wide flex items-center justify-center gap-1">
-  <mat-icon fontIcon="photo_camera" class="text-blue-500 text-base"></mat-icon>
-  Upload a new profile photo
-</p>
 
-
+    <!-- Edit Icon Button -->
+    <label
+      class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full cursor-pointer shadow-md transition"
+      title="Change Profile Photo"
+    >
+      <mat-icon fontIcon="edit" class="text-sm"></mat-icon>
+      <input
+        type="file"
+        accept=".png,.jpg,.jpeg"
+        (change)="onProfilePicSelected($event)"
+        hidden
+      />
+    </label>
   </div>
+
+  <p class="text-sm text-gray-500 mt-2 text-center font-medium tracking-wide flex items-center justify-center gap-1">
+    <mat-icon fontIcon="photo_camera" class="text-blue-500 text-base"></mat-icon>
+    Upload a new profile photo
+  </p>
+</div>
 
   <!-- 🔹 Form Fields -->
   <form [formGroup]="frmGroup" class="transaction-form">

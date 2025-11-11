@@ -19,6 +19,8 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
   @Input() showDefaultFooter: boolean = true;
   @Input() showOkButton: boolean = true;
   @Input() okButtonText: string = 'OK';
+  // @Input() showCancelButton: boolean = true;
+  // @Input() cancelButtonText: string = 'Cancel';
   @Input() modalComponent?: Type<any>;
   @Input() modalComponentData?: any;
 
@@ -153,6 +155,27 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.closeModal();
   }
+
+  // onCancelClick(): void {
+  //   try {
+  //     let result: any = true;
+  //     if (this.componentRef && this.componentRef.instance) {
+  //       const inst: any = this.componentRef.instance;
+  //       // Prefer an explicit getter if provided by child
+  //       if (typeof inst.getModalResult === 'function') {
+  //         result = inst.getModalResult();
+  //       } else if (inst.frmGroup && typeof inst.frmGroup.getRawValue === 'function') {
+  //         // Common pattern: child exposes a FormGroup named frmGroup
+  //         result = inst.frmGroup.getRawValue();
+  //       }
+  //     }
+  //     this.modalResult.emit(result);
+  //   } catch (e) {
+  //     console.warn('OK click: failed to collect child result, emitting true', e);
+  //     this.modalResult.emit(true);
+  //   }
+  //   this.closeModal();
+  // }
 
   private loadComponent(retryCount: number = 0) {
     console.log(`=== LOADING COMPONENT (Attempt ${retryCount + 1}) ===`);

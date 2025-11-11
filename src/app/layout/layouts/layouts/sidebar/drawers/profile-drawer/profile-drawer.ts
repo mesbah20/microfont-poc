@@ -67,7 +67,7 @@ export class ProfileDrawer {
   //   console.log('✅ Profile updated:', result);
   //   this.showEditProfileModal = false;
   // }
-  // ✅ এখানে data console-এ দেখা যাবে
+  // ✅ to show data on console
   onProfileUpdated(updatedData: any) {
     console.log('🟢 Updated profile data received from modal:', updatedData);
   }

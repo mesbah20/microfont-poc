@@ -67,6 +67,7 @@ export class EditProfileModal implements OnInit {
   headerOpen: WritableSignal<boolean> = signal(true);
   imgPreviewUrl: string | ArrayBuffer | null = null;
   selectedImageFile?: File;
+ 
 
   constructor(private fb: FormBuilder) {}
 
@@ -91,13 +92,16 @@ export class EditProfileModal implements OnInit {
         if (this.initialData[k] !== undefined) patch[k] = this.initialData[k];
       });
       this.frmGroup.patchValue(patch);
-      if (this.initialData.user_img) this.imgPreviewUrl = this.initialData.user_img;
+      if (this.initialData?.user_img){this.imgPreviewUrl = this.initialData.user_img;} 
     }
   }
 
   getModalResult() {
     return this.frmGroup.getRawValue();
   }
+onImageError() {
+  this.imgPreviewUrl = null;
+}
 
   onProfilePicSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
