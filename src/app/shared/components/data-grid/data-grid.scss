@@ -3,13 +3,13 @@
   flex-direction: column;
   background: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   font-family: 'Roboto', sans-serif;
 
   .controls-bar {
     display: flex;
     justify-content:flex-end;
-    align-items: center; 
+    align-items: center;
     padding: 4px 2px;
     background: #f8f9fa;
     border-bottom: 1px solid #a9ccf0;
@@ -23,17 +23,17 @@
         width: 80%;
         border-radius: 4px;
         ::ng-deep .mat-mdc-form-field {
-          background: transparent !important; 
+          background: transparent !important;
         }
-        
+
         ::ng-deep .mat-mdc-text-field-wrapper {
           border: 1px solid #ced4da;
           border-radius: 5px 10px;
-          background: transparent !important; 
+          background: transparent !important;
         }
 
         ::ng-deep .mdc-text-field {
-          background-color: transparent !important; 
+          background-color: transparent !important;
         }
       }
     }
@@ -41,7 +41,7 @@
     .pagination-controls {
       .page-size-selector {
         width: 120px;
-        
+
         ::ng-deep .mat-mdc-form-field-wrapper {
           padding-bottom: 0;
         }
@@ -55,22 +55,22 @@
     overflow-y: hidden;
     width: 100%;
     padding-right: 0;
-    scrollbar-gutter: stable; 
+    scrollbar-gutter: stable;
     scrollbar-color: #c1c1c1 #f1f1f1;
-    
+
     &::-webkit-scrollbar {
       height: 8px;
     }
-    
+
     &::-webkit-scrollbar-track {
       background: #f1f1f1;
       border-radius: 4px;
     }
-    
+
     &::-webkit-scrollbar-thumb {
       background: #c1c1c1;
       border-radius: 4px;
-      
+
       &:hover {
         background: #a8a8a8;
       }
@@ -81,7 +81,7 @@
       table-layout: auto;
       border-collapse: collapse;
       position: relative;
-      
+
       .mat-mdc-header-cell,
       .mat-mdc-cell {
         padding: 12px 16px;
@@ -90,11 +90,11 @@
         vertical-align: middle;
         box-sizing: border-box;
         white-space: nowrap;
-        
+
         &.wide-column {
           min-width: 200px;
         }
-        
+
         &.narrow-column {
           min-width: 80px;
         }
@@ -130,7 +130,7 @@
               height: 18px;
               opacity: 0.5;
               transition: opacity 0.2s ease;
-              flex-shrink: 0; 
+              flex-shrink: 0;
 
               &.sorted {
                 opacity: 1;
@@ -171,13 +171,13 @@
             font-size: 14px;
           }
         }
-        
+
         &.text-column {
           max-width: 300px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          
+
           &:hover {
             white-space: normal;
             word-break: break-word;
@@ -210,23 +210,23 @@
         justify-content: center;
         align-items: center;
         flex-wrap: nowrap;
-        
+
 
         .action-btn {
           flex-shrink: 0;
-          
-        
-          background: transparent !important; 
+
+
+          background: transparent !important;
 
           &:hover {
-            background: transparent !important; 
+            background: transparent !important;
           }
           &:focus {
             background: transparent !important;
           }
         }
       }
-      
+
       .mat-column-selection {
         width: 48px;
         min-width: 48px;
@@ -235,7 +235,7 @@
         text-align: center;
         padding: 12px 8px;
       }
-      
+
       // Actions column - sticky on desktop only
       .mat-column-actions {
         position: sticky;
@@ -263,11 +263,11 @@
     border-top: 1px solid #e9ecef;
     display: flex;
     justify-content: end;
-    flex-shrink: 0; 
+    flex-shrink: 0;
 
     ::ng-deep .mat-mdc-paginator {
       background: transparent;
-      
+
       .mat-mdc-paginator-container {
         justify-content: center;
       }
@@ -364,7 +364,7 @@
 @media (max-width: 768px) {
   .data-grid-container {
     border-radius: 4px;
-    
+
     .controls-bar {
       flex-direction: column;
       gap: 12px;
@@ -373,7 +373,7 @@
 
       .search-section {
         max-width: none;
-        
+
         .search-field {
           width: 100%;
         }
@@ -389,10 +389,10 @@
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
       scrollbar-color: #c1c1c1 #f1f1f1;
-      
+
       .data-table {
         min-width: 600px; // Ensure table doesn't get too compressed
-        
+
         .mat-mdc-header-cell,
         .mat-mdc-cell {
           padding: 8px 10px;
@@ -418,14 +418,14 @@
             width: 32px;
             height: 32px;
             padding: 4px;
-            
+
             mat-icon, svg {
               width: 20px;
               height: 20px;
             }
           }
         }
-        
+
         // Remove sticky and shadows on mobile
         .mat-column-actions {
           position: static !important;
@@ -435,7 +435,7 @@
           width: auto;
           min-width: 120px !important;
         }
-        
+
         .mat-column-selection {
           width: 40px;
           min-width: 40px;
@@ -447,14 +447,14 @@
 
     .pagination-container {
       padding: 8px 12px;
-      
+
       ::ng-deep .mat-mdc-paginator {
         .mat-mdc-paginator-container {
           flex-wrap: wrap;
           gap: 8px;
           padding: 0;
         }
-        
+
         .mat-mdc-paginator-page-size {
           margin: 0;
         }
@@ -477,7 +477,7 @@
     .controls-bar {
       padding: 8px;
     }
-    
+
     .table-container {
       .data-table {
         .mat-mdc-header-cell,
@@ -489,25 +489,25 @@
 
         .action-buttons {
           gap: 1px;
-          
+
           .action-btn {
             width: 28px;
             height: 28px;
             padding: 2px;
-            
+
             mat-icon, svg {
               width: 18px;
               height: 18px;
             }
           }
         }
-        
+
         .mat-column-actions {
           min-width: 100px !important;
         }
       }
     }
-    
+
     .status-bar {
       padding: 6px 8px;
       font-size: 11px;
@@ -528,7 +528,7 @@
 // Dark theme support
 @media (prefers-color-scheme: dark) {
   .data-grid-container {
- 
+
     color: #e2e8f0;
 
     .controls-bar {
@@ -558,13 +558,13 @@
     }
 
     .table-container {
-      overflow: visible; 
-      
+      overflow: visible;
+
       .data-table {
         .action-buttons {
           display: none;
         }
-        
+
         .mat-column-actions {
           display: none;
         }
@@ -572,3 +572,6 @@
     }
   }
 }
+
+
+

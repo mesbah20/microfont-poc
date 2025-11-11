@@ -286,6 +286,7 @@
       [class.flex]="!sidebarExpanded"
       [class.justify-center]="!sidebarExpanded">
         <div (click)="setActiveItem('security')"
+             routerLink="config/approval-items"
              class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
