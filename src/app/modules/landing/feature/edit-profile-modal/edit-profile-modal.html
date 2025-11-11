@@ -1,60 +1,125 @@
-<lds-modal
-  [isVisible]="isOpen"
-  [modalTitle]="'Edit Profile'"
-  [cssClass]="'modal-panel-right'"
-  [closeOnBackdropClick]="true"
-  (isVisibleChanged)="isOpenChange.emit($event)"
-  (modalClosed)="onClose()"
->
-  <div bodyContent>
-    <form [formGroup]="frm" class="grid gap-3">
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label>User ID</label>
-          <input class="inp" formControlName="user_id" />
-        </div>
-        <div>
-          <label>User Name</label>
-          <input class="inp" formControlName="user_nm" />
-        </div>
+<div class="other-page-wrapper p-6 space-y-4">
+
+  <!-- 🔹 Profile Image Section (Top) -->
+  <div class="flex flex-col items-center justify-center gap-3 mb-6">
+    <div class="relative">
+      <!-- Profile Preview -->
+      <div
+        class="w-24 h-24 rounded-full overflow-hidden ring-2 ring-blue-400 flex items-center justify-center bg-gray-100 shadow-md"
+      >
+        <img
+          *ngIf="imgPreviewUrl; else noimg"
+          [src]="imgPreviewUrl"
+          alt="Profile Preview"
+          class="w-full h-full object-cover text-sm"
+        />
+        <ng-template #noimg>
+          <span class="text-xs text-gray-500">No Image</span>
+        </ng-template>
       </div>
 
-      <div>
-        <label>Description</label>
-        <textarea class="inp" formControlName="user_descrip"></textarea>
-      </div>
+      <!-- Edit Icon Button -->
+      <label
+        class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full cursor-pointer shadow-md transition"
+        title="Change Profile Photo"
+      >
+        <mat-icon fontIcon="edit" class="text-sm"></mat-icon>
+        <input
+          type="file"
+          accept=".png,.jpg,.jpeg"
+          (change)="onProfilePicSelected($event)"
+          hidden
+        />
+      </label>
+    </div>
+<p class="text-sm text-gray-500 mt-2 text-center font-medium tracking-wide flex items-center justify-center gap-1">
+  <mat-icon fontIcon="photo_camera" class="text-blue-500 text-base"></mat-icon>
+  Upload a new profile photo
+</p>
 
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label>Home Office ID</label>
-          <input class="inp" formControlName="home_office_id" />
-        </div>
-        <div>
-          <label>Email</label>
-          <input class="inp" formControlName="user_email_id" />
-        </div>
-      </div>
 
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label>Login ID</label>
-          <input class="inp" formControlName="login_id" />
-        </div>
-        <div>
-          <label>Mobile Number</label>
-          <input class="inp" formControlName="mobile_number" maxlength="30" />
-        </div>
-      </div>
-
-      <div>
-        <label>Profile Image URL</label>
-        <input class="inp" formControlName="user_img" />
-      </div>
-    </form>
   </div>
 
-  <div slot="footer">
-    <button class="btn btn-secondary" type="button" (click)="onClose()">Cancel</button>
-    <button class="btn btn-primary" type="button" (click)="onSave()">Save</button>
-  </div>
-</lds-modal>
+  <!-- 🔹 Form Fields -->
+  <form [formGroup]="frmGroup" class="transaction-form">
+    <div class="panel">
+      <div class="transaction-grid-container mb-10">
+        <!-- Header -->
+        <section class="header-section">
+          <app-expansion-panel-header
+            [isOpenSignal]="headerOpen"
+            [panelTitle]="'Profile Information'"
+          />
+        </section>
+
+        <!-- Form Inputs -->
+        <section
+          class="primary-fields-section bg-gray-50 rounded-lg mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"
+        >
+          <lds-id-box
+            [frmGroup]="frmGroup"
+            [controlName]="'user_id'"
+            [label]="'User ID'"
+            [isVertical]="true"
+            [isDotsVisible]="false"
+          ></lds-id-box>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'login_id'"
+            [label]="'Login ID'"
+            [isReadonly]="true"
+            displayMode="vertical"
+          ></app-text-base-input>
+
+          <lds-office-box
+            [frmGroup]="frmGroup"
+            [controlName]="'home_office_id'"
+            [labelText]="'Home Office ID'"
+            [isVertical]="true"
+            [enable]="false"
+          ></lds-office-box>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'user_nm'"
+            [label]="'User Name'"
+            displayMode="vertical"
+            [customErrorMessages]="{
+              required: 'User name is required',
+              maxlength: 'Max 100 characters'
+            }"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'user_email_id'"
+            [label]="'Email'"
+            displayMode="vertical"
+            [customErrorMessages]="{
+              required: 'Email is required',
+              email: 'Enter valid email'
+            }"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'mobile_number'"
+            [label]="'Mobile Number'"
+            displayMode="vertical"
+            [placeholder]="'e.g. +8801XXXXXXXXX'"
+          ></app-text-base-input>
+
+          <lds-txt-area
+            class="md:col-span-2"
+            [frmGroup]="frmGroup"
+            [controlName]="'user_descrip'"
+            [labelText]="'Description'"
+            [isVertical]="true"
+            [rows]="3"
+          ></lds-txt-area>
+        </section>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,94 +1,116 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation, WritableSignal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Button } from '../../../../shared/components/input-types/button/button';
+import { FileComponent } from '../../../../shared/components/input-types/file-input/file-input';
+import { IdBoxComponent } from '../../../../shared/components/input-types/id-box/id-box';
+import { OfficeBoxComponent } from '../../../../shared/components/input-types/office-box/office-box';
+import { TextArea } from '../../../../shared/components/input-types/text-area/text-area';
+import { TextBaseInput } from '../../../../shared/components/input-types/text-base-input/text-base-input';
+import { DataGridComponent } from '../../../../shared/components/data-grid';
+import { DataSelectionModal } from '../../../../shared/components/data-selection-modal/data-selection-modal';
+import { ExpansionPanelHeader } from '../../../../shared/components/expansion-panel-header/expansion-panel-header';
+import { ExpansionSubPanelHeader } from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
+import { AmountToWordInput } from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
+import { DateInput } from '../../../../shared/components/input-types/date-input/date-input';
+import { NumberInput } from '../../../../shared/components/input-types/number-input/number-input';
+import { SelectOptionField } from '../../../../shared/components/input-types/select-option-field/select-option-field';
+import { Switch } from '../../../../shared/components/input-types/switch/switch';
 import { LdsModalComponent } from '../../../../shared/components/lds-modal/lds-modal';
+import { LdsStepperComponent } from '../../../../shared/components/lds-stepper/lds-stepper';
+import { MultiSelectOptionField } from '../../../../shared/components/multi-select-option-field/multi-select-option-field';
+import { OtherComponentsPage } from '../../../../shared/components/other-components-page/other-components-page';
+import { MatIcon } from '@angular/material/icon';
 
-export type UserDto = {
-  user_id: string;
-  user_nm: string;
-  user_descrip: string;
-  home_office_id: string;
-  user_email_id: string;
-  login_id: string;
-  mobile_number: string;
-  user_img: string;
-};
+
 
 @Component({
   selector: 'app-edit-profile-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, LdsModalComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    TextBaseInput,
+    TextArea,
+    FileComponent,
+    OfficeBoxComponent,
+    IdBoxComponent,
+    Button,
+    Switch,
+    AmountToWordInput,
+    SelectOptionField,
+    DateInput,
+    MultiSelectOptionField,
+    LdsStepperComponent,
+    LdsModalComponent,
+    NumberInput,
+    DataGridComponent,
+    ExpansionPanelHeader,
+    ExpansionSubPanelHeader,
+    DataSelectionModal,
+    OtherComponentsPage,
+    MatIcon
+      
+  ],
   templateUrl: './edit-profile-modal.html',
-  styleUrls: ['./edit-profile-modal.scss']
+  styleUrls: ['./edit-profile-modal.scss'],
+
 })
-export class EditProfileModal implements OnChanges {
-  @Input() isOpen = false;
-  @Output() isOpenChange = new EventEmitter<boolean>();
+export class EditProfileModal implements OnInit {
+  @Input() initialData?: any;
+  @Input() modalParent?: { close(result?: any): void; closeModal(): void };
 
-  @Input() user!: UserDto;
 
-  // Editable fields only
-  editableFields: Array<keyof UserDto> = [
-    'user_nm', 'user_descrip', 'user_email_id', 'mobile_number', 'user_img'
-  ];
+  @Output() modalResult = new EventEmitter<any>();
 
-  @Output() save = new EventEmitter<Partial<UserDto>>();
-  @Output() close = new EventEmitter<void>();
+    frmGroup!: FormGroup;
+  headerOpen: WritableSignal<boolean> = signal(true);
+  imgPreviewUrl: string | ArrayBuffer | null = null;
+  selectedImageFile?: File;
 
-  // CHANGE: declare the form with definite assignment; actual init happens in constructor
-  frm!: ReturnType<FormBuilder['group']>;
+  constructor(private fb: FormBuilder) {}
 
-  // CHANGE: move form initialization into constructor so fb is already injected
-  constructor(private fb: FormBuilder) {
-    this.frm = this.fb.group({
+  ngOnInit(): void {
+    this.frmGroup = this.fb.group({
       user_id: [{ value: '', disabled: true }],
-      user_nm: ['', Validators.required],
-      user_descrip: [''],
       home_office_id: [{ value: '', disabled: true }],
-      user_email_id: ['', [Validators.email]],
       login_id: [{ value: '', disabled: true }],
-      mobile_number: ['', [Validators.maxLength(30)]],
-      user_img: ['']
+      user_nm: ['', [Validators.required, Validators.maxLength(100)]],
+      user_descrip: ['', [Validators.maxLength(500)]],
+      user_email_id: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
+      mobile_number: [
+        '',
+        [Validators.maxLength(30), Validators.pattern(/^[0-9+\-\s()]{0,30}$/)]
+      ],
+      user_img: [null],
     });
-  }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['user'] && this.user) {
-      this.frm.reset({
-        user_id: this.user.user_id,
-        user_nm: this.user.user_nm,
-        user_descrip: this.user.user_descrip,
-        home_office_id: this.user.home_office_id,
-        user_email_id: this.user.user_email_id,
-        login_id: this.user.login_id,
-        mobile_number: this.user.mobile_number,
-        user_img: this.user.user_img
+    if (this.initialData) {
+      const patch: any = {};
+      Object.keys(this.frmGroup.controls).forEach((k) => {
+        if (this.initialData[k] !== undefined) patch[k] = this.initialData[k];
       });
+      this.frmGroup.patchValue(patch);
+      if (this.initialData.user_img) this.imgPreviewUrl = this.initialData.user_img;
     }
   }
 
-  onClose() {
-    this.isOpen = false;
-    this.isOpenChange.emit(false);
-    this.close.emit();
+  getModalResult() {
+    return this.frmGroup.getRawValue();
   }
 
-  onSave() {
-    if (this.frm.invalid || !this.user) return;
+  onProfilePicSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = input.files;
+    if (!files || files.length === 0) return;
 
-    const after = this.frm.getRawValue() as UserDto;
-    const patch: Partial<UserDto> = {};
+    const file = files[0];
+    this.selectedImageFile = file;
+    this.frmGroup.patchValue({ user_img: file });
 
-    // Only send changed editable fields
-    for (const key of this.editableFields) {
-      if (after[key] !== this.user[key]) {
-        patch[key] = after[key];
-      }
-    }
-
-    if (Object.keys(patch).length > 0) {
-      this.save.emit(patch);
-    }
-    this.onClose();
+    const reader = new FileReader();
+    reader.onload = () => (this.imgPreviewUrl = reader.result);
+    reader.readAsDataURL(file);
   }
 }
+

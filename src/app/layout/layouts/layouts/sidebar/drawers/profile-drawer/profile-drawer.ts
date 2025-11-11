@@ -1,8 +1,11 @@
-import {Component, signal} from '@angular/core';
+import {Component, signal, Type} from '@angular/core';
 import {ChatBox} from './drawers/chat-box/chat-box';
 import {MatIcon} from '@angular/material/icon';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import { ThemePickerComponent } from '../../themePicker/theme-picker.component';
+import { CommonModule } from '@angular/common';
+import { LdsModalComponent } from '../../../../../../shared/components/lds-modal/lds-modal';
+import { EditProfileModal } from '../../../../../../modules/landing/feature/edit-profile-modal/edit-profile-modal';
 
 @Component({
   selector: 'app-profile-drawer',
@@ -10,6 +13,9 @@ import { ThemePickerComponent } from '../../themePicker/theme-picker.component';
     ChatBox,
     MatIcon,
     ThemePickerComponent,
+    CommonModule,
+    LdsModalComponent,
+    EditProfileModal
   ],
   templateUrl: './profile-drawer.html',
   standalone: true,
@@ -30,6 +36,41 @@ export class ProfileDrawer {
 
   isChatOpen = signal(false);
   chatWith: string;
+    showEditProfileModal = false;
+  modalComponent?: Type<any>;
+  modalData?: any;
+
+   openEditProfileModal() {
+    this.modalComponent = EditProfileModal;
+    this.modalData = {
+      initialData: {
+        user_id: 'USR002',
+        user_nm: 'Saikat',
+        user_descrip: 'Software Engineer',
+        home_office_id: 'DHK001',
+        login_id: 'saikat01',
+        user_email_id: 'saikat.gmail.com',
+        mobile_number: '017XXXXXXXX',
+        user_img: 'assets/profile.png'
+      }
+    };
+    this.showEditProfileModal = true;
+  }
+
+  /** ✅ Modal close */
+  closeEditProfileModal() {
+    this.showEditProfileModal = false;
+  }
+
+  /** ✅ Modal result  */
+  // onProfileUpdated(result: any) {
+  //   console.log('✅ Profile updated:', result);
+  //   this.showEditProfileModal = false;
+  // }
+  // ✅ এখানে data console-এ দেখা যাবে
+  onProfileUpdated(updatedData: any) {
+    console.log('🟢 Updated profile data received from modal:', updatedData);
+  }
 
   toggleChat(chatWith: string) {
     this.isChatOpen.set(!this.isChatOpen());
