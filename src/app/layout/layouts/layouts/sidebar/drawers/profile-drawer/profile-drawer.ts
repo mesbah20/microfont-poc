@@ -3,6 +3,7 @@ import {ChatBox} from './drawers/chat-box/chat-box';
 import {MatIcon} from '@angular/material/icon';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import { ThemePickerComponent } from '../../themePicker/theme-picker.component';
+import {Router, RouterModule} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LdsModalComponent } from '../../../../../../shared/components/lds-modal/lds-modal';
 import { EditProfileModal } from '../../../../../../modules/landing/feature/edit-profile-modal/edit-profile-modal';
@@ -13,6 +14,7 @@ import { EditProfileModal } from '../../../../../../modules/landing/feature/edit
     ChatBox,
     MatIcon,
     ThemePickerComponent,
+    RouterModule
     CommonModule,
     LdsModalComponent,
     EditProfileModal
@@ -36,6 +38,8 @@ export class ProfileDrawer {
 
   isChatOpen = signal(false);
   chatWith: string;
+
+  constructor(private router: Router) {}
     showEditProfileModal = false;
   modalComponent?: Type<any>;
   modalData?: any;
@@ -101,5 +105,9 @@ export class ProfileDrawer {
   isSectionOpen(section: string): boolean {
     return this.openSections[section];
   }
+
+  goToNotes() {
+  this.router.navigate(['/usernote']);
+}
 
 }

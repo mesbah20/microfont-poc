@@ -1,0 +1,18 @@
+<div *ngIf="loaderService.isLoading()" class="loader-page">
+  <div class="loader-container">
+    <div class="ring firstRing"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="caption">
+      <p style="margin-bottom: 0px; font-size: 20px;">
+        Please Wait<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- <div *ngIf="loaderService.isLoading()" class="loader-container">
+  <div class="ring"></div>
+  <div class="ring"></div>
+  <p>Loading...</p>
+</div> -->
