@@ -1,6 +1,6 @@
 <div class="other-page-wrapper p-4">
   <h3 class="text-2xl font-bold mb-4">{{ title }}</h3>
-  
+
    <form [formGroup]="frmGroup" class="transaction-form">
     <div class="panel">
          <div class="transaction-grid-container mb-10">
@@ -9,12 +9,12 @@
               [isOpenSignal]="businessHeaderPanel"
               [panelTitle]="'Transaction Management'"
             />
-            
+
           </section>
 
 
              <section class="primary-fields-section bg-gray-50 rounded-lg  mb-6 grid grid-cols-1">
-         
+
               <!-- Transaction Reference Subsection -->
               <div class=" component-section">
                 <app-text-base-input
@@ -27,7 +27,7 @@
                   [tooltipPosition]="'above'"
                   [tooltipDelay]="300"
                   [tooltipClass]="'success-tooltip'"
-              
+
                   [customErrorMessages]="{
                     required: 'Transaction reference is required',
                     minlength: 'Minimum 3 characters required',
@@ -48,15 +48,9 @@
                   [tooltip]="'Click to select account ID'"
                   [tooltipPosition]="'above'"
                   [tooltipDelay]="300"
-                
+
                 ></lds-id-box>
               </div>
-
-             
-            
-
-           
-
               <!-- Amount in Words Subsection -->
               <div class=" component-section">
                 <app-amount-to-word-input
@@ -64,12 +58,26 @@
                   [controlName]="'amountToWord'"
                   [label]="'Amount in Words'"
                   [isVertical]="true"
-                 
+
                   [decimalPlaces]="2"
                   [maxLen]="12"
                   [tooltip]="'Automatically synced with amount field'"
-            
+
                 ></app-amount-to-word-input>
+              </div>
+
+                <div class="p-4">
+                <lds-data-grid
+                  [id]="'enhanced-transactions'"
+                  [dataSource]="sampleTransactions()"
+                  [initPageSize]="8"
+                  [useInlineEdit]="true"
+                  [editableColumns]="['amount', 'status', 'priority', 'currency', 'country', 'productCategory', 'subCategory', 'assignedRole']"
+                  [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
+                  [selectedColumns]="['id', 'amount', 'currency']"
+
+                  ></lds-data-grid>
+<!--                  (onRowDoubleClick)="onRowDblClick($event)"-->
               </div>
             </section>
          </div>

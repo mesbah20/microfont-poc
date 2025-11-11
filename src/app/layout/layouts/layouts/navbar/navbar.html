@@ -1,8 +1,8 @@
 <div class="navbar-container relative z-50">
   <div
-    class="h-16 flex items-center justify-between px-4  border-b-[0.5px] border-gray-300 shadow-2xl shadow-black/10">
+    class="h-16 flex items-center justify-between px-2 sm:px-4 border-b-[0.5px] border-gray-300 shadow-2xl shadow-black/10">
 
-<div class="flex space-x-2">
+<div class="flex space-x-1 sm:space-x-2">
   
  <button (click)="toggleSidebar()"
   class="cursor-pointer hover:bg-[var(--theme-accent)] hover:scale-105p p-2 rounded">
@@ -11,16 +11,15 @@
 </button>
 
   <div class="flex-col sm:flex justify-center items-center sm:flex-row sm:space-x-2">
-  <img class="cursor-pointer w-10 " routerLink="/dashboard" src="/asset/logos/nexoLogo1.png" alt=""/>
-  <span style="font-weight: 600; font-family: Verdana, Geneva, Tahoma, sans-serif;" class="text-white text-xl">Nexo</span>
+  <img class="cursor-pointer w-8 sm:w-10" routerLink="/dashboard" src="/asset/logos/nexoLogo1.png" alt=""/>
+  <span style="font-weight: 600; font-family: Verdana, Geneva, Tahoma, sans-serif;" class="text-white text-base sm:text-xl hidden sm:inline">Nexo</span>
 </div>
 </div>
 
 
       <!-- <app-search></app-search> -->
        <div>
-
-         <p style="font-weight: 600; font-family: Verdana, Geneva, Tahoma, sans-serif;" class="text-xl text-white ">All Components</p>
+         <p style="font-weight: 600; font-family: Verdana, Geneva, Tahoma, sans-serif;" class="text-sm sm:text-xl text-white">All Components</p>
        </div>
       <!-- Desktop Buttons -->
       <div class="flex items-center space-x-[3px] hidden sm:flex">

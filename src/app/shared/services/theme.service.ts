@@ -87,22 +87,6 @@ export class ThemeService {
         '--primary-700': '#6d28d9',
       }
     },
-    // {
-    //   id: 'orange',
-    //   name: 'Sunset Orange',
-    //   icon: 'wb_sunny',
-    //   primary: '#f97316',
-    //   secondary: '#c2410c',
-    //   accent: '#fb923c',
-    //   background: '#fff7ed',
-    //   cssVariables: {
-    //     '--primary-50': '#fff7ed',
-    //     '--primary-100': '#ffedd5',
-    //     '--primary-500': '#f97316',
-    //     '--primary-600': '#ea580c',
-    //     '--primary-700': '#c2410c',
-    //   }
-    // },
     {
       id: 'rose',
       name: 'Cherry Rose',

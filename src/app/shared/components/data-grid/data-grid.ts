@@ -1,6 +1,6 @@
-import { Component, input, output, signal, computed, OnInit, OnDestroy, effect } from '@angular/core';
+import { Component, input, output, signal, computed, OnInit, OnDestroy, effect, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
@@ -11,6 +11,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MultiSelectOptionField } from '../multi-select-option-field/multi-select-option-field';
+import { ExpansionPanelHeader } from '../expansion-panel-header/expansion-panel-header';
+import { Button } from '../input-types/button/button';
 
 export interface TableRowDesigner {
   condition: (item: any) => boolean;
@@ -37,8 +40,8 @@ export interface GridColumn {
   filterable?: boolean;
   isDropdown?: boolean;
   dropdownOptions?: DropdownOption[];
-  dropdownOptionsSource?: string; 
-  isMultiSelect?: boolean; 
+  dropdownOptionsSource?: string;
+  isMultiSelect?: boolean;
   isCheckbox?: boolean;
   showSelectAll?: boolean; // New property for checkbox columns
   readOnly?: boolean; // New property to make checkboxes read-only
@@ -64,10 +67,16 @@ export interface ColumnSelectAllEvent {
   checked: boolean;
 }
 
+export interface Option {
+  key: string;
+  value: string;
+}
+
 @Component({
   selector: 'lds-data-grid',
   standalone: true,
   imports: [
+    ReactiveFormsModule,
     CommonModule,
     FormsModule,
     MatTableModule,
@@ -79,12 +88,17 @@ export interface ColumnSelectAllEvent {
     MatInputModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MultiSelectOptionField,
+    ExpansionPanelHeader,
+    Button
   ],
   templateUrl: './data-grid.html',
   styleUrl: './data-grid.scss'
 })
 export class DataGridComponent<T extends Record<string, any> = any> implements OnInit, OnDestroy {
+  frmGroup: FormGroup;
+
   // Basic Inputs
   readonly id = input<string>('');
   readonly showEditButton = input<boolean>(false);
@@ -103,6 +117,9 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly initPageSize = input<number>(5);
   readonly useInlineEdit = input<boolean>(true);
   readonly searchEnabled = input<boolean>(false);
+  readonly groupOptionEnabled = input<boolean>(false);
+  readonly gridTitle = input<string>('');
+  readonly summaryGridPosition = input<string>('above');
 
   // Dropdown Inputs
   readonly dropdownColumns = input<string[]>([]);
@@ -115,11 +132,15 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly checkboxSelectAllColumns = input<string[]>([]); // Columns that should show select all
   readonly readOnlyCheckboxColumns = input<string[]>([]); // Columns that should be read-only
 
+  // Summary
+  readonly summaryColumns = input<string[]>([]);
+  readonly groupByColumns = input<string[]>([]);
+
   // Basic Outputs
-  readonly onSelectAllChange = output<{ 
-    isSelectAll: boolean, 
-    selectedRows: T[], 
-    count: number 
+  readonly onSelectAllChange = output<{
+    isSelectAll: boolean,
+    selectedRows: T[],
+    count: number
   }>();
   readonly onFHEditClick = output<string>();
   readonly onFHDeleteClick = output<string>();
@@ -128,6 +149,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly onChecked = output<{ data: string, checked: boolean }>();
   readonly onPrint = output<string>();
   readonly dataSourceChanged = output<T[]>();
+  readonly onRowDoubleClick = output<string>();
 
   // Enhanced Checkbox Outputs
   readonly onCheckboxValueChange = output<CheckboxChangeEvent>();
@@ -145,6 +167,25 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   public _selectAll = signal<boolean>(false);
   public _editingRow = signal<number | null>(null);
   public _editingData = signal<Partial<T>>({});
+  public _allSummary = signal<Record<string, number>>({});
+  public _summaryOption = signal<{ key: string; value: string }[]>([]);
+  public _groupByOption = signal<{ key: string; value: string }[]>([]);
+  public _gridSummaryColumns = signal<string[]>([]);
+  public _gridGroupColumns = signal<string[]>([]);
+  public _selectedSummaryColumns = signal<string[]>([]);
+  public _selectedGroupColumns = signal<string[]>([]);
+  public _panelTitle = signal<string>('');
+  businessHeaderPanel: WritableSignal<boolean> = signal(true);
+
+  //Grouped summary (per group)
+  public _groupedSummary = signal<any[]>([]);
+  private _initialized = false;
+
+  //Overall summary
+  public _totalSummary = signal<{ totalCount: number; totals: Record<string, number> }>({
+    totalCount: 0,
+    totals: {}
+  });
 
   // Computed values
   columns = computed(() => this.buildColumns());
@@ -155,11 +196,11 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   selectedCount = computed(() => this._selectedRows().size);
   isAllSelected = computed(() => this._selectedRows().size === this.displayedData().length && this.displayedData().length > 0);
 
-  constructor() {
+  constructor(private formBuilder: FormBuilder) {
     // Data source effect
     effect(() => {
       const data = this.dataSource();
-      
+
       if (data && data.length > 0) {
         this._dataSource.set([...data]); // Create a copy
         this.applyFilters();
@@ -176,9 +217,28 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
         this._pageSize.set(pageSize);
       }
     });
+
+    //Group Summary, Count
+    effect(() => {
+      if (this._initialized) return; // skip re-run
+      this._initialized = true;
+      this.allGroupSummary();
+    });
   }
 
   ngOnInit() {
+    this.frmGroup = this.formBuilder.group({
+      summaryColumn: [[]],
+      groupColumn: [[]],
+    });
+
+    this.loadSummaryOption();
+    this.loadGroupOption();
+
+    // Child Panel Title
+    const gridTitle = this.gridTitle();
+    this._panelTitle.set(`${gridTitle} Summary`);
+
     console.log('Enhanced DataGridComponent initialized');
   }
 
@@ -200,13 +260,13 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
       sortable: !this.checkboxColumns().includes(prop), // Checkboxes are not sortable by default
       filterable: true,
       width: this.getColumnWidth(prop),
-      
+
       // Dropdown properties
       isDropdown: this.dropdownColumns().includes(prop),
       dropdownOptions: this.dropdownOptions()[prop] || [],
       dropdownOptionsSource: this.dynamicDropdownSources()[prop],
       isMultiSelect: this.multiSelectColumns().includes(prop),
-      
+
       // Enhanced checkbox properties
       isCheckbox: this.checkboxColumns().includes(prop),
       showSelectAll: this.checkboxSelectAllColumns().includes(prop),
@@ -226,7 +286,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
         }));
       }
     }
-    
+
     // Static options from configuration
     return column.dropdownOptions || [];
   }
@@ -234,16 +294,16 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   // Method to get display text for dropdown values
   getDropdownDisplayText(column: GridColumn, value: any, rowData?: T): string {
     if (!column.isDropdown) return value;
-    
+
     const options = this.getDropdownOptions(column, rowData);
-    
+
     if (column.isMultiSelect && Array.isArray(value)) {
       return value.map(v => {
         const option = options.find(opt => opt.value === v);
         return option ? option.label : v;
       }).join(', ');
     }
-    
+
     const option = options.find(opt => opt.value === value);
     return option ? option.label : value;
   }
@@ -251,12 +311,12 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   // Enhanced setEditingValue to handle all input types
   setEditingValue(property: string, value: any): void {
     const column = this.columns().find(col => col.property === property);
-    
+
     if (column?.isCheckbox) {
       // Ensure boolean value for checkboxes
-      this._editingData.set({ 
-        ...this._editingData(), 
-        [property]: Boolean(value) 
+      this._editingData.set({
+        ...this._editingData(),
+        [property]: Boolean(value)
       } as Partial<T>);
     } else if (column?.isMultiSelect && typeof value === 'string') {
       // Handle multi-select string conversion if needed
@@ -277,7 +337,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   }
 
   // Enhanced checkbox methods
-  
+
   // Method to handle individual checkbox changes in display mode
   onCheckboxChange(item: T, property: string, checked: boolean, displayIndex: number): void {
     if (this.readOnlyCheckboxColumns().includes(property)) {
@@ -291,14 +351,14 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
       const filteredItem = this._filteredData()[actualIndex];
       return sourceItem === filteredItem;
     });
-    
+
     if (sourceIndex !== -1) {
       const updatedData = [...this._dataSource()];
       (updatedData[sourceIndex] as any)[property] = checked;
-      
+
       this._dataSource.set(updatedData);
       this.applyFilters();
-      
+
       // Emit events
       this.dataSourceChanged.emit(updatedData);
       this.onCheckboxValueChange.emit({
@@ -314,8 +374,8 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   isAllColumnValuesChecked(property: string): boolean {
     const displayedData = this.displayedData();
     if (displayedData.length === 0) return false;
-    
-    return displayedData.every(item => 
+
+    return displayedData.every(item =>
       Boolean(this.getPropertyValue(item, property))
     );
   }
@@ -324,11 +384,11 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   isSomeColumnValuesChecked(property: string): boolean {
     const displayedData = this.displayedData();
     if (displayedData.length === 0) return false;
-    
-    const checkedCount = displayedData.filter(item => 
+
+    const checkedCount = displayedData.filter(item =>
       Boolean(this.getPropertyValue(item, property))
     ).length;
-    
+
     return checkedCount > 0 && checkedCount < displayedData.length;
   }
 
@@ -340,7 +400,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
 
     const updatedData = [...this._dataSource()];
     const displayedData = this.displayedData();
-    
+
     // Update all displayed rows
     displayedData.forEach(displayedItem => {
       const sourceIndex = updatedData.findIndex(sourceItem => sourceItem === displayedItem);
@@ -348,10 +408,10 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
         (updatedData[sourceIndex] as any)[property] = checked;
       }
     });
-    
+
     this._dataSource.set(updatedData);
     this.applyFilters();
-    
+
     // Emit events
     this.dataSourceChanged.emit(updatedData);
     this.onColumnSelectAll.emit({
@@ -370,16 +430,16 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
       isActive: '120px',
       // Add more properties as needed
     };
-    
+
     // Shorter width for checkbox columns
     if (this.checkboxColumns().includes(property)) {
       return widthMap[property] || '100px';
     }
-    
+
     return widthMap[property] || '150px'; // Default width
   }
 
-  private formatColumnHeader(property: string): string {
+  public formatColumnHeader(property: string): string {
     return property
       .replace(/([A-Z])/g, ' $1')
       .replace(/^./, str => str.toUpperCase())
@@ -392,10 +452,10 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
 
     // Apply search filter
     if (this._searchTerm()) {
-      filtered = filtered.filter(item => 
+      filtered = filtered.filter(item =>
         Object.entries(item as Record<string, any>).some(([key, value]) => {
           const column = this.columns().find(col => col.property === key);
-          
+
           // Handle different column types for search
           if (column?.isCheckbox) {
             // For checkboxes, search for "true", "false", "yes", "no"
@@ -423,10 +483,10 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
       filtered.sort((a, b) => {
         const aVal = this.getPropertyValue(a, this._sortColumn());
         const bVal = this.getPropertyValue(b, this._sortColumn());
-        
+
         // Handle different data types for sorting
         const column = this.columns().find(col => col.property === this._sortColumn());
-        
+
         if (column?.isCheckbox) {
           // Boolean sorting
           const aBool = Boolean(aVal);
@@ -455,7 +515,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
     }
 
     this._filteredData.set(filtered);
-    
+
     // Reset to first page when filtering, but don't reset if it's initial load
     if (this._searchTerm() || this._sortColumn()) {
       this._currentPage.set(0);
@@ -500,25 +560,25 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   onRowSelect(index: number, checked: boolean): void {
     const actualIndex = this._currentPage() * this._pageSize() + index;
     const newSelected = new Set(this._selectedRows());
-    
+
     if (checked) {
       newSelected.add(actualIndex);
     } else {
       newSelected.delete(actualIndex);
     }
-    
+
     this._selectedRows.set(newSelected);
-    
-    
-    this.onChecked.emit({ 
+
+
+    this.onChecked.emit({
       data: JSON.stringify(this._filteredData()[actualIndex]),
-      checked: checked 
+      checked: checked
     });
   }
-  
+
     onSelectAll(checked: boolean): void {
       this._selectAll.set(checked);
-      
+
       if (checked) {
         const newSelected = new Set<number>();
         this.displayedData().forEach((_, index) => {
@@ -528,7 +588,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
       } else {
         this._selectedRows.set(new Set());
       }
-  
+
     const selectedRows = this.getSelectedRows();
     this.onSelectAllChange.emit({
       isSelectAll: checked,
@@ -536,7 +596,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
       count: selectedRows.length
     });
     }
-  
+
   // Row editing
   startEdit(index: number): void {
     this._editingRow.set(index);
@@ -546,11 +606,11 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   saveEdit(index: number): void {
     const displayedItem = this.displayedData()[index];
     const sourceIndex = this._dataSource().findIndex(sourceItem => sourceItem === displayedItem);
-    
+
     if (sourceIndex !== -1) {
       const updatedData = [...this._dataSource()];
       updatedData[sourceIndex] = { ...updatedData[sourceIndex], ...this._editingData() };
-      
+
       this._dataSource.set(updatedData);
       this._editingRow.set(null);
       this._editingData.set({});
@@ -613,11 +673,11 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   getEditingValue(property: string): any {
     const value = (this._editingData() as Record<string, any>)[property];
     const column = this.columns().find(col => col.property === property);
-    
+
     if (column?.isCheckbox) {
       return Boolean(value);
     }
-    
+
     return value !== undefined ? value : '';
   }
 
@@ -644,7 +704,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   // Get displayed columns for the table
   getDisplayedColumns(): string[] {
     const columns: string[] = [];
-    
+
     if (this.enableSelection()) {
       columns.push('selection');
     }
@@ -652,18 +712,23 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
     if (this.showEditButton() || this.showDeleteButton() || this.showViewButton() || this.showPrintButton() || this.showProgressButton()) {
       columns.push('actions');
     }
-     
+
     const dataColumns = this.columns().map(col => col.property);
     columns.push(...dataColumns);
 
     return columns;
   }
 
+  // Row double-click handler (template binds directly, but helper for clarity)
+  emitRowDoubleClick(item: T): void {
+    this.onRowDoubleClick.emit(JSON.stringify(item));
+  }
+
   // Enhanced public methods for checkbox functionality
 
   // Get all checked items for a specific column
   getCheckedItemsForColumn(property: string): T[] {
-    return this._dataSource().filter(item => 
+    return this._dataSource().filter(item =>
       Boolean(this.getPropertyValue(item, property))
     );
   }
@@ -671,11 +736,11 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   // Set checkbox value for a specific item
   setCheckboxValue(item: T, property: string, checked: boolean): void {
     const sourceIndex = this._dataSource().findIndex(sourceItem => sourceItem === item);
-    
+
     if (sourceIndex !== -1 && !this.readOnlyCheckboxColumns().includes(property)) {
       const updatedData = [...this._dataSource()];
       (updatedData[sourceIndex] as any)[property] = checked;
-      
+
       this._dataSource.set(updatedData);
       this.applyFilters();
       this.dataSourceChanged.emit(updatedData);
@@ -705,6 +770,179 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
     }
   }
 
+  // Mobile detection utility for responsive design
+  isMobileView(): boolean {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth <= 768;
+    }
+    return false;
+  }
+
   // Math utility for template
   Math = Math;
+
+  private loadSummaryOption() {
+    //this.selectedSummaryColumns.set(this.summaryColumns());
+    const cols = this.summaryColumns();
+    //const cols = this.selectedSummaryColumns();
+
+    if (cols && cols.length > 0) {
+      const options: Option[] = cols.map(col => ({
+        key: col,
+        value: this.formatColumnHeader(col)
+      }));
+
+      this._summaryOption.set(options);
+    }
+    else {
+      this._summaryOption.set([]);
+    }
+  }
+
+  private loadGroupOption() {
+    //this.selectedGroupColumns.set(this.groupByColumns());
+    //const groupCols = this.selectedGroupColumns();
+
+    const groupCols = this.groupByColumns();
+
+    if (groupCols && groupCols.length > 0) {
+      const options: Option[] = groupCols.map(col => ({
+        key: col,
+        value: this.formatColumnHeader(col)
+      }));
+
+      this._groupByOption.set(options);
+    }
+    else {
+      this._groupByOption.set([]);
+    }
+  }
+
+  onSummaryChange(value: any[]) {
+    const keysOnly = value.map(v => v.key ?? v);
+    this._selectedSummaryColumns.set(keysOnly);
+    console.log(this._selectedSummaryColumns());
+  }
+
+  onGroupChange(value: any[]) {
+    const keysOnly = value.map(v => v.key ?? v);
+    this._selectedGroupColumns.set(keysOnly);
+    console.log(this._selectedGroupColumns());
+  }
+
+  private selectedGroupSummary() {
+    // this._groupedSummary.set([]);
+    // this._totalSummary.set({
+    //   totalCount: 0,
+    //   totals: {}
+    // });
+
+    const data = this._dataSource();
+    const sumCols = this._selectedSummaryColumns();
+    const groupCols = this._selectedGroupColumns();
+
+    this._gridSummaryColumns.set(sumCols);
+    this._gridGroupColumns.set(groupCols);
+
+    // Reset if data or grouping not available
+    if (!data.length || !groupCols.length) {
+      this._groupedSummary.set([]);
+      this._totalSummary.set({ totalCount: 0, totals: {} });
+      return;
+    }
+
+    const groupedMap = new Map<string, any>();
+    const totalTotals: Record<string, number> = {};
+    sumCols.forEach(c => (totalTotals[c] = 0));
+    let totalCount = 0;
+
+    // GROUP + SUM
+    data.forEach(row => {
+      const key = groupCols.map(c => row[c] ?? '').join('|');
+      if (!groupedMap.has(key)) {
+        const newObj: any = {};
+        groupCols.forEach(c => (newObj[c] = row[c]));
+        sumCols.forEach(s => (newObj[s] = 0));
+        newObj['count'] = 0;
+        groupedMap.set(key, newObj);
+      }
+
+      const groupItem = groupedMap.get(key);
+      groupItem['count'] += 1;
+      totalCount++;
+
+      // Add to group totals and overall totals
+      sumCols.forEach(s => {
+        const val = Number(row[s]) || 0;
+        groupItem[s] += val;
+        totalTotals[s] += val;
+      });
+    });
+
+    // Set computed results
+    this._groupedSummary.set(Array.from(groupedMap.values()));
+    this._totalSummary.set({ totalCount, totals: totalTotals });
+
+  }
+
+  public allGroupSummary() {
+    const data = this._dataSource();
+    const groupCols = this.groupByColumns();
+    const sumCols = this.summaryColumns();
+
+    this._gridGroupColumns.set(groupCols);
+    this._gridSummaryColumns.set(sumCols);
+
+    // Reset if data or grouping not available
+    if (!data.length || !groupCols.length) {
+      this._groupedSummary.set([]);
+      this._totalSummary.set({ totalCount: 0, totals: {} });
+      return;
+    }
+
+    const groupedMap = new Map<string, any>();
+    const totalTotals: Record<string, number> = {};
+    sumCols.forEach(c => (totalTotals[c] = 0));
+    let totalCount = 0;
+
+    // GROUP + SUM
+    data.forEach(row => {
+      const key = groupCols.map(c => row[c]).join('|');
+      if (!groupedMap.has(key)) {
+        const newObj: any = {};
+        groupCols.forEach(c => (newObj[c] = row[c]));
+        sumCols.forEach(s => (newObj[s] = 0));
+        newObj['count'] = 0;
+        groupedMap.set(key, newObj);
+      }
+
+      const groupItem = groupedMap.get(key);
+      groupItem['count'] += 1;
+      totalCount++;
+
+      // Add to group totals and overall totals
+      sumCols.forEach(s => {
+        const val = Number(row[s]) || 0;
+        groupItem[s] += val;
+        totalTotals[s] += val;
+      });
+    });
+
+    // Set computed results
+    this._groupedSummary.set(Array.from(groupedMap.values()));
+    this._totalSummary.set({ totalCount, totals: totalTotals });
+  }
+
+  generateSelectedGroupSummary(): void {
+    this.selectedGroupSummary();
+  }
+  // Returns all columns for mat-table including count
+  getDisplayedColumnsWithCount(): string[] {
+    return [...this.getDisplayedGroupColumns(), 'count'];
+  }
+
+  // Example: getDisplayedColumns() returns group + summary columns
+  getDisplayedGroupColumns(): string[] {
+    return [...this._gridGroupColumns(), ...this._gridSummaryColumns()];
+  }
 }
