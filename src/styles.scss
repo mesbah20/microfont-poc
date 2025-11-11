@@ -32,7 +32,7 @@
 /* 🌊 Ocean Blue */
 .theme-blue {
   --theme-primary: #086AD8;
-  --theme-secondary: #0456b8;
+  --theme-secondary: #008cff;
   --theme-accent: #60a5fa;
   --theme-background: #eff6ff;
   --theme-glow: rgba(8, 106, 216, 0.4);
@@ -62,7 +62,7 @@
 /* 👑 Royal Purple */
 .theme-purple {
   --theme-primary: #301934;
-  --theme-secondary: #6d28d9;
+  --theme-secondary: #6e157e;
   --theme-accent: #a78bfa;
   --theme-background: #f5f3ff;
   --theme-glow: rgba(139, 92, 246, 0.4);
@@ -82,7 +82,7 @@
 /* 💜 Lavender */
 .theme-Lavendar {
   --theme-primary: #78608d;
-  --theme-secondary: #7a5d94;
+  --theme-secondary: #8c4ec2;
   --theme-accent: #b19cc2;
   --theme-background: #e6dcee;
   --theme-glow: rgba(177, 156, 194, 0.4);
@@ -147,14 +147,28 @@ body { margin: 0; font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;}
   background-color: white !important;
 }
 
-// Global fix for Material Angular overlays in modals
-.cdk-overlay-container {
-  z-index: 2000 !important;
+// Global fix for Material Angular overlays in modals - Conservative approach
+.mat-mdc-select-panel {
+  z-index: 12500 !important;
+  max-height: 300px !important;
 }
 
-.mat-mdc-select-panel {
-  z-index: 2000 !important;
-  max-height: 300px !important;
+// CDK Overlay container needs to be above modal
+.cdk-overlay-container {
+  z-index: 13000 !important;
+}
+
+// Specific fix for paginator dropdowns in modals only
+.modal-wrapper .mat-mdc-paginator .mat-mdc-select-panel,
+.modal-content .mat-mdc-paginator .mat-mdc-select-panel,
+.modal-dialog .mat-mdc-paginator .mat-mdc-select-panel {
+  z-index: 13100 !important;
+}
+
+.modal-wrapper .cdk-overlay-container,
+.modal-content .cdk-overlay-container,
+.modal-dialog .cdk-overlay-container {
+  z-index: 13200 !important;
 }
 
 
@@ -613,7 +627,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   @apply flex-1 max-w-full px-2 pe-8 py-1  border border-[#106ebe] border-slate-500 rounded-md;
   @apply border border-[#106ebe] border-slate-500 rounded-md;
   @apply bg-slate-50 placeholder-slate-400 placeholder:text-sm;
-
+  
   /* Focus states */
   @apply focus:outline-none focus:ring-1 focus:ring-[#106ebe] focus:border-[#106ebe];
   @apply focus:bg-white;
@@ -628,7 +642,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   @apply disabled:placeholder-slate-300;
 
   /* Responsive typography */
-  @apply text-sm sm:text-base;
+  @apply  sm:text-base;
 }
 
 /* mat-select or other select inputs */
@@ -636,6 +650,14 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   @extend .custom-input;
   @apply text-sm py-1.5;
   // @apply flex-1 max-w-full px-2 pe-8  text-sm border border-[#106ebe] border-slate-500 rounded-md;
+}
+
+
+.floating-input-label{
+ @apply absolute text-sm text-gray-900 duration-300 transform -translate-y-4 scale-75 top-2 z-1 origin-[0] bg-white px-2 
+               peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2
+               peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-600 start-1;
+               font-weight: 500;
 }
 
 .custom-select option {

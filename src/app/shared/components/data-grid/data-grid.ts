@@ -120,7 +120,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly groupOptionEnabled = input<boolean>(false);
   readonly gridTitle = input<string>('');
   readonly summaryGridPosition = input<string>('above');
-
+  readonly summaryGridEnabled = input<boolean>(false);
   // Dropdown Inputs
   readonly dropdownColumns = input<string[]>([]);
   readonly dropdownOptions = input<Record<string, DropdownOption[]>>({});
@@ -136,6 +136,8 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly summaryColumns = input<string[]>([]);
   readonly groupByColumns = input<string[]>([]);
 
+
+  
   // Basic Outputs
   readonly onSelectAllChange = output<{ 
     isSelectAll: boolean, 
@@ -238,6 +240,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
     // Child Panel Title
     const gridTitle = this.gridTitle();
     this._panelTitle.set(`${gridTitle} Summary`);
+
 
     console.log('Enhanced DataGridComponent initialized');
   }
@@ -780,6 +783,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
 
   // Math utility for template
   Math = Math;
+
 
   private loadSummaryOption() {
     //this.selectedSummaryColumns.set(this.summaryColumns());

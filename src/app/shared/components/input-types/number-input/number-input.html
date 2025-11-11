@@ -30,7 +30,7 @@
         [maxLength]="maxLen() ?? null"
         [minLength]="minLen() ?? null"
         step="1"
-        class="custom-input peer block px-3 pt-4 pb-2 text-sm text-gray-900 bg-transparent border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 transition-all duration-200"
+        class="custom-input peer block px-3 pt-4 pb-2 text-gray-900 bg-transparent border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 transition-all duration-200"
         autocomplete="off"
         (keypress)="onKeyPress($event)"
         (input)="onInput($event)"
@@ -40,9 +40,7 @@
       <!-- FLOATING LABEL -->
       <label
         for="number_outlined"
-        class="floating-input-label absolute text-sm text-gray-700 duration-300 transform -translate-y-4 scale-75 top-2 z-1 origin-[0] bg-white px-2
-               peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2
-               peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-600 start-1">
+        class="floating-input-label">
         {{ label() }}
         @if (isRequired()) { <span class="text-red-500">*</span> }
       </label>

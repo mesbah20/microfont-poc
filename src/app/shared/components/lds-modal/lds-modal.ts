@@ -1,11 +1,12 @@
 // lds-modal.component.ts - Angular 20 Compatible with Enhanced Design
 import { Component, Input, Output, EventEmitter, TemplateRef, ContentChild, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewChild, ViewContainerRef, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Button } from '../input-types/button/button';
 
 @Component({
   selector: 'lds-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Button],
   templateUrl: './lds-modal.html',
   styleUrls: ['./lds-modal.scss'],
 

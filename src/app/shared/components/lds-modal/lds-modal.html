@@ -62,9 +62,13 @@
                 @if (!hasCustomFooter) {
                   <div class="default-footer">
                     @if (showOkButton) {
-                      <button type="button" class="btn btn-primary" (click)="onOkClick()">
-                        {{ okButtonText }}
-                      </button>
+                      <lds-btn
+                        type="button"
+                        class=""
+                        labelText={{okButtonText}}
+                        (click)="onOkClick()">
+                       
+                      </lds-btn>
                     }
                   </div>
                 }

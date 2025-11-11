@@ -34,7 +34,7 @@ export class SelectOptionField implements OnInit {
   readonly tooltipDelay = input<number>(500);
   readonly tooltipClass = input<string>('custom-tooltip');
   readonly placeholder = input<any>();
-  
+  readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
   readonly onSelect = output<{
     selectedOption: Option;
     selectedKey: any;

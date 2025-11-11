@@ -78,10 +78,12 @@ import { Theme, ThemeService } from '../../../../../shared/services/theme.servic
               </mat-icon>
             </div>
             
-            <div class="theme-info">
-              <mat-icon class="theme-icon" [attr.aria-hidden]="true">{{ theme.icon }}</mat-icon>
-              <span class="theme-name">{{ theme.name }}</span>
-            </div>
+          <div class="theme-info flex flex-wrap lg:flex-nowrap  items-center">
+          <mat-icon class="theme-icon" [attr.aria-hidden]="true">{{ theme.icon }}</mat-icon>
+          <span class="theme-name ml-2">{{ theme.name }}</span>
+        </div>
+
+
           </button>
         </div>
 
@@ -159,10 +161,10 @@ import { Theme, ThemeService } from '../../../../../shared/services/theme.servic
     }
 
     .theme-picker-dropdown {
-      position: absolute;
+      position: fixed;
       bottom: calc(100% + 8px);
       right: 0;
-      width: 340px;
+      width: 280px;
       background: white;
       border-radius: 12px;
       box-shadow: 
@@ -175,8 +177,9 @@ import { Theme, ThemeService } from '../../../../../shared/services/theme.servic
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      max-height: 500px;
+      max-height: 400px;
       overflow-y: auto;
+      z-index: 15000;
     }
 
     .theme-picker-dropdown.visible {
@@ -206,12 +209,18 @@ import { Theme, ThemeService } from '../../../../../shared/services/theme.servic
       .theme-picker-dropdown {
         right: auto;
         left: 0;
-        width: 300px;
+        width: 260px;
         transform-origin: bottom left;
       }
       
       .theme-picker-dropdown.position-down {
         transform-origin: top left;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .theme-picker-dropdown {
+        width: 240px;
       }
     }
 
@@ -345,11 +354,11 @@ import { Theme, ThemeService } from '../../../../../shared/services/theme.servic
     }
 
     .theme-info {
-      padding: 12px;
+      padding: 6px;
       background: white;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 2px;
       border-top: 1px solid rgba(0,0,0,0.05);
     }
 
@@ -567,23 +576,57 @@ export class ThemePickerComponent implements OnInit {
     const dropdown = this.dropdown.nativeElement;
     const container = this.themePickerContainer.nativeElement;
     const rect = container.getBoundingClientRect();
-    const dropdownRect = dropdown.getBoundingClientRect();
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
+    const dropdownWidth = 280; // Updated width from CSS
+    const dropdownHeight = 400; // Updated max height from CSS
 
-    // Reset position classes
+    // Reset position classes and inline styles
     this.renderer.removeClass(dropdown, 'position-left');
-    this.renderer.removeClass(dropdown, 'position-up');
+    this.renderer.removeClass(dropdown, 'position-down');
+    this.renderer.removeStyle(dropdown, 'top');
+    this.renderer.removeStyle(dropdown, 'bottom');
+    this.renderer.removeStyle(dropdown, 'left');
+    this.renderer.removeStyle(dropdown, 'right');
 
-    // Check if dropdown goes outside viewport horizontally
-    if (rect.right + dropdownRect.width > viewportWidth - 16) {
+    // Calculate center position relative to button
+    const buttonCenterX = rect.left + (rect.width / 2);
+    let left = buttonCenterX - (dropdownWidth / 2); // Center dropdown on button
+    let top = rect.top - dropdownHeight - 8; // Position above button
+
+    // Check horizontal boundaries and adjust
+    if (left < 16) {
+      // If dropdown would go outside left edge, align with left edge but keep margin
+      left = 16;
       this.renderer.addClass(dropdown, 'position-left');
+    } else if (left + dropdownWidth > viewportWidth - 16) {
+      // If dropdown would go outside right edge, align with right edge but keep margin
+      left = viewportWidth - dropdownWidth - 16;
     }
 
-    // Check if dropdown goes outside viewport vertically
-    if (rect.bottom + dropdownRect.height > viewportHeight - 16) {
-      this.renderer.addClass(dropdown, 'position-up');
+    // For very small buttons or when centering would cause issues, fall back to right alignment
+    if (rect.width < 100 && left < rect.left - 20) {
+      left = rect.right - dropdownWidth;
     }
+
+    // Check vertical boundaries
+    if (top < 16) {
+      // If dropdown would go outside top edge, position below button
+      top = rect.bottom + 8;
+      this.renderer.addClass(dropdown, 'position-down');
+    }
+
+    // Ensure dropdown doesn't go below viewport
+    if (top + dropdownHeight > viewportHeight - 16) {
+      top = viewportHeight - dropdownHeight - 16;
+    }
+
+    // Apply calculated positions using fixed positioning
+    this.renderer.setStyle(dropdown, 'position', 'fixed');
+    this.renderer.setStyle(dropdown, 'top', `${top}px`);
+    this.renderer.setStyle(dropdown, 'left', `${left}px`);
+    this.renderer.setStyle(dropdown, 'right', 'auto');
+    this.renderer.setStyle(dropdown, 'bottom', 'auto');
   }
 
   // Theme application is now handled by ThemeService

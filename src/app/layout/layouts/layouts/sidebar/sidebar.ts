@@ -32,7 +32,7 @@ export class Sidebar {
   drawerOpen: boolean = false;
   drawerType: string = '';
   activeTheme: string = localStorage.getItem('selectedTheme') || '';
-
+  isMobile = false;
   // New property for sidebar expansion
   sidebarExpanded: boolean = false;
   isMobileOpen: boolean = false;
@@ -76,6 +76,41 @@ export class Sidebar {
     const width = window.innerWidth;
     this.isMobileOpen = width < 768; 
   }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    
+    // Close drawer when clicking outside of it
+    const drawerElement = document.querySelector('.drawer-container');
+    const menuButton = document.querySelector('[data-drawer-trigger="Menu"]');
+    const moduleButton = document.querySelector('[data-drawer-trigger="Modules"]');
+    const profileButton = document.querySelector('[data-drawer-trigger="Profile"]');
+    
+    if (this.drawerOpen && drawerElement && 
+        !drawerElement.contains(target) && 
+        !menuButton?.contains(target) &&
+        !moduleButton?.contains(target) &&
+        !profileButton?.contains(target)) {
+      this.closeDrawer();
+    }
+    
+    // Close mobile sidebar when clicking outside of it
+    const sidebarElement = document.querySelector('.sidebar-container');
+    const sidebarToggleButton = document.querySelector('[data-sidebar-toggle]');
+    
+    if (this.sidebarExpanded && this.isMobileOpen && sidebarElement && 
+        !sidebarElement.contains(target) && 
+        !sidebarToggleButton?.contains(target)) {
+      this.toggleSidebar();
+    }
+  }
+    onResize() {
+    this.checkIfMobile();
+  }
+   checkIfMobile() {
+    this.isMobile = window.innerWidth < 768;
+  }
   ngOnDestroy(): void {
     this.themeSub?.unsubscribe();
   }
@@ -83,7 +118,9 @@ export class Sidebar {
   setActiveItem(item: string): void {
     this.activeItem = item;
   }
-
+  closeDrawer() {
+    this.drawerOpen = false;
+  }
   toggleDrawer(type: string): void {
     if (this.drawerType === type && this.drawerOpen) {
       this.drawerOpen = false;

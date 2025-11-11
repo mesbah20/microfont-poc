@@ -44,7 +44,7 @@ export class OfficeBoxComponent implements OnInit {
   readonly isVertical = input<boolean>(false);
   // Custom error messages
   readonly customErrorMessages = input<{ [key: string]: string }>({});
-
+ readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
   // Outputs
   readonly valueChanged = output<number>();
   readonly onChanged = output<{ officeCode: string; officeName: string }>();
