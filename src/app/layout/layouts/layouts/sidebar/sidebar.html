@@ -338,67 +338,68 @@
          [class.px-4.5]="!sidebarExpanded"
          [class.px-2]="sidebarExpanded">
 
-      <!-- User Profile -->
-           <div class="group "
-                [class.flex]="!sidebarExpanded"
-                [class.justify-center]="!sidebarExpanded">
-            <div (click)="toggleDrawer('Profile'); setActiveItem('profile')"
-             data-drawer-trigger="Profile"
-             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden hover:bg-[var(--theme-accent)]"
-             [class.w-10]="!sidebarExpanded"
-             [class.h-10]="!sidebarExpanded"
+      <div class="group" [class.flex]="!sidebarExpanded" [class.justify-center]="!sidebarExpanded">
+  <div
+    (click)="toggleDrawer('Profile'); setActiveItem('profile')"
+    data-drawer-trigger="Profile"
+    class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-visible hover:bg-[var(--theme-accent)]"
+    [class.w-10]="!sidebarExpanded"
+    [class.h-10]="!sidebarExpanded"
+    [class.px-4]="sidebarExpanded"
+    [class.py-3]="sidebarExpanded"
+    [class.justify-center]="!sidebarExpanded"
+    [class.justify-start]="sidebarExpanded">
 
-             [class.px-4]="sidebarExpanded"
-             [class.py-3]="sidebarExpanded"
-             [class.justify-center]="!sidebarExpanded"
-             [class.justify-start]="sidebarExpanded">
+    <!-- Avatar wrapper (relative for absolute badges) -->
+    <div class="relative profile-icon-wrapper flex items-center">
+      <!-- theme-based image (existing logic preserved) -->
+      @if(activeTheme === 'blue') {
+        <img src="/asset/icons/profile3.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
+      } @else if(activeTheme === 'rose') {
+        <img src="/asset/icons/roseProfile.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
+      } @else if(activeTheme === 'MidnightBlue') {
+        <img src="/asset/icons/midnightProfile.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
+      } @else if(activeTheme === 'emerald') {
+        <img src="/asset/icons/greenProfile.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
+      } @else if(activeTheme === 'purple') {
+        <img src="/asset/icons/purpleProfile.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
+      } @else if(activeTheme === 'Lavendar') {
+        <img src="/asset/icons/lavendarProfile.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
+      } @else if(activeTheme === 'dark') {
+        <img src="/asset/icons/blackProfile.svg" class="flex-shrink-0" [class.filter]="activeItem === 'menu'"/>
+      }
 
-            @if(activeTheme === 'blue') {
-            <img src="/asset/icons/profile3.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
-          } @else if(activeTheme === 'rose') {
-            <img src="/asset/icons/roseProfile.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
-          } @else if(activeTheme === 'MidnightBlue') {
-            <img src="/asset/icons/midnightProfile.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
-          } @else if(activeTheme === 'emerald') {
-            <img src="/asset/icons/greenProfile.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
-          } @else if(activeTheme === 'purple') {
-            <img src="/asset/icons/purpleProfile.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
-          } @else if(activeTheme === 'Lavendar') {
-            <img src="/asset/icons/lavendarProfile.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
-          } @else if(activeTheme === 'dark') {
-            <img src="/asset/icons/blackProfile.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
-          }
+      <!-- Notification badge: top-right (like WhatsApp) -->
+      <ng-container *ngIf="(notifications$ | async) as n">
+        <span *ngIf="n > 0" class="icon-badge notification-badge">
+          {{ n > 99 ? '99+' : n }}
+        </span>
+      </ng-container>
 
-          <span class="ml-4 text-sm font-medium text-white whitespace-nowrap transition-all duration-300"
-                [class.opacity-0]="!sidebarExpanded"
-                [class.opacity-100]="sidebarExpanded"
-                [class.hidden]="!sidebarExpanded">
-            Profile
-          </span>
+      <!-- Message badge: top-left (optional, small) -->
+      <ng-container *ngIf="(messages$ | async) as m">
+        <span *ngIf="m > 0" class="icon-badge message-badge">
+          {{ m > 99 ? '99+' : m }}
+        </span>
+      </ng-container>
+    </div>
 
-          <div class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1  text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap pointer-events-none z-50"
-               [class.hidden]="sidebarExpanded">
-            Profile
-            <div class="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800 rotate-45"></div>
-          </div>
-        </div>
+    <!-- Label (shown when expanded) -->
+    <span class="ml-4 text-sm font-medium text-white whitespace-nowrap transition-all duration-300"
+          [class.opacity-0]="!sidebarExpanded"
+          [class.opacity-100]="sidebarExpanded"
+          [class.hidden]="!sidebarExpanded">
+      Profile
+    </span>
 
-
-      </div>
+    <!-- Tooltip (only shown when collapsed) -->
+    <div class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap pointer-events-none z-50"
+         [class.hidden]="sidebarExpanded">
+      Profile
+      <div class="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800 rotate-45"></div>
+    </div>
+  </div>
+</div>
 
       <!-- Logout -->
 
