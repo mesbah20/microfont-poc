@@ -1,7 +1,8 @@
-import { Component, effect, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {FormGroupSignal, ONCLICK_RESET} from '../../../../../../shared/constant/button-signals.constant';
 import { FormGroup } from '@angular/forms';
+import { ActivityLogService } from '../../../../../../shared/services/activity-log.service';
 
 @Component({
     selector: 'app-reset',
@@ -14,7 +15,8 @@ import { FormGroup } from '@angular/forms';
 })
 export class Reset {
   frmGroup = signal<FormGroup>(FormGroupSignal());
-  
+  private activityLog = inject(ActivityLogService);
+
    constructor() {
     effect(() => {
       const formGroup = FormGroupSignal();
@@ -22,6 +24,8 @@ export class Reset {
     });
   }
   reset() {
+    const functionId = localStorage.getItem('currentFunctionId') || 'UNKNOWN';
+    this.activityLog.logEvent('RESET_CLICK', functionId);
     ONCLICK_RESET.set(true);
   }
 }
