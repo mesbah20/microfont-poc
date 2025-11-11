@@ -2,7 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { MatIcon } from '@angular/material/icon';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { ThemeService } from '../../../../../../shared/services/theme.service';
 import { Subscription } from 'rxjs';
@@ -23,7 +23,8 @@ interface ModuleItem {
   imports: [
     RouterLink,
     MatIcon,
-    CommonModule
+    CommonModule,
+    MatIconModule
   ],
   templateUrl: './module-drawer.html',
   styleUrl: './module-drawer.scss',
@@ -84,7 +85,8 @@ export class ModuleDrawer implements OnInit {
       {
         id: '1',
         name: 'Nexo',
-        icon: '🏦',
+        icon: '🏦', 
+        // icon: 'account_balance',
         route: '/nexo',
         color: 'from-blue-500 to-cyan-500',
         isActive: true,
@@ -94,6 +96,7 @@ export class ModuleDrawer implements OnInit {
         id: '2',
         name: 'Access Control',
         icon: '🔐',
+        // icon: 'lock_outline',
         route: '/access-control',
         color: 'from-gray-800 to-gray-600',
         isActive: true,
@@ -103,6 +106,7 @@ export class ModuleDrawer implements OnInit {
         id: '3',
         name: 'Recruitment',
         icon: '📝',
+        // icon: 'edit',
         route: '/recruitment',
         color: 'from-pink-500 to-rose-500',
         isActive: true,
@@ -112,6 +116,7 @@ export class ModuleDrawer implements OnInit {
         id: '4',
         name: 'Employee',
         icon: '👥',
+        // icon: 'people_outline',
         route: '/employee',
         color: 'from-indigo-500 to-purple-500',
         isActive: true,
@@ -121,6 +126,7 @@ export class ModuleDrawer implements OnInit {
         id: '5',
         name: 'Vehicle',
         icon: '🚗',
+        // icon: 'directions_car',
         route: '/vehicle-management',
         color: 'from-yellow-500 to-orange-500',
         isActive: true,
@@ -130,6 +136,7 @@ export class ModuleDrawer implements OnInit {
         id: '6',
         name: 'Payroll',
         icon: '💰',
+        // icon: 'attach_money',
         route: '/payroll',
         color: 'from-amber-500 to-yellow-500',
         isActive: false,
@@ -139,6 +146,7 @@ export class ModuleDrawer implements OnInit {
         id: '7',
         name: 'Leave',
         icon: '🕒',
+        // icon: 'schedule',
         route: '/leave-attendance',
         color: 'from-teal-500 to-green-500',
         isActive: false,
@@ -148,6 +156,7 @@ export class ModuleDrawer implements OnInit {
         id: '8',
         name: 'Procurement',
         icon: '🛒',
+        // icon: 'shopping_cart',
         route: '/procurement',
         color: 'from-indigo-600 to-violet-500',
         isActive: false,
@@ -157,6 +166,7 @@ export class ModuleDrawer implements OnInit {
         id: '9',
         name: 'Inventory',
         icon: '📦',
+        // icon: 'inventory_2',
         route: '/inventory',
         color: 'from-blue-500 to-cyan-500',
         isActive: false,
@@ -192,25 +202,22 @@ export class ModuleDrawer implements OnInit {
     return module.isActive && !this.isModuleSelected(module.id);
   }
 
-  // Helper method to get CSS classes for module card
   getModuleClasses(module: ModuleItem): string {
-    const baseClasses = 'bg-white rounded-xl shadow-md p-3 flex flex-col items-center text-center group relative transition-all duration-300';
-
+    const baseClasses = ' rounded-xl p-3 flex flex-col items-center text-center group relative transition-all';
     if (this.isModuleSelected(module.id)) {
-      return `${baseClasses} border-2 border-green-500 cursor-default`;
+      return `${baseClasses} border-3 border-green-600 cursor-default`;
     } else if (this.isModuleClickable(module)) {
-      return `${baseClasses} cursor-pointer hover:shadow-lg hover:bg-gray-50`;
+      return `${baseClasses} cursor-pointer hover:shadow-lg hover:bg-gray-300`;
     } else {
       return `${baseClasses} opacity-60 cursor-not-allowed`;
     }
   }
 
-  // Helper method to get CSS classes for icon
   getIconClasses(module: ModuleItem): string {
     if (this.isModuleSelected(module.id)) {
       return `${module.color} scale-110`;
     } else if (this.isModuleClickable(module)) {
-      return `${module.color} group-hover:scale-105`;
+      return `${module.color} group-hover:scale-100`;
     } else {
       return `${module.color} opacity-70`;
     }

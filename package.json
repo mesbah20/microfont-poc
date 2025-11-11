@@ -36,6 +36,7 @@
     "highcharts": "^12.1.2",
     "highcharts-3d": "^0.1.7",
     "highcharts-angular": "^4.0.1",
+    "keycloak-js": "^26.2.1",
     "ng-apexcharts": "^2.0.3",
     "ngx-mask": "^20.0.0",
     "ngx-quill": "^28.0.2",
