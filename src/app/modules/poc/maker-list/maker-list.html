@@ -30,7 +30,7 @@
           <lds-btn [labelText]="'Clear'" [cssClass]="'bg-slate-500 text-white px-4'" (onClick)="resetMakerForm()"></lds-btn>
         </div>
 
-        <div *ngIf="showmakerList">
+        @if (showmakerList) {
           <div class="component-section mt-3">
             <lds-data-grid
               [id]="'maker-list'"
@@ -44,17 +44,23 @@
               [useInlineEdit]="false"
               [dataSource]="makerList"
               [selectedColumns]="[
-                'setId','functionName','actionType','remarks','recordUserId','createDate'
-              ]"
+        'setId',
+        'functionName',
+        'actionType',
+        'remarks',
+        'recordUserId',
+        'createDate'
+      ]"
               [customColumnNames]="{
-                setId:'Set',
-                functionName:'Function',
-                actionType:'Last Action',
-                remarks:'Remarks',
-                recordUserId:'Record User',
-                createDate:'Created Date'
-              }"
-              (onFHProgressClick)="handleProgressClick($event)">
+        setId: 'Set',
+        functionName: 'Function',
+        actionType: 'Last Action',
+        remarks: 'Remarks',
+        recordUserId: 'Record User',
+        createDate: 'Created Date'
+      }"
+              (onFHProgressClick)="handleProgressClick($event)"
+            >
             </lds-data-grid>
 
             <lds-modal
@@ -65,11 +71,11 @@
               [cssClass]="'modal-lg'"
               [showOkButton]="false"
               (isVisibleChanged)="onModalVisibilityChange($event)"
-              (modalResult)="onModalResult($event)">
+              (modalResult)="onModalResult($event)"
+            >
             </lds-modal>
-
           </div>
-        </div>
+        }
       </div>
     </div>
   </div>
