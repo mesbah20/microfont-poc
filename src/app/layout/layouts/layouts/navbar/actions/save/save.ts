@@ -1,7 +1,8 @@
-import {Component, effect, signal} from '@angular/core';
+import {Component, effect, inject, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {FormGroupSignal, ONCLICK_RESET, ONCLICK_SAVE} from '../../../../../../shared/constant/button-signals.constant';
 import {FormGroup} from '@angular/forms';
+import { ActivityLogService } from '../../../../../../shared/services/activity-log.service';
 
 @Component({
     selector: 'app-save',
@@ -13,8 +14,8 @@ import {FormGroup} from '@angular/forms';
     styleUrl: './save.scss'
 })
 export class Save {
-
   frmGroup = signal<FormGroup>(FormGroupSignal());
+  private activityLog = inject(ActivityLogService);
 
   constructor() {
     effect(() => {
@@ -25,5 +26,7 @@ export class Save {
 
   save() {
     ONCLICK_SAVE.set(true);
+    const functionId = localStorage.getItem('currentFunctionId') || 'UNKNOWN';
+    this.activityLog.logEvent('SAVE_CLICK', functionId);
   }
 }

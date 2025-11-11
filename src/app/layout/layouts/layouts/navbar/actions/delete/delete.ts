@@ -6,6 +6,7 @@ import {
 } from '../../../../../../shared/components/delete-confirmation-dialogue/delete-confirmation-dialogue';
 import { FormGroup } from '@angular/forms';
 import { FormGroupSignal } from '../../../../../../shared/constant/button-signals.constant';
+import { ActivityLogService } from '../../../../../../shared/services/activity-log.service';
 
 @Component({
   selector: 'app-delete',
@@ -20,7 +21,7 @@ export class Delete {
 
   private dialog = inject(MatDialog);
   frmGroup = signal<FormGroup>(FormGroupSignal());
-  
+  private activityLog = inject(ActivityLogService);
    constructor() {
     effect(() => {
       const formGroup = FormGroupSignal();
@@ -45,9 +46,13 @@ export class Delete {
         // User confirmed deletion
         console.log('Item deleted!');
         // Add your deletion logic here
+        const functionId = localStorage.getItem('currentFunctionId') || 'UNKNOWN';
+        this.activityLog.logEvent('DELETE_CLICK', functionId);
       } else {
         // User cancelled
         console.log('Deletion cancelled');
+        const functionId = localStorage.getItem('currentFunctionId') || 'UNKNOWN';
+        this.activityLog.logEvent('DELETE_CLICK_CANCEL', functionId);
       }
     });
 

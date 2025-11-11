@@ -1,7 +1,8 @@
-import { Component, effect, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import { FormGroupSignal, ONCLICK_VIEW } from '../../../../../../shared/constant/button-signals.constant';
 import { FormGroup } from '@angular/forms';
+import { ActivityLogService } from '../../../../../../shared/services/activity-log.service';
 
 @Component({
     selector: 'app-view',
@@ -14,7 +15,7 @@ import { FormGroup } from '@angular/forms';
 })
 export class View {
     frmGroup = signal<FormGroup>(FormGroupSignal());
-
+    private activityLog = inject(ActivityLogService);
     constructor() {
       effect(() => {
         const formGroup = FormGroupSignal();
@@ -22,6 +23,8 @@ export class View {
       });
     }
     view() {
+        const functionId = localStorage.getItem('currentFunctionId') || 'UNKNOWN';
+        this.activityLog.logEvent('VIEW_CLICK', functionId);
         ONCLICK_VIEW.set(true);
       }
 }
