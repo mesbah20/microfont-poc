@@ -631,7 +631,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   @apply flex-1 max-w-full px-2 pe-8 py-1  border border-[#106ebe] border-slate-500 rounded-md;
   @apply border border-[#106ebe] border-slate-500 rounded-md;
   @apply bg-slate-50 placeholder-slate-400 placeholder:text-sm;
-  
+
   /* Focus states */
   @apply focus:outline-none focus:ring-1 focus:ring-[#106ebe] focus:border-[#106ebe];
   @apply focus:bg-white;
@@ -658,7 +658,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 
 
 .floating-input-label{
- @apply absolute text-sm text-gray-900 duration-300 transform -translate-y-4 scale-75 top-2 z-1 origin-[0] bg-white px-2 
+ @apply absolute text-sm text-gray-900 duration-300 transform -translate-y-4 scale-75 top-2 z-1 origin-[0] bg-white px-2
                peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2
                peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-600 start-1;
                font-weight: 500;
@@ -934,5 +934,10 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   top: 70px !important;
   right: 20px !important;
   left: auto !important;
+}
+.notification-toast-position {
+  bottom: 70px !important;
+  left: 20px !important;
+  right: auto !important;
 }
 

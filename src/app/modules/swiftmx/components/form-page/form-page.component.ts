@@ -41,7 +41,6 @@ export class FormPageComponent implements OnInit {
   }
 
   onSave() {
-    debugger;
   if (this.form.invalid || this.isSaving) return;
 
   this.isSaving = true;
