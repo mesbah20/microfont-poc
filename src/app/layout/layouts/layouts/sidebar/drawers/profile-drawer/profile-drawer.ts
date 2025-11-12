@@ -257,6 +257,7 @@ export class ProfileDrawer {
     console.log('=== OPENING MODAL ===');
     console.log('Component to load:', componentToLoad);
     console.log('Component name:', componentToLoad?.name);
+ 
     console.log('Data to pass:', data);
     // Reset modal state
     this.showModal = false;
