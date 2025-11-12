@@ -1,30 +1,21 @@
-import { Injectable } from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { finalize } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class LoaderService {
+  public isLoading = signal(false);
 
-  private active = 0;
-  private readonly _loading$ = new BehaviorSubject<boolean>(false);
-  readonly loading$ = this._loading$.asObservable();
-
-  constructor() {
+  showLoader() {
+    this.isLoading.set(true);
   }
 
-  show() {
-    this.active++;
-    if (this.active === 1) this._loading$.next(true);
+  hideLoader() {
+    this.isLoading.set(false);
   }
 
-  hide() {
-    if (this.active > 0) this.active--;
-    if (this.active === 0) this._loading$.next(false);
-  }
-
-  reset() {
-    this.active = 0;
-    this._loading$.next(false);
+  automaticallyHandleLoader<T>(observable: Observable<T>): Observable<T> {
+    this.isLoading.set(true);
+    return observable.pipe(finalize(() => this.isLoading.set(false)));
   }
 }

@@ -1,10 +1,13 @@
-<div class="h-full overflow-y-auto pb-16 profile-drawer bg-[var(--theme-background)">
+<div
+  class="h-full overflow-y-auto pb-16 profile-drawer bg-[var(--theme-background)]"
+>
   <div class="p-6 space-y-4 pt-2">
-
     <!-- Profile Section -->
     <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
       <div class="flex items-center space-x-3 mb-3">
-        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+        <div
+          class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center"
+        >
           <mat-icon class="text-white">person</mat-icon>
         </div>
         <div>
@@ -12,19 +15,24 @@
           <p class="text-sm text-gray-600">saikat.gmail.com</p>
         </div>
       </div>
-     <button
-  class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
-  (click)="openEditProfileModal()">
-  <mat-icon class="mr-2">edit</mat-icon>
-  Edit Profile
-</button>
+      <button
+        class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
+        (click)="openEditProfileModal()">
+        <mat-icon class="mr-2">edit</mat-icon>
+        Edit Profile
+      </button>
     </div>
 
     <!-- Service Request -->
     <div class="border-b border-gray-200 pb-2">
-      <button class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer">
-        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-          <mat-icon class="text-green-600">list_alt</mat-icon>
+      <button
+        class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
+        (click)="openServiceRequestModal()"
+      >
+        <div
+          class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center"
+        >
+          <mat-icon class="text-green-600">support_agent</mat-icon>
         </div>
         <div class="flex-1 text-left">
           <p class="font-medium text-gray-800">Service Request</p>
@@ -36,8 +44,12 @@
 
     <!-- Branch -->
     <div class="border-b border-gray-200 pb-2">
-      <button class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer">
-        <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+      <button
+        class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
+      >
+        <div
+          class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center"
+        >
           <mat-icon class="text-orange-600">account_tree</mat-icon>
         </div>
         <div class="flex-1 text-left">
@@ -48,10 +60,26 @@
       </button>
     </div>
 
-    <!-- Notifications (Expandable) -->
+    <!-- Notes -->
     <div class="border-b border-gray-200 pb-2">
-      <div class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer cursor-pointer"
-           (click)="toggleSection('notifications')">
+      <button
+        class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
+        (click)="goToNotes()">
+        <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+          <mat-icon class="text-green-600">list_alt</mat-icon>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="font-medium text-gray-800">Notes</p>
+        </div>
+        <mat-icon class="text-gray-400">chevron_right</mat-icon>
+      </button>
+    </div>
+
+    <!-- Notifications -->
+    <div class="border-b border-gray-200 pb-2">
+      <div
+        class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
+        (click)="toggleNotificationsPopover($event)">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
             <mat-icon class="text-blue-600">notifications</mat-icon>
@@ -62,70 +90,23 @@
           </div>
         </div>
         <div class="flex items-center space-x-2">
-          <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">3</span>
-          <mat-icon class="text-slate-400">{{ isSectionOpen('mxMessages') ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </div>
-      </div>
-
-      <div [@expandCollapse]="isSectionOpen('notifications') ? 'open' : 'closed'" class="overflow-hidden">
-        <div class="mt-2 space-y-3">
-          <!-- Notification Items -->
-          <div class="max-w-md mx-auto bg-gray-0 p-4 rounded-lg">
-            <!-- Notification List -->
-            <div class="space-y-3">
-              <!-- Item 1: Password Expiry -->
-              <div class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">lock</mat-icon>
-                <div class="flex-1">
-                  <div class="flex justify-between">
-                    <p class="text-sm font-medium text-gray-800">Password Expiry</p>
-                    <span class="text-xs text-gray-500">3m ago</span>
-                  </div>
-                  <p class="text-xs text-gray-600">Expires in 3 days. Update now.</p>
-                </div>
-              </div>
-
-              <!-- Item 2: Dashboard Update -->
-              <div class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-purple-600">dashboard</mat-icon>
-                <div class="flex-1">
-                  <div class="flex justify-between">
-                    <p class="text-sm font-medium text-gray-800">System Updated</p>
-                    <span class="text-xs text-gray-500">30m ago</span>
-                  </div>
-                  <p class="text-xs text-gray-600">New dashboard features released.</p>
-                </div>
-              </div>
-
-              <!-- Item 3: Request Approved -->
-              <div class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-green-600">check_circle</mat-icon>
-                <div class="flex-1">
-                  <div class="flex justify-between">
-                    <p class="text-sm font-medium text-gray-800">Request Approved</p>
-                    <span class="text-xs text-gray-500">2h ago</span>
-                  </div>
-                  <p class="text-xs text-gray-600">Request #1234 has been approved.</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- View More Button -->
-            <div class="flex justify-between items-center mt-4 px-6">
-              <div class="text-xs text-blue-600 cursor-pointer">View More</div>
-              <div class="text-xs text-blue-600 cursor-pointer">Mark all as read</div>
-            </div>
-          </div>
+          <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+            {{ (novuService.getUnreadCount() | async) || 0 }}
+          </span>
+          <mat-icon class="text-slate-400">chevron_right</mat-icon>
         </div>
       </div>
     </div>
 
-    <!-- Messaging (Expandable) -->
+    <!-- Messaging -->
     <div class="border-b border-gray-200 pb-2">
-      <div class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer cursor-pointer"
-           (click)="toggleSection('messaging')">
+      <div
+        class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
+        (click)="toggleSection('messaging')">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+          <div
+            class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center"
+          >
             <mat-icon class="text-indigo-600">mail</mat-icon>
           </div>
           <div>
@@ -134,20 +115,31 @@
           </div>
         </div>
         <div class="flex items-center space-x-2">
-          <span class="bg-indigo-500 text-white text-xs px-2 py-1 rounded-full">2</span>
-          <mat-icon class="text-slate-400">{{ isSectionOpen('mxMessages') ? 'expand_less' : 'expand_more' }}</mat-icon>
+          <span class="bg-indigo-500 text-white text-xs px-2 py-1 rounded-full">
+            {{ (notificationService.messages$ | async) || 0 }}
+          </span>
+          <mat-icon class="text-slate-400">
+            {{ isSectionOpen('messaging') ? 'expand_less' : 'expand_more' }}
+          </mat-icon>
         </div>
       </div>
 
-      <div [@expandCollapse]="isSectionOpen('messaging') ? 'open' : 'closed'" class="overflow-hidden">
+      <div
+        [@expandCollapse]="isSectionOpen('messaging') ? 'open' : 'closed'"
+        class="overflow-hidden">
         <div class="mt-2 space-y-2 p-4">
-          <!-- COO Chat -->
-          <div (click)="toggleChat('hello')" class="flex items-center p-2 hover:bg-gray-100 cursor-pointer rounded-lg">
+          <!-- Chat 1 -->
+          <div
+            (click)="toggleChat('hello')"
+            class="flex items-center p-2 hover:bg-gray-100 cursor-pointer rounded-lg">
             <div class="relative mr-3">
-              <div class="w-8 h-8 rounded-full bg-green-200 flex items-center justify-center">
+              <div
+                class="w-8 h-8 rounded-full bg-green-200 flex items-center justify-center"
+              >
                 <span class="text-green-800 font-semibold">A</span>
               </div>
-              <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+              <span
+                class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex justify-between items-center">
@@ -156,15 +148,20 @@
               </div>
               <div class="flex items-center">
                 <mat-icon class="text-blue-500 mr-1" style="font-size: 16px;">done_all</mat-icon>
-                <p class="text-sm text-gray-600 truncate font-semibold">Hey! Did you check the latest files?</p>
+                <p class="text-sm text-gray-600 truncate font-semibold">
+                  Hey! Did you check the latest files?
+                </p>
               </div>
             </div>
           </div>
 
-          <!-- Chat 1 -->
-          <div class="flex items-center p-2 hover:bg-gray-100 cursor-pointer rounded-lg">
+          <!-- Chat 2 -->
+          <div
+            class="flex items-center p-2 hover:bg-gray-100 cursor-pointer rounded-lg">
             <div class="relative mr-3">
-              <div class="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center">
+              <div
+                class="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center"
+              >
                 <span class="text-blue-800 font-semibold">R</span>
               </div>
             </div>
@@ -173,72 +170,87 @@
                 <p class="font-medium text-gray-900">HR Team</p>
                 <span class="text-xs text-gray-500">10 min</span>
               </div>
-              <p class="text-sm text-gray-600 truncate">Thank you! Got the report. 👍</p>
+              <p class="text-sm text-gray-600 truncate">
+                Thank you! Got the report. 👍
+              </p>
             </div>
           </div>
 
-          <!-- Chat 2 -->
-          <div class="flex items-center p-2 hover:bg-gray-100 cursor-pointer rounded-lg">
+          <!-- Chat 3 -->
+          <div
+            class="flex items-center p-2 hover:bg-gray-100 cursor-pointer rounded-lg">
             <div class="relative mr-3">
-              <div class="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center">
+              <div
+                class="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center"
+              >
                 <span class="text-purple-800 font-semibold">S</span>
               </div>
-              <span class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 rounded-full border-2 border-white"></span>
+              <span
+                class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 rounded-full border-2 border-white"></span>
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex justify-between items-center">
                 <p class="font-medium text-gray-900">Support</p>
                 <span class="text-xs text-gray-500">Yesterday</span>
               </div>
-              <p class="text-sm text-gray-600 truncate">Password update reminder</p>
+              <p class="text-sm text-gray-600 truncate">
+                Password update reminder
+              </p>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Theme -->
+    <div class="border-b border-gray-200 pb-2">
+      <button
+        class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer">
+        <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+          <mat-icon class="text-blue-600">palette</mat-icon>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="font-medium text-gray-800">Theme</p>
+          <p class="text-sm text-gray-600">Choose your theme</p>
+        </div>
+        <app-theme-picker></app-theme-picker>
+      </button>
+    </div>
   </div>
-
-  <div class="border-b border-gray-200 pb-2">
-    <button class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer">
-      <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-        <mat-icon class="text-blue-600">palette</mat-icon>
-      </div>
-      <div class="flex-1 text-left">
-        <p class="font-medium text-gray-800">Theme</p>
-        <p class="text-sm text-gray-600">Choose your theme</p>
-      </div>
-      <app-theme-picker></app-theme-picker>
-    </button>
-  </div>
-  
-
-  <!-- Chat Drawer -->
-  <div
-    class="fixed bottom-[20px] right-[10px] w-[400px] bg-white shadow-2xl transform transition-all duration-300 ease-in-out border border-gray-200
-    rounded-lg overflow-hidden flex flex-col z-50"
-    [style.transform]="isChatOpen() ? 'translateY(0)' : 'translateY(100%)'"
-    [style.opacity]="isChatOpen() ? '1' : '0'"
-    [style.visibility]="isChatOpen() ? 'visible' : 'hidden'">
-
-    <!-- Menu -->
-    <app-chat-box [closeChat]="closeChatFromChild.bind(this)"></app-chat-box>
-
-    <!-- Resize handle -->
-    <div
-      class="absolute right-0 top-0 h-full w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize transition-colors duration-200"></div>
-  </div>
-<lds-modal
-  [isVisible]="showEditProfileModal"
-  [modalTitle]="'Edit Profile'"
-  [modalComponent]="modalComponent"
-  [modalComponentData]="modalData"
-  (isVisibleChanged)="showEditProfileModal = $event"
-  (modalResult)="onProfileUpdated($event)"
-  (modalClosed)="closeEditProfileModal()"
-  [cssClass]="'modal-lg'"
-  [showOkButton]="true"  
-  [showDefaultFooter]="true"
-></lds-modal>
-
-
 </div>
+
+<!-- Chat Drawer -->
+<div
+  class="fixed bottom-[20px] right-[10px] w-[400px] bg-white shadow-2xl transform transition-all duration-300 ease-in-out border border-gray-200
+    rounded-lg overflow-hidden flex flex-col z-50"
+  [style.transform]="isChatOpen() ? 'translateY(0)' : 'translateY(100%)'"
+  [style.opacity]="isChatOpen() ? '1' : '0'"
+  [style.visibility]="isChatOpen() ? 'visible' : 'hidden'">
+  <app-chat-box [closeChat]="closeChatFromChild.bind(this)"></app-chat-box>
+  <div
+    class="absolute right-0 top-0 h-full w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize transition-colors duration-200"></div>
+</div>
+
+<!-- Notification Detail Modal -->
+<app-notification-detail-modal
+  *ngIf="showDetailModal && selectedNotification"
+  [notification]="selectedNotification!"
+  (close)="closeDetailModal()"
+>
+</app-notification-detail-modal>
+
+<!-- Dynamic Modal -->
+<lds-modal
+  #modalComponentRef
+  [isVisible]="showModal || showEditProfileModal"
+  [modalTitle]="showEditProfileModal ? 'Edit Profile' : 'Service Request'"
+  [modalComponent]="modalComponent"
+  [modalComponentData]="showEditProfileModal ? modalData : modalComponentData"
+  [okButtonText]="showEditProfileModal ? 'Update Profile' : modalOkButtonText()"
+  (isVisibleChanged)="onModalVisibilityChange($event)"
+  (modalResult)="onModalResult($event)"
+  (modalClosed)="onModalClosed()"
+  [cssClass]="'modal-lg'"
+  [showOkButton]="true"
+  [showDefaultFooter]="true">
+</lds-modal>

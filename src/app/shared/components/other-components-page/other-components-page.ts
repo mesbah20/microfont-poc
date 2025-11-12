@@ -27,9 +27,9 @@ import { DataGridComponent } from '../data-grid';
         TextArea,
         AmountToWordInput,
         SelectOptionField,
-          ExpansionPanelHeader,
-            ExpansionSubPanelHeader,
-            DataGridComponent
+        ExpansionPanelHeader,
+        ExpansionSubPanelHeader,
+        DataGridComponent
 
   ],
   templateUrl: './other-components-page.html',

@@ -27,16 +27,36 @@ export const routes: Routes = [
       },
     ]
   },
+  // {
+  //   path: '', component: Layout,
+  //   data: {
+  //     layout: 'empty'
+  //   },
+  //   children: [
+  //     {
+  //       path: 'config',
+  //       loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting)
+  //     },
+  //   ]
+  // },
+
+  {path: '', redirectTo: 'usernote', pathMatch: 'full'},
   {
-    path: 'config', component: Layout,
+    path: '',
+    redirectTo: 'usernote',
+    pathMatch: 'full'
+  },
+  {
+    path: '**',
+    redirectTo: 'usernote'
+  },
+  {
+    path: '', component: Layout,
     data: {
       layout: 'empty'
     },
     children: [
-      {
-        path: '',
-        loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting)
-      },
+      {path: '', loadChildren: () => import('./features/feature.routing').then(m => m.featureRoutes)},
     ]
   },
   // {
