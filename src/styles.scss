@@ -153,26 +153,26 @@ body { margin: 0; font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;}
 
 // Global fix for Material Angular overlays in modals - Conservative approach
 .mat-mdc-select-panel {
-  z-index: 12500 !important;
+  z-index: 10500 !important;
   max-height: 300px !important;
 }
 
 // CDK Overlay container needs to be above modal
 .cdk-overlay-container {
-  z-index: 13000 !important;
+  z-index: 10600 !important;
 }
 
 // Specific fix for paginator dropdowns in modals only
 .modal-wrapper .mat-mdc-paginator .mat-mdc-select-panel,
 .modal-content .mat-mdc-paginator .mat-mdc-select-panel,
 .modal-dialog .mat-mdc-paginator .mat-mdc-select-panel {
-  z-index: 13100 !important;
+  z-index: 10700 !important;
 }
 
 .modal-wrapper .cdk-overlay-container,
 .modal-content .cdk-overlay-container,
 .modal-dialog .cdk-overlay-container {
-  z-index: 13200 !important;
+  z-index: 10800 !important;
 }
 
 
@@ -911,22 +911,44 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 }
 
 
+/* Modal z-index hierarchy - ensuring modals are above navbar/sidebar */
+.modal-backdrop {
+  z-index: 9998 !important;
+}
+
 .modal-wrapper {
   position: fixed !important;
   top: 0; left: 0; right: 0; bottom: 0;
   display: flex; justify-content: center; align-items: center;
-  z-index: 12000 !important;
+  z-index: 9999 !important;
   pointer-events: auto !important;
   overflow: visible !important;
   transform: none !important;  /* critical for hit-testing */
 }
 
 .modal-content {
-  z-index: 12001 !important;
+  z-index: 10000 !important;
   pointer-events: auto !important;
   overflow: visible !important;  /* allow dropdown to escape container */
   position: relative;
   transform: none !important;
+}
+
+/* Force navbar and sidebar behind modals */
+.navbar-container {
+  z-index: 10 !important;
+}
+
+.sidebar-container {
+  z-index: 30 !important;
+}
+
+/* Override inline Tailwind z-index classes when modal is open */
+body.modal-open .sidebar-container,
+body.modal-open [class*="z-[60]"],
+body.modal-open [class*="z-[55]"],
+body.modal-open [class*="z-50"] {
+  z-index: 30 !important;
 }
 
 /* custom-toast-position */
