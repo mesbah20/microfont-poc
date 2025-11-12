@@ -121,6 +121,25 @@ export class ServiceRequestService {
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Get HTTP headers with Bearer token
+   */
+  private getHeaders(): HttpHeaders {
+    const token =
+      localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+
+    if (token) {
+      return new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      });
+    }
+
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+  }
+
   /** GET all service requests from the server (filtered by logged-in user) */
   getServiceRequests(): Observable<ServiceRequest[]> {
     // Get the logged-in user's ID from localStorage
@@ -133,48 +152,57 @@ export class ServiceRequestService {
     }
 
     console.log('Calling API:', `${this.getByEmployeeApiUrl}/${userId}`);
-    return this.http.get<any>(`${this.getByEmployeeApiUrl}/${userId}`).pipe(
-      tap((response) => {
-        console.log('Raw API response:', response);
-        console.log('Response type:', typeof response);
-        console.log('Is array?', Array.isArray(response));
-      }),
-      map((response) => {
-        // Handle if response is wrapped in a data property
-        if (response && response.data && Array.isArray(response.data)) {
-          console.log('Response has data property, extracting...');
-          return response.data;
-        }
-        // Handle if response is already an array
-        if (Array.isArray(response)) {
-          console.log('Response is already an array');
-          return response;
-        }
-        // Handle if response is a single object
-        console.log('Response is not an array, wrapping in array');
-        return [response];
-      }),
-      map((requests) => {
-        // Map API response fields to match our interface
-        return requests.map((req: any) => ({
-          ...req,
-          // Do not hardcode fullName; keep backend value if provided
-          serviceDtlId: req.serviceDtlId || req.serviceDtlId, // Preserve detail id if provided
-          createdAt: req.createDate ? new Date(req.createDate) : undefined,
-          updatedAt: req.modifyDate ? new Date(req.modifyDate) : undefined,
-        }));
-      }),
-      tap((requests) =>
-        console.log('Processed requests with dates for user:', userId, requests)
-      ),
-      catchError(this.handleError<ServiceRequest[]>('getServiceRequests', []))
-    );
+    return this.http
+      .get<any>(`${this.getByEmployeeApiUrl}/${userId}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        tap((response) => {
+          console.log('Raw API response:', response);
+          console.log('Response type:', typeof response);
+          console.log('Is array?', Array.isArray(response));
+        }),
+        map((response) => {
+          // Handle if response is wrapped in a data property
+          if (response && response.data && Array.isArray(response.data)) {
+            console.log('Response has data property, extracting...');
+            return response.data;
+          }
+          // Handle if response is already an array
+          if (Array.isArray(response)) {
+            console.log('Response is already an array');
+            return response;
+          }
+          // Handle if response is a single object
+          console.log('Response is not an array, wrapping in array');
+          return [response];
+        }),
+        map((requests) => {
+          // Map API response fields to match our interface
+          return requests.map((req: any) => ({
+            ...req,
+            // Do not hardcode fullName; keep backend value if provided
+            serviceDtlId: req.serviceDtlId || req.serviceDtlId, // Preserve detail id if provided
+            createdAt: req.createDate ? new Date(req.createDate) : undefined,
+            updatedAt: req.modifyDate ? new Date(req.modifyDate) : undefined,
+          }));
+        }),
+        tap((requests) =>
+          console.log(
+            'Processed requests with dates for user:',
+            userId,
+            requests
+          )
+        ),
+        catchError(this.handleError<ServiceRequest[]>('getServiceRequests', []))
+      );
   }
 
   /** GET service request by id */
   getServiceRequest(id: number): Observable<ServiceRequest> {
     return this.http
       .get<ServiceRequest>(`${this.getByIdApiUrl}/${id}`, {
+        headers: this.getHeaders(),
       })
       .pipe(
         tap((_) => console.log(`Fetched service request id=${id}`)),
@@ -184,12 +212,12 @@ export class ServiceRequestService {
       );
   }
 
-  /** GET service requests by employee ID */
   getServiceRequestsByEmployee(
     employeeId: string
   ): Observable<ServiceRequest[]> {
     return this.http
       .get<ServiceRequest[]>(`${this.getByEmployeeApiUrl}/${employeeId}`, {
+        headers: this.getHeaders(),
       })
       .pipe(
         tap((_) =>
@@ -205,9 +233,9 @@ export class ServiceRequestService {
   getServiceRequestsByIssuer(issuerName: string): Observable<ServiceRequest[]> {
     const payload = { issuerName };
     console.log('Fetching service requests by issuer:', payload);
-
     return this.http
       .post<any>(this.getByIssuerApiUrl, payload, {
+        headers: this.getHeaders(),
       })
       .pipe(
         tap((response) => {
@@ -251,27 +279,33 @@ export class ServiceRequestService {
   /** GET all service requests (admin only - fetches all requests regardless of user) */
   getAllServiceRequestsAdmin(): Observable<ServiceRequest[]> {
     console.log('Calling Admin API:', this.listApiUrl);
-    return this.http.get<any>(this.listApiUrl).pipe(
-      tap((response) => {
-        console.log('Raw Admin API response:', response);
-      }),
-      map((response) => {
-        // Handle if response is wrapped in a data property
-        if (response && response.data && Array.isArray(response.data)) {
-          return response.data;
-        }
-        // Handle if response is already an array
-        if (Array.isArray(response)) {
-          return response;
-        }
-        // Handle if response is a single object
-        return [response];
-      }),
-      tap((requests) => console.log('All service requests (admin):', requests)),
-      catchError(
-        this.handleError<ServiceRequest[]>('getAllServiceRequestsAdmin', [])
-      )
-    );
+    return this.http
+      .get<any>(this.listApiUrl, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        tap((response) => {
+          console.log('Raw Admin API response:', response);
+        }),
+        map((response) => {
+          // Handle if response is wrapped in a data property
+          if (response && response.data && Array.isArray(response.data)) {
+            return response.data;
+          }
+          // Handle if response is already an array
+          if (Array.isArray(response)) {
+            return response;
+          }
+          // Handle if response is a single object
+          return [response];
+        }),
+        tap((requests) =>
+          console.log('All service requests (admin):', requests)
+        ),
+        catchError(
+          this.handleError<ServiceRequest[]>('getAllServiceRequestsAdmin', [])
+        )
+      );
   }
 
   /** POST: add a new service request to the server */
@@ -347,33 +381,37 @@ export class ServiceRequestService {
     console.log('Transformed requestDto:', requestDto);
     console.log('Sending service request to API:', this.createApiUrl);
 
-    return this.http.post<any>(this.createApiUrl, requestDto).pipe(
-      tap((response) => {
-        console.log('Service request created successfully:', response);
-      }),
-      map((response) => {
-        // Transform response back to ServiceRequest format if needed
-        return {
-          ...serviceRequest,
-          id: response.id || response.serviceId || Date.now(), // Use response ID or generate one
-          serviceId: response.serviceId || response.id,
-          serviceDtlId: response.serviceDtlId || response.serviceDtlId, // Preserve detail id if backend supplies it
-          status: 'pending',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        } as ServiceRequest;
-      }),
-      catchError((error) => {
-        console.error('Error creating service request:', error);
-        console.error('Error details:', {
-          status: error.status,
-          statusText: error.statusText,
-          error: error.error,
-          message: error.message,
-        });
-        return this.handleError<ServiceRequest>('addServiceRequest')(error);
+    return this.http
+      .post<any>(this.createApiUrl, requestDto, {
+        headers: this.getHeaders(),
       })
-    );
+      .pipe(
+        tap((response) => {
+          console.log('Service request created successfully:', response);
+        }),
+        map((response) => {
+          // Transform response back to ServiceRequest format if needed
+          return {
+            ...serviceRequest,
+            id: response.id || response.serviceId || Date.now(), // Use response ID or generate one
+            serviceId: response.serviceId || response.id,
+            serviceDtlId: response.serviceDtlId || response.serviceDtlId, // Preserve detail id if backend supplies it
+            status: 'pending',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          } as ServiceRequest;
+        }),
+        catchError((error) => {
+          console.error('Error creating service request:', error);
+          console.error('Error details:', {
+            status: error.status,
+            statusText: error.statusText,
+            error: error.error,
+            message: error.message,
+          });
+          return this.handleError<ServiceRequest>('addServiceRequest')(error);
+        })
+      );
   }
 
   /** PUT: update the service request on the server */
@@ -465,24 +503,31 @@ export class ServiceRequestService {
     const updateUrl = `${this.updateApiUrl}/${serviceId}/${serviceDtlId}`;
     console.log('Calling update endpoint:', updateUrl);
 
-    return this.http.put<any>(updateUrl, updateDto).pipe(
-      tap((response) =>
-        console.log(`Updated service request id=${serviceRequest.id}`, response)
-      ),
-      map((response) => {
-        return {
-          ...serviceRequest,
-          ...response,
-          createdAt: response.createDate
-            ? new Date(response.createDate)
-            : serviceRequest.createdAt,
-          updatedAt: response.modifyDate
-            ? new Date(response.modifyDate)
-            : new Date(),
-        } as ServiceRequest;
-      }),
-      catchError(this.handleError<ServiceRequest>('updateServiceRequest'))
-    );
+    return this.http
+      .put<any>(updateUrl, updateDto, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        tap((response) =>
+          console.log(
+            `Updated service request id=${serviceRequest.id}`,
+            response
+          )
+        ),
+        map((response) => {
+          return {
+            ...serviceRequest,
+            ...response,
+            createdAt: response.createDate
+              ? new Date(response.createDate)
+              : serviceRequest.createdAt,
+            updatedAt: response.modifyDate
+              ? new Date(response.modifyDate)
+              : new Date(),
+          } as ServiceRequest;
+        }),
+        catchError(this.handleError<ServiceRequest>('updateServiceRequest'))
+      );
   }
 
   /**
@@ -507,6 +552,7 @@ export class ServiceRequestService {
   deleteServiceRequest(id: number): Observable<ServiceRequest> {
     return this.http
       .delete<ServiceRequest>(`${this.deleteApiUrl}/${id}`, {
+        headers: this.getHeaders(),
       })
       .pipe(
         tap((_) => console.log(`Deleted service request id=${id}`)),
@@ -516,23 +562,29 @@ export class ServiceRequestService {
 
   /** GET service requests by status */
   getServiceRequestsByStatus(status: string): Observable<ServiceRequest[]> {
-    return this.http.get<ServiceRequest[]>(this.listApiUrl).pipe(
-      map((requests) => requests.filter((r) => r.status === status)),
-      tap((filtered) =>
-        console.log(
-          `Fetched ${filtered.length} requests with status: ${status}`
+    return this.http
+      .get<ServiceRequest[]>(this.listApiUrl, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        map((requests) => requests.filter((r) => r.status === status)),
+        tap((filtered) =>
+          console.log(
+            `Fetched ${filtered.length} requests with status: ${status}`
+          )
+        ),
+        catchError(
+          this.handleError<ServiceRequest[]>('getServiceRequestsByStatus', [])
         )
-      ),
-      catchError(
-        this.handleError<ServiceRequest[]>('getServiceRequestsByStatus', [])
-      )
-    );
+      );
   }
 
   /** GET all departments from the server */
   getAllDepartments(): Observable<Department[]> {
     return this.http
-      .get<Department[]>(this.departmentApiUrl)
+      .get<Department[]>(this.departmentApiUrl, {
+        headers: this.getHeaders(),
+      })
       .pipe(
         catchError(this.handleError<Department[]>('getAllDepartments', []))
       );
@@ -553,22 +605,30 @@ export class ServiceRequestService {
 
   /** GET all office info from the server */
   getAllOfficeInfo(): Observable<any[]> {
-    return this.http.post<any>(this.officeInfoApiUrl, {}).pipe(
-      tap((response) => console.log('Fetched office info:', response)),
-      map((response) => {
-        // Handle if response is wrapped in a data property
-        if (response && response.data && Array.isArray(response.data)) {
-          return response.data;
+    return this.http
+      .post<any>(
+        this.officeInfoApiUrl,
+        {},
+        {
+          headers: this.getHeaders(),
         }
-        // Handle if response is already an array
-        if (Array.isArray(response)) {
-          return response;
-        }
-        // Handle if response is a single object
-        return [response];
-      }),
-      catchError(this.handleError<any[]>('getAllOfficeInfo', []))
-    );
+      )
+      .pipe(
+        tap((response) => console.log('Fetched office info:', response)),
+        map((response) => {
+          // Handle if response is wrapped in a data property
+          if (response && response.data && Array.isArray(response.data)) {
+            return response.data;
+          }
+          // Handle if response is already an array
+          if (Array.isArray(response)) {
+            return response;
+          }
+          // Handle if response is a single object
+          return [response];
+        }),
+        catchError(this.handleError<any[]>('getAllOfficeInfo', []))
+      );
   }
 
   /** Convert office info to dropdown options format */
