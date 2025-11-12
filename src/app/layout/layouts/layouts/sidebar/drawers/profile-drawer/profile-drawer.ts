@@ -258,6 +258,7 @@ export class ProfileDrawer {
     console.log('Component to load:', componentToLoad);
     console.log('Component name:', componentToLoad?.name);
  
+    console.log('Data to pass:', data);
     // Reset modal state
     this.showModal = false;
     this.modalComponent = undefined;
@@ -344,7 +345,12 @@ export class ProfileDrawer {
   }
  
   onModalVisibilityChange(isVisible: boolean) {
-    this.showModal = isVisible;
+    // Update both modal flags based on which one was open
+    if (this.showEditProfileModal) {
+      this.showEditProfileModal = isVisible;
+    } else {
+      this.showModal = isVisible;
+    }
     console.log('Modal visibility changed to:', isVisible);
   }
  
@@ -352,14 +358,22 @@ export class ProfileDrawer {
     console.log('Modal result received:', result);
  
     if (!result) return;
- 
-    // Don't manually close the modal here - it will close automatically
-    // Only handle the result data if needed
-    // this.showModal = false; // REMOVED - modal closes automatically
+
+    // Handle different modal types
+    if (this.showEditProfileModal) {
+      this.onProfileUpdated(result);
+    } else {
+   
+    }
   }
  
   onModalClosed() {
-    this.showModal = false;
+    // Close whichever modal was open
+    if (this.showEditProfileModal) {
+      this.closeEditProfileModal();
+    } else {
+      this.showModal = false;
+    }
   }
  
   onOkButtonTextChange(text: string) {

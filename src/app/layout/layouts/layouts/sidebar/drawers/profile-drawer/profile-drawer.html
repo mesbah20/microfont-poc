@@ -239,15 +239,17 @@
 >
 </app-notification-detail-modal>
 
-<!-- Edit Profile Modal -->
+<!-- Dynamic Modal -->
 <lds-modal
-  [isVisible]="showEditProfileModal"
-  [modalTitle]="'Edit Profile'"
+  #modalComponentRef
+  [isVisible]="showModal || showEditProfileModal"
+  [modalTitle]="showEditProfileModal ? 'Edit Profile' : 'Service Request'"
   [modalComponent]="modalComponent"
-  [modalComponentData]="modalData"
-  (isVisibleChanged)="showEditProfileModal = $event"
-  (modalResult)="onProfileUpdated($event)"
-  (modalClosed)="closeEditProfileModal()"
+  [modalComponentData]="showEditProfileModal ? modalData : modalComponentData"
+  [okButtonText]="showEditProfileModal ? 'Update Profile' : modalOkButtonText()"
+  (isVisibleChanged)="onModalVisibilityChange($event)"
+  (modalResult)="onModalResult($event)"
+  (modalClosed)="onModalClosed()"
   [cssClass]="'modal-lg'"
   [showOkButton]="true"
   [showDefaultFooter]="true">
