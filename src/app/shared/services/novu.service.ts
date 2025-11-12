@@ -31,12 +31,12 @@ export class NovuService {
     this.novu = new Novu({
       applicationIdentifier: appId,
       subscriberId,
-      // backendUrl: 'http://192.168.10.56:3000/novu/api',
-      // socketUrl: 'http://192.168.10.56:3002/novu/ws'
-        backendUrl: 'https://api.novu.co',
-      socketUrl: 'https://ws.novu.co'
+      backendUrl: 'http://192.168.10.56:3000/novu/api',
+      socketUrl: 'http://192.168.10.56:3002/novu/ws'
+      //   backendUrl: 'https://api.novu.co',
+      // socketUrl: 'https://ws.novu.co'
     });
-
+    
     // WebSocket কানেক্ট
     this.novu.socket?.connect();
     console.log('WebSocket CONNECTED');
