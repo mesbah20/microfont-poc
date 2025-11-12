@@ -27,6 +27,19 @@ export const routes: Routes = [
       },
     ]
   },
+  // {
+  //   path: '', component: Layout,
+  //   data: {
+  //     layout: 'empty'
+  //   },
+  //   children: [
+  //     {
+  //       path: 'config',
+  //       loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting)
+  //     },
+  //   ]
+  // },
+
   {path: '', redirectTo: 'usernote', pathMatch: 'full'},
   {
     path: '',
@@ -44,19 +57,6 @@ export const routes: Routes = [
     },
     children: [
       {path: '', loadChildren: () => import('./features/feature.routing').then(m => m.featureRoutes)},
-    ]
-  },
-
-  {
-    path: 'config', component: Layout,
-    data: {
-      layout: 'empty'
-    },
-    children: [
-      {
-        path: '',
-        loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting)
-      },
     ]
   },
   // {

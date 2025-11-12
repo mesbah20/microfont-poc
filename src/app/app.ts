@@ -27,7 +27,6 @@ export class App implements OnInit {
   async ngOnInit() {
     // Theme service will automatically initialize the saved theme
     const userId = localStorage.getItem('userId');
-    debugger;
     if (userId) {
       console.log('Novu initializing for user:', userId);
       await this.novuService.init(userId, 'EDstW_4loKyp');

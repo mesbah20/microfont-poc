@@ -27,6 +27,16 @@ export class ToastHelperService {
     return this.toastr.success(message || '', title || '', opts);
   }
 
+  notificationAlert(message?: string, title?: string, override?: Partial<IndividualConfig>): ActiveToast<any> {
+    const opts = {
+      positionClass: 'notification-toast-position',
+      timeOut: 3000,
+      progressBar: true,
+      closeButton: true,
+      ...override };
+    return this.toastr.warning(message || '', title || '', opts);
+  }
+
   info(message?: string, title?: string, override?: Partial<IndividualConfig>): ActiveToast<any> {
     const opts = { ...this.defaults, ...override };
     return this.toastr.info(message || '', title || '', opts);
