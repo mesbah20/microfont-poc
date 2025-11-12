@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject, firstValueFrom, Observable, tap } from 'rxjs';
 import { Novu } from '@novu/js';
 import { HttpClient } from '@angular/common/http';
 
@@ -18,7 +18,6 @@ export class NovuService {
   private notifications$ = new BehaviorSubject<InAppNotification[]>([]);
   private unreadCount$ = new BehaviorSubject<number>(0);
   private backendUrl = 'http://localhost:8080/api/demo';
-
   constructor(private http: HttpClient) {}
 
   async init(subscriberId: string, appId: string): Promise<void> {
@@ -32,8 +31,10 @@ export class NovuService {
     this.novu = new Novu({
       applicationIdentifier: appId,
       subscriberId,
-      backendUrl: 'http://192.168.10.56:3000/novu/api',
-      socketUrl: 'http://192.168.10.56:3002/novu/ws'
+      // backendUrl: 'http://192.168.10.56:3000/novu/api',
+      // socketUrl: 'http://192.168.10.56:3002/novu/ws'
+        backendUrl: 'https://api.novu.co',
+      socketUrl: 'https://ws.novu.co'
     });
 
     // WebSocket কানেক্ট
@@ -98,9 +99,10 @@ export class NovuService {
     return this.notifications$.asObservable();
   }
 
-  getUnreadCount(): Observable<number> {
+getUnreadCount(): Observable<number> {
     return this.unreadCount$.asObservable();
-  }
+}
+
 
   async markAsRead(id: string): Promise<void> {
     if (!this.novu) return;
