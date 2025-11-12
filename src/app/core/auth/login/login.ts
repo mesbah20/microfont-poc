@@ -228,7 +228,7 @@ export class Login implements OnInit {
           this.loadUserDataResponse();
           try {
             console.log('Initializing Novu for user:', userId);
-            await this.novuService.init(userId, 'oH9Vf1VWV7s8');
+            await this.novuService.init(userId, 'EDstW_4loKyp');
             console.log('Novu initialized successfully!');
           } catch (err) {
             console.error('Failed to initialize Novu:', err);
