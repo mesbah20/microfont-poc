@@ -42,7 +42,6 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
     document.removeEventListener('keydown', this.handleEscapeKey.bind(this));
     if (this.isVisible) {
       this.restoreBodyScroll();
-      document.body.classList.remove('modal-open');
     }
   }
 
@@ -107,7 +106,6 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
 
   private handleModalOpen(): void {
     this.preventBodyScroll();
-    document.body.classList.add('modal-open');
     this.isVisibleChanged.emit(true);
     this.modalOpened.emit();
 
@@ -119,7 +117,6 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
 
   private handleModalClose(): void {
     this.restoreBodyScroll();
-    document.body.classList.remove('modal-open');
     this.isVisibleChanged.emit(false);
     this.modalClosed.emit();
   }
