@@ -662,11 +662,11 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 
 @media (max-width: 740px) {
   .floating-input-label {
-    @apply text-[12px] top-1.5 -translate-y-3; 
+    @apply text-[13px] top-1.5 -translate-y-3; 
   }
 
   .custom-input {
-    @apply text-[12px] px-2 py-1.5 pe-8;
+    @apply text-[13px] px-2 py-1.5 pe-8;
   }
 
   .custom-select {
