@@ -1,4 +1,4 @@
-import { Component, NgZone, signal, Type } from '@angular/core';
+import { Component, NgZone, signal, Type, ViewChild } from '@angular/core';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { ChatBox } from './drawers/chat-box/chat-box';
 import { MatIcon } from '@angular/material/icon';
@@ -25,6 +25,7 @@ import { LdsModalComponent } from '../../../../../../shared/components/lds-modal
 import { Button } from '../../../../../../shared/components/input-types/button/button';
 import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/components/service-request-dialog/service-request-dialog';
 import { EditProfileModal } from '../../../../../../modules/landing/feature/edit-profile-modal/edit-profile-modal';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-profile-drawer',
@@ -63,6 +64,13 @@ export class ProfileDrawer {
   private overlayRef: OverlayRef | null = null;
   selectedNotification: InAppNotification | null = null;
   showDetailModal = false;
+  @ViewChild(LdsModalComponent) modalComponentRef?: LdsModalComponent;
+  showModal = false;
+  modalComponent?: Type<any>;
+  modalComponentData?: any = null;
+  modalOkButtonText = signal('Submit Request'); // Use signal for button text
+  private modalSubscriptions: Subscription[] = [];
+  private subscriptionCheckTimer: any = null;
 
   openSections: { [key: string]: boolean } = {
     notifications: false,
@@ -70,7 +78,7 @@ export class ProfileDrawer {
   };
 
   showEditProfileModal = false;
-  modalComponent?: Type<any>;
+  // modalComponent?: Type<any>;
   modalData?: any;
 
   constructor(
@@ -242,4 +250,144 @@ export class ProfileDrawer {
   goToNotes() {
     this.router.navigate(['/usernote']);
   }
+
+  // Modal related methods
+  openServiceRequestModal() {
+    this.openModal(ServiceRequestDialog, {
+      title: 'Service Request',
+      description: 'Fill out the service request form',
+    });
+  }
+ 
+  openModal(componentToLoad?: Type<any>, data?: any) {
+    console.log('=== OPENING MODAL ===');
+    console.log('Component to load:', componentToLoad);
+    console.log('Component name:', componentToLoad?.name);
+ 
+    console.log('Data to pass:', data);
+    // Reset modal state
+    this.showModal = false;
+    this.modalComponent = undefined;
+    this.modalOkButtonText.set('Submit Request'); // Reset to default
+ 
+    setTimeout(() => {
+      this.modalComponent = componentToLoad;
+      this.modalComponentData = data;
+      this.showModal = true;
+      console.log('Modal opened with component:', this.modalComponent?.name);
+ 
+      // Re-subscribe to child outputs after modal is opened
+      setTimeout(() => this.subscribeToChildOutputs(), 500);
+    }, 50);
+  }
+
+  private subscribeToChildOutputs() {
+    // Clear any existing subscriptions
+    this.modalSubscriptions.forEach((sub) => sub.unsubscribe());
+    this.modalSubscriptions = [];
+ 
+    // Clear any pending timer
+    if (this.subscriptionCheckTimer) {
+      clearInterval(this.subscriptionCheckTimer);
+      this.subscriptionCheckTimer = null;
+    }
+ 
+    // Check periodically if modal component instance is available
+    this.subscriptionCheckTimer = setInterval(() => {
+      if (
+        this.modalComponentRef &&
+        (this.modalComponentRef as any).componentRef
+      ) {
+        const childInstance = (this.modalComponentRef as any).componentRef
+          .instance;
+        if (childInstance && childInstance.okButtonTextChange) {
+          // Subscribe to okButtonTextChange
+          const sub = childInstance.okButtonTextChange.subscribe(
+            (text: string) => {
+              this.onOkButtonTextChange(text);
+            }
+          );
+          this.modalSubscriptions.push(sub);
+ 
+          // Set initial button text from the child's getter
+          if (childInstance.okButtonText) {
+            setTimeout(() => {
+              this.modalOkButtonText.set(childInstance.okButtonText);
+            }, 0);
+          }
+ 
+          clearInterval(this.subscriptionCheckTimer);
+          this.subscriptionCheckTimer = null;
+        }
+      }
+    }, 100);
+ 
+    // Clear interval after 3 seconds if not found
+    setTimeout(() => {
+      if (this.subscriptionCheckTimer) {
+        clearInterval(this.subscriptionCheckTimer);
+        this.subscriptionCheckTimer = null;
+      }
+    }, 3000);
+  }
+ 
+  onModalClose(isVisible: boolean) {
+    console.log('Modal visibility changed:', isVisible);
+    this.showModal = isVisible;
+ 
+    if (!isVisible) {
+      // Clean up subscriptions when modal closes
+      this.modalSubscriptions.forEach((sub) => sub.unsubscribe());
+      this.modalSubscriptions = [];
+ 
+      if (this.subscriptionCheckTimer) {
+        clearInterval(this.subscriptionCheckTimer);
+        this.subscriptionCheckTimer = null;
+      }
+ 
+      // Don't clear modalComponent/modalComponentData here - let Angular handle it
+      // This prevents the ExpressionChangedAfterItHasBeenCheckedError
+    }
+  }
+ 
+  onModalVisibilityChange(isVisible: boolean) {
+    // Update both modal flags based on which one was open
+    if (this.showEditProfileModal) {
+      this.showEditProfileModal = isVisible;
+    } else {
+      this.showModal = isVisible;
+    }
+    console.log('Modal visibility changed to:', isVisible);
+  }
+ 
+  onModalResult(result: any) {
+    console.log('Modal result received:', result);
+ 
+    if (!result) return;
+
+    // Handle different modal types
+    if (this.showEditProfileModal) {
+      this.onProfileUpdated(result);
+    } else {
+   
+    }
+  }
+ 
+  onModalClosed() {
+    // Close whichever modal was open
+    if (this.showEditProfileModal) {
+      this.closeEditProfileModal();
+    } else {
+      this.showModal = false;
+    }
+  }
+ 
+  onOkButtonTextChange(text: string) {
+    console.log('OK button text changed to:', text);
+    // Only update if modal is visible to avoid change detection errors during modal close
+    if (this.showModal) {
+      this.modalOkButtonText.set(text);
+    }
+  }
+
 }

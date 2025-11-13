@@ -32,8 +32,8 @@ export class NovuService {
     this.novu = new Novu({
       applicationIdentifier: appId,
       subscriberId,
-      backendUrl: 'https://api.novu.co',
-      socketUrl: 'https://ws.novu.co'
+      backendUrl: 'http://192.168.10.56:3000/novu/api',
+      socketUrl: 'http://192.168.10.56:3002/novu/ws'
     });
 
     // WebSocket কানেক্ট
