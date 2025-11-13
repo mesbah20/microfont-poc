@@ -28,8 +28,9 @@
     <div class="border-b border-gray-200 pb-2">
       <button
         class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
-        (click)="openServiceRequestModal()"
+        
       >
+      <!-- (click)="openServiceRequestModal()" -->
         <div
           class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center"
         >
@@ -263,11 +264,9 @@
     <div
       class="absolute right-0 top-0 h-full w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize transition-colors duration-200">
     </div>
-  </div>
+  
   <lds-modal [isVisible]="showEditProfileModal" [modalTitle]="'Edit Profile'" [modalComponent]="modalComponent"
     [modalComponentData]="modalData" (isVisibleChanged)="showEditProfileModal = $event"
     (modalResult)="onProfileUpdated($event)" (modalClosed)="closeEditProfileModal()" [cssClass]="'modal-lg'"
     [showOkButton]="true" [okButtonText]="'Update'" [showDefaultFooter]="true"></lds-modal>
 
-
-</div>

@@ -29,18 +29,20 @@ export const routes: Routes = [
       },
     ]
   },
-  // {
-  //   path: '', component: Layout,
-  //   data: {
-  //     layout: 'empty'
-  //   },
-  //   children: [
-  //     {
-  //       path: 'config',
-  //       loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting)
-  //     },
-  //   ]
-  // },
+   {
+  path: '', component: Layout,
+    data: {
+       layout: 'empty'
+     },
+    children: [
+        {
+      path: 'vehicle',
+       loadChildren: () =>
+         import('./modules/vehicle-management/vehicle-management.routing')
+          .then(m => m.VehicleManagementRouting),
+     },
+     ]
+   },
 
   {path: '', redirectTo: 'usernote', pathMatch: 'full'},
   {

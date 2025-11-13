@@ -1,0 +1,354 @@
+<div class="page-wrapper">
+  @if(frmGroup) {
+    <form [formGroup]="frmGroup" class="transaction-form">
+
+      <!-- 🧩 Header Section -->
+      <section class="header-section">
+        <app-expansion-panel-header
+          [panelTitle]="'Vehicle Information Management'"
+          [isOpenSignal]="isPanelOpen"
+        ></app-expansion-panel-header>
+      </section>
+
+      <!-- ======================= BASIC VEHICLE INFORMATION ======================= -->
+      <section class="sub-panel bg-gray-50 rounded-lg mb-6 p-4">
+        <app-expansion-sub-panel-header
+          [subPanelTitle]="'Basic Vehicle Information'"
+          [isOpenSignal]="isSubPanelOpen"
+        ></app-expansion-sub-panel-header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <app-select-option-field
+            [frmGroup]="frmGroup"
+            [controlName]="'vehicleType'"
+            [label]="'Vehicle Type'"
+            [options]="vehicleTypeOptions"
+            displayMode="outline"
+            [tooltip]="'Select vehicle type'"
+          ></app-select-option-field>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'vehicleName'"
+            [label]="'Vehicle Name'"
+            displayMode="outline"
+            [customErrorMessages]="{
+              required: 'Vehicle name is required',
+              maxlength: 'Max 100 characters'
+            }"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'vehicleModel'"
+            [label]="'Vehicle Model'"
+            displayMode="outline"
+            [customErrorMessages]="{
+              maxlength: 'Max 100 characters'
+            }"
+          ></app-text-base-input>
+
+          <app-select-option-field
+            [frmGroup]="frmGroup"
+            [controlName]="'overallCondition'"
+            [label]="'Overall Condition'"
+            [options]="overallConditionOptions"
+            displayMode="outline"
+          ></app-select-option-field>
+
+          <app-select-option-field
+            [frmGroup]="frmGroup"
+            [controlName]="'usageType'"
+            [label]="'Usage Type'"
+            [options]="usageTypeOptions"
+            displayMode="outline"
+          ></app-select-option-field>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'noOfSeats'"
+            [label]="'Number of Seats'"
+            type="number"
+            displayMode="outline"
+            [customErrorMessages]="{
+              required: 'Number of seats is required',
+              max: 'Must be between 1 and 99999'
+            }"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'maxPassengerCapacity'"
+            [label]="'Max Passenger Capacity'"
+            type="number"
+            displayMode="outline"
+          ></app-text-base-input>
+        </div>
+      </section>
+
+      <!-- ======================= REGISTRATION & ENGINE INFORMATION ======================= -->
+      <section class="sub-panel bg-gray-50 rounded-lg mb-6 p-4">
+        <app-expansion-sub-panel-header
+          [subPanelTitle]="'Registration & Engine Information'"
+          [isOpenSignal]="isSubPanelOpen"
+        ></app-expansion-sub-panel-header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'registrationNumber'"
+            [label]="'Registration Number'"
+            displayMode="outline"
+            [customErrorMessages]="{
+              required: 'Registration number is required',
+              maxlength: 'Max 40 characters',
+              duplicateCheck: 'Registration number already exists'
+            }"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'chassisNumber'"
+            [label]="'Chassis Number'"
+            displayMode="outline"
+            [customErrorMessages]="{
+              required: 'Chassis number is required',
+              maxlength: 'Max 40 characters',
+              duplicateCheck: 'Chassis number already exists'
+            }"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'engineNumber'"
+            [label]="'Engine Number'"
+            displayMode="outline"
+            [customErrorMessages]="{
+              required: 'Engine number is required',
+              maxlength: 'Max 40 characters',
+              duplicateCheck: 'Engine number already exists'
+            }"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'engineCC'"
+            [label]="'Engine CC'"
+            type="number"
+            displayMode="outline"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'mileage'"
+            [label]="'Mileage'"
+            type="number"
+            displayMode="outline"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'vehicleColor'"
+            [label]="'Vehicle Color'"
+            displayMode="outline"
+          ></app-text-base-input>
+        </div>
+      </section>
+
+      <!-- ======================= PURCHASE INFORMATION ======================= -->
+      <section class="sub-panel bg-gray-50 rounded-lg mb-6 p-4">
+        <app-expansion-sub-panel-header
+          [subPanelTitle]="'Purchase Information'"
+          [isOpenSignal]="isSubPanelOpen"
+        ></app-expansion-sub-panel-header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <app-select-option-field
+            [frmGroup]="frmGroup"
+            [controlName]="'purchaseType'"
+            [label]="'Purchase Type'"
+            [options]="purchaseTypeOptions"
+            displayMode="outline"
+          ></app-select-option-field>
+
+          <app-date-input
+            [frmGroup]="frmGroup"
+            [controlName]="'purchaseDate'"
+            [label]="'Purchase Date'"
+            displayMode="outline"
+            (onBlurred)="onPurchaseDateChange()"
+          ></app-date-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'purchasePrice'"
+            [label]="'Purchase Price'"
+            type="number"
+            displayMode="outline"
+          ></app-text-base-input>
+
+          <app-date-input
+            [frmGroup]="frmGroup"
+            [controlName]="'vehicleReceiveDate'"
+            [label]="'Vehicle Receive Date'"
+            displayMode="outline"
+          ></app-date-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'supplierName'"
+            [label]="'Supplier Name'"
+            displayMode="outline"
+            [customErrorMessages]="{
+              required: 'Supplier name is required',
+              maxlength: 'Max 100 characters'
+            }"
+          ></app-text-base-input>
+        </div>
+      </section>
+
+      <!-- ======================= INSURANCE & TAX INFORMATION ======================= -->
+      <section class="sub-panel bg-gray-50 rounded-lg mb-6 p-4">
+        <app-expansion-sub-panel-header
+          [subPanelTitle]="'Insurance & Tax Information'"
+          [isOpenSignal]="isSubPanelOpen"
+        ></app-expansion-sub-panel-header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'insuranceNo'"
+            [label]="'Insurance Number'"
+            displayMode="outline"
+            [customErrorMessages]="{
+              required: 'Insurance number is required',
+              maxlength: 'Max 40 characters',
+              duplicateCheck: 'Insurance number already exists'
+            }"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'insuranceCompany'"
+            [label]="'Insurance Company'"
+            displayMode="outline"
+          ></app-text-base-input>
+
+          <app-date-input
+            [frmGroup]="frmGroup"
+            [controlName]="'insuranceIssueDate'"
+            [label]="'Insurance Issue Date'"
+            displayMode="outline"
+          ></app-date-input>
+
+          <app-date-input
+            [frmGroup]="frmGroup"
+            [controlName]="'insuranceExpiryDate'"
+            [label]="'Insurance Expiry Date'"
+            displayMode="outline"
+          ></app-date-input>
+
+          <app-date-input
+            [frmGroup]="frmGroup"
+            [controlName]="'taxTokenDate'"
+            [label]="'Tax Token Date'"
+            displayMode="outline"
+          ></app-date-input>
+
+          <app-date-input
+            [frmGroup]="frmGroup"
+            [controlName]="'taxTokenExpiryDate'"
+            [label]="'Tax Token Expiry Date'"
+            displayMode="outline"
+          ></app-date-input>
+
+          <app-date-input
+            [frmGroup]="frmGroup"
+            [controlName]="'fitnessDate'"
+            [label]="'Fitness Date'"
+            displayMode="outline"
+          ></app-date-input>
+
+          <app-date-input
+            [frmGroup]="frmGroup"
+            [controlName]="'fitnessExpiryDate'"
+            [label]="'Fitness Expiry Date'"
+            displayMode="outline"
+          ></app-date-input>
+        </div>
+      </section>
+
+      <!-- ======================= OTHER DETAILS ======================= -->
+      <section class="sub-panel bg-gray-50 rounded-lg mb-6 p-4">
+        <app-expansion-sub-panel-header
+          [subPanelTitle]="'Additional Information'"
+          [isOpenSignal]="isSubPanelOpen"
+        ></app-expansion-sub-panel-header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'fiscalYear'"
+            [label]="'Fiscal Year'"
+            displayMode="outline"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'tyreSize'"
+            [label]="'Tyre Size'"
+            type="number"
+            displayMode="outline"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'tyreType'"
+            [label]="'Tyre Type'"
+            displayMode="outline"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'cngCapacity'"
+            [label]="'CNG Capacity'"
+            type="number"
+            displayMode="outline"
+          ></app-text-base-input>
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [controlName]="'fuelCapacity'"
+            [label]="'Fuel Capacity'"
+            type="number"
+            displayMode="outline"
+          ></app-text-base-input>
+        </div>
+      </section>
+
+      <!-- ======================= ACTION BUTTONS ======================= -->
+      <section class="action-buttons-section rounded-lg p-4 mb-6 mt-6 flex gap-4">
+        <lds-btn
+          id="saveBtn"
+          value="save"
+          labelText="Save"
+          (onClick)="onSubmit()"
+        ></lds-btn>
+
+        <lds-btn
+          id="resetBtn"
+          value="reset"
+          labelText="Reset"
+          (onClick)="onReset()"
+        ></lds-btn>
+
+        <lds-btn
+          id="viewBtn"
+          value="view"
+          labelText="Back to List"
+          (onClick)="onView()"
+        ></lds-btn>
+      </section>
+    </form>
+  }
+</div>
