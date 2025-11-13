@@ -10,6 +10,8 @@ export const environment = {
   configurationEndPoint : GATE_WAY_ENDPOINT + 'config/' + VERSION_1,
   hrmEndPoint : GATE_WAY_ENDPOINT + 'hrm/' + VERSION_1,
   portalEndPoint : GATE_WAY_ENDPOINT + 'portal/' + VERSION_1,
+  vehicleEndPoint: GATE_WAY_ENDPOINT + 'vehicle/' + VERSION_1,
+  leaveAttendanceEndPoint: GATE_WAY_ENDPOINT + 'leave-attendance/' + VERSION_1,
 
   apiBaseUrl:'http://localhost:8092/centrino',
   // apiBaseUrl: 'http://localhost:8095/swiftFusionAPI/api/v1/',
