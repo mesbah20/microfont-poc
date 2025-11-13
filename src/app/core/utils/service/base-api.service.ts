@@ -1,5 +1,5 @@
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CommonResponseList, CommonResponseObject, CommonResponsePageable,} from '../model/common-response';
 
@@ -10,7 +10,7 @@ export class BaseApiService<I> {
 
     protected constructor(
         protected httpClient: HttpClient,
-        protected _BASE_URL: string
+        @Inject('BASE_URL') protected _BASE_URL: string
     ) {}
 
     create(i: I): Observable<CommonResponseObject<I>> {
