@@ -5,9 +5,7 @@ import { FormGroupSignal, ONCLICK_DELETE, ONCLICK_RESET } from '../../../../../.
 
 @Component({
     selector: 'app-exit',
-    imports: [
-        MatIcon
-    ],
+    imports: [],
     templateUrl: './exit.html',
     standalone: true,
     styleUrl: './exit.scss'

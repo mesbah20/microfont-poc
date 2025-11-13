@@ -6,9 +6,7 @@ import { ActivityLogService } from '../../../../../../shared/services/activity-l
 
 @Component({
     selector: 'app-view',
-    imports: [
-        MatIcon
-    ],
+    imports: [],
     templateUrl: './view.html',
     standalone: true,
     styleUrl: './view.scss'
