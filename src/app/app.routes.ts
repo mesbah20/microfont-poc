@@ -17,15 +17,13 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'mx', component: Layout,
+    path: '', component: Layout,
     data: {
       layout: 'empty'
     },
     children: [
-      {
-        path: '',
-        loadChildren: () => import('./modules/swiftmx/swiftmx.routing').then(m => m.SwiftmxRouting)
-      },
+      { path: 'mx', loadChildren: () => import('./modules/swiftmx/swiftmx.routing').then(m => m.SwiftmxRouting) },
+      { path: 'dashboard', loadChildren: () => import('./modules/landing/landing.routing').then(m => m.landingRouting) },
     ]
   },
   // {
@@ -49,7 +47,7 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'usernote'
+    redirectTo: 'landing'
   },
   {
     path: '', component: Layout,

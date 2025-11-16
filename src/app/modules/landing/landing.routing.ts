@@ -7,6 +7,7 @@ import {Landing} from './landing/landing';
 import {Home} from './home/home';
 
 export const landingRouting: Routes = [
+  {path: '', redirectTo: 'dashboard', pathMatch: "full"},
   {path: 'dashboard', component: Dashboard},
   {path: 'home', component: Home},
   {path: 'config/approval-items', component: ApprovalItems},

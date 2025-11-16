@@ -35,14 +35,14 @@ export class App implements OnInit {
 
   async ngOnInit() {
     const isAuthenticated = await this.authService.init();
-
+    //debugger;
     const currentPath = window.location.pathname;
 
     if (isAuthenticated) {
-      this.authService.getToken();
-      if (currentPath === '/login' || currentPath === '/') {
-        this.router.navigate(['/home']);
-      }
+      this.authService.decodeToken();
+      // if (currentPath === '/login' || currentPath === '/') {
+      //   this.router.navigate(['/home']);
+      // }
     }
     else {
       if (currentPath !== '/login') {

@@ -64,10 +64,8 @@ export class AuthService {
     });
   }
 
-  getToken(): string {
-    this.userInfo(this.keycloak.token || '')
-    debugger;
-    return this.keycloak.token || '';
+  decodeToken(): void {
+    this.userInfo(this.keycloak.token || '');
   }
 
   userInfo(token: string){
