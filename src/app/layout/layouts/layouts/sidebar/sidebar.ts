@@ -13,6 +13,7 @@ import { ModuleDrawer } from './drawers/module-drawer/module-drawer';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { environment } from '../../../../../environments/environment';
+import { ToastHelperService } from '../../../../shared/services/toast-helper.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -34,7 +35,7 @@ export class Sidebar {
   activeItem: string = '';
   drawerOpen: boolean = false;
   drawerType: string = '';
-   http = inject(HttpClient);
+  http = inject(HttpClient);
   fb = inject(FormBuilder);
   router = inject(Router);
   errorMessage: string = '';
@@ -43,26 +44,28 @@ export class Sidebar {
   coreBaseUrl = environment.logoutUrl;
   activeTheme: string = localStorage.getItem('selectedTheme') || '';
   public notifications$: Observable<number>;
-public messages$: Observable<number>;
+  public messages$: Observable<number>;
   isMobile = false;
+  toastr = inject(ToastHelperService);
   // New property for sidebar expansion
   sidebarExpanded: boolean = false;
   isMobileOpen: boolean = false;
-   private subs = new Subscription();
+  private subs = new Subscription();
   private themeSub?: Subscription;
+  private previousCount: number = 0;
   constructor(private themeService: ThemeService,
     private sidebarService: SidebarService, public notificationService: NotificationService, private novuService: NovuService
   ) {
     this.notifications$ = this.novuService.getUnreadCount();
-  this.messages$ = this.notificationService.messages$;
+    this.messages$ = this.notificationService.messages$;
 
   }
 
   // Toggle sidebar expansion (Gmail-style)
-    toggleSidebar(): void {
+  toggleSidebar(): void {
     this.sidebarExpanded = !this.sidebarExpanded;
     this.sidebarService.setSidebarState(this.sidebarExpanded);
-    }
+  }
 
   toggleMobileSidebar(): void {
     this.isMobileOpen = !this.isMobileOpen;
@@ -72,13 +75,22 @@ public messages$: Observable<number>;
     //  Subscribe to theme changes
     this.themeSub = this.themeService.currentTheme$.subscribe(themeId => {
       this.activeTheme = themeId;
-      
+
     });
 
     this.subs.add(
       this.sidebarService.sidebarExpanded$.subscribe(expanded => {
         this.sidebarExpanded = expanded;
         console.log('Sidebar expanded:', expanded);
+      })
+    );
+
+    this.subs.add(
+      this.notifications$.subscribe(count => {
+        if (count > this.previousCount) {
+          this.toastr.notificationAlert(`🔔 You have new notification(s)!`);
+        }
+        this.previousCount = count;
       })
     );
     this.handleResize();
@@ -89,41 +101,41 @@ public messages$: Observable<number>;
   @HostListener('window:resize')
   handleResize(): void {
     const width = window.innerWidth;
-    this.isMobileOpen = width < 768; 
+    this.isMobileOpen = width < 768;
   }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
     const target = event.target as HTMLElement;
-    
+
     // Close drawer when clicking outside of it
     const drawerElement = document.querySelector('.drawer-container');
     const menuButton = document.querySelector('[data-drawer-trigger="Menu"]');
     const moduleButton = document.querySelector('[data-drawer-trigger="Modules"]');
     const profileButton = document.querySelector('[data-drawer-trigger="Profile"]');
-    
-    if (this.drawerOpen && drawerElement && 
-        !drawerElement.contains(target) && 
-        !menuButton?.contains(target) &&
-        !moduleButton?.contains(target) &&
-        !profileButton?.contains(target)) {
+
+    if (this.drawerOpen && drawerElement &&
+      !drawerElement.contains(target) &&
+      !menuButton?.contains(target) &&
+      !moduleButton?.contains(target) &&
+      !profileButton?.contains(target)) {
       this.closeDrawer();
     }
-    
+
     // Close mobile sidebar when clicking outside of it
     const sidebarElement = document.querySelector('.sidebar-container');
     const sidebarToggleButton = document.querySelector('[data-sidebar-toggle]');
-    
-    if (this.sidebarExpanded && this.isMobileOpen && sidebarElement && 
-        !sidebarElement.contains(target) && 
-        !sidebarToggleButton?.contains(target)) {
+
+    if (this.sidebarExpanded && this.isMobileOpen && sidebarElement &&
+      !sidebarElement.contains(target) &&
+      !sidebarToggleButton?.contains(target)) {
       this.toggleSidebar();
     }
   }
-    onResize() {
+  onResize() {
     this.checkIfMobile();
   }
-   checkIfMobile() {
+  checkIfMobile() {
     this.isMobile = window.innerWidth < 768;
   }
   ngOnDestroy(): void {
@@ -133,52 +145,52 @@ public messages$: Observable<number>;
     this.logoutError = false;
     this.errorMessage = '';
     this.isLoading = true;
- 
+
     // Get the token from storage
     const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
- 
+
     if (!token) {
       console.warn('No token found, clearing storage and redirecting');
       this.clearStorageAndRedirect();
       return;
     }
- 
+
     // Create the logout payload with session information
     const logoutPayload = this.generatePayload();
-    
+
     // Create headers with Bearer token
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
- 
+
     console.log('Logout request with token:', token);
     console.log('Logout payload:', logoutPayload);
- 
+
     // Make POST request to logout endpoint with payload
     this.http.post(this.coreBaseUrl, logoutPayload, { headers }).subscribe({
       next: (response: any) => {
         this.isLoading = false;
         console.log('Logout response', response);
- 
+
         // Clear storage and redirect after successful logout
         this.clearStorageAndRedirect();
       },
       error: (error) => {
         this.isLoading = false;
         console.error('Logout error:', error);
- 
+
         // Even if the API call fails, clear local storage and redirect
         // This ensures user can't access protected routes with stale token
         this.clearStorageAndRedirect();
- 
+
         // Optional: Show error message if needed
         this.logoutError = true;
         this.errorMessage = 'Logout completed (with possible server error)';
       }
     });
   }
-    private clearStorageAndRedirect() {
+  private clearStorageAndRedirect() {
     // Clear all storage
     localStorage.clear();
     sessionStorage.clear();
@@ -193,7 +205,7 @@ public messages$: Observable<number>;
   }
   // Existing methods
   setActiveItem(item: string): void {
-    if(item=='logout') this.doLogout();
+    if (item == 'logout') this.doLogout();
     this.activeItem = item;
   }
 
@@ -209,7 +221,7 @@ public messages$: Observable<number>;
       this.drawerOpen = true;
     }
   }
-   generatePayload(): any {
+  generatePayload(): any {
     const currentDateTime = new Date().toISOString();
     console.log("session ID", sessionStorage.getItem('sessionId'));
 
