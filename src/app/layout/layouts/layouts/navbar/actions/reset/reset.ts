@@ -6,9 +6,7 @@ import { ActivityLogService } from '../../../../../../shared/services/activity-l
 
 @Component({
     selector: 'app-reset',
-    imports: [
-        MatIcon
-    ],
+    imports: [],
     templateUrl: './reset.html',
     standalone: true,
     styleUrl: './reset.scss'

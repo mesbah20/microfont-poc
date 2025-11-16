@@ -12,7 +12,7 @@ import {
   EventEmitter
 } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass,  NgIf } from '@angular/common';
 import { MatPseudoCheckboxModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -26,7 +26,6 @@ type Option = { key: any; value: string };
     FormsModule,
     ReactiveFormsModule,
     NgClass,
-    NgFor,
     NgIf,
     MatPseudoCheckboxModule,
     MatIconModule,

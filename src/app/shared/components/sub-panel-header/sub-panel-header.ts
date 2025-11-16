@@ -1,12 +1,10 @@
 import {ChangeDetectorRef, Component, inject, input, output} from '@angular/core';
-import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {MatTooltip} from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-sub-panel-header',
     imports: [
-        MatIcon,
         MatIconButton,
         MatTooltip
     ],
