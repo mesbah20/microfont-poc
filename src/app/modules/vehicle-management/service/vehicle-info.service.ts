@@ -3,15 +3,14 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
 import { BaseApiService } from '../../../core/utils/service/base-api.service';
-import { VehicleInfo } from '../feature/vehicle-info/vehicle-info';
 import { CommonResponseList } from '../../../core/utils/model/common-response';
-import { ApiResponse, Page } from '../model/vehicle-info.model';
+import { ApiResponse, Page, VehicleInfo as VehicleInfoModel } from '../model/vehicle-info.model';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class VehicleInfoService extends BaseApiService<VehicleInfo> {
+export class VehicleInfoService extends BaseApiService<VehicleInfoModel> {
 
   constructor(private http: HttpClient) {
     super(http, environment.vehicleEndPoint + 'vehicle-info');
@@ -26,10 +25,10 @@ export class VehicleInfoService extends BaseApiService<VehicleInfo> {
   }
 
   getAvailableVehicle() {
-    return this.httpClient.get<CommonResponseList<VehicleInfo>>(this._BASE_URL + '/availableVehicles');
+    return this.httpClient.get<CommonResponseList<VehicleInfoModel>>(this._BASE_URL + '/availableVehicles');
   }
   getAvailableVehicleForUpdate(id: number) {
-    return this.httpClient.get<CommonResponseList<VehicleInfo>>(`${this._BASE_URL}/availableVehiclesForUpdate/${id}`);
+    return this.httpClient.get<CommonResponseList<VehicleInfoModel>>(`${this._BASE_URL}/availableVehiclesForUpdate/${id}`);
   }
 
   updateVehicleStatus(id: number, availability: string): Observable<any> {
@@ -40,7 +39,7 @@ export class VehicleInfoService extends BaseApiService<VehicleInfo> {
     return this.http.get<any>(`${this._BASE_URL}/unassigned`);
   }
 
-  searchVehicles(formValue: any, pageIndex: number, pageSize: number): Observable<ApiResponse<Page<VehicleInfo>>> {
+  searchVehicles(formValue: any, pageIndex: number, pageSize: number): Observable<ApiResponse<Page<VehicleInfoModel>>> {
 
     let params: any = {
       pageIndex,
@@ -58,7 +57,7 @@ export class VehicleInfoService extends BaseApiService<VehicleInfo> {
     }
 
     const httpParams = new HttpParams({ fromObject: params });
-    return this.http.get<ApiResponse<Page<VehicleInfo>>>(`${this._BASE_URL}/search`, { params: httpParams });
+    return this.http.get<ApiResponse<Page<VehicleInfoModel>>>(`${this._BASE_URL}/search`, { params: httpParams });
   }
 
 

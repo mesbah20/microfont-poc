@@ -2,7 +2,7 @@
   @if(frmGroup) {
     <form [formGroup]="frmGroup" class="transaction-form">
 
-      <!-- 🧩 Header Section -->
+      <!--  Header Section -->
       <section class="header-section">
         <app-expansion-panel-header
           [panelTitle]="'Vehicle Information Management'"
@@ -23,7 +23,7 @@
             [controlName]="'vehicleType'"
             [label]="'Vehicle Type'"
             [options]="vehicleTypeOptions"
-            displayMode="outline"
+            displayMode="vertical"
             [tooltip]="'Select vehicle type'"
           ></app-select-option-field>
 
@@ -31,7 +31,7 @@
             [frmGroup]="frmGroup"
             [controlName]="'vehicleName'"
             [label]="'Vehicle Name'"
-            displayMode="outline"
+            displayMode="vertical"
             [customErrorMessages]="{
               required: 'Vehicle name is required',
               maxlength: 'Max 100 characters'
@@ -42,7 +42,7 @@
             [frmGroup]="frmGroup"
             [controlName]="'vehicleModel'"
             [label]="'Vehicle Model'"
-            displayMode="outline"
+            displayMode="vertical"
             [customErrorMessages]="{
               maxlength: 'Max 100 characters'
             }"
@@ -53,7 +53,7 @@
             [controlName]="'overallCondition'"
             [label]="'Overall Condition'"
             [options]="overallConditionOptions"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-select-option-field>
 
           <app-select-option-field
@@ -61,7 +61,7 @@
             [controlName]="'usageType'"
             [label]="'Usage Type'"
             [options]="usageTypeOptions"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-select-option-field>
 
           <app-text-base-input
@@ -69,7 +69,7 @@
             [controlName]="'noOfSeats'"
             [label]="'Number of Seats'"
             type="number"
-            displayMode="outline"
+            displayMode="vertical"
             [customErrorMessages]="{
               required: 'Number of seats is required',
               max: 'Must be between 1 and 99999'
@@ -81,7 +81,7 @@
             [controlName]="'maxPassengerCapacity'"
             [label]="'Max Passenger Capacity'"
             type="number"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-text-base-input>
         </div>
       </section>
@@ -98,7 +98,7 @@
             [frmGroup]="frmGroup"
             [controlName]="'registrationNumber'"
             [label]="'Registration Number'"
-            displayMode="outline"
+            displayMode="vertical"
             [customErrorMessages]="{
               required: 'Registration number is required',
               maxlength: 'Max 40 characters',
@@ -110,7 +110,7 @@
             [frmGroup]="frmGroup"
             [controlName]="'chassisNumber'"
             [label]="'Chassis Number'"
-            displayMode="outline"
+            displayMode="vertical"
             [customErrorMessages]="{
               required: 'Chassis number is required',
               maxlength: 'Max 40 characters',
@@ -122,7 +122,7 @@
             [frmGroup]="frmGroup"
             [controlName]="'engineNumber'"
             [label]="'Engine Number'"
-            displayMode="outline"
+            displayMode="vertical"
             [customErrorMessages]="{
               required: 'Engine number is required',
               maxlength: 'Max 40 characters',
@@ -135,7 +135,7 @@
             [controlName]="'engineCC'"
             [label]="'Engine CC'"
             type="number"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-text-base-input>
 
           <app-text-base-input
@@ -143,14 +143,14 @@
             [controlName]="'mileage'"
             [label]="'Mileage'"
             type="number"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-text-base-input>
 
           <app-text-base-input
             [frmGroup]="frmGroup"
             [controlName]="'vehicleColor'"
             [label]="'Vehicle Color'"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-text-base-input>
         </div>
       </section>
@@ -168,14 +168,14 @@
             [controlName]="'purchaseType'"
             [label]="'Purchase Type'"
             [options]="purchaseTypeOptions"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-select-option-field>
 
           <app-date-input
             [frmGroup]="frmGroup"
             [controlName]="'purchaseDate'"
             [label]="'Purchase Date'"
-            displayMode="outline"
+            displayMode="vertical"
             (onBlurred)="onPurchaseDateChange()"
           ></app-date-input>
 
@@ -184,21 +184,21 @@
             [controlName]="'purchasePrice'"
             [label]="'Purchase Price'"
             type="number"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-text-base-input>
 
           <app-date-input
             [frmGroup]="frmGroup"
             [controlName]="'vehicleReceiveDate'"
             [label]="'Vehicle Receive Date'"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-date-input>
 
           <app-text-base-input
             [frmGroup]="frmGroup"
             [controlName]="'supplierName'"
             [label]="'Supplier Name'"
-            displayMode="outline"
+            displayMode="vertical"
             [customErrorMessages]="{
               required: 'Supplier name is required',
               maxlength: 'Max 100 characters'
@@ -219,7 +219,7 @@
             [frmGroup]="frmGroup"
             [controlName]="'insuranceNo'"
             [label]="'Insurance Number'"
-            displayMode="outline"
+            displayMode="vertical"
             [customErrorMessages]="{
               required: 'Insurance number is required',
               maxlength: 'Max 40 characters',
@@ -231,49 +231,49 @@
             [frmGroup]="frmGroup"
             [controlName]="'insuranceCompany'"
             [label]="'Insurance Company'"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-text-base-input>
 
           <app-date-input
             [frmGroup]="frmGroup"
             [controlName]="'insuranceIssueDate'"
             [label]="'Insurance Issue Date'"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-date-input>
 
           <app-date-input
             [frmGroup]="frmGroup"
             [controlName]="'insuranceExpiryDate'"
             [label]="'Insurance Expiry Date'"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-date-input>
 
           <app-date-input
             [frmGroup]="frmGroup"
             [controlName]="'taxTokenDate'"
             [label]="'Tax Token Date'"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-date-input>
 
           <app-date-input
             [frmGroup]="frmGroup"
             [controlName]="'taxTokenExpiryDate'"
             [label]="'Tax Token Expiry Date'"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-date-input>
 
           <app-date-input
             [frmGroup]="frmGroup"
             [controlName]="'fitnessDate'"
             [label]="'Fitness Date'"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-date-input>
 
           <app-date-input
             [frmGroup]="frmGroup"
             [controlName]="'fitnessExpiryDate'"
             [label]="'Fitness Expiry Date'"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-date-input>
         </div>
       </section>
@@ -290,7 +290,7 @@
             [frmGroup]="frmGroup"
             [controlName]="'fiscalYear'"
             [label]="'Fiscal Year'"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-text-base-input>
 
           <app-text-base-input
@@ -298,14 +298,14 @@
             [controlName]="'tyreSize'"
             [label]="'Tyre Size'"
             type="number"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-text-base-input>
 
           <app-text-base-input
             [frmGroup]="frmGroup"
             [controlName]="'tyreType'"
             [label]="'Tyre Type'"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-text-base-input>
 
           <app-text-base-input
@@ -313,7 +313,7 @@
             [controlName]="'cngCapacity'"
             [label]="'CNG Capacity'"
             type="number"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-text-base-input>
 
           <app-text-base-input
@@ -321,7 +321,7 @@
             [controlName]="'fuelCapacity'"
             [label]="'Fuel Capacity'"
             type="number"
-            displayMode="outline"
+            displayMode="vertical"
           ></app-text-base-input>
         </div>
       </section>
@@ -330,8 +330,8 @@
       <section class="action-buttons-section rounded-lg p-4 mb-6 mt-6 flex gap-4">
         <lds-btn
           id="saveBtn"
-          value="save"
-          labelText="Save"
+          [value]="buttonName"
+          [labelText]="buttonName | titlecase"
           (onClick)="onSubmit()"
         ></lds-btn>
 
