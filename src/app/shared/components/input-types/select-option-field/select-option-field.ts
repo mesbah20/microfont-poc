@@ -50,6 +50,7 @@ export class SelectOptionField implements OnInit {
   selectedValue = signal<any>('');
   filteredOptions = signal<Option[]>([]);
   displayText = signal<string>('');
+  dropdownPosition = signal<'down' | 'up'>('down'); // NEW: Track dropdown position
 
   private _lastControlValue: any = '';
   private _lastOptionsRef: Option[] | null = null;
@@ -265,7 +266,33 @@ export class SelectOptionField implements OnInit {
   openDropdown(): void {
     if (!this.isReadonly()) {
       if (this.searchable()) this.filterTerm.set('');
+      this.calculateDropdownPosition();
       this.isOpen.set(true);
+    }
+  }
+
+  private calculateDropdownPosition(): void {
+    // Get the input element reference
+    const inputElement = this.searchInput?.nativeElement || 
+                        document.querySelector(`#select_outlined`) as HTMLElement ||
+                        document.querySelector('.custom-select') as HTMLElement;
+    
+    if (!inputElement) {
+      this.dropdownPosition.set('down');
+      return;
+    }
+
+    const rect = inputElement.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const dropdownHeight = 200; // Max height from CSS
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    // Position up if there's not enough space below but enough space above
+    if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
+      this.dropdownPosition.set('up');
+    } else {
+      this.dropdownPosition.set('down');
     }
   }
 

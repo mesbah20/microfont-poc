@@ -240,6 +240,7 @@ export class ProfileDrawer {
     this.router.navigate(['/usernote']);
   }
 
+
   // Modal related methods
   openServiceRequestModal() {
     this.openModal(ServiceRequestDialog, {
