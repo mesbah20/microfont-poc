@@ -967,3 +967,13 @@ body.modal-open app-sidebar,
   right: auto !important;
 }
 
+
+.custom-toast-position {
+  top: 90px !important;       /* Y-axis */
+  left: 900px !important;      /* X-axis */
+  right: auto !important;
+  bottom: auto !important;
+  position: fixed !important;
+  
+}
+
