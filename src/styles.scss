@@ -1,8 +1,15 @@
-@import "tailwindcss";
+@use "tailwindcss";
+@use "./app/shared/components/lds-modal/lds-modal.scss";
 @import 'quill/dist/quill.snow.css';
 @import 'quill/dist/quill.core.css';
+@import "../node_modules/ngx-toastr/toastr.css";
 
 
+
+/* SCSS partial - use @use */
+
+/* Rest of your styles */
+@reference "tailwindcss";
 /* Theme Variables */
 :root {
   --theme-primary: #086AD8;
@@ -106,6 +113,7 @@
 .sidebar-container {
   background-color: var(--theme-background);
   transition: background-color 0.3s ease;
+  // z-index: 100;
 }
 
 .sidebar-brand {
@@ -129,7 +137,7 @@
 .navbar-container {
   background-color: var(--theme-primary);
   transition: background-color 0.3s ease;
-  z-index: 10;
+  // z-index: 10;
 }
 
 /* SVG Theme Support */
@@ -137,10 +145,7 @@
   stop-color: var(--theme-primary);
 }
 
-@import "../node_modules/ngx-toastr/toastr.css";
-@import "./app/shared/components/lds-modal/lds-modal.scss";
 
-@reference "tailwindcss";
 
 html, body { height: 100%; }
 //body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
@@ -153,7 +158,7 @@ body { margin: 0; font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;}
 
 // Global fix for Material Angular overlays in modals - Conservative approach
 .mat-mdc-select-panel {
-  z-index: 12500 !important;
+  z-index: 13000 !important;
   max-height: 300px !important;
 }
 
@@ -625,44 +630,55 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 }
 
 
+/* ===============================
+   Base Input & Select Styles
+   =============================== */
 
-.custom-input {
-  /* Base styling - Standard width instead of full */
-  @apply flex-1 max-w-full px-2 pe-8 py-1  border border-[#106ebe] border-slate-500 rounded-md;
-  @apply border border-[#106ebe] border-slate-500 rounded-md;
-  @apply bg-slate-50 placeholder-slate-400 placeholder:text-sm;
-
-  /* Focus states */
-  @apply focus:outline-none focus:ring-1 focus:ring-[#106ebe] focus:border-[#106ebe];
-  @apply focus:bg-white;
-  @apply transition-all duration-200 ease-in-out;
-
-  /* Hover state */
-  @apply hover:border-slate-800 hover:bg-white;
-
-  /* Disabled states */
-  @apply disabled:bg-slate-100 disabled:cursor-not-allowed;
-  @apply disabled:border-slate-300 disabled:text-slate-500;
-  @apply disabled:placeholder-slate-300;
-
-  /* Responsive typography */
-  @apply  sm:text-base;
-}
-
-/* mat-select or other select inputs */
+.custom-input,
 .custom-select {
-  @extend .custom-input;
-  @apply text-sm py-1.5;
-  // @apply flex-1 max-w-full px-2 pe-8  text-sm border border-[#106ebe] border-slate-500 rounded-md;
+  @apply w-full px-3 py-1 pb-0 pe-8 text-sm rounded-md border border-slate-400 bg-slate-50 text-gray-900 
+         placeholder:text-slate-400 placeholder:text-sm
+         transition-all duration-200 ease-in-out
+         focus:outline-none focus:ring-1 focus:ring-[#106ebe] focus:border-[#106ebe] focus:bg-white
+         hover:border-slate-600 hover:bg-white
+         disabled:bg-slate-100 disabled:text-slate-500 disabled:border-slate-300 disabled:cursor-not-allowed;
 }
 
 
-.floating-input-label{
- @apply absolute text-sm text-gray-900 duration-300 transform -translate-y-4 scale-75 top-2 z-1 origin-[0] bg-white px-2
-               peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2
-               peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-600 start-1;
-               font-weight: 500;
+/* Inputs (slightly smaller text for dense layouts) */
+.custom-input {
+  @apply text-xs sm:text-sm;
 }
+
+/* Selects (slightly more padding and consistent height) */
+.custom-select {
+  @apply text-sm;
+}
+
+
+.floating-input-label {
+  @apply absolute top-1 bg-white text-xs font-medium transform -translate-y-4 scale-93 left-2 text-[#106ebe]
+         px-1 transition-all duration-300
+         peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-gray-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2
+         peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-[#106ebe]
+         peer-[&:not(:placeholder-shown)]:top-1 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-[#106ebe];
+}
+
+@media (max-width: 740px) {
+  .floating-input-label {
+    @apply text-[13px] top-1.5 -translate-y-3; 
+  }
+
+  .custom-input {
+    @apply text-[13px] px-2 py-1.5 pe-8;
+  }
+
+  .custom-select {
+    @apply text-[13px] px-2 py-1;
+  }
+}
+
+// .floating-input-label{ @apply absolute text-sm text-gray-900 duration-300 transform -translate-y-4 scale-75 top-1 z-1 origin-[0] bg-white px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-1 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-600 start-1; font-weight: 500; }
 
 .custom-select option {
   // font-size: 12px;
@@ -929,6 +945,16 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   transform: none !important;
 }
 
+/* Hide sidebar when modal is open - Global override */
+body.modal-open .sidebar,
+body.modal-open .sidebar-container,
+body.modal-open app-sidebar,
+.modal-open .sidebar,
+.modal-open .sidebar-container,
+.modal-open app-sidebar {
+  z-index: -999 !important;
+}
+
 /* custom-toast-position */
 .custom-toast-position {
   top: 70px !important;
@@ -939,5 +965,15 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   bottom: 70px !important;
   left: 20px !important;
   right: auto !important;
+}
+
+
+.custom-toast-position {
+  top: 90px !important;       /* Y-axis */
+  left: 900px !important;      /* X-axis */
+  right: auto !important;
+  bottom: auto !important;
+  position: fixed !important;
+  
 }
 

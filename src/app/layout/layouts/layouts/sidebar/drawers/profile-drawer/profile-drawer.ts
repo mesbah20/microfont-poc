@@ -15,14 +15,12 @@ import {
   InAppNotification,
   NovuService,
 } from '../../../../../../shared/services/novu.service';
-import { RouterLink } from '@angular/router';
-import { ConnectedPosition, Overlay, OverlayRef } from '@angular/cdk/overlay';
+import {  Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { NotificationPopoverComponent } from '../../../../../../modules/swiftmx/components/notification/notification-popover.component';
 import { NotificationDetailModalComponent } from '../../../../../../modules/swiftmx/components/notification/notification-detail-modal.component';
 import { Router, RouterModule } from '@angular/router';
 import { LdsModalComponent } from '../../../../../../shared/components/lds-modal/lds-modal';
-import { Button } from '../../../../../../shared/components/input-types/button/button';
 import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/components/service-request-dialog/service-request-dialog';
 import { EditProfileModal } from '../../../../../../modules/landing/feature/edit-profile-modal/edit-profile-modal';
 import { Subscription } from 'rxjs';
@@ -34,13 +32,10 @@ import { Subscription } from 'rxjs';
     MatIcon,
     ThemePickerComponent,
     AsyncPipe,
-    RouterLink,
     NotificationDetailModalComponent,
     RouterModule,
     CommonModule,
     LdsModalComponent,
-    Button,
-    EditProfileModal,
   ],
   templateUrl: './profile-drawer.html',
   standalone: true,

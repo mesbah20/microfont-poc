@@ -1,5 +1,4 @@
 import {Component, effect} from '@angular/core';
-import {Search} from './actions/search/search';
 import {Save} from './actions/save/save';
 import {View} from './actions/view/view';
 import {Delete} from './actions/delete/delete';
@@ -12,7 +11,6 @@ import { SidebarService } from '../../../service/sidebar.service';
 @Component({
   selector: 'app-navbar',
   imports: [
-    Search,
     Save,
     View,
     Delete,

@@ -10,9 +10,7 @@ import { ActivityLogService } from '../../../../../../shared/services/activity-l
 
 @Component({
   selector: 'app-delete',
-  imports: [
-    MatIcon
-  ],
+  imports: [],
   templateUrl: './delete.html',
   standalone: true,
   styleUrl: './delete.scss'

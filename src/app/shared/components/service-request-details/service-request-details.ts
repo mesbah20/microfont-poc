@@ -19,14 +19,11 @@ import {
 import { ToastrService } from 'ngx-toastr';
 import { MatTabsModule } from '@angular/material/tabs';
 import { jwtDecode } from 'jwt-decode';
-import { TextBaseInput } from '../input-types/text-base-input/text-base-input';
 import { Button } from '../input-types/button/button';
 import { TextArea } from '../input-types/text-area/text-area';
 import { SelectOptionField } from '../input-types/select-option-field/select-option-field';
 import { ExpansionPanelHeader } from '../expansion-panel-header/expansion-panel-header';
 import { FileComponent } from '../input-types/file-input/file-input';
-import { View } from '../../../layout/layouts/layouts/navbar/actions/view/view';
-import { DataGridComponent } from '../data-grid';
 import {
   ServiceRequest,
   ServiceRequestService,
@@ -41,15 +38,10 @@ import {
   standalone: true,
   imports: [
     CommonModule,
-    TextBaseInput,
     ReactiveFormsModule,
-    Button,
     TextArea,
     SelectOptionField,
     ExpansionPanelHeader,
-    FileComponent,
-    View,
-    DataGridComponent,
     MatTabsModule,
   ],
   templateUrl: './service-request-details.html',
