@@ -18,7 +18,7 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'mx', component: Layout,
+    path: '', component: Layout,
     data: {
       layout: 'empty'
     },
