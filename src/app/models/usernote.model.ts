@@ -4,7 +4,7 @@ export interface IUserNote
     noteId?: string;
     noteTitle?: string;
     noteContent?: string;
-    isPinned?: string;
-    isReminder?: string;
-    reminderDate?: string;
+    isPinned?: number;
+    isReminder?: number;
+    reminderDate?: string | null | undefined;
 }
