@@ -3,10 +3,8 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
 import { ThemeService } from '../../../../../../shared/services/theme.service';
 import { Subscription } from 'rxjs';
-import { FormsModule } from '@angular/forms';
 
 interface ModuleItem {
   id: string;
@@ -21,8 +19,6 @@ interface ModuleItem {
 @Component({
   selector: 'app-module-drawer',
   imports: [
-    RouterLink,
-    MatIcon,
     CommonModule,
     MatIconModule
   ],

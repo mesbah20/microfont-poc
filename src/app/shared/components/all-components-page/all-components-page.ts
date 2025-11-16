@@ -3,7 +3,6 @@ import { Component, effect, inject, OnInit, signal, TemplateRef, ViewChild, Writ
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextBaseInput } from '../input-types/text-base-input/text-base-input';
 import { IdBoxComponent } from '../input-types/id-box/id-box';
-import { AmountInput } from '../input-types/amount-input/amount-input';
 import { AmountToWordInput } from '../input-types/amount-to-word-input/amount-to-word-input';
 import { SelectOptionField } from '../input-types/select-option-field/select-option-field';
 import { FileComponent } from '../input-types/file-input/file-input';
@@ -13,12 +12,10 @@ import { ExpansionPanelHeader } from '../expansion-panel-header/expansion-panel-
 import { ExpansionSubPanelHeader } from '../expansion-sub-panel-header/expansion-sub-panel-header';
 import { Switch } from '../input-types/switch/switch';
 import { TextArea } from '../input-types/text-area/text-area';
-import { ToastrService } from 'ngx-toastr';
 import { NumberInput } from '../input-types/number-input/number-input';
 import { DropdownOption } from '../data-grid/data-grid';
-import { LdsStepperComponent, Step } from '../lds-stepper/lds-stepper';
+import {  Step } from '../lds-stepper/lds-stepper';
 import { MultiSelectOptionField } from '../multi-select-option-field/multi-select-option-field';
-import { DataSelectionModal } from '../data-selection-modal/data-selection-modal';
 import { BUTTON_VISIBILITY, ONCLICK_SAVE } from '../../constant/button-signals.constant';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { DateInput } from '../input-types/date-input/date-input';
@@ -53,7 +50,6 @@ export interface DataSelectionConfig {
     ReactiveFormsModule,
     TextBaseInput,
     IdBoxComponent,
-    AmountInput,
     Switch,
     Button,
     TextArea,
@@ -62,7 +58,6 @@ export interface DataSelectionConfig {
     DateInput,
     CommonModule,
     MultiSelectOptionField,
-    LdsStepperComponent,
     FileComponent,
     OfficeBoxComponent,
     LdsModalComponent,
@@ -70,8 +65,6 @@ export interface DataSelectionConfig {
     DataGridComponent,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
-  DataSelectionModal,
-  OtherComponentsPage
   ],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],

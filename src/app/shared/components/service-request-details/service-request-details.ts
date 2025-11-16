@@ -39,11 +39,9 @@ import {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    Button,
     TextArea,
     SelectOptionField,
     ExpansionPanelHeader,
-    FileComponent,
     MatTabsModule,
   ],
   templateUrl: './service-request-details.html',

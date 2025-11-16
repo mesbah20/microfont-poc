@@ -41,7 +41,6 @@ import { Button } from '../../../../shared/components/input-types/button/button'
     LdsModalComponent,
     DataGridComponent,
     ExpansionPanelHeader,
-    ServiceRequestDetails,
     SelectOptionField,
     Button,
   ],

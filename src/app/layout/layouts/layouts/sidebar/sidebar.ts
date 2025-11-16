@@ -1,5 +1,4 @@
 import { Component, HostListener, inject } from '@angular/core';
-import { MatIcon } from '@angular/material/icon';
 import { MenuDrawer } from './drawers/menu-drawer/menu-drawer';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { ProfileDrawer } from './drawers/profile-drawer/profile-drawer';
@@ -19,7 +18,6 @@ import { environment } from '../../../../../environments/environment';
   selector: 'app-sidebar',
   standalone: true,
   imports: [
-    MatIcon,
     MenuDrawer,
     ModuleDrawer,
     TitleCasePipe,

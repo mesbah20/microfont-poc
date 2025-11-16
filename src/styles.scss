@@ -1,8 +1,15 @@
-@import "tailwindcss";
+@use "tailwindcss";
+@use "./app/shared/components/lds-modal/lds-modal.scss";
 @import 'quill/dist/quill.snow.css';
 @import 'quill/dist/quill.core.css';
+@import "../node_modules/ngx-toastr/toastr.css";
 
 
+
+/* SCSS partial - use @use */
+
+/* Rest of your styles */
+@reference "tailwindcss";
 /* Theme Variables */
 :root {
   --theme-primary: #086AD8;
@@ -138,10 +145,7 @@
   stop-color: var(--theme-primary);
 }
 
-@import "../node_modules/ngx-toastr/toastr.css";
-@import "./app/shared/components/lds-modal/lds-modal.scss";
 
-@reference "tailwindcss";
 
 html, body { height: 100%; }
 //body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

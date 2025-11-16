@@ -1,5 +1,5 @@
 /* form-page.component.scss */
-@import "tailwindcss";
+@use "tailwindcss";
 :host {
   display: block;
   font-family: 'Inter', 'Segoe UI', sans-serif;
