@@ -10,7 +10,7 @@ export const landingRouting: Routes = [
   {path: '', redirectTo: 'dashboard', pathMatch: "full"},
   {path: 'dashboard', component: Dashboard},
   {path: 'home', component: Home},
-  {path: 'config/approval-items', component: ApprovalItems},
+  // {path: 'config/approval-items', component: ApprovalItems},
   {path: 'alert-example-page', component: AlertExamplePage}
 ];
 

@@ -943,7 +943,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   generateSelectedGroupSummary(): void {    
     this.loaderService.showLoader();   
     this.selectedGroupSummary();
-    //this.loaderService.hideLoader();
+    this.loaderService.hideLoader();
   }
   // Returns all columns for mat-table including count
   getDisplayedColumnsWithCount(): string[] {

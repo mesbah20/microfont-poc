@@ -2,6 +2,7 @@ import { Component, effect, inject, OnInit, signal, WritableSignal, HostListener
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextBaseInput } from '../../shared/components/input-types/text-base-input/text-base-input';
 import { DateInput } from '../../shared/components/input-types/date-input/date-input';
+import { TimeInput } from '../../shared/components/input-types/time-input/time-input';
 import { ExpansionPanelHeader } from '../../shared/components/expansion-panel-header/expansion-panel-header';
 import { Switch } from '../../shared/components/input-types/switch/switch';
 import { TextArea } from '../../shared/components/input-types/text-area/text-area';
@@ -25,6 +26,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     TextArea,
     Switch,
     DateInput,
+    TimeInput,
     Button,
     MatDivider,
     MatIcon,
@@ -40,10 +42,10 @@ export class Usernote implements OnInit {
   userNote: IUserNote = {};
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
   toastr = inject(ToastrService);
-  userId: string = 'dipankar.basu'
   cols: number = 4; // default columns
   userNoteId: number = 0;
   saveButtonText: string = "Create";
+  reminderTime: string;
 
 
   constructor(private formBuilder: FormBuilder,
@@ -53,54 +55,60 @@ export class Usernote implements OnInit {
 
   ngOnInit() {
     this.frmUserNote = this.formBuilder.group({
-      title: ['', [Validators.required, Validators.maxLength(100)]],
+      title: ['', [Validators.required]],
       content: ['', [Validators.required, Validators.maxLength(255)]],
       isPinned: [false],
       isReminder: [false],
-      reminderDate: ['']
+      reminderDate: [''],
+      reminderTime: ['']
 
     });
 
-    this.getUserNoteByUserId(this.userId);
+    this.getUserNoteByUserId();
   }
 
-  getUserNoteByUserId(userId: string) {
-    //this.loaderService.showLoader();  
+  getUserNoteByUserId() {
+    const userId = localStorage.getItem('userId') ;
+    this.loaderService.showLoader();  
     this.userNoteService
-      .getUserNoteByUserId(userId)
+      .getUserNoteByUserId(userId ?? '')
       .subscribe((Response) => {
         // if (Response.Status == 'OK') {
-        this.userNoteList = Response as IUserNote[];//06/07/2023         
-        this.loaderService.hideLoader();
+        this.userNoteList = Response as IUserNote[];//06/07/2023      
       });
+      this.loaderService.hideLoader();
   }
 
   // Create/Update Note
   createNote() {
-    //this.loaderService.showLoader()
+    this.loaderService.showLoader();
 
     this.userNote.noteId = String(this.userNoteId);
-    this.userNote.userId = "dipankar.basu";
+    this.userNote.userId = localStorage.getItem('userId') ?? '';
     this.userNote.noteTitle = this.form['title'].value;
     this.userNote.noteContent = this.form['content'].value;
-    this.userNote.isPinned = this.form['isPinned'].value ? "1" : "0";
-    this.userNote.isReminder = this.form['isReminder'].value ? "1" : "0";
-    this.userNote.reminderDate = this.form['reminderDate'].value;
+    this.userNote.isPinned = this.form['isPinned'].value ? 1 : 0;
+    this.userNote.isReminder = this.form['isReminder'].value ? 1 : 0;
+    if (this.userNote.isReminder == 1) {     
+      this.userNote.reminderDate = this.convertToIsoDateTime(this.form['reminderDate'].value, this.reminderTime)
+    }
+    else
+      this.userNote.reminderDate = null;
+
+    console.log("createNote", this.userNote);
 
     if (this.frmUserNote.valid) {
       this.userNoteService
         .createUserNote(this.userNote)
         .subscribe((Response) => {
-          this.onReset();
-
           if (this.userNoteId > 0) {
             this.toastr.success('Note Updated Successfully', 'Update Note');
           }
           else {
             this.toastr.success('Note Created Successfully', 'Create Note');
           }
-
-          this.getUserNoteByUserId(this.userId);
+          this.onReset();
+          this.getUserNoteByUserId();
           // if (Response.Status == 'OK') {
           //   this.loading = false;
 
@@ -118,16 +126,21 @@ export class Usernote implements OnInit {
           // this.loading = false;
         });
     }
+    this.loaderService.hideLoader();
   }
 
-  updateNote(note: IUserNote) {
+  updateNote(note: IUserNote) {    
     this.userNoteId = Number(note.noteId);
     this.form['title'].setValue(note.noteTitle);
     this.form['content'].setValue(note.noteContent);
     this.form['isPinned'].setValue(note.isPinned);
     this.form['isReminder'].setValue(note.isReminder);
-    this.form['reminderDate'].setValue(note.reminderDate);
-
+    if (note.isReminder == 1) {
+      const { date, time } = this.splitFromIsoDateTime(note.reminderDate ?? '');
+    
+      this.form['reminderDate'].setValue(date);
+      this.form['reminderTime'].setValue(time);
+    }
     this.saveButtonText = "Update";
   }
 
@@ -137,7 +150,7 @@ export class Usernote implements OnInit {
       .subscribe((Response) => {
         this.toastr.success('Note Deleted Successfully', 'Delete Note');
         this.onReset();
-        this.getUserNoteByUserId(this.userId);
+        this.getUserNoteByUserId();
 
         // if (Response.Status == 'OK') {
         //   this.loading = false;
@@ -182,8 +195,34 @@ export class Usernote implements OnInit {
     }
   }
 
+  onTimeChange(time: string) {
+    this.reminderTime = time;
+    //console.log('Time:', this.reminderTime);
+  }
+
   get form() {
     return this.frmUserNote.controls;
+  }
+
+  splitFromIsoDateTime(isoDateTime: string): { date: string; time: string } {
+    if (!isoDateTime) return { date: '', time: '' };
+
+    const [datePart, timePart] = isoDateTime.split('T'); // split at 'T'
+
+    if (!datePart || !timePart) return { date: '', time: '' };
+
+    // Optional: remove seconds from time
+    const [hours, minutes] = timePart.split(':');
+    const time = `${hours}:${minutes}`;
+
+    return { date: datePart, time };
+  }
+
+  convertToIsoDateTime(dateStr: string, timeStr: string): string {
+    const [year, month, day] = dateStr.split('-');
+    const [hour, minute] = timeStr.split(':');
+
+    return `${year}-${month}-${day}T${hour}:${minute}:00`;
   }
 
   // Responsive columns
