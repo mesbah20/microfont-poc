@@ -219,6 +219,8 @@ input[type="number"]::placeholder {
 
 .page-wrapper {
   @apply w-full bg-white mx-auto shadow-lg rounded-lg pb-4;
+  min-height: 100vh;
+
 }
 
 .form-wrapper {
@@ -278,6 +280,7 @@ input[type="number"]::placeholder {
   hover:bg-[#0d5aa3]
   transition-colors duration-200 ease-in-out
   shadow-sm hover:shadow-md;
+  position: relative;
 }
 
 .expansion-sub-header {
