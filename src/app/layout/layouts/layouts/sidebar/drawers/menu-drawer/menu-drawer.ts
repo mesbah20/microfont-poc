@@ -220,7 +220,6 @@ export class MenuDrawer implements OnInit {
     this.isLoading = false;
     this.userAccessList = dummyData;
     this.generateMenuFromAccess();
-
   }
 
   generateMenuFromAccess() {

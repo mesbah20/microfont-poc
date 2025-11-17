@@ -1,14 +1,20 @@
-import {ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection} from '@angular/core';
+import {
+  ApplicationConfig,
+  EnvironmentProviders,
+  provideBrowserGlobalErrorListeners, Provider,
+  provideZoneChangeDetection
+} from '@angular/core';
 import {provideRouter} from '@angular/router';
 
 import {routes} from './app.routes';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import {provideToastr} from 'ngx-toastr';
 import {provideAnimations} from '@angular/platform-browser/animations';
-import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {provideAuth} from './core/auth/auth.provider';
+import {tokenInterceptor} from './TokenInterceptor';
 
-export const appConfig: ApplicationConfig = {
+export const appConfig: { providers: (EnvironmentProviders | Provider[])[] } = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({eventCoalescing: true}),
@@ -17,6 +23,8 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideToastr(),
     provideHttpClient(),
-    provideAuth(),
+    provideHttpClient(
+      withInterceptors([tokenInterceptor])
+    )
   ]
 };

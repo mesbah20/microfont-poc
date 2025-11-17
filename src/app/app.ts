@@ -35,18 +35,15 @@ export class App implements OnInit {
 
 
   async ngOnInit() {
-    this.authService.getResources().subscribe(res => {
-      localStorage.setItem('resourceList', JSON.stringify(res.data))
-    });
-    this.authService.getUserWiseApplications().subscribe(res => {
-      localStorage.setItem('appList', JSON.stringify(res.data))
-    });
     const isAuthenticated = await this.authService.init();
     //debugger;
     const currentPath = window.location.pathname;
 
     if (isAuthenticated) {
       this.authService.decodeToken();
+      // if (currentPath === '/login' || currentPath === '/') {
+      //   this.router.navigate(['/home']);
+      // }
     }
     else {
       if (currentPath !== '/login') {
@@ -64,7 +61,6 @@ export class App implements OnInit {
       await this.novuService.init(userId, 'EDstW_4loKyp');
     } else {
       console.warn('No userId found in localStorage. Novu not initialized.');
-      // অপশনাল: লগইন পেজে রিডাইরেক্ট করুন
       // this.router.navigate(['/login']);
     }
   }
