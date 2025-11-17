@@ -20,10 +20,11 @@ export class ApprovalService {
         const url = `http://localhost:8083/approval-register/operation/${req.officeId}/${req.appId }/${req.setId}/${req.approvalLevel}/${req.nextApprovalLevel}/${encodeURIComponent(req.remarks)}/${req.userId}/${req.approvalFlag}`;
         return this.http.get(url, { responseType: 'text' });
     }
-    getMakerList(userId : string): Observable<any> {
-      var url = `http://localhost:8083/approval-register/makerAll/${userId}`;
-      return this.http.get<any>(url);
-    }
+    // getMakerList(userId : string): Observable<any> {
+    //   var url = `http://localhost:8083/approval-register/makerAll/${userId}`;
+    //   return this.http.get<any>(url);
+    // }
+
     getApprovalQueDetails(setId  : number): Observable<any> {
       var url = `http://localhost:8083/approval-register/approvalQue/${setId }`;
       return this.http.get<any>(url);
@@ -33,6 +34,17 @@ export class ApprovalService {
       const url = `http://192.168.20.93:8083/approval-register/all/checker_manager`;
       return this.http.get<any[]>(url);
     }
+
+    getMakerList(data: {
+      userId: string;
+      functionId: number;
+      startDate: string;
+      endDate: string;
+    }): Observable<any[]> {
+      const url = `http://192.168.20.93:8083/approval-register/makerAll`;
+      return this.http.post<any[]>(url, data);
+    }
+
 
 
 }

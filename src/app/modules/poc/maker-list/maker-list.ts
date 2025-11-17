@@ -13,6 +13,7 @@ import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal'
 import {OtherComponentsPage} from '../../../shared/components/other-components-page/other-components-page';
 import { UserService } from '../../../core/user/user.service';
 import { User} from '../../../core/user/user.types';
+import {ApprovalService} from '../../../shared/services/approval-service';
 
 @Component({
   selector: 'app-maker-list',
@@ -33,6 +34,7 @@ import { User} from '../../../core/user/user.types';
 export class MakerList implements OnInit {
   fb = inject(FormBuilder);
   dialog = inject(MatDialog);
+  private approvalService = inject(ApprovalService);
 
   // +++ 2. INJECT THE USER SERVICE +++
   private userService = inject(UserService);
@@ -121,26 +123,37 @@ export class MakerList implements OnInit {
   }
 
   loadMakerList(): void {
-    const { fromDate, toDate, functionId } = this.frmGroup.value || {};
-    const from = fromDate ? new Date(fromDate) : new Date('1900-01-01');
-    const to = toDate ? new Date(toDate) : new Date('2999-12-31');
-    to.setHours(23, 59, 59, 999);
 
-    const fnId = functionId ? Number(functionId) : null;
-    const filtered = this.apiResponseMaker.filter(item => {
-      const itemFn = Number(item.functionId);
-      const itemDate = new Date(item.createDate);
-      const fnOk = (fnId !== null) ? itemFn === fnId : true;
-      return fnOk && itemDate >= from && itemDate <= to;
+    const { functionId, fromDate, toDate } = this.frmGroup.value;
+
+    const payload = {
+      userId: this.currentUser ? this.currentUser.username : 'anik',
+      functionId: Number(functionId),
+      startDate: fromDate ? new Date(fromDate).toISOString().substring(0, 10) : "1900-01-01",
+      endDate: toDate ? new Date(toDate).toISOString().substring(0, 10) : "2999-12-31"
+    };
+
+    this.approvalService.getMakerList(payload).subscribe({
+
+      next: (response: any[]) => {
+        console.log("Maker API response:", response);
+
+        this.makerList = response.map(item => ({
+          ...item,
+          currentContext: this.safeJson(item.currentUxContent),
+          previousContext: this.safeJson(item.previousUxContent),
+        }));
+
+        this.showmakerList = this.makerList.length > 0;
+      },
+
+      error: err => {
+        console.error("Maker API Failed:", err);
+        this.makerList = [];
+        this.showmakerList = false;
+      }
+
     });
-
-    this.makerList = filtered.map(item => ({
-      ...item,
-      currentContext: this.safeJson(item.currentUxContent),
-      previousContext: this.safeJson(item.previousUxContent),
-    }));
-
-    this.showmakerList = this.makerList.length > 0;
   }
 
   // loadMakerList(): void {
@@ -227,7 +240,11 @@ export class MakerList implements OnInit {
   }
 
 
-  private safeJson(s: string) { try { return JSON.parse(s || '{}'); } catch { return {}; } }
+  private safeJson(s: string | null) {
+    if (!s) return {};
+    try { return JSON.parse(s); }
+    catch { return {}; }
+  }
 
 
 }
