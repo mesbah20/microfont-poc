@@ -59,7 +59,7 @@ export class AuthService {
   }
 
   logout(): void {
-    this.keycloak.logout({});
+    this.keycloak.logout({redirectUri: 'http://localhost:4200/login'});
     localStorage.clear();
     sessionStorage.clear();
   }
