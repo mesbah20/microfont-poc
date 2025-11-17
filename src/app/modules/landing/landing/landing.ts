@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { KeyclockService } from '../../../core/service/keyclock.service';
-import { TimeInput } from '../../../shared/components/input-types/time-input';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {Router} from '@angular/router';
 import {AuthService} from '../../../core/auth/auth.service';
@@ -9,7 +8,6 @@ import {AuthService} from '../../../core/auth/auth.service';
   selector: 'app-landing',
   standalone: true,
   imports: [
-    TimeInput,
     ReactiveFormsModule
   ],
   templateUrl: './landing.html',
