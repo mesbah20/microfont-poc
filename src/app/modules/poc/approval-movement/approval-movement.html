@@ -1,27 +1,36 @@
 <div class="page-wrapper">
   <div class="panel">
     <div class="grid grid-cols-1 md:grid-cols-1 gap-0">
-      <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'Change Details'" />
+      <app-expansion-panel-header
+        [isOpenSignal]="businessHeaderPanel"
+        [panelTitle]="'Change Details'">
+      </app-expansion-panel-header>
+
       <div class="container">
 
+        <!-- Top bar -->
         <div class="flex justify-between items-center">
           <div class="flex items-center p-2 gap-3">
-            <!-- Back Button -->
-            <button class="flex items-center px-4 py-2 mx-1 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors"
-                    type="button"
-                    (click)="goBack()">
+            <button
+              class="flex items-center px-4 py-2 mx-1 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors"
+              type="button"
+              (click)="goBack()">
               <mat-icon class="mr-2">arrow_back</mat-icon>
               Back
             </button>
 
-            <!-- Page Title -->
             <span class="font-semibold text-lg">Approval Movement</span>
           </div>
 
           <div class="flex justify-center sm:justify-end mt-1.5 mr-3">
             <div class="flex gap-3">
-              <input type="text" [(ngModel)]="rejectReason" placeholder="Remarks"
-                     class="border rounded px-2 py-1" required>
+              <input
+                type="text"
+                [(ngModel)]="rejectReason"
+                placeholder="Remarks"
+                class="border rounded px-2 py-1"
+                required
+              />
               <button mat-flat-button color="warn"
                       class="flex items-center px-4 py-2 mx-1 bg-red-400 text-white rounded hover:bg-red-500 transition-colors"
                       type="button"
@@ -46,7 +55,7 @@
             <div class="text-blue-500 text-lg">Loading approval data...</div>
           </div>
 
-          <!-- Fatal Error Message (Red) -->
+          <!-- Fatal Error Message -->
           <div *ngIf="errorMessage" class="p-4 m-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-md">
             <div class="flex items-center">
               <mat-icon class="mr-2 text-red-500">error</mat-icon>
@@ -58,7 +67,7 @@
           <!-- Success: Components Loaded -->
           <div *ngIf="!isLoading && !errorMessage">
 
-            <!-- SUCCESS BANNER FOR DEMO -->
+            <!-- Success Banner -->
             <div class="p-4 m-4 mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 rounded shadow-md">
               <div class="flex items-center">
                 <mat-icon class="mr-2 text-green-500">check_circle</mat-icon>
@@ -68,14 +77,14 @@
             </div>
 
             <div class="w-full h-full bg-accent-50 p-3">
-              <!-- Case 1: Only Change Request (No Previous Data) -->
+
+              <!-- Single Change Request Only (if no previousUxContent) -->
               <ng-container *ngIf="!data?.previousUxContent; else withPrevious">
                 <mat-card class="w-full shadow-lg">
                   <div class="font-semibold text-xl pt-1 text-center bg-accent-50 mb-3">
                     Change Request
                   </div>
 
-                  <!-- Success Indicator for Left Component -->
                   <div *ngIf="!errorLeft" class="p-2 m-2 bg-green-50 border border-green-300 text-green-700 rounded text-sm">
                     <div class="flex items-center">
                       <mat-icon class="mr-2 text-green-500" style="font-size: 18px; width: 18px; height: 18px;">check</mat-icon>
@@ -83,9 +92,9 @@
                     </div>
                   </div>
 
+                  <!-- Host for single card mode -->
                   <ng-template #dynamicHostLeft></ng-template>
 
-                  <!-- Error for Left Component -->
                   <div *ngIf="errorLeft" class="p-4 m-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-md">
                     <div class="flex items-center">
                       <mat-icon class="mr-2 text-red-500">error</mat-icon>
@@ -96,16 +105,16 @@
                 </mat-card>
               </ng-container>
 
-              <!-- Case 2: Change Request + Previous Data (Side by Side) -->
+              <!-- Change Request + Previous Data -->
               <ng-template #withPrevious>
                 <div class="grid sm:grid-cols-2 gap-x-5">
+
                   <!-- Left Card: Change Request -->
                   <mat-card class="shadow-lg">
                     <div class="font-semibold text-xl pt-1 text-center bg-accent-50 mb-3">
                       Change Request
                     </div>
 
-                    <!-- Success Indicator for Left Component -->
                     <div *ngIf="!errorLeft" class="p-2 m-2 bg-green-50 border border-green-300 text-green-700 rounded text-sm">
                       <div class="flex items-center">
                         <mat-icon class="mr-2 text-green-500" style="font-size: 18px; width: 18px; height: 18px;">check</mat-icon>
@@ -113,9 +122,9 @@
                       </div>
                     </div>
 
+                    <!-- Host for left in dual mode -->
                     <ng-template #dynamicHostLeft></ng-template>
 
-                    <!-- Error for Left Component -->
                     <div *ngIf="errorLeft" class="p-4 m-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-md">
                       <div class="flex items-center">
                         <mat-icon class="mr-2 text-red-500">error</mat-icon>
@@ -131,7 +140,6 @@
                       Previous Data
                     </div>
 
-                    <!-- Success Indicator for Right Component -->
                     <div *ngIf="!errorRight" class="p-2 m-2 bg-green-50 border border-green-300 text-green-700 rounded text-sm">
                       <div class="flex items-center">
                         <mat-icon class="mr-2 text-green-500" style="font-size: 18px; width: 18px; height: 18px;">check</mat-icon>
@@ -139,9 +147,9 @@
                       </div>
                     </div>
 
+                    <!-- Host for right side -->
                     <ng-template #dynamicHostRight></ng-template>
 
-                    <!-- Error for Right Component -->
                     <div *ngIf="errorRight" class="p-4 m-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-md">
                       <div class="flex items-center">
                         <mat-icon class="mr-2 text-red-500">error</mat-icon>
@@ -152,8 +160,10 @@
                   </mat-card>
                 </div>
               </ng-template>
+
             </div>
           </div>
+
         </div>
 
       </div>

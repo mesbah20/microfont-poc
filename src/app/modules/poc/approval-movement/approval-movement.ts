@@ -1,4 +1,15 @@
-import { Component, EnvironmentInjector, ViewChild, ViewContainerRef, AfterViewInit, inject, WritableSignal, signal } from '@angular/core';
+import {
+  Component,
+  EnvironmentInjector,
+  ViewChild,
+  ViewContainerRef,
+  AfterViewInit,
+  OnInit,
+  inject,
+  WritableSignal,
+  signal,
+  ChangeDetectorRef
+} from '@angular/core';
 import { ComponentRegistry } from '../component-registry';
 import { CommonModule } from '@angular/common';
 import { MatCard } from '@angular/material/card';
@@ -7,7 +18,6 @@ import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { BUTTON_VISIBILITY } from '../../../shared/constant/button-signals.constant';
 import { MatIcon } from '@angular/material/icon';
-import { ApprovalRequest } from '../../../shared/models/approval';
 import { ToastrService } from 'ngx-toastr';
 import { HighlightService } from '../../../shared/services/highlight.service';
 import { ExpansionPanelHeader } from "../../../shared/components/expansion-panel-header/expansion-panel-header";
@@ -27,15 +37,15 @@ type DiffMap = Record<string, boolean>;
   templateUrl: './approval-movement.html',
   styleUrl: './approval-movement.scss'
 })
-export class ApprovalMovement implements AfterViewInit {
+export class ApprovalMovement implements OnInit, AfterViewInit {
 
-  @ViewChild('dynamicHostLeft', { read: ViewContainerRef, static: false })
-  private hostLeft!: ViewContainerRef;
+  @ViewChild('dynamicHostLeft', { read: ViewContainerRef })
+  hostLeft!: ViewContainerRef;
 
-  @ViewChild('dynamicHostRight', { read: ViewContainerRef, static: false })
-  private hostRight!: ViewContainerRef;
+  @ViewChild('dynamicHostRight', { read: ViewContainerRef })
+  hostRight!: ViewContainerRef;
 
-  isLoading: boolean = true;
+  isLoading: boolean = false;        // ⬅ start as false so content renders immediately
   errorMessage: string | null = null;
   errorLeft: string | null = null;
   errorRight: string | null = null;
@@ -43,7 +53,7 @@ export class ApprovalMovement implements AfterViewInit {
   toastr = inject(ToastrService);
   data: any;
   private diffMap: DiffMap = {};
-  private setId: number;
+  private setId: number = 0;
   rejectReason = '';
 
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
@@ -55,6 +65,7 @@ export class ApprovalMovement implements AfterViewInit {
     private router: Router,
     private location: Location,
     private hl: HighlightService,
+    private cdr: ChangeDetectorRef
   ) {
     const nav = this.router.getCurrentNavigation();
     this.data = nav?.extras.state?.['data'] || null;
@@ -70,35 +81,37 @@ export class ApprovalMovement implements AfterViewInit {
   }
 
   // ---------------------------------------
-  //           ON INIT (WITH DUMMY DATA)
+  //           ON INIT (DUMMY DATA)
   // ---------------------------------------
   ngOnInit(): void {
-
-    // Inject dummy data when router provides nothing
+    // For now always use dummy data so the view renders
     if (!this.data) {
-      console.log("ℹ️ No navigation data. Using dummy data for demo.");
+      console.log("ℹ️ No navigation data. Using dummy Name + Phone data.");
 
       this.data = {
-        setId: 999,
-        selector: "text-base-input", // MUST exist in ComponentRegistry
+        setId: 1,
+        selector: "text-base-input",
         currentUxContent: {
           selector: "text-base-input",
-          label: "Full Name",
-          value: "John Doe",
-          type: "text"
+          fields: [
+            { key: "name", label: "Name", value: "John Doe" },
+            { key: "phone", label: "Phone Number", value: "01812345678" }
+          ]
         },
         previousUxContent: {
           selector: "text-base-input",
-          label: "Full Name",
-          value: "Jonathan Doe",
-          type: "text"
+          fields: [
+            { key: "name", label: "Name", value: "Jonathan Doe" },
+            { key: "phone", label: "Phone Number", value: "01798765432" }
+          ]
         }
       };
     }
 
-    this.setId = this.data.setId;
-    this.data.currentUxContent = this.data.currentContext || this.safeParse(this.data.currentUxContent);
-    this.data.previousUxContent = this.data.previousContext || this.safeParse(this.data.previousUxContent);
+    this.setId = this.data.setId ?? 0;
+
+    this.data.currentUxContent = this.safeParse(this.data.currentUxContent);
+    this.data.previousUxContent = this.safeParse(this.data.previousUxContent);
 
     if (this.data?.currentUxContent) {
       this.diffMap = buildDiffMap(this.data.previousUxContent, this.data.currentUxContent, []);
@@ -107,7 +120,9 @@ export class ApprovalMovement implements AfterViewInit {
 
   // ---------------------------------------
   ngAfterViewInit(): void {
-    setTimeout(() => this.loadAndRender());
+    // Make sure view children are resolved, then render
+    this.cdr.detectChanges();
+    this.loadAndRender();
   }
 
   safeParse(value: any): any {
@@ -115,7 +130,7 @@ export class ApprovalMovement implements AfterViewInit {
     if (typeof value === 'object') return value;
     try {
       return JSON.parse(value);
-    } catch (e) {
+    } catch {
       return {};
     }
   }
@@ -124,19 +139,10 @@ export class ApprovalMovement implements AfterViewInit {
   //              LOAD + RENDER
   // ---------------------------------------
   private loadAndRender(): void {
-    this.isLoading = false;
-
     try {
       if (!this.data.selector || !this.data.currentUxContent) {
         throw new Error('Invalid data: Missing content or selector.');
       }
-
-      // Build diff
-      const diffMap = buildDiffMap(
-        this.data.previousUxContent,
-        this.data.currentUxContent,
-        []
-      );
 
       const isBothhost = !!(this.hostLeft && this.hostRight);
 
@@ -147,11 +153,11 @@ export class ApprovalMovement implements AfterViewInit {
         this.data.currentUxContent,
         true,
         isBothhost,
-        diffMap
+        this.diffMap
       );
 
       if (!successLeft) {
-        this.errorLeft = `Failed to render Change Request component (${this.data.selector})`;
+        this.errorLeft = `Failed to render 'Change Request' component (${this.data.selector})`;
       }
 
       // Render Right (Previous Data)
@@ -167,15 +173,17 @@ export class ApprovalMovement implements AfterViewInit {
         );
 
         if (!successRight) {
-          this.errorRight = `Failed to render Previous Data component (${sel})`;
+          this.errorRight = `Failed to render 'Previous Data' component (${sel})`;
         }
+      } else {
+        console.log('ℹ️ No previous data to render (New record creation)');
       }
 
       this.toastr.success('Approval view loaded successfully!', 'Success');
 
     } catch (e: any) {
-      this.errorMessage = e.message;
-      this.toastr.error(e.message, 'Error');
+      this.errorMessage = e.message || 'Unknown error';
+      //this.toastr.error(this.errorMessage, 'Error');
     }
   }
 
@@ -189,10 +197,19 @@ export class ApprovalMovement implements AfterViewInit {
     highlightMap?: Record<string, boolean>
   ): boolean {
 
-    if (!host) return false;
-
+    console.log("🟦 createInto() called with selector:", selector);
     const compType = this.registry.resolve(selector);
-    if (!compType) return false;
+    console.log("🟧 Resolved component:", compType);
+
+    if (!compType) {
+      console.error("❌ Component not found in registry:", selector);
+      return false;
+    }
+
+    if (!host) {
+      console.error("❌ Host not available");
+      return false;
+    }
 
     host.clear();
     const ref = host.createComponent(compType, { environmentInjector: this.env });
@@ -258,7 +275,6 @@ export class ApprovalMovement implements AfterViewInit {
     });
   }
 
-
   onSendBack(): void {
     if (!this.rejectReason) {
       this.toastr.warning('Remarks Required!');
@@ -284,7 +300,6 @@ export class ApprovalMovement implements AfterViewInit {
       }
     });
   }
-
 
   goBack() {
     this.location.back();
