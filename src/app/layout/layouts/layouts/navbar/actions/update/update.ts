@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import {MatIcon} from '@angular/material/icon';
+import { FormGroupSignal, ONCLICK_UPDATE } from '../../../../../../shared/constant/button-signals.constant';
 
 @Component({
     selector: 'app-update',
@@ -11,5 +13,8 @@ import {MatIcon} from '@angular/material/icon';
     styleUrl: './update.scss'
 })
 export class Update {
-
+    frmGroup = signal<FormGroup>(FormGroupSignal());
+    update() {
+        ONCLICK_UPDATE.set(true);
+      }
 }

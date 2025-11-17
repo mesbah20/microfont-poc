@@ -182,6 +182,31 @@
             line-height: 16px;
             padding: 1px 4px;
           }
+
+
+          ::ng-deep .mat-mdc-select-trigger {
+            font-size: 11px !important;
+            height: 16px !important;
+            line-height: 16px !important;
+            padding: 0 !important;
+          }
+
+          ::ng-deep .mat-mdc-select-value {
+            font-size: 11px !important;
+            line-height: 16px !important;
+          }
+
+          // Dropdown options panel
+          ::ng-deep .mat-mdc-option {
+            font-size: 11px !important;
+            padding: 2px 6px !important;
+            min-height: 20px !important;
+          }
+
+            ::ng-deep .mat-mdc-form-field-infix {
+                padding: 0 !important;
+                min-height: 16px !important;
+              }                                               
         }
 
         &.text-column {
