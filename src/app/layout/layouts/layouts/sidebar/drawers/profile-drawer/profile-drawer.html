@@ -167,16 +167,23 @@
 </div>
 
 <!-- Chat Drawer -->
-<div class="fixed bottom-[20px] right-[10px] w-[400px] bg-white shadow-2xl transform transition-all duration-300 ease-in-out border border-gray-200
-    rounded-lg overflow-hidden flex flex-col z-50"
-  [style.transform]="isChatOpen() ? 'translateY(0)' : 'translateY(100%)'" [style.opacity]="isChatOpen() ? '1' : '0'"
+<div
+  class="fixed bottom-[20px] right-[10px] w-[300px] h-[380px] bg-white shadow-2xl 
+         transform transition-all duration-300 ease-in-out border border-gray-200
+         rounded-lg flex flex-col z-50"
+  [style.transform]="isChatOpen() ? 'translateY(0)' : 'translateY(100%)'"
+  [style.opacity]="isChatOpen() ? '1' : '0'"
   [style.visibility]="isChatOpen() ? 'visible' : 'hidden'">
-  <app-chat-box [chatId]="selectedChat?.chatId ?? ''" [partner]="selectedChat?.partner ?? ''"
+
+  <app-chat-box
+    class="flex-1"
+    [chatId]="selectedChat?.chatId ?? ''"
+    [partner]="selectedChat?.partner ?? ''"
     (closeChat)="closeChatFromChild()">
   </app-chat-box>
-  <div
-    class="absolute right-0 top-0 h-full w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize transition-colors duration-200">
-  </div>
+
+  <!-- Resize bar -->
+  <div class="absolute right-0 top-0 h-full w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize"></div>
 </div>
 
 <!-- Notification Detail Modal -->
