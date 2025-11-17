@@ -1,5 +1,20 @@
 // lds-modal.component.ts - Angular 20 Compatible with Enhanced Design
-import { Component, Input, Output, EventEmitter, TemplateRef, ContentChild, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewChild, ViewContainerRef, Type } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  TemplateRef,
+  ContentChild,
+  OnInit,
+  OnDestroy,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+  ViewContainerRef,
+  Type,
+  ComponentRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Button } from '../input-types/button/button';
 
@@ -19,6 +34,8 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
   @Input() showDefaultFooter: boolean = true;
   @Input() showOkButton: boolean = true;
   @Input() okButtonText: string = 'OK';
+  // @Input() showCancelButton: boolean = true;
+  // @Input() cancelButtonText: string = 'Cancel';
   @Input() modalComponent?: Type<any>;
   @Input() modalComponentData?: any;
 
@@ -32,7 +49,7 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild('modalContainer', { read: ViewContainerRef, static: false }) modalContainer!: ViewContainerRef;
 
   private originalBodyOverflow: string = '';
-  private componentRef: any;
+  private componentRef: ComponentRef<any> | null = null;
 
   ngOnInit() {
     document.addEventListener('keydown', this.handleEscapeKey.bind(this));
@@ -80,6 +97,10 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
       setTimeout(() => {
         this.loadComponent();
       }, 0);
+    }
+
+    if (changes['modalComponentData'] && this.componentRef?.instance) {
+      this.assignComponentData(changes['modalComponentData'].currentValue);
     }
   }
 
@@ -161,6 +182,27 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
     this.closeModal();
   }
 
+  // onCancelClick(): void {
+  //   try {
+  //     let result: any = true;
+  //     if (this.componentRef && this.componentRef.instance) {
+  //       const inst: any = this.componentRef.instance;
+  //       // Prefer an explicit getter if provided by child
+  //       if (typeof inst.getModalResult === 'function') {
+  //         result = inst.getModalResult();
+  //       } else if (inst.frmGroup && typeof inst.frmGroup.getRawValue === 'function') {
+  //         // Common pattern: child exposes a FormGroup named frmGroup
+  //         result = inst.frmGroup.getRawValue();
+  //       }
+  //     }
+  //     this.modalResult.emit(result);
+  //   } catch (e) {
+  //     console.warn('OK click: failed to collect child result, emitting true', e);
+  //     this.modalResult.emit(true);
+  //   }
+  //   this.closeModal();
+  // }
+
   private loadComponent(retryCount: number = 0) {
     console.log(`=== LOADING COMPONENT (Attempt ${retryCount + 1}) ===`);
     console.log('Modal Container:', this.modalContainer);
@@ -191,21 +233,14 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
       this.modalContainer.clear();
 
       console.log('Creating component...');
-      this.componentRef = this.modalContainer.createComponent(this.modalComponent);
+        this.componentRef = this.modalContainer.createComponent(this.modalComponent);
 
       console.log('Component created successfully:', this.componentRef);
       console.log('Component instance:', this.componentRef.instance);
 
-      if (this.modalComponentData && this.componentRef.instance) {
-        Object.keys(this.modalComponentData).forEach(key => {
-          if (this.componentRef.instance.hasOwnProperty(key) || key in this.componentRef.instance) {
-            this.componentRef.instance[key] = this.modalComponentData[key];
-          }
-        });
-        console.log('Data assigned to component:', this.modalComponentData);
-      }
+        this.assignComponentData(this.modalComponentData);
 
-      this.componentRef.changeDetectorRef.detectChanges();
+        this.componentRef.changeDetectorRef.detectChanges();
 
       console.log('✅ Component loaded successfully');
       console.log('Component element:', this.componentRef.location.nativeElement);
@@ -223,9 +258,9 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
             closeModal: () => this.closeModal()
           };
         }
-      } catch (err) {
-        console.warn('Could not assign modalParent to child instance', err);
-      }
+        } catch (err) {
+          console.warn('Could not assign modalParent to child instance', err);
+        }
 
       // Auto-subscribe to any EventEmitter-like outputs on the child instance and forward
       try {
@@ -312,6 +347,35 @@ export class LdsModalComponent implements OnInit, OnDestroy, OnChanges {
         this.modalContainer.element.nativeElement.appendChild(element);
       }
     }
+  }
+
+  private assignComponentData(data: any): void {
+    if (!data || !this.componentRef?.instance) {
+      return;
+    }
+
+    const instance = this.componentRef.instance as any;
+
+    const assignValue = (key: string, value: any) => {
+      if (typeof this.componentRef!.setInput === 'function') {
+        this.componentRef!.setInput(key, value);
+      } else {
+        instance[key] = value;
+      }
+    };
+
+    if ('modalComponentData' in instance) {
+      assignValue('modalComponentData', data);
+    } else {
+      Object.entries(data).forEach(([key, value]) => {
+        if (key in instance) {
+          assignValue(key, value);
+        }
+      });
+    }
+
+    this.componentRef.changeDetectorRef.detectChanges();
+    console.log('Data assigned to component:', data);
   }
 
   private preventBodyScroll(): void {

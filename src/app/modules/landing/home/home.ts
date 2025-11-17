@@ -39,7 +39,7 @@ export class Home {
 
   ngOnInit(): void {
     this.userService.user$.subscribe(res => {
-      console.log(res)
+      console.log('showing abc: ', res)
     })
     // auto-slide every 5s
     this.intervalId = setInterval(() => {

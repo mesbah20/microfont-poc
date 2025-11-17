@@ -27,6 +27,22 @@ export const routes: Routes = [
       
     ]
   },
+   {
+  path: '', component: Layout,
+    data: {
+       layout: 'empty'
+     },
+    children: [
+        {
+      path: 'vehicle',
+       loadChildren: () =>
+         import('./modules/vehicle-management/vehicle-management.routing')
+          .then(m => m.VehicleManagementRouting),
+     },
+     ]
+   },
+
+  {path: '', redirectTo: 'usernote', pathMatch: 'full'},
   {
     path: 'poc', component: Layout,
     data: {
