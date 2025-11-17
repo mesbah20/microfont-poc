@@ -6,6 +6,8 @@ import { DataGridComponent } from '../../../shared/components/data-grid';
 import { ExpansionPanelHeader } from '../../../shared/components/expansion-panel-header/expansion-panel-header';
 import {ViewApprovalActivitiesComponent} from '../view-approval-activities/view-approval-activities.component';
 import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
+import { UserService } from '../../../core/user/user.service';
+import { User} from '../../../core/user/user.types';
 
 @Component({
   selector: 'app-checker-list',
@@ -17,6 +19,10 @@ import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal'
 export class CheckerList implements OnInit {
   router = inject(Router);
   dialog = inject(MatDialog);
+
+  // +++ 2. INJECT THE USER SERVICE +++
+  private userService = inject(UserService);
+  private currentUser: User | null = null;
 
   // Modal controls
   isModalVisible: boolean = false;
@@ -137,6 +143,23 @@ export class CheckerList implements OnInit {
     this.loadPending();
   }
 
+  // ngOnInit(): void {
+  //   // We subscribe to the user$ observable
+  //   this.userService.user$.subscribe(user => {
+  //     if (user) {
+  //       // Once we have a user, store it and load their data
+  //       console.log("Logged in user:", user);
+  //       this.currentUser = user;
+  //       this.loadPending(); // <-- Now we load the data
+  //     } else {
+  //       // Handle case where user is logged out or null
+  //       console.log("Waiting for user login...");
+  //       this.currentUser = null;
+  //       this.dataSource = []; // Clear data
+  //     }
+  //   });
+  // }
+
   loadPending(): void {
     this.dataSource = this.apiResponse.map((item: any) => ({
       ...item,
@@ -145,8 +168,38 @@ export class CheckerList implements OnInit {
     }));
   }
 
+  // loadPending(): void {
+  //   // Add a "guard clause" to ensure we have a user
+  //   if (!this.currentUser) {
+  //     console.warn("loadPending called, but no user is logged in.");
+  //     this.dataSource = [];
+  //     return;
+  //   }
+  //
+  //   // Get the username (e.g., "bob")
+  //   const myUsername = this.currentUser.username;
+  //
+  //   //
+  //   // NOTE: This filters your local 'apiResponse' list.
+  //   // In a real app, you would send 'myUsername' to your backend API
+  //   // (e.g., this.myApiService.getPendingItems(myUsername).subscribe(...))
+  //   //
+  //   const myPendingItems = this.apiResponse.filter(
+  //     item => item.recordUserId === myUsername
+  //   );
+  //
+  //   // Now, map the filtered items
+  //   this.dataSource = myPendingItems.map((item: any) => ({
+  //     ...item,
+  //     currentContext: this.parseJson(item.currentUxContent),
+  //     previousContext: this.parseJson(item.previousUxContent),
+  //   }));
+  //
+  //   console.log(`Loaded ${this.dataSource.length} items for user ${myUsername}`);
+  // }
+
   view(row: any): void {
-    this.router.navigateByUrl('config/approval-movement', {state: {data: row}});
+    this.router.navigateByUrl('mx/approval-movement', {state: {data: row}});
   }
 
   // showApprovalSteps(row: any): void {
