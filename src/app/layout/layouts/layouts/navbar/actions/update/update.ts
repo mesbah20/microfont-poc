@@ -5,9 +5,7 @@ import { FormGroupSignal, ONCLICK_UPDATE } from '../../../../../../shared/consta
 
 @Component({
     selector: 'app-update',
-    imports: [
-        MatIcon
-    ],
+    imports: [],
     templateUrl: './update.html',
     standalone: true,
     styleUrl: './update.scss'
