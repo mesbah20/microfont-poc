@@ -1,4 +1,14 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation, WritableSignal, signal } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+  WritableSignal,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { IdBoxComponent } from '../../../../shared/components/input-types/id-box/id-box';
@@ -7,8 +17,12 @@ import { TextArea } from '../../../../shared/components/input-types/text-area/te
 import { TextBaseInput } from '../../../../shared/components/input-types/text-base-input/text-base-input';
 import { ExpansionPanelHeader } from '../../../../shared/components/expansion-panel-header/expansion-panel-header';
 import { MatIcon } from '@angular/material/icon';
+import { User } from '../../../../core/user/user.types';
 
-
+type ProfileModalData = Partial<User> & {
+  description?: string;
+  mobile?: string;
+};
 
 @Component({
   selector: 'app-edit-profile-modal',
@@ -21,25 +35,20 @@ import { MatIcon } from '@angular/material/icon';
     OfficeBoxComponent,
     IdBoxComponent,
     ExpansionPanelHeader,
-    MatIcon
-      
+    MatIcon,
   ],
   templateUrl: './edit-profile-modal.html',
   styleUrls: ['./edit-profile-modal.scss'],
-
 })
-export class EditProfileModal implements OnInit {
-  @Input() initialData?: any;
-  @Input() modalParent?: { close(result?: any): void; closeModal(): void };
-
-
+export class EditProfileModal implements OnInit, OnChanges {
   @Output() modalResult = new EventEmitter<any>();
+  @Input() modalComponentData: ProfileModalData | null = null;
 
-    frmGroup!: FormGroup;
+  frmGroup!: FormGroup;
   headerOpen: WritableSignal<boolean> = signal(true);
   imgPreviewUrl: string | ArrayBuffer | null = null;
   selectedImageFile?: File;
- 
+  imageUploadInProgress = false;
 
   constructor(private fb: FormBuilder) {}
 
@@ -51,42 +60,111 @@ export class EditProfileModal implements OnInit {
       user_nm: ['', [Validators.required, Validators.maxLength(100)]],
       user_descrip: ['', [Validators.maxLength(500)]],
       user_email_id: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
-      mobile_number: [
-        '',
-        [Validators.maxLength(30), Validators.pattern(/^[0-9+\-\s()]{0,30}$/)]
-      ],
+      mobile_number: ['', [Validators.maxLength(30), Validators.pattern(/^[0-9+\-\s()]{0,30}$/)]],
       user_img: [null],
     });
 
-    if (this.initialData) {
-      const patch: any = {};
-      Object.keys(this.frmGroup.controls).forEach((k) => {
-        if (this.initialData[k] !== undefined) patch[k] = this.initialData[k];
-      });
-      this.frmGroup.patchValue(patch);
-      if (this.initialData?.user_img){this.imgPreviewUrl = this.initialData.user_img;} 
+    if (this.modalComponentData) {
+      console.log('ngOnInit patch with data:', this.modalComponentData);
+      this.patchFormWithData(this.modalComponentData);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!this.frmGroup || !changes['modalComponentData']) {
+      return;
+    }
+
+    if (this.modalComponentData) {
+      console.log('ngOnChanges patch with data:', this.modalComponentData);
+      this.patchFormWithData(this.modalComponentData);
     }
   }
 
   getModalResult() {
     return this.frmGroup.getRawValue();
   }
-onImageError() {
-  this.imgPreviewUrl = null;
-}
 
-  onProfilePicSelected(event: Event): void {
+  onImageError() {
+    this.imgPreviewUrl = null;
+  }
+
+  async onProfilePicSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const files = input.files;
     if (!files || files.length === 0) return;
 
     const file = files[0];
     this.selectedImageFile = file;
-    this.frmGroup.patchValue({ user_img: file });
+    this.imageUploadInProgress = true;
 
-    const reader = new FileReader();
-    reader.onload = () => (this.imgPreviewUrl = reader.result);
-    reader.readAsDataURL(file);
+    try {
+      const base64String = await this.convertFileToBase64(file);
+      this.frmGroup.patchValue({ user_img: base64String });
+      this.imgPreviewUrl = `data:${file.type};base64,${base64String}`;
+    } catch (error) {
+      console.error('Failed to convert profile picture to base64', error);
+    } finally {
+      this.imageUploadInProgress = false;
+    }
+  }
+
+  private patchFormWithData(data: ProfileModalData): void {
+    console.log('patchFormWithData called with:', data);
+    const normalizedImage = this.extractBase64Value(data.avatar ?? null);
+    this.frmGroup.patchValue({
+      user_id: data.employeeId ?? '',
+      login_id: data.username ?? '',
+      home_office_id: data.officeId ?? '',
+      user_nm: data.name ?? '',
+      user_email_id: data.email ?? '',
+      user_descrip: data.description ?? '',
+      mobile_number: data.mobile ?? '',
+      user_img: normalizedImage,
+    });
+
+    this.imgPreviewUrl = this.buildPreviewSrc(data.avatar ?? null);
+    console.log('Form values after patch:', this.frmGroup.getRawValue());
+  }
+
+  private convertFileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result;
+        if (typeof result === 'string') {
+          const base64 = result.split(',')[1] ?? result;
+          resolve(base64);
+        } else {
+          reject('Unsupported file result');
+        }
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  private extractBase64Value(value: string | null): string | null {
+    if (!value) {
+      return null;
+    }
+    if (value.startsWith('data:')) {
+      return value.split(',')[1] ?? null;
+    }
+    return value;
+  }
+
+  private buildPreviewSrc(value: string | null): string | null {
+    if (!value) {
+      return null;
+    }
+    if (value.startsWith('data:')) {
+      return value;
+    }
+    // Assume base64 without prefix; default to png
+    if (/^[a-zA-Z0-9+/=]+$/.test(value.replace(/\s+/g, ''))) {
+      return `data:image/png;base64,${value}`;
+    }
+    return value;
   }
 }
-

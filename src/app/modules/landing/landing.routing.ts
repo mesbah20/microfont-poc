@@ -1,8 +1,6 @@
 import {Routes} from '@angular/router';
 import {Dashboard} from './feature/dashboard/dashboard';
 import { AlertExamplePage } from './alert-example-page/alert-example-page';
-import {Login} from '../../core/auth/login/login';
-import { Landing } from './landing/landing';
 import {ApprovalItems} from '../poc/approval-items/approval-items';
 import {Landing} from './landing/landing';
 import {Home} from './home/home';

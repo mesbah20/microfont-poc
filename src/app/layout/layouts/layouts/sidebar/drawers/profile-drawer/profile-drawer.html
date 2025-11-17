@@ -11,8 +11,12 @@
           <mat-icon class="text-white">person</mat-icon>
         </div>
         <div>
-          <h3 class="font-medium text-gray-800">Saikat</h3>
-          <p class="text-sm text-gray-600">saikat.gmail.com</p>
+          <h3 class="font-medium text-gray-800">
+            {{ currentUser?.name || 'Loading user...' }}
+          </h3>
+          <p class="text-sm text-gray-600">
+            {{ currentUser?.email || 'Fetching email...' }}
+          </p>
         </div>
       </div>
       <button
@@ -55,7 +59,9 @@
         </div>
         <div class="flex-1 text-left">
           <p class="font-medium text-gray-800">Branch</p>
-          <p class="text-sm text-gray-600">Current: Dhanmondi</p>
+          <p class="text-sm text-gray-600">
+            Current: {{ currentUser?.officeId || 'N/A' }}
+          </p>
         </div>
         <mat-icon class="text-gray-400">chevron_right</mat-icon>
       </button>

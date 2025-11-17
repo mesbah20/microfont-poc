@@ -1,68 +1,70 @@
 <div class="other-page-wrapper p-6 space-y-4">
 
-<!-- 🔹 Profile Image Section (Top) -->
-<div class="flex flex-col items-center justify-center gap-3 mb-6">
-  <div class="relative">
-    <!-- Profile Preview -->
-    <div
-      class="w-24 h-24 rounded-full overflow-hidden ring-2 ring-blue-400 flex items-center justify-center bg-gray-100 shadow-md">
+  <!-- 🔹 Profile Image Section -->
+  <div class="flex flex-col items-center justify-center gap-3 mb-6">
+    <div class="relative group">
+      <div class="w-28 h-28 rounded-full bg-gradient-to-br from-blue-100 via-white to-blue-200 p-[3px] shadow-[0_10px_25px_-15px_rgba(37,99,235,0.75)] transition duration-300 group-hover:scale-105">
+        <div class="w-full h-full rounded-full overflow-hidden border border-white bg-gray-50 flex items-center justify-center">
+          <ng-container *ngIf="imgPreviewUrl; else noImage">
+            <img
+              [src]="imgPreviewUrl"
+              alt="Profile Preview"
+              class="w-full h-full object-cover text-sm"
+            />
+          </ng-container>
 
-      <!-- if has imgPreviewUrl -->
-      <ng-container *ngIf="imgPreviewUrl; else noImage">
-        <img
-          [src]="imgPreviewUrl"
-          alt="Profile Preview"
-          class="w-full h-full object-cover text-sm"
-        />
-      </ng-container>
+          <ng-template #noImage>
+            <img
+              src="asset/icons/blackProfile.svg"
+              alt="Default Profile"
+              class="w-full h-full object-cover opacity-80"
+            />
+          </ng-template>
+        </div>
+      </div>
 
-      <!-- if not fallback image -->
-      <ng-template #noImage>
-        <img
-          src="asset/icons/blackProfile.svg"
-          alt="Default Profile"
-          class="w-full h-full object-cover opacity-80"
+      <!-- Edit Icon Button -->
+      <label
+        class="absolute -bottom-1 -right-1 cursor-pointer"
+        title="Change Profile Photo"
+      >
+        <span class="w-11 h-11 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 shadow-xl text-white border-2 border-white transition duration-300 group-hover:scale-110 group-hover:shadow-blue-300/40">
+          <mat-icon fontIcon="edit" class="text-base"></mat-icon>
+        </span>
+        <input
+          type="file"
+          accept=".png,.jpg,.jpeg"
+          (change)="onProfilePicSelected($event)"
+          hidden
         />
-      </ng-template>
+      </label>
     </div>
 
-    <!-- Edit Icon Button -->
-    <label
-      class="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full cursor-pointer shadow-md transition"
-      title="Change Profile Photo"
-    >
-      <mat-icon fontIcon="edit" class="text-sm"></mat-icon>
-      <input
-        type="file"
-        accept=".png,.jpg,.jpeg"
-        (change)="onProfilePicSelected($event)"
-        hidden
-      />
-    </label>
+    <p class="text-sm text-gray-500 mt-2 text-center font-medium tracking-wide flex items-center justify-center gap-2">
+      <mat-icon fontIcon="photo_camera" class="text-blue-500 text-base"></mat-icon>
+      Upload a new profile photo
+      <span *ngIf="imageUploadInProgress" class="text-xs text-blue-500 animate-pulse">(processing...)</span>
+    </p>
   </div>
-
-  <p class="text-sm text-gray-500 mt-2 text-center font-medium tracking-wide flex items-center justify-center gap-1">
-    <mat-icon fontIcon="photo_camera" class="text-blue-500 text-base"></mat-icon>
-    Upload a new profile photo
-  </p>
-</div>
 
   <!-- 🔹 Form Fields -->
   <form [formGroup]="frmGroup" class="transaction-form">
     <div class="panel">
       <div class="transaction-grid-container mb-10">
+
         <!-- Header -->
         <section class="header-section">
           <app-expansion-panel-header
             [isOpenSignal]="headerOpen"
             [panelTitle]="'Profile Information'"
-          />
+          ></app-expansion-panel-header>
         </section>
 
         <!-- Form Inputs -->
         <section
           class="primary-fields-section bg-gray-50 rounded-lg mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"
         >
+          <!-- User ID -->
           <lds-id-box
             [frmGroup]="frmGroup"
             [controlName]="'user_id'"
@@ -71,6 +73,7 @@
             [isDotsVisible]="false"
           ></lds-id-box>
 
+          <!-- Login ID (Readonly) -->
           <app-text-base-input
             [frmGroup]="frmGroup"
             [controlName]="'login_id'"
@@ -79,6 +82,7 @@
             displayMode="vertical"
           ></app-text-base-input>
 
+          <!-- Home Office -->
           <lds-office-box
             [frmGroup]="frmGroup"
             [controlName]="'home_office_id'"
@@ -87,6 +91,7 @@
             [enable]="false"
           ></lds-office-box>
 
+          <!-- User Name -->
           <app-text-base-input
             [frmGroup]="frmGroup"
             [controlName]="'user_nm'"
@@ -98,6 +103,7 @@
             }"
           ></app-text-base-input>
 
+          <!-- Email -->
           <app-text-base-input
             [frmGroup]="frmGroup"
             [controlName]="'user_email_id'"
@@ -109,6 +115,7 @@
             }"
           ></app-text-base-input>
 
+          <!-- Mobile Number -->
           <app-text-base-input
             [frmGroup]="frmGroup"
             [controlName]="'mobile_number'"
@@ -117,6 +124,7 @@
             [placeholder]="'e.g. +8801XXXXXXXXX'"
           ></app-text-base-input>
 
+          <!-- Description -->
           <lds-txt-area
             class="md:col-span-2"
             [frmGroup]="frmGroup"

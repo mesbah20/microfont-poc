@@ -1,4 +1,4 @@
-import { Component, NgZone, signal, Type, ViewChild } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit, signal, Type, ViewChild } from '@angular/core';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { ChatBox } from './drawers/chat-box/chat-box';
 import { MatIcon } from '@angular/material/icon';
@@ -24,6 +24,9 @@ import { LdsModalComponent } from '../../../../../../shared/components/lds-modal
 import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/components/service-request-dialog/service-request-dialog';
 import { EditProfileModal } from '../../../../../../modules/landing/feature/edit-profile-modal/edit-profile-modal';
 import { Subscription } from 'rxjs';
+import { UserService } from '../../../../../../core/user/user.service';
+import { User } from '../../../../../../core/user/user.types';
+import { ToastHelperService } from '../../../../../../shared/services/toast-helper.service';
 
 @Component({
   selector: 'app-profile-drawer',
@@ -48,7 +51,7 @@ import { Subscription } from 'rxjs';
     ]),
   ],
 })
-export class ProfileDrawer {
+export class ProfileDrawer implements OnInit, OnDestroy {
   isNotificationsOpen = false;
   isMessagingOpen = false;
 
@@ -66,6 +69,7 @@ export class ProfileDrawer {
   modalOkButtonText = signal('Submit Request'); // Use signal for button text
   private modalSubscriptions: Subscription[] = [];
   private subscriptionCheckTimer: any = null;
+  private userSubscription?: Subscription;
 
   openSections: { [key: string]: boolean } = {
     notifications: false,
@@ -74,32 +78,46 @@ export class ProfileDrawer {
 
   showEditProfileModal = false;
   // modalComponent?: Type<any>;
-  modalData?: any;
+  modalData?: User;
+  currentUser?: User;
 
   constructor(
     public notificationService: NotificationService,
+    private userService: UserService,
     private router: Router,
+    private toastHelper: ToastHelperService,
     public novuService: NovuService,
     private overlay: Overlay,
     private ngZone: NgZone
   ) {}
 
-  openEditProfileModal() {
-    this.modalComponent = EditProfileModal;
-    this.modalData = {
-      initialData: {
-        user_id: 'USR002',
-        user_nm: 'Saikat',
-        user_descrip: 'Software Engineer',
-        home_office_id: 'DHK001',
-        login_id: 'saikat01',
-        user_email_id: 'saikat.gmail.com',
-        mobile_number: '017XXXXXXXX',
-        user_img: 'assets/profile.png',
+  ngOnInit(): void {
+    this.userSubscription = this.userService.user$.subscribe({
+      next: (user) => {
+        this.currentUser = user;
       },
-    };
-    this.showEditProfileModal = true;
+      error: (error) => {
+        console.error('Failed to load current user profile from stream', error);
+      },
+    });
   }
+
+  openEditProfileModal() {
+    const openModalWithUser = (user: User) => {
+      this.modalComponent = EditProfileModal;
+      this.modalData = user;
+      this.showEditProfileModal = true;
+    };
+
+    if (!this.currentUser) {
+      console.warn('User profile is not available yet; cannot open edit modal.');
+      return;
+    }
+
+    openModalWithUser(this.currentUser);
+  }
+
+
 
   closeEditProfileModal() {
     this.showEditProfileModal = false;
@@ -110,9 +128,9 @@ export class ProfileDrawer {
   //   console.log('✅ Profile updated:', result);
   //   this.showEditProfileModal = false;
   // }
-  // ✅ to show data on console
   onProfileUpdated(updatedData: any) {
     console.log('🟢 Updated profile data received from modal:', updatedData);
+    this.toastHelper.success('Profile updated', 'Success');
   }
 
   toggleChat(chatWith: string) {
@@ -240,6 +258,12 @@ export class ProfileDrawer {
   ngOnDestroy() {
     this.overlayRef?.dispose();
     this.detailOverlayRef?.dispose();
+    this.modalSubscriptions.forEach((sub) => sub.unsubscribe());
+    if (this.subscriptionCheckTimer) {
+      clearInterval(this.subscriptionCheckTimer);
+      this.subscriptionCheckTimer = null;
+    }
+    this.userSubscription?.unsubscribe();
   }
 
   goToNotes() {
@@ -325,26 +349,26 @@ export class ProfileDrawer {
       }
     }, 3000);
   }
- 
+
   onModalClose(isVisible: boolean) {
     console.log('Modal visibility changed:', isVisible);
     this.showModal = isVisible;
- 
+
     if (!isVisible) {
       // Clean up subscriptions when modal closes
       this.modalSubscriptions.forEach((sub) => sub.unsubscribe());
       this.modalSubscriptions = [];
- 
+
       if (this.subscriptionCheckTimer) {
         clearInterval(this.subscriptionCheckTimer);
         this.subscriptionCheckTimer = null;
       }
- 
+
       // Don't clear modalComponent/modalComponentData here - let Angular handle it
       // This prevents the ExpressionChangedAfterItHasBeenCheckedError
     }
   }
- 
+
   onModalVisibilityChange(isVisible: boolean) {
     // Update both modal flags based on which one was open
     if (this.showEditProfileModal) {
@@ -384,5 +408,6 @@ export class ProfileDrawer {
       this.modalOkButtonText.set(text);
     }
   }
+  
 
 }
