@@ -636,7 +636,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 
 .custom-input,
 .custom-select {
-  @apply w-full px-3 py-1 pb-0 pe-8 text-sm rounded-md border border-slate-400 bg-slate-50 text-gray-900 
+  @apply w-full px-3 py-1 pb-0 pe-8 text-sm rounded-md border border-slate-400 bg-slate-50 text-gray-900
          placeholder:text-slate-400 placeholder:text-sm
          transition-all duration-200 ease-in-out
          focus:outline-none focus:ring-1 focus:ring-[#106ebe] focus:border-[#106ebe] focus:bg-white
@@ -666,7 +666,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 
 @media (max-width: 740px) {
   .floating-input-label {
-    @apply text-[13px] top-1.5 -translate-y-3; 
+    @apply text-[13px] top-1.5 -translate-y-3;
   }
 
   .custom-input {
@@ -968,12 +968,12 @@ body.modal-open app-sidebar,
 }
 
 
-.custom-toast-position {
-  top: 90px !important;       /* Y-axis */
-  left: 900px !important;      /* X-axis */
-  right: auto !important;
-  bottom: auto !important;
-  position: fixed !important;
-  
-}
+//.custom-toast-position {
+//  top: 90px !important;       /* Y-axis */
+//  left: 900px !important;      /* X-axis */
+//  right: auto !important;
+//  bottom: auto !important;
+//  position: fixed !important;
+//
+//}
 

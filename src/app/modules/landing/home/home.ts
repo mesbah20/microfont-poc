@@ -1,7 +1,8 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {KeyclockService} from '../../../core/service/keyclock.service';
 import {UserService} from '../../../core/user/user.service';
+import {AuthService} from "../../../core/auth/auth.service";
 
 @Component({
   selector: 'app-home',
@@ -9,9 +10,10 @@ import {UserService} from '../../../core/user/user.service';
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
-export class Home {
+export class Home implements OnInit{
   keyclock: KeyclockService = inject(KeyclockService);
   private userService = inject(UserService);
+  private authService = inject(AuthService);
   slides: any[] = [
     {
       image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=400&fit=crop',
@@ -34,12 +36,21 @@ export class Home {
       description: 'Achieving goals through collaboration'
     }
   ];
+  username: string;
   currentSlide = 0;
   private intervalId: any;
 
   ngOnInit(): void {
     this.userService.user$.subscribe(res => {
-      console.log(res)
+      this.username = res.name;
+    });
+    this.authService.getResources().subscribe(res => {
+      //let groupResource = this.groupByModuleId(res.data);
+      localStorage.setItem('resourceList', JSON.stringify(res.data))
+    })
+    this.authService.getUserWiseApplications().subscribe(res => {
+      //let groupResource = this.groupByModuleId(res.data);
+      localStorage.setItem('appList', JSON.stringify(res.data))
     })
     // auto-slide every 5s
     this.intervalId = setInterval(() => {
@@ -51,6 +62,21 @@ export class Home {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
+  }
+
+  groupByModuleId(resources: any[]) {
+    const grouped: Record<string, { moduleId: string, moduleName: string, items: any[] }> = {};
+
+    resources.forEach(r => {
+      const attrs = r.attributes || {};
+      const moduleId = String(attrs.moduleId ?? 'unknown');
+      const moduleName = String(attrs.moduleName ?? 'unknown');
+      if (!grouped[moduleId]) {
+        grouped[moduleId] = { moduleId, moduleName, items: [] };
+      }
+      grouped[moduleId].items.push(r);
+    });
+    return grouped;
   }
 
   nextSlide() {

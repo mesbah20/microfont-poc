@@ -31,7 +31,7 @@ export const authInterceptor = (
     // the user out from the app.
   newReq = req.clone({
     headers: req.headers
-      .set('Authorization', 'Bearer ' + 'eyJraWQiOiJjNDAzN2U4Yi04NjllLTRjMTItYWIyZi1lNDU5MzM2ZDgxZjciLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJTaWRkaWsiLCJicmFuY2hJZCI6MjEsImdyb3VwSWQiOjEsImlzcyI6Imh0dHA6Ly8xOTIuMTY4LjEwLjM2OjgwOTAiLCJmdWxsTmFtZSI6InNpZGRkaWsiLCJzZXNzaW9uSWQiOiJlMTc4NTQzNy1kMGNkLTQ4MjQtYTBhYS0wMGUxZDQ5MjI0ODYiLCJ1c2VyTmFtZSI6IlNpZGRpayIsInV1aWQiOiI4MzUyYjYyMi1lYWQ1LTQ0MjUtYWY0OS1lMjRlNWY3MWU0MTMiLCJvcmdJZCI6MSwiYXV0aG9yaXRpZXMiOltdLCJhdWQiOiJzYi1jbGllbnQiLCJuYmYiOjE3NjMwMDkwNTgsImlkIjoyLCJleHAiOjE3NjM4NzMwNTgsImlhdCI6MTc2MzAwOTA1OCwianRpIjoiYTMwYjRhMDMtY2ZkYi00MmQzLWI5ODMtMzIyNjgwZTMxNjI1In0.gsi8k8S8M6jKM3tIZZ84W9Cjcx7zAUGNfRoZurlUH63m1t9Uumjgwd_qiqKW9Qt5GmEK0XnOpxdBzRTEO0wbMZl1tQY_fIchbJGnTuylFvbDAHjRIVv9j-QIebmssH4sPLJJJ3ENKyIiUCKw38bkARH4PyjZCv31UJXnHFQodAg_x97WrnqSKC872i_KyEox5a7E6ECdHOv0LaC7-xuZ879tANaBWjuhmtlyNCqRLScu2kZ510PEPM5tCZ1wg6Ro6hLjc2ewM26X9LFXaGczkZy1eFT-M5kYV1ruL9cEp9zK1Lc6Rm6cfzl3TwzlppFHevyVFaw39dqD3ak4ELMMyQ')
+      .set('Authorization', 'Bearer ' + sessionStorage.getItem('access_token'))
       .set('branchId',  '1')
   });
 
