@@ -1,0 +1,45 @@
+.details-panel {
+  background-color: #fff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.08);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.detail-grid div {
+  background-color: #f9fafb;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.detail-grid span {
+  font-size: 0.8rem;
+  color: #475569;
+  text-transform: uppercase;
+}
+
+.detail-grid strong {
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.loader {
+  padding: 2rem;
+  text-align: center;
+  color: #475569;
+}
+
+.action-area {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+}

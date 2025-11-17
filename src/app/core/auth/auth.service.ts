@@ -1,10 +1,11 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import Keycloak from 'keycloak-js';
 import {environment} from '../../../environments/environment';
 import {AuthUtils} from './auth.utils';
 import {User} from '../user/user.types';
 import {UserService} from '../user/user.service';
+import {tap} from 'rxjs';
 
 
 @Injectable({ providedIn: 'root' })
@@ -65,6 +66,7 @@ export class AuthService {
   }
 
   decodeToken(): void {
+    sessionStorage.setItem('access_token', this.keycloak.token || '')
     this.userInfo(this.keycloak.token || '');
   }
 
@@ -85,4 +87,26 @@ export class AuthService {
     user.userTerminalIP = decodeToken.userTerminalIP;
     this._userService.user = user;
   }
+
+  getResources(){
+    const params = new HttpParams({
+      fromObject: { appId: environment.appId }
+    });
+    let url = environment.bffUrl + 'resource-manager/api/v1/resource/accessible-resource/app'
+    return this.http.get<any>(url, {params});
+  }
+
+  getUserWiseApplications(){
+    let url = environment.bffUrl + 'resource-manager/api/v1/resource/applications'
+    return this.http.get<any>(url);
+  }
+
+  getAllApplications(){
+    const params = new HttpParams({
+      fromObject: { appId: environment.appId }
+    });
+    let url = environment.bffUrl + 'resource-manager/api/v1/resource/applications-generic'
+    return this.http.get<any>(url, {params});
+  }
+
 }

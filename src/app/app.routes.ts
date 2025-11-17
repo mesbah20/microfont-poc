@@ -7,7 +7,7 @@ export const routes: Routes = [
 
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: Landing },
-  
+
   {
     path: 'landing', component: Layout,
     data: {
@@ -24,9 +24,26 @@ export const routes: Routes = [
     },
     children: [
       { path: 'mx', loadChildren: () => import('./modules/swiftmx/swiftmx.routing').then(m => m.SwiftmxRouting) },
-      
+      { path: 'dashboard', loadChildren: () => import('./modules/landing/landing.routing').then(m => m.landingRouting) },
+      { path: 'hrm', loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting) },
     ]
   },
+   {
+  path: '', component: Layout,
+    data: {
+       layout: 'empty'
+     },
+    children: [
+        {
+      path: 'vehicle',
+       loadChildren: () =>
+         import('./modules/vehicle-management/vehicle-management.routing')
+          .then(m => m.VehicleManagementRouting),
+     },
+     ]
+   },
+
+  {path: '', redirectTo: 'usernote', pathMatch: 'full'},
   {
     path: 'poc', component: Layout,
     data: {
