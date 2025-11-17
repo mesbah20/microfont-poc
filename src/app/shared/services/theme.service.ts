@@ -141,8 +141,30 @@ export class ThemeService {
     this.initializeTheme();
   }
 
+  private setCookie(name: string, value: string, days: number = 365): void {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = `expires=${date.toUTCString()}`;
+    this.document.cookie = `${name}=${value};${expires};path=/;SameSite=Lax`;
+  }
+
+  private getCookie(name: string): string | null {
+    const nameEQ = `${name}=`;
+    const ca = this.document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  }
+
+  private deleteCookie(name: string): void {
+    this.document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+  }
+
   private initializeTheme() {
-    const savedTheme = localStorage.getItem('selectedTheme') || 'blue';
+    const savedTheme = this.getCookie('selectedTheme') || 'blue';
     this.applyTheme(savedTheme);
   }
 
@@ -179,12 +201,12 @@ export class ThemeService {
     this.document.documentElement.style.setProperty('--theme-btn', theme.btn || '');
 
     // Save theme preference
-    localStorage.setItem('selectedTheme', themeId);
+    this.setCookie('selectedTheme', themeId);
     this.currentThemeSubject.next(themeId);
   }
 
   resetTheme() {
     this.applyTheme('blue');
-    localStorage.removeItem('selectedTheme');
+    this.deleteCookie('selectedTheme');
   }
 }

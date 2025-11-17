@@ -16,17 +16,17 @@ import {
   NovuService,
 } from '../../../../../../shared/services/novu.service';
 import {  Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { ComponentPortal } from '@angular/cdk/portal';
-import { NotificationPopoverComponent } from '../../../../../../modules/swiftmx/components/notification/notification-popover.component';
-import { NotificationDetailModalComponent } from '../../../../../../modules/swiftmx/components/notification/notification-detail-modal.component';
-import { Router, RouterModule } from '@angular/router';
-import { LdsModalComponent } from '../../../../../../shared/components/lds-modal/lds-modal';
-import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/components/service-request-dialog/service-request-dialog';
 import { EditProfileModal } from '../../../../../../modules/landing/feature/edit-profile-modal/edit-profile-modal';
 import { Subscription } from 'rxjs';
 import { UserService } from '../../../../../../core/user/user.service';
 import { User } from '../../../../../../core/user/user.types';
 import { ToastHelperService } from '../../../../../../shared/services/toast-helper.service';
+import { Router, RouterModule } from '@angular/router';
+import { NotificationDetailModalComponent } from '../../../../../../modules/swiftmx/components/notification/notification-detail-modal.component';
+import { LdsModalComponent } from '../../../../../../shared/components/lds-modal/lds-modal';
+import { ComponentPortal } from '@angular/cdk/portal';
+import { NotificationPopoverComponent } from '../../../../../../modules/swiftmx/components/notification/notification-popover.component';
+import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/components/service-request-dialog/service-request-dialog';
 
 @Component({
   selector: 'app-profile-drawer',
@@ -34,6 +34,7 @@ import { ToastHelperService } from '../../../../../../shared/services/toast-help
     ChatBox,
     MatIcon,
     ThemePickerComponent,
+    RouterModule,
     AsyncPipe,
     NotificationDetailModalComponent,
     RouterModule,
@@ -267,8 +268,9 @@ export class ProfileDrawer implements OnInit, OnDestroy {
   }
 
   goToNotes() {
-    this.router.navigate(['/usernote']);
+    this.router.navigate(['/feature/usernote']);
   }
+
 
   // Modal related methods
   openServiceRequestModal() {

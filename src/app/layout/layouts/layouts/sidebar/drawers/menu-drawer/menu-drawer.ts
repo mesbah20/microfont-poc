@@ -115,7 +115,7 @@ export class MenuDrawer implements OnInit {
         MenuName: 'Operation',
         ModuleId: 'M001',
         ModuleName: 'Main Module',
-        AppRoute: '/dashboard',
+        AppRoute: '/landing/dashboard',
         ItemType: 'F',
         QuickRouteNo: '10001',
         IsFinancial: '0'
