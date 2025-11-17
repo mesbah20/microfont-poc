@@ -65,6 +65,15 @@ export const routes: Routes = [
       { path: '', loadChildren: () => import('./features/feature.routing').then(m => m.featureRoutes) },
     ]
   },
+  {
+    path: 'report', component: Layout,
+    data: {
+      layout: 'empty'
+    },
+    children: [
+      { path: '', loadChildren: () => import('./features/report/report.routing').then(m => m.reportRoutes) },
+    ]
+  },
 ];
 
 

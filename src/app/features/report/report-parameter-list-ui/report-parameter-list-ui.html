@@ -1,0 +1,535 @@
+<div class="page-wrapper">
+
+    <!-- Loading Indicator -->
+    @if (loading()) {
+      <div class="flex justify-center items-center py-20">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    }
+
+    <!-- Form Content -->
+    @if (!loading()) {
+      <form [formGroup]="reportForm" class="p-8">
+
+        <!-- Section 1: Report Information -->
+        <div class="mb-8">
+          <app-expansion-panel-header [isOpenSignal]="reportInfoPanel" [panelTitle]="'Report Information'"></app-expansion-panel-header>
+
+          @if (reportInfoPanel()) {
+          <div class="form-grid-2-col mt-4">
+            
+            <!-- Report Id with Lookup -->
+            <lds-id-box
+              [frmGroup]="reportForm"
+              [controlName]="'id'"
+              [label]="'Report ID'"
+              [isVertical]="true"
+              [isDotsVisible]="true"
+              [tooltip]="'Click to select report'"
+              [tooltipPosition]="'above'"
+              [placeholder]="'Auto-generated or select existing'"
+              [tooltipDelay]="300"
+         
+              (dotsClicked)="openReportModal()"
+              (onChanged)="onIdBoxChanged($event)"
+            ></lds-id-box>
+
+            <!-- Report Name -->
+            <app-text-base-input
+              [frmGroup]="reportForm"
+              controlName="reportName"
+              label="Report Name"
+              [isVertical]="true"
+              [maxLength]="150"
+              placeholder="e.g., Employee Attendance Report"
+            ></app-text-base-input>
+
+            <!-- Function Id with Lookup -->
+            <lds-id-box
+              [frmGroup]="reportForm"
+              [controlName]="'functionId'"
+              [label]="'Function ID'"
+              [isVertical]="true"
+              [isDotsVisible]="true"
+              [tooltip]="'Click to select function'"
+              [tooltipPosition]="'above'"
+              [placeholder]="'e.g., FN_ATT_001'"
+              [tooltipDelay]="300"
+              (dotsClicked)="openFunctionModal()"
+            ></lds-id-box>
+
+            <!-- Function Name (Read-only) -->
+            <app-text-base-input
+              [frmGroup]="reportForm"
+              controlName="functionName"
+              label="Function Name"
+              [isVertical]="true"
+              placeholder="Auto-populated from Function ID"
+              [isReadonly]="true"
+            ></app-text-base-input>
+
+            <!-- Data Source Type -->
+            <app-select-option-field
+              [frmGroup]="reportForm"
+              controlName="dataSourceType"
+              label="Data Source Type"
+              [options]="dataSourceTypeOptions"
+              [isVertical]="true"
+              [searchable]="true"
+              placeholder="Select data source"
+            ></app-select-option-field>
+
+            <!-- Database Connection (Conditional) -->
+            @if (showDatabaseConnection()) {
+              <app-select-option-field
+                [frmGroup]="reportForm"
+                controlName="databaseConnectionId"
+                label="Database Connection"
+                [options]="databaseConnections"
+                [isVertical]="true"
+                [searchable]="true"
+                placeholder="Select database connection"
+              ></app-select-option-field>
+            }
+
+            <!-- API Endpoint (Conditional) -->
+            @if (showApiEndpoint()) {
+              <app-select-option-field
+                [frmGroup]="reportForm"
+                controlName="apiEndpointId"
+                label="API Endpoint"
+                [options]="apiEndpoints"
+                [isVertical]="true"
+                [searchable]="true"
+                placeholder="Select API endpoint"
+              ></app-select-option-field>
+            }
+
+          </div>
+
+          <!-- Full Width Fields -->
+          <div class="form-grid-2-col mt-4">
+            
+
+            <!-- Report File Upload -->
+            <div class="mb-4">
+              <lds-file
+                [frmGroup]="reportForm"
+                [controlName]="'reportFile'"
+                [labelText]="'Report File (.rptdesign)'"
+                [isVertical]="true"
+                [fileExtension]="'.rptdesign'"
+                (selectedFilesChanged)="onFileSelected($event)"
+              ></lds-file>
+            </div>
+            <app-text-base-input
+                [frmGroup]="reportForm"
+                controlName="reportFileName"
+                label="Report File Name"
+                [isVertical]="true"
+                [maxLength]="150"
+                placeholder="e.g., Report File Name"
+            ></app-text-base-input>
+            <!-- Output Formats - Multi-select Checkboxes -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Output Formats <span class="text-red-500">*</span>
+              </label>
+              <div class="flex gap-4 flex-wrap">
+                @for (format of outputFormatOptions; track format.key) {
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      [value]="format.key"
+                      [checked]="isFormatSelected(format.key)"
+                      (change)="onOutputFormatChange($event, format.key)"
+                      class="text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      style="width: 1rem; height: 1rem;"
+                    />
+                    <span class="text-sm text-gray-700">{{ format.value }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+
+            <!-- Auto Generation Period -->
+            <app-select-option-field
+              [frmGroup]="reportForm"
+              controlName="autoGenPeriod"
+              label="Auto Generation Period"
+              [options]="autoGenPeriodOptions"
+              [isVertical]="true"
+              [searchable]="false"
+              placeholder="Select period (optional)"
+            ></app-select-option-field>
+
+            <!-- Is Visible -->
+            <div class="mb-4">
+              <lds-switch
+                [frmGroup]="reportForm"
+                [controlName]="'isVisible'"
+                [labelText]="'Is Visible'"
+                [isChecked]="reportForm.get('isVisible')?.value || false"
+              ></lds-switch>
+            </div>
+
+            <!-- Generate Before EOD -->
+            <lds-switch
+              [frmGroup]="reportForm"
+              [controlName]="'genBeforeEod'"
+              [labelText]="'Generate Before EOD'"
+              [isChecked]="reportForm.get('genBeforeEod')?.value || false"
+            ></lds-switch>
+
+          </div>
+          }
+        </div>
+
+        <!-- Section 2: Parameter Management -->
+        <div class="mb-8">
+          <app-expansion-sub-panel-header [isOpenSignal]="parameterSubPanel" [subPanelTitle]="'Parameter Management'" [isButton]="true" [buttonText]="'Add'" [buttonIcon]="'add'" (addAction)="openParameterForm()"></app-expansion-sub-panel-header>
+
+          @if (parameterSubPanel()) {
+            <div class="form-grid-col-1 mt-4">
+                <!-- Parameter Table -->
+              @if (parameters().length > 0) {
+                <lds-data-grid
+                  [id]="'parameterGrid'"
+                  [dataSource]="parameters()"
+                  [initPageSize]="5"
+                  [showEditButton]="true"
+                  [showDeleteButton]="true"
+                  [showViewButton]="false"
+                  [showPrintButton]="false"
+                  [enableSelection]="false"
+                  [useInlineEdit]="false"
+                  [searchEnabled]="false"
+                  (onFHEditClick)="onParameterEdit($event)"
+                  (onFHDeleteClick)="onParameterDelete($event)"
+                ></lds-data-grid>
+              } @else {
+                <div class="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                  <svg class="mx-auto text-gray-400" style="height: 3rem; width: 3rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                  <p class="mt-4 text-sm text-gray-500">No parameters defined.</p>
+                  <p class="text-sm text-gray-500">Click "Add Button(+)" to create.</p>
+                </div>
+              }
+
+            </div>
+          }
+        </div>
+
+      </form>
+    }
+
+    <!-- Parameter Form Modal -->
+    @if (isParameterModalOpen()) {
+      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto m-4">
+          
+          <!-- Modal Header -->
+          <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 border-b border-gray-200 rounded-t-lg">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-bold text-white">
+                {{ isEditingParameter() ? 'Edit Parameter' : 'Add Parameter' }}
+              </h2>
+              <button (click)="onCancelParameter()" class="text-white hover:text-gray-200">
+                <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Modal Body -->
+          <form [formGroup]="parameterForm" class="p-6">
+            <div class="form-grid-2-col gap-4">
+
+              <!-- Parameter Name -->
+              <app-text-base-input
+                [frmGroup]="parameterForm"
+                controlName="parameterName"
+                label="Parameter Name"
+                [isVertical]="true"
+                [maxLength]="50"
+                placeholder="e.g., branch_id"
+              ></app-text-base-input>
+
+              <!-- Parameter Label -->
+              <app-text-base-input
+                [frmGroup]="parameterForm"
+                controlName="parameterLabel"
+                label="Parameter Label"
+                [isVertical]="true"
+                [maxLength]="100"
+                placeholder="e.g., Branch Id"
+              ></app-text-base-input>
+
+              <!-- Data Type -->
+              <app-select-option-field
+                [frmGroup]="parameterForm"
+                controlName="dataType"
+                label="Data Type"
+                [options]="parameterDataTypeOptions"
+                [isVertical]="true"
+                [searchable]="true"
+                placeholder="Select data type"
+              ></app-select-option-field>
+
+              <!-- Input Type (for Text) -->
+              <!-- Input Type (filtered by Data Type) -->
+              <app-select-option-field
+                [frmGroup]="parameterForm"
+                controlName="inputType"
+                label="Input Type"
+                [options]="getFilteredInputTypeOptions()"
+                [isVertical]="true"
+                placeholder="Select input type"
+              ></app-select-option-field>
+
+              <!-- Data Source (for SELECT type parameters) -->
+              @if (showDropdownOptions()) {
+                <app-text-base-input
+                  [frmGroup]="parameterForm"
+                  controlName="dataSource"
+                  label="Data Source"
+                  [isVertical]="true"
+                  placeholder="Enter API URL, SQL query, function() or leave empty for static options"
+                ></app-text-base-input>
+                
+                @if (getDataSourceError()) {
+                  <div class="text-red-500 text-sm mt-1">
+                    {{ getDataSourceError() }}
+                  </div>
+                }
+                
+              }
+
+              @if (showDropdownOptions() && hasDataSource()) {
+                <div class="col-span-2 bg-blue-50 p-3 rounded-lg text-xs">
+                  <strong class="text-blue-800">API Data Source Example:</strong>
+                  <div class="mt-2">
+                    <strong>Data Source URL:</strong> <code>https://api.example.com/branches</code><br>
+                  </div>
+                </div>
+              }
+
+              <!-- Format/Pattern -->
+              @if (showDateFormat()) {
+                <app-text-base-input
+                  [frmGroup]="parameterForm"
+                  controlName="formatPattern"
+                  label="Date Format"
+                  [isVertical]="true"
+                  placeholder="e.g., dd/MM/yyyy"
+                ></app-text-base-input>
+              }
+
+              <!-- Default Value Section -->
+              <div class="col-span-2">
+                
+                <!-- For BOOLEAN types - use switch for default -->
+                @if (parameterForm.get('dataType')?.value === 'BOOLEAN') {
+                  <lds-switch
+                    [frmGroup]="parameterForm"
+                    [controlName]="'defaultValue'"
+                    [labelText]="'Default Value'"
+                    [isChecked]="parameterForm.get('defaultValue')?.value === 'true' || parameterForm.get('defaultValue')?.value === true"
+                  ></lds-switch>
+                } @else if (parameterForm.get('inputType')?.value === 'SELECT' && !hasDataSource()) {
+                  <!-- For SELECT types without dataSource - dropdown from selectOptions -->
+                  <app-select-option-field
+                    [frmGroup]="parameterForm"
+                    controlName="defaultValue"
+                    label="Default Value"
+                    [options]="getSelectOptionsForDefault()"
+                    [isVertical]="true"
+                    [searchable]="false"
+                    placeholder="Select default option"
+                  ></app-select-option-field>
+                } @else {
+                  <!-- For other types - predefined values or custom input -->
+                  <app-select-option-field
+                    [frmGroup]="parameterForm"
+                    controlName="defaultValueType"
+                    label="Default Value Type"
+                    [options]="[{key: 'predefined', value: 'Predefined Template'}, {key: 'custom', value: 'Custom Value'}]"
+                    [isVertical]="true"
+                    [searchable]="false"
+                    placeholder="Select type"
+                  ></app-select-option-field>
+
+                  @if (parameterForm.get('defaultValueType')?.value === 'predefined') {
+                    <app-select-option-field
+                      [frmGroup]="parameterForm"
+                      controlName="defaultValue"
+                      label="Predefined Value"
+                      [options]="getFilteredPredefinedValues()"
+                      [isVertical]="true"
+                      [searchable]="true"
+                      placeholder="Select predefined value"
+                    ></app-select-option-field>
+                  }
+
+                  @if (parameterForm.get('defaultValueType')?.value === 'custom') {
+                    @if (parameterForm.get('dataType')?.value === 'DATE') {
+                      <app-date-input
+                        [frmGroup]="parameterForm"
+                        controlName="customDefaultValue"
+                        label="Custom Default Value"
+                        [isVertical]="true"
+                        placeholder="Select date"
+                      ></app-date-input>
+                    } @else if (parameterForm.get('dataType')?.value === 'NUMBER') {
+                      <lds-number
+                        [frmGroup]="parameterForm"
+                        controlName="customDefaultValue"
+                        label="Custom Default Value"
+                        [isVertical]="true"
+                        placeholder="Enter number"
+                      ></lds-number>
+                    } @else {
+                      <app-text-base-input
+                        [frmGroup]="parameterForm"
+                        controlName="customDefaultValue"
+                        label="Custom Default Value"
+                        [isVertical]="true"
+                        placeholder="Enter custom value"
+                      ></app-text-base-input>
+                    }
+                  }
+                }
+
+              </div>
+
+              <!-- Min Length (for Text) -->
+              @if (showTextValidation()) {
+                <app-text-base-input
+                  [frmGroup]="parameterForm"
+                  controlName="minLength"
+                  label="Min Length"
+                  [isVertical]="true"
+                  [type]="'number'"
+                  placeholder="Minimum length"
+                ></app-text-base-input>
+
+                <app-text-base-input
+                  [frmGroup]="parameterForm"
+                  controlName="maxLength"
+                  label="Max Length"
+                  [isVertical]="true"
+                  [type]="'number'"
+                  placeholder="Maximum length"
+                ></app-text-base-input>
+              }
+
+              <!-- Min/Max Value (for Number) -->
+              @if (showNumberValidation()) {
+                <app-text-base-input
+                  [frmGroup]="parameterForm"
+                  controlName="minValue"
+                  label="Min Value"
+                  [isVertical]="true"
+                  [type]="'number'"
+                  placeholder="Minimum value"
+                ></app-text-base-input>
+
+                <app-text-base-input
+                  [frmGroup]="parameterForm"
+                  controlName="maxValue"
+                  label="Max Value"
+                  [isVertical]="true"
+                  [type]="'number'"
+                  placeholder="Maximum value"
+                ></app-text-base-input>
+              }
+
+            </div>
+
+            <!-- Full Width Fields -->
+            <div class="form-grid-col-1 mt-4">
+
+              <!-- Select Options (for Dropdown) -->
+              @if (showDropdownOptions()) {
+                <lds-txt-area
+                  [frmGroup]="parameterForm"
+                  [controlName]="'selectOptions'"
+                  [labelText]="getSelectOptionsLabel()"
+                  [isVertical]="true"
+                  [placeholder]="getSelectOptionsPlaceholder()"
+                  [rows]="3"
+                  [maxLen]="1000"
+                ></lds-txt-area>
+                
+                @if (!hasDataSource()) {
+                  <div class="text-amber-600 text-xs mt-1">
+                    <strong>Required:</strong> Either provide Data Source above OR enter static options here
+                  </div>
+                }
+              }
+
+              <!-- Help Text -->
+              <app-text-base-input
+                [frmGroup]="parameterForm"
+                controlName="helpText"
+                label="Help Text"
+                [isVertical]="true"
+                [maxLength]="200"
+                placeholder="Optional hint for users"
+              ></app-text-base-input>
+
+              <!-- Is Required -->
+              <lds-switch
+                [frmGroup]="parameterForm"
+                [controlName]="'isRequired'"
+                [labelText]="'Required Parameter'"
+                [isChecked]="parameterForm.get('isRequired')?.value || false"
+              ></lds-switch>
+
+              <!-- Is Visible -->
+              <lds-switch
+                [frmGroup]="parameterForm"
+                [controlName]="'isVisible'"
+                [labelText]="'Visible Parameter'"
+                [isChecked]="parameterForm.get('isVisible')?.value || false"
+              ></lds-switch>
+
+              <!-- Is Readonly -->
+              <lds-switch
+                [frmGroup]="parameterForm"
+                [controlName]="'isReadonly'"
+                [labelText]="'Readonly Parameter'"
+                [isChecked]="parameterForm.get('isReadonly')?.value || false"
+              ></lds-switch>
+
+            </div>
+
+          </form>
+
+          <!-- Modal Footer -->
+          <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end gap-3 rounded-b-lg">
+            <lds-btn
+              [labelText]="'Cancel'"
+              [icon]="'close'"
+              [enable]="true"
+              (onClick)="onCancelParameter()"
+              [cssClass]="'bg-gray-500 hover:bg-gray-600 text-white'"
+            ></lds-btn>
+
+            <lds-btn
+              [labelText]="isEditingParameter() ? 'Update' : 'Add to List'"
+              [icon]="isEditingParameter() ? 'update' : 'add'"
+              
+              (onClick)="onAddParameter()"
+              [cssClass]="'bg-blue-600 hover:bg-blue-700 text-white'"
+            ></lds-btn>
+          </div>
+
+        </div>
+      </div>
+    }
+
+</div>
