@@ -124,6 +124,7 @@ export class ProfileDrawer implements OnInit, OnDestroy {
     this.showEditProfileModal = false;
   }
 
+
   /** ✅ Modal result  */
   // onProfileUpdated(result: any) {
   //   console.log('✅ Profile updated:', result);
