@@ -225,17 +225,13 @@ export class CheckerList implements OnInit {
   // }
 
   handleProgressClick(rowDataString: string): void {
-    try {
-      const rowData = JSON.parse(rowDataString);
-      // Pass the component and data to openModal
-      this.openModal(
-        ViewApprovalActivitiesComponent,
-        rowData,
-        'Approval Activities'
-      );
-    } catch (e) {
-      console.error('Failed to parse row data for modal:', e);
-    }
+    const rowData = JSON.parse(rowDataString);
+
+    this.openModal(
+      ViewApprovalActivitiesComponent,
+      { setId: rowData.setId },
+      'Approval Activities'
+    );
   }
 
   openModal(componentToLoad: Type<any>, data: any, title: string = 'Modal') {

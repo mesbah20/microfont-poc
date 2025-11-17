@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import {MatTooltip} from '@angular/material/tooltip';
+import {ApprovalService} from '../../../shared/services/approval-service';
 
 // Raw JSON structure from your approval service
 interface RawApproval {
@@ -44,78 +45,15 @@ interface ApprovalStep {
 })
 export class ViewApprovalActivitiesComponent implements OnInit{
   /** Data coming from modalComponentData */
-  @Input() data: any;
+  @Input() modalComponentData: any;
+  @Input() setId!: number;
   /**  Provided automatically by <lds-modal> for closing / emitting results */
   modalParent?: { close: (result?: any) => void };
 
   selectedStepId = signal<number | null>(null);
 
-  // Hardcoded demo JSON (replace with real API response if needed)
-  //senario 1
-  rawData1: RawApproval[] = [
-    {
-      queueId: 224, setId: 245, approveLevel: 1, approverNo: 2,
-      approveFlag: 'PENDING', userId: 'checker_manager', remarks: null, actionTime: null
-    },
-    {
-      queueId: 225, setId: 245, approveLevel: 1, approverNo: 2,
-      approveFlag: 'PENDING', userId: 'checker_manager2', remarks: null, actionTime: null
-    },
-    {
-      queueId: 226, setId: 245, approveLevel: 2, approverNo: 1,
-      approveFlag: 'DEFAULT', userId: 'checker_gm', remarks: null, actionTime: null
-    },
-    {
-      queueId: 227, setId: 245, approveLevel: 2, approverNo: 1,
-      approveFlag: 'DEFAULT', userId: 'checker_gm2', remarks: null, actionTime: null
-    },
-    {
-      queueId: 228, setId: 245, approveLevel: 3, approverNo: 1,
-      approveFlag: 'DEFAULT', userId: 'checker_ceo', remarks: null, actionTime: null
-    }
-  ];
-  //senario 2
-  rawData: RawApproval[] = [
-    // --- Level 1: Manager Review ---
-    {
-      queueId: 224, setId: 245, approveLevel: 1, approverNo: 2,
-      approveFlag: 'APPROVED', userId: 'checker_manager',
-      remarks: 'Reviewed and verified', actionTime: '2025-11-07T09:45:00Z'
-    },
-    {
-      queueId: 225, setId: 245, approveLevel: 1, approverNo: 2,
-      approveFlag: 'APPROVED', userId: 'checker_manager2',
-      remarks: 'All documents are valid', actionTime: '2025-11-07T10:00:00Z'
-    },
-
-    // --- Level 2: General Manager Approval ---
-    {
-      queueId: 226, setId: 245, approveLevel: 2, approverNo: 1,
-      approveFlag: 'PENDING', userId: 'checker_gm',
-      remarks: 'Awaiting GM confirmation', actionTime: null
-    },
-    {
-      queueId: 227, setId: 245, approveLevel: 2, approverNo: 1,
-      approveFlag: 'DEFAULT', userId: 'checker_gm2',
-      remarks: null, actionTime: null
-    },
-
-    // --- Level 3: CEO Final Approval ---
-    {
-      queueId: 228, setId: 245, approveLevel: 3, approverNo: 1,
-      approveFlag: 'DEFAULT', userId: 'checker_ceo',
-      remarks: null, actionTime: null
-    },
-
-    // --- Level 4: Rejected Example ---
-    {
-      queueId: 229, setId: 245, approveLevel: 4, approverNo: 1,
-      approveFlag: 'REJECTED', userId: 'checker_audit',
-      remarks: 'Insufficient backup documents', actionTime: '2025-11-08T14:25:00Z'
-    }
-  ];
-
-  steps: ApprovalStep[] = this.transformToSteps(this.rawData);
+  rawData: RawApproval[] = [];
+  steps: ApprovalStep[] = [];
 
   // overall computed timeline status
   timelineStatus = computed(() => {
@@ -125,16 +63,36 @@ export class ViewApprovalActivitiesComponent implements OnInit{
     return 'CREATED';
   });
 
-  constructor(
-  ) {}
+  constructor(private approvalService: ApprovalService) {}
+
 
   ngOnInit(): void {
-    // @ts-ignore
-    const activeStep = this.steps.find(s =>
-      ['PENDING', 'CREATED'].includes(this.getStepStatus(s.historyList))
-    );
-    if (activeStep) this.selectedStepId.set(activeStep.stepOrder);
+    console.log('Init ViewApprovalActivitiesComponent, setId =', this.setId);
+    const setId = this.setId;
+
+    if (!setId) {
+      console.error("No setId received in modal");
+      return;
+    }
+
+    this.approvalService.getApprovalActivitiesBySetId(setId).subscribe({
+      next: (res: RawApproval[]) => {
+        console.log("API Result:", res);
+
+        this.rawData = res;
+        this.steps = this.transformToSteps(res);
+
+        const active = this.steps.find(s =>
+          ['PENDING', 'CREATED'].includes(this.getStepStatus(s.historyList))
+        );
+
+        if (active) this.selectedStepId.set(active.stepOrder);
+      },
+      error: err => console.error("API error:", err)
+    });
   }
+
+
 
   // --- Transform JSON → Step model ---
   private transformToSteps(json: RawApproval[]): ApprovalStep[] {

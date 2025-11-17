@@ -25,10 +25,10 @@ export class ApprovalService {
     //   return this.http.get<any>(url);
     // }
 
-    getApprovalQueDetails(setId  : number): Observable<any> {
-      var url = `http://localhost:8083/approval-register/approvalQue/${setId }`;
-      return this.http.get<any>(url);
-    }
+    // getApprovalQueDetails(setId  : number): Observable<any> {
+    //   var url = `http://localhost:8083/approval-register/approvalQue/${setId }`;
+    //   return this.http.get<any>(url);
+    // }
 
     getCheckerManagerList(): Observable<any[]> {
       const url = `http://192.168.20.93:8083/approval-register/all/checker_manager`;
