@@ -14,6 +14,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { environment } from '../../../../../environments/environment';
 import { ToastHelperService } from '../../../../shared/services/toast-helper.service';
+import {AuthService} from '../../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -54,6 +55,7 @@ export class Sidebar {
   private themeSub?: Subscription;
   private previousCount: number = 0;
   constructor(private themeService: ThemeService,
+    public authService: AuthService,
     private sidebarService: SidebarService, public notificationService: NotificationService, private novuService: NovuService
   ) {
     this.notifications$ = this.novuService.getUnreadCount();
