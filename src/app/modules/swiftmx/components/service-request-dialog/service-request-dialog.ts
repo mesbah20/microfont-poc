@@ -22,11 +22,9 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { jwtDecode } from 'jwt-decode';
 import { TextBaseInput } from '../../../../shared/components/input-types/text-base-input/text-base-input';
 import { TextArea } from '../../../../shared/components/input-types/text-area/text-area';
-import { Button } from '../../../../shared/components/input-types/button/button';
 import { SelectOptionField } from '../../../../shared/components/input-types/select-option-field/select-option-field';
 import { ExpansionPanelHeader } from '../../../../shared/components/expansion-panel-header/expansion-panel-header';
 import { FileComponent } from '../../../../shared/components/input-types/file-input/file-input';
-import { View } from '../../../../layout/layouts/layouts/navbar/actions/view/view';
 import {
   ServiceRequestService,
   ServiceRequest,
@@ -44,12 +42,10 @@ import { DataGridComponent } from '../../../../shared/components/data-grid/data-
     CommonModule,
     TextBaseInput,
     ReactiveFormsModule,
-    Button,
     TextArea,
     SelectOptionField,
     ExpansionPanelHeader,
     FileComponent,
-    View,
     DataGridComponent,
     MatTabsModule,
   ],

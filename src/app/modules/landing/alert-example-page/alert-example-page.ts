@@ -9,7 +9,6 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Switch } from "../../../shared/components/input-types/switch/switch";
 import { Label } from "../../../shared/components/input-types/label/label";
 import { DeleteConfirmationDialogue } from '../../../shared/components/delete-confirmation-dialogue/delete-confirmation-dialogue';
-import { DataSelectionModal } from '../../../shared/components/data-selection-modal/data-selection-modal';
 import { DataSelectionConfig, DataSelectionItem, DataSelectionResult } from '../../../shared/models/data-selection.interface';
 
 @Component({
@@ -24,7 +23,6 @@ import { DataSelectionConfig, DataSelectionItem, DataSelectionResult } from '../
     AmountToWordInput,
     Switch,
     Label,
-    DataSelectionModal
   ],
   templateUrl: './alert-example-page.html',
   styleUrl: './alert-example-page.scss'

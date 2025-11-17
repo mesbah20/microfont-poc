@@ -3,7 +3,6 @@ import { Component, effect, inject, OnInit, signal, TemplateRef, ViewChild, Writ
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextBaseInput } from '../input-types/text-base-input/text-base-input';
 import { IdBoxComponent } from '../input-types/id-box/id-box';
-import { AmountInput } from '../input-types/amount-input/amount-input';
 import { AmountToWordInput } from '../input-types/amount-to-word-input/amount-to-word-input';
 import { SelectOptionField } from '../input-types/select-option-field/select-option-field';
 import { FileComponent } from '../input-types/file-input/file-input';
@@ -13,12 +12,10 @@ import { ExpansionPanelHeader } from '../expansion-panel-header/expansion-panel-
 import { ExpansionSubPanelHeader } from '../expansion-sub-panel-header/expansion-sub-panel-header';
 import { Switch } from '../input-types/switch/switch';
 import { TextArea } from '../input-types/text-area/text-area';
-import { ToastrService } from 'ngx-toastr';
 import { NumberInput } from '../input-types/number-input/number-input';
 import { DropdownOption } from '../data-grid/data-grid';
-import { LdsStepperComponent, Step } from '../lds-stepper/lds-stepper';
+import {  Step } from '../lds-stepper/lds-stepper';
 import { MultiSelectOptionField } from '../multi-select-option-field/multi-select-option-field';
-import { DataSelectionModal } from '../data-selection-modal/data-selection-modal';
 import { BUTTON_VISIBILITY, ONCLICK_SAVE } from '../../constant/button-signals.constant';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { DateInput } from '../input-types/date-input/date-input';
@@ -26,6 +23,7 @@ import { LdsModalComponent } from '../lds-modal/lds-modal';
 import { OtherComponentsPage } from '../other-components-page/other-components-page';
 import { CommonModule } from '@angular/common';
 import { Button } from '../input-types/button/button';
+import { CustomToastrService } from '../../services/custom-toastr.service';
 import {ToastHelperService} from '../../services/toast-helper.service';
 
 // Types for data selection modal
@@ -53,7 +51,6 @@ export interface DataSelectionConfig {
     ReactiveFormsModule,
     TextBaseInput,
     IdBoxComponent,
-    AmountInput,
     Switch,
     Button,
     TextArea,
@@ -62,7 +59,6 @@ export interface DataSelectionConfig {
     DateInput,
     CommonModule,
     MultiSelectOptionField,
-    LdsStepperComponent,
     FileComponent,
     OfficeBoxComponent,
     LdsModalComponent,
@@ -70,13 +66,14 @@ export interface DataSelectionConfig {
     DataGridComponent,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
-  DataSelectionModal,
-  OtherComponentsPage
   ],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],
 })
 export class AllComponentsPage implements OnInit {
+  private toastCount = 0;      // Unique ID for CSS classes
+  private startY = 50;         // Starting Y position
+  private gapY = 70;
   frmGroup: FormGroup;
   toastr = inject(ToastHelperService);
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
@@ -492,6 +489,7 @@ onModalResult(result: any) {
   }
   constructor(
     private formBuilder: FormBuilder,
+    //private toastr: CustomToastrService
 
   ) {
     BUTTON_VISIBILITY.set({
@@ -690,7 +688,7 @@ openModal(componentToLoad?: Type<any>, data?: any) {
   }, 50);
 }
 // Show specific validation errors
-private showFormValidationErrors(errors: any): void {
+/*private showFormValidationErrors(errors: any): void {
   const errorKeys = Object.keys(errors);
 
   if (errorKeys.length === 0) {
@@ -724,6 +722,146 @@ private showFormValidationErrors(errors: any): void {
 
   if (errorKeys.length > 3) {
     this.toastr.warning(`${errorKeys.length - 3} more validation errors found. Check form fields.`, 'Additional Errors');
+  }
+}*/
+
+/*private showFormValidationErrors(errors: any): void {
+  const errorKeys = Object.keys(errors);
+
+  if (errorKeys.length === 0) {
+    this.toastr.error('Form has validation errors but no specific errors found', 'Validation Error', {
+      toastClass: 'ngx-toastr custom-toast-0',
+      timeOut: 0, // stays until manually closed
+      closeButton: true
+    });
+    return;
+  }
+
+  // Show first few errors to avoid spam
+  errorKeys.slice(0, 3).forEach((key, index) => {
+    const fieldError = errors[key];
+    const fieldName = this.getFieldDisplayName(key);
+
+    // Dynamic Y position for each toast
+    const y = 80 + index * 70; // 80px initial offset, 70px spacing between toasts
+    const customClass = `custom-toast-${index}`;
+
+    // Create dynamic CSS for this toast
+    const style = document.createElement('style');
+    style.textContent = `
+      .${customClass} {
+        position: fixed !important;
+        top: ${y}px !important;
+        left: 900px !important;
+        z-index: 9999 !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Determine error message
+    let message = '';
+    if (fieldError.errors.required) {
+      message = `${fieldName} is required`;
+    } else if (fieldError.errors.minlength) {
+      message = `${fieldName} must be at least ${fieldError.errors.minlength.requiredLength} characters`;
+    } else if (fieldError.errors.maxlength) {
+      message = `${fieldName} must not exceed ${fieldError.errors.maxlength.requiredLength} characters`;
+    } else if (fieldError.errors.min) {
+      message = `${fieldName} must be at least ${fieldError.errors.min.min}`;
+    } else if (fieldError.errors.max) {
+      message = `${fieldName} must not exceed ${fieldError.errors.max.max}`;
+    } else if (fieldError.errors.pattern) {
+      message = `${fieldName} has invalid format`;
+    } else if (fieldError.errors.minAmount) {
+      message = `${fieldName} must be at least ${fieldError.errors.minAmount} for selected subcategory`;
+    } else {
+      message = `${fieldName} has validation errors`;
+    }
+
+    // Show toast at custom Y position
+    this.toastr.error(message, 'Validation Error', {
+      toastClass: `ngx-toastr ${customClass}`,
+      timeOut: 0, // stays until manually closed
+      closeButton: true,
+      progressBar: true
+    }).onHidden.subscribe(() => {
+      document.head.removeChild(style); // clean up CSS
+    });
+  });
+
+  // Show additional errors notice if more than 3
+  if (errorKeys.length > 3) {
+    const y = 80 + 3 * 70; // position below first 3 toasts
+    const customClass = `custom-toast-more`;
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .${customClass} {
+        position: fixed !important;
+        top: ${y}px !important;
+        left: 900px !important;
+        z-index: 9999 !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    this.toastr.warning(`${errorKeys.length - 3} more validation errors found. Check form fields.`, 'Additional Errors', {
+      toastClass: `ngx-toastr ${customClass}`,
+      timeOut: 0,
+      closeButton: true,
+      progressBar: true
+    }).onHidden.subscribe(() => {
+      document.head.removeChild(style);
+    });
+  }
+}*/
+
+
+private showFormValidationErrors(errors: any): void {
+  const errorKeys = Object.keys(errors);
+
+  if (errorKeys.length === 0) {
+    //this.showCustomToastMessage1('Form has validation errors but no specific errors found', 'Validation Error', 'error');
+    this.toastr.error('Form has validation errors but no specific errors found', 'Validation Error');
+    return;
+  }
+
+  // Show first few errors
+  errorKeys.slice(0, 3).forEach((key) => {
+    const fieldError = errors[key];
+    const fieldName = this.getFieldDisplayName(key);
+
+    // Build message
+    let message = '';
+    if (fieldError.errors.required) {
+      message = `${fieldName} is required`;
+    } else if (fieldError.errors.minlength) {
+      message = `${fieldName} must be at least ${fieldError.errors.minlength.requiredLength} characters`;
+    } else if (fieldError.errors.maxlength) {
+      message = `${fieldName} must not exceed ${fieldError.errors.maxlength.requiredLength} characters`;
+    } else if (fieldError.errors.min) {
+      message = `${fieldName} must be at least ${fieldError.errors.min.min}`;
+    } else if (fieldError.errors.max) {
+      message = `${fieldName} must not exceed ${fieldError.errors.max.max}`;
+    } else if (fieldError.errors.pattern) {
+      message = `${fieldName} has invalid format`;
+    } else if (fieldError.errors.minAmount) {
+      message = `${fieldName} must be at least ${fieldError.errors.minAmount} for selected subcategory`;
+    } else {
+      message = `${fieldName} has validation errors`;
+    }
+
+    // Show toast with stacking
+    //this.showCustomToastMessage1(message, 'Validation Error', 'error');
+    this.toastr.error(message, 'Validation Error');
+  });
+
+  // If more than 3 errors, show summary
+  if (errorKeys.length > 3) {
+    this.toastr.warning(
+      `${errorKeys.length - 3} more validation errors found. Check form fields.`,
+      'Additional Errors',
+    );
   }
 }
 
@@ -891,6 +1029,10 @@ debugFormState(): void {
     this.frmGroup.get('switch')?.valueChanges.subscribe((isEnabled: boolean) => {
       this.handleSwitchToggle(isEnabled);
     });
+
+    this.frmGroup.get('switch')?.valueChanges.subscribe((isEnabled: boolean) => {
+      this.handleSwitchToggle(!isEnabled);
+    });
   }
 
 
@@ -1045,15 +1187,83 @@ debugFormState(): void {
     }
   }
 
+showDynamicToasts() {
+    const messages = [
+      'First toast message',
+      'Second toast message',
+      'Third toast message',
+      'Fourth toast message'
+    ];
+
+    this.showNextToast(messages, 0);
+  }
+
+   private showNextToast(messages: string[], index: number) {
+    if (index >= messages.length) return;
+
+    this.toastCount++;
+    const styleId = `dynamic-toast-${this.toastCount}`;
+    // Calculate Y position dynamically
+    const yPosition = this.startY + index * this.gapY;
+    const xPosition = 50; // fixed X position, adjust if needed
+
+    // Create dynamic CSS class
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.innerHTML = `
+      .${styleId} {
+        top: ${yPosition}px !important;
+        left: ${xPosition}px !important;
+        position: fixed !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Show toast and wait until hidden to show next one
+    this.toastr.success(messages[index], 'Success', {
+      toastClass: `ngx-toastr ${styleId}`,
+      timeOut: 600,
+    }).onHidden.subscribe(() => {
+      this.showNextToast(messages, index + 1);
+    });
+
+    this.toastr.error(messages[index], 'Validation', {
+      toastClass: `ngx-toastr ${styleId}`,
+      closeButton: true,
+      timeOut: 3000,
+      progressBar: true,
+    }).onHidden.subscribe(() => {
+
+      document.head.removeChild(style);
+      this.showNextToast(messages, index + 1);
+    });
+  }
+
   private handleSwitchToggle(isEnabled: boolean): void {
     if (isEnabled) {
       // Enable express processing - reduce validation requirements
       this.frmGroup.get('textArea')?.setValidators([Validators.maxLength(500)]);
-      this.toastr.success('Express processing enabled', 'Processing Mode');
+      /*this.toastr.success('Express processing enabled', 'Processing Mode', {
+      //positionClass: 'toast-top-left'
+      toastClass: 'ngx-toastr custom-toast-position',
+      closeButton: true
+    }
+    );*/
+    //this.showCustomToast('Express processing enabled','Processing Mode' );
+    this.toastr.success('Operation completed!', 'Processing Mode');
+
     } else {
       // Standard processing - restore full validation
       this.frmGroup.get('textArea')?.setValidators([Validators.required, Validators.maxLength(500)]);
-      this.toastr.info('Standard processing mode', 'Processing Mode');
+      /*this.toastr.info('Standard processing mode', 'Processing Mode', {
+      //positionClass: 'toast-top-left'
+      toastClass: 'ngx-toastr',
+      closeButton: true
+    }
+    );*/
+    //this.showCustomToast('Standard processing mode','info');
+    this.toastr.info('Standard processing mode', 'info');
+
     }
     this.frmGroup.get('textArea')?.updateValueAndValidity();
   }

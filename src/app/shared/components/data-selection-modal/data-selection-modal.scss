@@ -1,6 +1,6 @@
 // Data Selection Modal Styles - Tailwind CSS Based
 // Clean and compact styling for the data selection modal
-
+@use "tailwindcss"; 
 // Modal overlay and container animations
 @keyframes fadeIn {
   from { opacity: 0; }

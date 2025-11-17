@@ -3,11 +3,15 @@ import { AllComponentsPage } from '../../shared/components/all-components-page/a
 import {ApprovalItems} from './approval-items/approval-items';
 import {ApprovalMovement} from './approval-movement/approval-movement';
 import {ViewApprovalActivitiesComponent} from './view-approval-activities/view-approval-activities.component';
+import {EmployeeOnboard} from './employee-onboard/employee-onboard';
+import {EmployeeList} from './employee-list/employee-list';
 
 
 export const PocRouting: Routes = [
 
 
+  {path: 'employee-onboard', component: EmployeeOnboard},
+  {path: 'employee-list', component: EmployeeList},
   {path: 'components', component: AllComponentsPage},
   {path: 'approval-items', component: ApprovalItems},
   {path: 'approval-movement', component: ApprovalMovement},

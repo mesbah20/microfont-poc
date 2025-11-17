@@ -5,7 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { DemoService } from '../../../../shared/services/demo.service';
 import { TextBaseInput } from '../../../../shared/components/input-types/text-base-input/text-base-input';
 import { NumberInput } from '../../../../shared/components/input-types/number-input/number-input';
-import { Save } from '../../../../layout/layouts/layouts/navbar/actions/save/save';
 import { Button } from "../../../../shared/components/input-types/button/button";
 
 @Component({
@@ -17,7 +16,6 @@ import { Button } from "../../../../shared/components/input-types/button/button"
     HttpClientModule,
     TextBaseInput,
     NumberInput,
-    Save,
     Button
 ],
   providers: [DemoService],

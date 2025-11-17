@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { KeyclockService } from '../../../core/service/keyclock.service';
-import { TimeInput } from '../../../shared/components/input-types/time-input';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {Router} from '@angular/router';
+import {AuthService} from '../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
   imports: [
-    TimeInput,
     ReactiveFormsModule
   ],
   templateUrl: './landing.html',
@@ -18,17 +18,19 @@ export class Landing implements OnInit {
 
   constructor(
      private fb: FormBuilder,
-    private keyclockService: KeyclockService,
+    private router: Router,
+    private authService: AuthService,
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
      this.timeForm = this.fb.group({
       time: ['',  Validators.required]
     });
+
    }
 
   login() {
-    this.keyclockService.init();
+    this.authService.login();
   }
 
   onTimeChange(time: string) {

@@ -34,7 +34,7 @@
       >
         <div (click)="toggleDrawer('Menu'); setActiveItem('menu')"
              data-drawer-trigger="Menu"
-             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
+             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-visible"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
              [class.hover:bg-gray-100]="activeItem !== 'menu'"
@@ -83,8 +83,8 @@
           </span>
 
           <!-- Tooltip (only shown when collapsed) -->
-          <div class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap pointer-events-none z-50"
-               [class.hidden]="sidebarExpanded">
+          <div class="tooltip absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap pointer-events-none"
+          [class.hidden]="sidebarExpanded">
             Menu
             <div class="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-1 w-1.5 h-1.5 bg-gray-900 rotate-45"></div>
           </div>
@@ -98,7 +98,7 @@
       >
         <div (click)="toggleDrawer('Modules'); setActiveItem('modules')"
              data-drawer-trigger="Modules"
-             class="rounded-lg cursor-pointer transition-all duration-200 relative  flex items-center overflow-hidden"
+             class="rounded-lg cursor-pointer transition-all duration-200 relative  flex items-center overflow-visible"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
              [class.hover:bg-gray-100]="activeItem !== 'application'"
@@ -157,7 +157,7 @@
       <div class="group "
       [class.flex]="!sidebarExpanded"
       [class.justify-center]="!sidebarExpanded">
-        <div routerLink="/dashboard" (click)="setActiveItem('dashboard')"
+        <div routerLink="/landing/dashboard" (click)="setActiveItem('dashboard')"
              class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
@@ -217,7 +217,7 @@
       [class.flex]="!sidebarExpanded"
       [class.justify-center]="!sidebarExpanded">
         <div (click)="setActiveItem('transaction')"
-             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
+             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-visible"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
              [class.hover:bg-gray-100]="activeItem !== 'transaction'"
@@ -275,8 +275,8 @@
       <div class="group "
       [class.flex]="!sidebarExpanded"
       [class.justify-center]="!sidebarExpanded">
-        <div (click)="setActiveItem('approval')"
-             routerLink="/config/approval-items"
+        <div (click)="setActiveItem('security')"
+             routerLink="/poc/approval-items"
              class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
@@ -406,8 +406,8 @@
             <div class="group " routerLink="/login"
               [class.flex]="!sidebarExpanded"
               [class.justify-center]="!sidebarExpanded">
-            <div (click)="setActiveItem('logout')"
-             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden hover:bg-[var(--theme-accent)]"
+            <div (click)="authService.logout()"
+             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-visible hover:bg-[var(--theme-accent)]"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
 

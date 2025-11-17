@@ -6,9 +6,7 @@ import { ActivityLogService } from '../../../../../../shared/services/activity-l
 
 @Component({
     selector: 'app-save',
-    imports: [
-        MatIcon
-    ],
+    imports: [],
     templateUrl: './save.html',
     standalone: true,
     styleUrl: './save.scss'

@@ -1,5 +1,5 @@
 import {Component, computed, input, output, signal} from '@angular/core';
-import {NgClass, NgIf, NgFor} from '@angular/common';
+import {NgClass} from '@angular/common';
 import { FormGroup } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -7,8 +7,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 	selector: 'lds-file',
 	imports: [
 		NgClass,
-		NgIf,
-		NgFor,
 		MatTooltipModule
 	],
 	templateUrl: './file-input.html',

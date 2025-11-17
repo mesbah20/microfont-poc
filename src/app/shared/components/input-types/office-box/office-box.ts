@@ -1,7 +1,7 @@
 import {Component, input, output, OnInit, signal} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatInput} from "@angular/material/input";
-import {NgClass, NgIf} from '@angular/common';
+import {NgClass} from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -14,7 +14,6 @@ import { MatIconModule } from '@angular/material/icon';
     MatTooltipModule,
     MatIconModule,
     NgClass,
-    NgIf
   ],
   templateUrl: './office-box.html',
   standalone: true,

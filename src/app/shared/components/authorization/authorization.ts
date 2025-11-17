@@ -6,7 +6,6 @@ import {MatPaginator} from '@angular/material/paginator';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatDialog} from '@angular/material/dialog';
-import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {GetUnauthorizedMessagesRequest, ProcessAuthorizationRequest, SwiftAuthorizationLog} from '../../models/swift-authorization-log.model';
 import {AuthorizationService} from '../../services/authorization.service';
@@ -29,7 +28,6 @@ import { BUTTON_VISIBILITY } from '../../constant/button-signals.constant';
     DatePipe,
     NgClass,
     NgClass,
-    MatIcon,
     MatIconButton,
     MatPaginator,
     MatTooltip,

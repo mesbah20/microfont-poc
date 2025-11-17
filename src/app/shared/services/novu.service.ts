@@ -602,7 +602,8 @@ export class NovuService {
 
   getUnreadCount(): Observable<number> {
     return this.unreadCount$.asObservable();
-  }
+}
+
 
   async markAsRead(id: string): Promise<void> {
     if (!this.novu) return;

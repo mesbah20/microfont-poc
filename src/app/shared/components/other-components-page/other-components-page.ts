@@ -2,14 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output, signal, WritableSignal 
 import { CommonModule } from '@angular/common';
 import { TextBaseInput } from '../input-types/text-base-input/text-base-input';
 import { IdBoxComponent } from '../input-types/id-box/id-box';
-import { AmountInput } from '../input-types/amount-input/amount-input';
-import { Switch } from '../input-types/switch/switch';
-import { Button } from '../input-types/button/button';
-import { TextArea } from '../input-types/text-area/text-area';
 import { AmountToWordInput } from '../input-types/amount-to-word-input/amount-to-word-input';
-import { SelectOptionField } from '../input-types/select-option-field/select-option-field';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ExpansionSubPanelHeader } from '../expansion-sub-panel-header/expansion-sub-panel-header';
 import { ExpansionPanelHeader } from '../expansion-panel-header/expansion-panel-header';
 import { DataGridComponent } from '../data-grid';
 
@@ -21,14 +15,8 @@ import { DataGridComponent } from '../data-grid';
     TextBaseInput,
         IdBoxComponent,
         ReactiveFormsModule,
-        AmountInput,
-        Switch,
-        Button,
-        TextArea,
         AmountToWordInput,
-        SelectOptionField,
         ExpansionPanelHeader,
-        ExpansionSubPanelHeader,
         DataGridComponent
 
   ],

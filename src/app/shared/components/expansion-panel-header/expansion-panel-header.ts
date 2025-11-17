@@ -3,9 +3,7 @@ import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-expansion-panel-header',
-  imports: [
-    MatIcon
-  ],
+  imports: [],
   templateUrl: './expansion-panel-header.html',
   styleUrl: './expansion-panel-header.scss'
 })
