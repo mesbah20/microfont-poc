@@ -59,7 +59,6 @@ export class MakerList implements OnInit {
   ]; //function List
 
   apiResponseMaker: any[] = [
-    // (same 10-record array you already use)
     { "createDate":"2025-10-22T10:20:11.001","updateDate":null,"createdBy":null,"updatedBy":null,"isEdited":false,"isDeleted":false,"isCreated":false,"actionType":"UPDATE","selector":"app-gl-subsidiary","remarks":"Record updated for test","approveFlag":"APPROVED","appId":901,"functionId":901003,"cloneObject":null,"setId":300,"noOfApprovalLevel":3,"minApprovalLevelReq":0,"lastApprovalLevel":1,"nextApprovalLevel":2,"primaryTableNm":"MREG_GL_AC_SUBSIDIARY","recordUserId":"anik","recordDt":"2025-10-22T10:18:55.000","previousUxContent":"{\"glAccSubNm\":\"Branch A\",\"glSubRefNo\":\"BR001\"}","currentUxContent":"{\"glAccSubNm\":\"Branch A Updated\",\"glSubRefNo\":\"BR001U\"}","functionName":"GL Subsidiary" },
     { "createDate":"2025-10-22T10:25:21.101","updateDate":null,"createdBy":null,"updatedBy":null,"isEdited":false,"isDeleted":false,"isCreated":true,"actionType":"CREATE","selector":"app-gl-subsidiary","remarks":"New subsidiary added","approveFlag":"PENDING","appId":901,"functionId":901003,"cloneObject":null,"setId":301,"noOfApprovalLevel":3,"minApprovalLevelReq":0,"lastApprovalLevel":0,"nextApprovalLevel":1,"primaryTableNm":"MREG_GL_AC_SUBSIDIARY","recordUserId":"rahim","recordDt":"2025-10-22T10:24:55.000","previousUxContent":null,"currentUxContent":"{\"glAccSubNm\":\"Branch B\",\"glSubRefNo\":\"BR002\"}","functionName":"GL Subsidiary" },
     { "createDate":"2025-10-22T11:30:35.501","updateDate":null,"createdBy":null,"updatedBy":null,"isEdited":true,"isDeleted":false,"isCreated":false,"actionType":"UPDATE","selector":"app-gl-subsidiary","remarks":"Correction in name","approveFlag":"PENDING","appId":901,"functionId":901003,"cloneObject":null,"setId":302,"noOfApprovalLevel":3,"minApprovalLevelReq":0,"lastApprovalLevel":0,"nextApprovalLevel":1,"primaryTableNm":"MREG_GL_AC_SUBSIDIARY","recordUserId":"karim","recordDt":"2025-10-22T11:29:55.000","previousUxContent":"{\"glAccSubNm\":\"Branch C\"}","currentUxContent":"{\"glAccSubNm\":\"Branch C Edited\"}","functionName":"GL Subsidiary" },
@@ -78,31 +77,12 @@ export class MakerList implements OnInit {
   ngOnInit(): void {
     this.buildForm();
     this.loadUserAccessList();
+    // DO NOT call loadMakerList() here - let user click Search button
   }
-
-  // +++ 1. UPDATE ngOnInit TO SUBSCRIBE +++
-  // ngOnInit(): void {
-  //   this.userService.user$.subscribe(user => {
-  //     if (user) {
-  //       console.log("Logged in user (Maker):", user);
-  //       this.currentUser = user;
-  //       // Now that we have a user, build the form and load its options
-  //       this.buildForm();
-  //       this.loadUserAccessList();
-  //     } else {
-  //       // Handle user being logged out
-  //       console.log("Waiting for user login...");
-  //       this.currentUser = null;
-  //       if (this.frmGroup) {
-  //         this.resetMakerForm(); // Clear form if user logs out
-  //       }
-  //     }
-  //   });
-  // }
 
   private buildForm(): void {
     this.frmGroup = this.fb.group({
-      functionId: [''],
+      functionId: [null],  // Changed from [''] to [null] for empty dropdown
       fromDate: [''],
       toDate: [''],
     });
@@ -117,13 +97,13 @@ export class MakerList implements OnInit {
       key: x.functionId, value: x.functionName
     }));
 
-    if (!this.frmGroup.get('functionId')?.value && this.functionOptions.length) {
-      this.frmGroup.patchValue({ functionId: this.functionOptions[0].key });
-    }
+    // REMOVED the auto-select logic - dropdown will stay empty
+    // if (!this.frmGroup.get('functionId')?.value && this.functionOptions.length) {
+    //   this.frmGroup.patchValue({ functionId: this.functionOptions[0].key });
+    // }
   }
 
   loadMakerList(): void {
-
     const { functionId, fromDate, toDate } = this.frmGroup.value;
 
     const payload = {
@@ -134,7 +114,6 @@ export class MakerList implements OnInit {
     };
 
     this.approvalService.getMakerList(payload).subscribe({
-
       next: (response: any[]) => {
         console.log("Maker API response:", response);
 
@@ -146,56 +125,13 @@ export class MakerList implements OnInit {
 
         this.showmakerList = this.makerList.length > 0;
       },
-
       error: err => {
         console.error("Maker API Failed:", err);
         this.makerList = [];
         this.showmakerList = false;
       }
-
     });
   }
-
-  // loadMakerList(): void {
-  //   // Add a guard clause to ensure the user is logged in
-  //   if (!this.currentUser) {
-  //     console.warn("No user is logged in. Cannot load maker list.");
-  //     this.makerList = [];
-  //     this.showmakerList = false;
-  //     return;
-  //   }
-  //
-  //   // Get the username (e.g., "bob")
-  //   const myUsername = this.currentUser.username;
-  //
-  //   const { fromDate, toDate, functionId } = this.frmGroup.value || {};
-  //   const from = fromDate ? new Date(fromDate) : new Date('1900-01-01');
-  //   const to = toDate ? new Date(toDate) : new Date('2999-12-31');
-  //   to.setHours(23, 59, 59, 999);
-  //
-  //   const fnId = functionId ? Number(functionId) : null;
-  //
-  //   const filtered = this.apiResponseMaker.filter(item => {
-  //     const itemFn = Number(item.functionId);
-  //     const itemDate = new Date(item.createDate);
-  //
-  //     // Define all filter conditions
-  //     const fnOk = (fnId !== null) ? itemFn === fnId : true;
-  //     const dateOk = itemDate >= from && itemDate <= to;
-  //     const userOk = item.recordUserId === myUsername; // <-- THE NEW FILTER
-  //
-  //     return fnOk && dateOk && userOk; // <-- Add userOk to the final check
-  //   });
-  //
-  //   this.makerList = filtered.map(item => ({
-  //     ...item,
-  //     currentContext: this.safeJson(item.currentUxContent),
-  //     previousContext: this.safeJson(item.previousUxContent),
-  //   }));
-  //
-  //   this.showmakerList = this.makerList.length > 0;
-  //   console.log(`Loaded ${this.makerList.length} items for maker ${myUsername}`);
-  // }
 
   resetMakerForm(): void {
     this.frmGroup.reset();
@@ -208,7 +144,6 @@ export class MakerList implements OnInit {
   handleProgressClick(rowDataString: string): void {
     try {
       const rowData = JSON.parse(rowDataString);
-      // Pass the component and data to openModal
       this.openModal(
         ViewApprovalActivitiesComponent,
         rowData,
@@ -239,12 +174,9 @@ export class MakerList implements OnInit {
     //console.log('Modal Result:', result);
   }
 
-
   private safeJson(s: string | null) {
     if (!s) return {};
     try { return JSON.parse(s); }
     catch { return {}; }
   }
-
-
 }
