@@ -1,4 +1,4 @@
-<button class="save-btn">
-  <mat-icon>save</mat-icon>
+<button class="save-btn"  (click)="update()" [disabled]="frmGroup().invalid" >
+  <img src="/asset/icons/save.svg" alt="" class="icon" />
   <p class="text">Update</p>
 </button>
