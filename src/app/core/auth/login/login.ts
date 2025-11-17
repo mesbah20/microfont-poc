@@ -5,6 +5,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import { NovuService } from '../../../shared/services/novu.service';
+import { firstValueFrom } from 'rxjs';
 
 export interface UserAccessItem {
   functionId: string;
@@ -114,6 +115,7 @@ export class Login implements OnInit {
   fb = inject(FormBuilder);
   router = inject(Router);
   private novuService = inject(NovuService);
+  private readonly notifyBaseUrl = 'http://192.168.20.69:8088/Notify';
   frmGroup: FormGroup;
   loginError: boolean = false;
   coreBaseUrl: string = environment.loginUrl;
@@ -228,8 +230,14 @@ export class Login implements OnInit {
           this.loadUserDataResponse();
           try {
             console.log('Initializing Novu for user:', userId);
-            // await this.novuService.init(userId, '1uXpKIJUa3Rg');
-            await this.novuService.init(userId, 'oH9Vf1VWV7s8');
+            const subscriberHash = await this.fetchSubscriberHash(userId);
+            if (subscriberHash) {
+              localStorage.setItem('novuSubscriberHash', subscriberHash);
+            } else {
+              localStorage.removeItem('novuSubscriberHash');
+            }
+            await this.novuService.init(userId, '1uXpKIJUa3Rg', subscriberHash);
+            // await this.novuService.init(userId, 'oH9Vf1VWV7s8');
             // await this.novuService.init(userId, 'EDstW_4loKyp');
             console.log('Novu initialized successfully!');
           } catch (err) {
@@ -278,6 +286,20 @@ export class Login implements OnInit {
     console.log("User Access List : ", this.userAccessList);
     localStorage.setItem('userAccessList', JSON.stringify(this.tokenObject.userAccessList));
 
+  }
+
+  private async fetchSubscriberHash(subscriberId: string): Promise<string | undefined> {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<{ subscriberHash: string }>(`${this.notifyBaseUrl}/subscribers/hash`, {
+          params: { subscriberId }
+        })
+      );
+      return response?.subscriberHash;
+    } catch (err) {
+      console.error('Failed to fetch Novu subscriber hash:', err);
+      return undefined;
+    }
   }
   // loadUserDataResponse(): void {
   //   const sentinelSession = environment.sentinelSessionUrl;

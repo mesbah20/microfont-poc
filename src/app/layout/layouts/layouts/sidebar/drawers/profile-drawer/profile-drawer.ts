@@ -127,19 +127,22 @@ openChatFromSearch(user: string) {
   this.searchForm.get('query')?.setValue('');
 }
 
-  async openChat(chat: ChatPreview) {
-  this.selectedChat = chat;
-  this.isChatOpen.set(true);
-  this.chatService.markChatAsRead(chat.chatId);
+  openChat(chat: ChatPreview) {
+    this.selectedChat = chat;
+    this.isChatOpen.set(true);
+    this.chatService.markChatAsRead(chat.chatId);
 
-  // রাখুন, অতিরিক্ত নিশ্চিততার জন্য
-  await this.novuService.refreshNow();
+    // clear search UI
+    this.searchForm.get('query')?.setValue('');
+    this.chatService.setSearchTerm(''); // hide suggestions
+    this.searching = false;
 
-  // clear search UI
-  this.searchForm.get('query')?.setValue('');
-  this.chatService.setSearchTerm(''); // hide suggestions
-  this.searching = false;
-}
+    // Ensure latest chat history is loaded for this subscriber
+    // so the chat box is not empty after a full page reload.
+    this.novuService
+      .refreshNow()
+      .catch((err) => console.error('NOVU: refreshNow failed on openChat:', err));
+  }
 
   openEditProfileModal() {
     this.modalComponent = EditProfileModal;

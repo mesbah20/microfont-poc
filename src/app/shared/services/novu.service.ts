@@ -16,9 +16,9 @@ export interface InAppNotification {
 
 export interface ChatMessage {
   chatId: string;
-  from: string;
-  to: string;
-  message: string;
+  senderUserId: string;
+  receiverUserId: string;
+  notificationBody: string;
   timestamp: string;
   status?: 'pending' | 'sent' | 'failed';
   clientId?: string;
@@ -31,184 +31,567 @@ export class NovuService {
   private chatMessages$ = new BehaviorSubject<ChatMessage[]>([]);
   private unreadCount$ = new BehaviorSubject<number>(0);
   private backendUrl = 'http://localhost:8080/api/demo';
-  private RECONCILE_WINDOW_MS = 15000;
+  private RECONCILE_WINDOW_MS = 15000; // 15s
+  private currentSubscriberHash?: string;
+  private mapNotification(result: any): InAppNotification | null {
+    if (!result) return null;
+    const identifier = result?.workflow?.identifier;
+    if (identifier === 'chat-message') return null;
+
+    return {
+      _id: result.id,
+      subject: result.subject ?? 'Notification',
+      content: result.body ?? '',
+      data: result.data,
+      read: !!result.isRead,
+      createdAt: result.createdAt ?? new Date().toISOString(),
+    };
+  }
+
+  private sanitizeChatBody(
+    body: string | undefined | null,
+    senderId: string | undefined | null,
+    receiverId: string | undefined | null
+  ): string {
+    if (!body) return '';
+    let text = body.trim();
+
+    const prefixes = [senderId, receiverId]
+      .map((p) => (p ?? '').trim())
+      .filter((p) => p.length > 0);
+
+    for (const prefix of prefixes) {
+      // Allow separators like spaces, nb-space, colon, dash, etc.
+      const pattern = new RegExp(
+        `^${this.escapeRegExp(prefix)}[\\s\\u00A0:_-]+`,
+        'i'
+      );
+      if (pattern.test(text)) {
+        text = text.replace(pattern, '').trim();
+        break;
+      }
+    }
+
+    return text;
+  }
+
+  private escapeRegExp(value: string): string {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  private resolveChatPayload(source: any): any | null {
+    if (!source) return null;
+
+    const candidates = [
+      source?.data,
+      source?.payload,
+      source,
+    ].filter(Boolean);
+
+    for (const candidate of candidates) {
+      if (candidate?.chatId) {
+        return candidate;
+      }
+
+      if (candidate?.data?.chatId) {
+        return candidate.data;
+      }
+    }
+
+    return null;
+  }
 
   constructor(private http: HttpClient) {}
 
-  // === LOCAL UI HELPERS ===
+  private attachDiagnosticLogging(instance: Novu) {
+    instance.on('session.initialize.pending', () => {
+      console.log('NOVU DEBUG: session.initialize.pending');
+    });
+
+    instance.on('session.initialize.resolved', (payload: any) => {
+      if (payload?.error) {
+        console.error('NOVU DEBUG: session.initialize.resolved error', payload.error);
+      } else {
+        console.log('NOVU DEBUG: session.initialize.resolved ok', {
+          applicationIdentifier: payload?.data?.applicationIdentifier,
+        });
+      }
+    });
+
+    instance.on('socket.connect.pending', (payload: any) => {
+      console.log('NOVU DEBUG: socket.connect.pending', {
+        socketUrl: payload?.args?.socketUrl,
+      });
+    });
+
+    instance.on('socket.connect.resolved', (payload: any) => {
+      if (payload?.error) {
+        console.error('NOVU DEBUG: socket.connect.resolved error', payload.error);
+      } else {
+        console.log('NOVU DEBUG: socket.connect.resolved ok');
+      }
+    });
+  }
+
+  // -------------------------
+  // Local operations (UI)
+  // -------------------------
   public pushLocalChatMessage(msg: ChatMessage) {
     const current = this.chatMessages$.value;
-    const exists = current.some(c =>
-      c.chatId === msg.chatId &&
-      c.message === msg.message &&
-      c.from === msg.from &&
-      c.timestamp === msg.timestamp
+    const exists = current.some(
+      (c) =>
+        c.chatId === msg.chatId &&
+        c.notificationBody === msg.notificationBody &&
+        c.timestamp === msg.timestamp
     );
+
+    console.log('NOVU: pushLocalChatMessage →', {
+      chatId: msg.chatId,
+      senderUserId: msg.senderUserId,
+      receiverUserId: msg.receiverUserId,
+      notificationBody: msg.notificationBody,
+      clientId: msg.clientId,
+      timestamp: msg.timestamp,
+      status: msg.status,
+      alreadyExists: exists,
+      totalMessages: current.length,
+    });
+
     if (!exists) {
-      this.chatMessages$.next([...current, msg]);
+      const toPush: ChatMessage = {
+        chatId: msg.chatId,
+        senderUserId: msg.senderUserId,
+        receiverUserId: msg.receiverUserId,
+        notificationBody: msg.notificationBody,
+        timestamp: msg.timestamp,
+        status: msg.status,
+        clientId: msg.clientId,
+      };
+      this.chatMessages$.next([...current, toPush]);
     }
   }
 
-  public markPendingMessageFailed(chatId: string, messageText: string) {
-    const updated = this.chatMessages$.value.map(c =>
-      c.chatId === chatId && c.message === messageText && c.status === 'pending'
+  public markPendingMessageFailed(chatId: string, notificationBody: string) {
+    const updated = this.chatMessages$.value.map((c) =>
+      c.chatId === chatId &&
+      c.notificationBody === notificationBody &&
+      c.status === 'pending'
         ? { ...c, status: 'failed' as const }
         : c
     );
+
+    console.log('NOVU: markPendingMessageFailed →', {
+      chatId,
+      notificationBody,
+    });
+    this.chatMessages$.next(updated);
+  }
+
+  public markPendingMessageSent(
+    chatId: string,
+    notificationBody: string,
+    serverTimestamp?: string,
+    clientId?: string
+  ) {
+    const updated = this.chatMessages$.value.map((c) => {
+      const matches = c.chatId === chatId && c.status === 'pending';
+      const byClientId = !!(clientId && c.clientId === clientId);
+      const byText = !clientId && c.notificationBody === notificationBody;
+
+      if (matches && (byClientId || byText)) {
+        return {
+          ...c,
+          status: 'sent' as const,
+          timestamp: serverTimestamp ?? c.timestamp,
+        };
+      }
+      return c;
+    });
+
+    console.log('NOVU: markPendingMessageSent →', {
+      chatId,
+      notificationBody,
+      clientId,
+      serverTimestamp,
+    });
+
     this.chatMessages$.next(updated);
   }
 
   private reconcileIncomingMessage(incoming: ChatMessage) {
     const current = [...this.chatMessages$.value];
 
-    // 1. Match by clientId (optimistic → sent)
+    console.log('NOVU: reconcileIncomingMessage START →', {
+      incomingChatId: incoming.chatId,
+      incomingSender: incoming.senderUserId,
+      incomingReceiver: incoming.receiverUserId,
+      incomingBody: incoming.notificationBody,
+      incomingTimestamp: incoming.timestamp,
+      incomingClientId: incoming.clientId,
+      pendingCount: current.filter((c) => c.status === 'pending').length,
+      totalMessages: current.length,
+    });
+
+    // PRIORITY 1: Match by clientId
     if (incoming.clientId) {
-      const idx = current.findIndex(c => c.clientId === incoming.clientId && c.status === 'pending');
+      let idx = current.findIndex(
+        (c) => c.clientId === incoming.clientId && c.status === 'pending'
+      );
+
+      if (idx === -1) {
+        idx = current.findIndex((c) => c.clientId === incoming.clientId);
+      }
+
       if (idx !== -1) {
-        current[idx] = { ...current[idx], timestamp: incoming.timestamp, status: 'sent' as const };
+        console.log('NOVU: RECONCILE BY clientId HIT →', {
+          clientId: incoming.clientId,
+          oldTimestamp: current[idx].timestamp,
+          newTimestamp: incoming.timestamp,
+          body: current[idx].notificationBody,
+        });
+
+        current[idx] = {
+          ...current[idx],
+          timestamp: incoming.timestamp,
+          status: 'sent' as const,
+        };
         this.chatMessages$.next(current);
         return;
       }
     }
 
-    // 2. Fallback: match by message + time window
+    // FALLBACK: Timestamp + body
     const now = Date.now();
-    const idx = current.findIndex(c =>
-      c.chatId === incoming.chatId &&
-      c.message === incoming.message &&
-      c.status === 'pending' &&
-      Math.abs(new Date(c.timestamp).getTime() - now) <= this.RECONCILE_WINDOW_MS
+    const idx = current.findIndex(
+      (c) =>
+        c.chatId === incoming.chatId &&
+        c.notificationBody === incoming.notificationBody &&
+        c.status === 'pending' &&
+        Math.abs(new Date(c.timestamp).getTime() - now) <=
+          this.RECONCILE_WINDOW_MS
     );
+
     if (idx !== -1) {
-      current[idx] = { ...current[idx], timestamp: incoming.timestamp, status: 'sent' as const };
+      console.log('NOVU: RECONCILE BY TIMESTAMP+BODY HIT →', {
+        chatId: incoming.chatId,
+        notificationBody: incoming.notificationBody,
+        oldTimestamp: current[idx].timestamp,
+        newTimestamp: incoming.timestamp,
+      });
+
+      current[idx] = {
+        ...current[idx],
+        timestamp: incoming.timestamp,
+        status: 'sent' as const,
+      };
       this.chatMessages$.next(current);
       return;
     }
 
-    // 3. Append if not duplicate
-    const exists = current.some(c =>
-      c.chatId === incoming.chatId &&
-      c.message === incoming.message &&
-      c.timestamp === incoming.timestamp
+    // APPEND if new
+    const exists = current.some(
+      (c) =>
+        c.chatId === incoming.chatId &&
+        c.notificationBody === incoming.notificationBody &&
+        c.timestamp === incoming.timestamp
     );
+
     if (!exists) {
-      this.chatMessages$.next([...current, { ...incoming, status: 'sent' as const }]);
+      console.log('NOVU: RECONCILE APPEND NEW MESSAGE →', incoming);
+
+      const newMsg: ChatMessage = { ...incoming, status: 'sent' as const };
+      this.chatMessages$.next([...current, newMsg]);
     }
   }
 
-  // === PARSE CHAT FROM BODY (NEW FORMAT) ===
-  private isChatMessage(body: string): boolean {
-    return typeof body === 'string' && body.trim().endsWith('|||iamchat');
-  }
+  // -------------------------
+  // Parse __CHAT__ markers
+  // Format:
+  // __CHAT__<senderUserId>|<receiverUserId>|<chatId>|<clientId>
+  // -------------------------
+  private parseChatMetaFromBody(body: string | undefined | null) {
+    if (!body) return null;
+    const m = body.match(/__CHAT__([^\r\n]+)/);
+    if (!m) return null;
 
-  private parseChatFromBody(body: string): ChatMessage | null {
-    const parts = body.split('|||');
-    if (parts.length < 7) return null;
-    if (parts[6].trim() !== 'iamchat') return null;
+    const payloadStr = m[1].trim();
+    const parts = payloadStr.split('|');
+
+    if (parts.length < 3) return null;
 
     return {
-      from: parts[0].trim(),
-      to: parts[1].trim(),
-      message: parts[2].trim(),
-      timestamp: parts[3].trim(),
-      chatId: parts[4].trim(),
-      clientId: parts[5].trim() || undefined,
-      status: 'sent' as const
+      senderUserId: parts[0] ?? '',
+      receiverUserId: parts[1] ?? '',
+      chatId: parts[2] ?? '',
+      clientId: parts[3] ?? undefined,
     };
   }
 
-  // === NOVU INIT + WEBSOCKET ===
-  async init(subscriberId: string, appId: string): Promise<void> {
-    if (this.novu) return;
+  // -------------------------
+  // Novu initialization
+  // -------------------------
+  async init(subscriberId: string, appId: string, subscriberHash?: string): Promise<void> {
+    const normalizedHash = subscriberHash ?? '';
 
-    this.novu = new Novu({
+    if (
+      this.novu &&
+      this.novu.subscriberId === subscriberId &&
+      this.currentSubscriberHash === normalizedHash
+    ) {
+      await this.refresh();
+      return;
+    }
+
+    if (this.novu) {
+      // Different subscriber or hash: disconnect and reset local state
+      this.novu.socket?.disconnect();
+      this.novu = null;
+      this.currentSubscriberHash = undefined;
+      this.notifications$.next([]);
+      this.chatMessages$.next([]);
+      this.unreadCount$.next(0);
+    }
+
+    if (!normalizedHash) {
+      console.warn('NOVU: subscriber hash missing – realtime sockets may fail to authenticate.');
+    }
+
+    console.log('NOVU: init START for:', subscriberId);
+
+    const novuOptions: any = {
       applicationIdentifier: appId,
       subscriberId,
-      backendUrl: 'https://api.novu.co',
-      socketUrl: 'https://ws.novu.co',
-    });
+      // backendUrl: 'https://api.novu.co',
+      // socketUrl: 'https://ws.novu.co',
+      backendUrl: 'http://192.168.10.56:3000/novu/api',
+      socketUrl: 'http://192.168.10.56:3002',
+    };
 
-    this.novu.socket?.connect();
+    if (normalizedHash) {
+      novuOptions.subscriberHash = normalizedHash;
+    }
 
-    this.novu.on('notifications.notification_received', (payload: any) => {
-      const result = payload?.result;
-      if (!result) return;
+    this.novu = new Novu(novuOptions);
+    this.currentSubscriberHash = normalizedHash;
 
-      const body = result.body;
+    this.attachDiagnosticLogging(this.novu);
 
-      // === CHAT MESSAGE FROM BODY ===
-      if (this.isChatMessage(body)) {
-        const chatMsg = this.parseChatFromBody(body);
-        if (chatMsg) {
-          this.reconcileIncomingMessage(chatMsg);
+    if (this.novu.socket) {
+      console.log('NOVU: requesting websocket connection...');
+      try {
+        const connectResult = await this.novu.socket.connect();
+        if (connectResult?.error) {
+          console.error('NOVU: socket.connect failed', connectResult.error);
+        } else {
+          console.log('NOVU: socket.connect resolved successfully.');
         }
-        return; // Don't show in normal notifications
+      } catch (err) {
+        console.error('NOVU: socket.connect threw', err);
       }
+    } else {
+      console.warn('NOVU: socket instance missing; realtime channel unavailable.');
+    }
 
-      // === NORMAL NOTIFICATION ===
-      const notif: InAppNotification = {
-        _id: result.id,
-        subject: result.subject ?? 'Notification',
-        content: body ?? '',
-        data: result.data,
-        read: result.isRead ?? false,
-        createdAt: result.createdAt,
-      };
+    this.novu.on(
+      'notifications.notification_received',
+      (payload: any) => {
+        const result = payload?.result;
+        if (!result) return;
 
-      const list = this.notifications$.value;
-      const updated = [notif, ...list.filter(n => n._id !== notif._id)];
-      this.notifications$.next(updated);
+        const workflowId = result?.workflow?.identifier;
 
-      if (!notif.read) {
-        this.unreadCount$.next(this.unreadCount$.value + 1);
+        // Novu Notification object carries custom payload under `data`.
+        // In case of different shapes, fall back to `payload` or root.
+        const chatData: any = this.resolveChatPayload(result);
+
+        console.log('NOVU DEBUG: notification_received', {
+          id: result?.id,
+          workflowId,
+          hasChatPayload: !!chatData?.chatId,
+        });
+
+        // CASE 1: structured
+        if (chatData?.chatId) {
+          const sender = String(chatData.senderUserId ?? '');
+          const receiver = String(chatData.receiverUserId ?? '');
+          const chatMsg: ChatMessage = {
+            chatId: String(chatData.chatId),
+            senderUserId: sender,
+            receiverUserId: receiver,
+            notificationBody: this.sanitizeChatBody(
+              String(chatData.notificationBody ?? ''),
+              sender,
+              receiver
+            ),
+            timestamp:
+              chatData.timestamp ?? new Date().toISOString(),
+            status: 'sent',
+            clientId: chatData.clientId,
+          };
+          this.reconcileIncomingMessage(chatMsg);
+          return;
+        }
+
+        // CASE 2: parse marker
+        const parsed = this.parseChatMetaFromBody(result.body);
+        if (parsed) {
+          const chatMsg: ChatMessage = {
+            chatId: parsed.chatId,
+            senderUserId: parsed.senderUserId,
+            receiverUserId: parsed.receiverUserId,
+            notificationBody: this.sanitizeChatBody(
+              (result.body || '')
+                .replace(/__CHAT__[^\r\n]+/, '')
+                .trim(),
+              parsed.senderUserId,
+              parsed.receiverUserId
+            ),
+            timestamp: new Date().toISOString(),
+            status: 'sent',
+            clientId: parsed.clientId,
+          };
+          this.reconcileIncomingMessage(chatMsg);
+          return;
+        }
+
+        const mappedNotification = this.mapNotification(result);
+        if (mappedNotification) {
+          const current = this.notifications$.value;
+          const updated = [mappedNotification, ...current];
+          this.notifications$.next(updated);
+          this.unreadCount$.next(updated.filter((n) => !n.read).length);
+        }
+      }
+    );
+
+    this.novu.on('notifications.unread_count_changed', (payload: any) => {
+      const resultValue = payload?.result;
+      const count =
+        typeof resultValue === 'number'
+          ? resultValue
+          : Number(
+              typeof resultValue === 'object' && resultValue !== null
+                ? resultValue?.count ?? resultValue?.data ?? resultValue
+                : resultValue
+            );
+      console.log('NOVU DEBUG: unread_count_changed', {
+        raw: resultValue,
+        computed: count,
+      });
+      if (!Number.isNaN(count)) {
+        this.unreadCount$.next(count);
       }
     });
 
     await this.refresh();
   }
 
-  // === REFRESH HISTORY ===
+  // -------------------------
+  // Refresh historical messages
+  // -------------------------
   private async refresh(): Promise<void> {
     if (!this.novu) return;
 
     try {
-      const res = await this.novu.notifications.list({ limit: 100 });
-      if (res.error || !res.data?.notifications) return;
-
-      const raw = res.data.notifications;
-      const normal: InAppNotification[] = [];
-      const chat: ChatMessage[] = [];
-
-      raw.forEach((n: any) => {
-        const body = n.body;
-
-        if (this.isChatMessage(body)) {
-          const msg = this.parseChatFromBody(body);
-          if (msg) chat.push(msg);
-        } else {
-          normal.push({
-            _id: n.id,
-            subject: n.subject ?? 'Notification',
-            content: body ?? '',
-            data: n.data,
-            read: n.isRead ?? false,
-            createdAt: n.createdAt,
-          });
-        }
+      console.log('NOVU DEBUG: refresh start...');
+      const result = await this.novu.notifications.list({
+        limit: 50,
       });
 
-      normal.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      this.notifications$.next(normal);
-      this.unreadCount$.next(normal.filter(n => !n.read).length);
+        const raw = result.data?.notifications ?? [];
 
-      chat.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-      this.chatMessages$.next(chat);
-    } catch (e) {
-      console.error('NOVU refresh error:', e);
+        // Filter out pure chat workflow notifications from the general
+        // notifications list, so chat messages do not appear under the
+        // bell/notification center. We identify chat items by the
+        // workflow identifier "chat-message".
+        const notifications: InAppNotification[] = raw
+          .filter((n: any) => n?.workflow?.identifier !== 'chat-message')
+          .map((n: any) => ({
+            _id: n.id,
+            subject: n.subject ?? 'Notification',
+            content: n.body ?? '',
+            data: n.data,
+            read: n.isRead,
+            createdAt: n.createdAt,
+          }));
+
+      notifications.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() -
+          new Date(a.createdAt).getTime()
+      );
+
+      const unreadCount = notifications.filter((n) => !n.read).length;
+      this.notifications$.next(notifications);
+      this.unreadCount$.next(unreadCount);
+
+      const chatMsgs: ChatMessage[] = raw
+        .map((n: any) => {
+          const chatData = this.resolveChatPayload(n);
+
+          if (chatData?.chatId) {
+            const sender = String(chatData.senderUserId ?? '');
+            const receiver = String(chatData.receiverUserId ?? '');
+            return {
+              chatId: chatData.chatId,
+              senderUserId: sender,
+              receiverUserId: receiver,
+              notificationBody: this.sanitizeChatBody(
+                chatData.notificationBody ?? '',
+                sender,
+                receiver
+              ),
+              timestamp: chatData.timestamp ?? n.createdAt,
+              status: 'sent',
+              clientId: chatData.clientId,
+            } as ChatMessage;
+          }
+
+          const parsed = this.parseChatMetaFromBody(n.body);
+          if (parsed) {
+            return {
+              chatId: parsed.chatId,
+              senderUserId: parsed.senderUserId,
+              receiverUserId: parsed.receiverUserId,
+              notificationBody: this.sanitizeChatBody(
+                (n.body || '').replace(
+                  /__CHAT__[^\r\n]+/,
+                  ''
+                ).trim(),
+                parsed.senderUserId,
+                parsed.receiverUserId
+              ),
+              timestamp: n.createdAt,
+              status: 'sent',
+              clientId: parsed.clientId,
+            } as ChatMessage;
+          }
+
+          return null;
+        })
+        .filter((x) => x !== null) as ChatMessage[];
+
+      chatMsgs.sort(
+        (a, b) =>
+          new Date(a.timestamp).getTime() -
+          new Date(b.timestamp).getTime()
+      );
+
+      this.chatMessages$.next(chatMsgs);
+
+      console.log('NOVU DEBUG: refresh success', {
+        notificationCount: notifications.length,
+        unreadCount,
+        chatMessageCount: chatMsgs.length,
+      });
+    } catch (err) {
+      console.error('NOVU: refresh error:', err);
     }
   }
 
-  // === PUBLIC API (ALL YOUR OLD METHODS) ===
+  // -------------------------
+  // Public API
+  // -------------------------
   getNotifications(): Observable<InAppNotification[]> {
     return this.notifications$.asObservable();
   }
@@ -221,27 +604,40 @@ export class NovuService {
     return this.unreadCount$.asObservable();
   }
 
-  async refreshNow(): Promise<void> {
-    await this.refresh();
-  }
-
   async markAsRead(id: string): Promise<void> {
     if (!this.novu) return;
+
     try {
-      await this.novu.notifications.read({ notificationId: id });
-      const list = this.notifications$.value.map(n => n._id === id ? { ...n, read: true } : n);
-      this.notifications$.next(list);
-      this.unreadCount$.next(list.filter(n => !n.read).length);
+      await this.novu.notifications.read({
+        notificationId: id,
+      });
+
+      const notifs = this.notifications$.value.map((n) =>
+        n._id === id ? { ...n, read: true } : n
+      );
+
+      this.notifications$.next(notifs);
+      this.unreadCount$.next(
+        notifs.filter((n) => !n.read).length
+      );
     } catch {
       await this.refresh();
     }
+  }
+
+  async refreshNow(): Promise<void> {
+    await this.refresh();
   }
 
   async markAllAsRead(): Promise<void> {
     if (!this.novu) return;
     try {
       await this.novu.notifications.readAll();
-      this.notifications$.next(this.notifications$.value.map(n => ({ ...n, read: true })));
+      const updated = this.notifications$.value.map((n) => ({
+        ...n,
+        read: true,
+      }));
+      this.notifications$.next(updated);
       this.unreadCount$.next(0);
     } catch {
       await this.refresh();
@@ -250,13 +646,20 @@ export class NovuService {
 
   async deleteNotification(id: string): Promise<void> {
     if (!this.novu) return;
+
     try {
-      await firstValueFrom(this.http.delete(`${this.backendUrl}/notification/${id}`));
-      const list = this.notifications$.value.filter(n => n._id !== id);
-      this.notifications$.next(list);
-      this.unreadCount$.next(list.filter(n => !n.read).length);
-    } catch (e) {
-      console.error('deleteNotification error:', e);
+      await firstValueFrom(
+        this.http.delete(`${this.backendUrl}/notification/${id}`)
+      );
+      const updated = this.notifications$.value.filter(
+        (n) => n._id !== id
+      );
+      this.notifications$.next(updated);
+      this.unreadCount$.next(
+        updated.filter((n) => !n.read).length
+      );
+    } catch (err) {
+      console.error('NOVU: deleteNotification → failed', err);
     }
   }
 }

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, combineLatest, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
 import { NovuService, ChatMessage } from './novu.service';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 
 export interface ChatPreview {
   chatId: string;
@@ -20,16 +20,29 @@ function buildChatId(a: string, b: string): string {
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
-  private readonly api = 'http://localhost:8080/api/demo';
+  // Notification service base (same API used for chat send)
+  private readonly api = 'http://192.168.20.69:8088/Notify';
   public previews$ = new BehaviorSubject<ChatPreview[]>([]);
-  private currentUserId = localStorage.getItem('userId') || '';
+
+  private get currentUserId(): string {
+    return localStorage.getItem('userId') || '';
+  }
 
   private searchTerm$ = new BehaviorSubject<string>('');
   public searchResults$ = this.searchTerm$.pipe(
     debounceTime(300),
     distinctUntilChanged(),
     switchMap((term) =>
-      term.trim() === '' ? of([] as string[]) : this.http.get<string[]>(`${this.api}/search-users?q=${encodeURIComponent(term)}`)
+      term.trim() === ''
+        ? of([] as string[])
+        : this.http
+            .get<string[]>(`${this.api}/subscribers/search?q=${encodeURIComponent(term)}`)
+            .pipe(
+              catchError((err) => {
+                console.error('Subscriber search failed:', err);
+                return of([] as string[]);
+              })
+            )
     )
   );
 
@@ -42,12 +55,18 @@ export class ChatService {
   private buildPreviews(messages: ChatMessage[]) {
     const previewMap = new Map<string, ChatPreview>();
 
-    messages.forEach((msg) => {
+    // Ensure chronological order so the lastMessage/time
+    // reflect the most recent message per conversation.
+    const sorted = [...messages].sort(
+      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
+
+    sorted.forEach((msg) => {
       if (!msg || !msg.chatId) return;
       const chatId = msg.chatId;
 
       // determine partner (the other participant)
-      let partner = msg.from === this.currentUserId ? msg.to : msg.from;
+      let partner = msg.senderUserId === this.currentUserId ? msg.receiverUserId : msg.senderUserId;
 
       // If partner still equals current user (parsing / bad data), try to infer the other from chatId
       if (!partner || partner === this.currentUserId) {
@@ -65,17 +84,17 @@ export class ChatService {
         previewMap.set(chatId, {
           chatId,
           partner,
-          lastMessage: msg.message,
+          lastMessage: msg.notificationBody,
           time: this.formatTime(msg.timestamp),
           unread: 0,
         });
       }
 
       const preview = previewMap.get(chatId)!;
-      preview.lastMessage = msg.message;
+      preview.lastMessage = msg.notificationBody;
       preview.time = this.formatTime(msg.timestamp);
 
-      if (msg.to === this.currentUserId) {
+      if (msg.receiverUserId === this.currentUserId) {
         preview.unread += 1;
       }
     });

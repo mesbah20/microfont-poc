@@ -29,8 +29,9 @@ export class App implements OnInit {
     const userId = localStorage.getItem('userId');
     if (userId) {
       console.log('Novu initializing for user:', userId);
-      // await this.novuService.init(userId, '1uXpKIJUa3Rg');
-      await this.novuService.init(userId, 'oH9Vf1VWV7s8');
+      const subscriberHash = localStorage.getItem('novuSubscriberHash') || undefined;
+      await this.novuService.init(userId, '1uXpKIJUa3Rg', subscriberHash);
+      // await this.novuService.init(userId, 'oH9Vf1VWV7s8');
       // await this.novuService.init(userId, 'EDstW_4loKyp');
     } else {
       console.warn('No userId found in localStorage. Novu not initialized.');
