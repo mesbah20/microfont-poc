@@ -58,11 +58,10 @@ export class AuthService {
     });
   }
 
-
   logout(): void {
-    this.keycloak.logout({
-      redirectUri: 'http://localhost:4000'
-    });
+    this.keycloak.logout({});
+    localStorage.clear();
+    sessionStorage.clear();
   }
 
   decodeToken(): void {
