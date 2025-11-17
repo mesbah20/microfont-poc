@@ -45,6 +45,9 @@ export class ApprovalService {
       return this.http.post<any[]>(url, data);
     }
 
-
+    getApprovalActivitiesBySetId(setId: number): Observable<any[]> {
+      const url = `http://192.168.20.93:8083/approval-register/approvalQue/${setId}`;
+      return this.http.get<any[]>(url);
+    }
 
 }
