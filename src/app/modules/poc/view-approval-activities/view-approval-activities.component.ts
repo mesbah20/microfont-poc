@@ -66,15 +66,21 @@ export class ViewApprovalActivitiesComponent implements OnInit{
   constructor(private approvalService: ApprovalService) {}
 
 
+  // ... inside ViewApprovalActivitiesComponent.ts
+
   ngOnInit(): void {
-    console.log('Init ViewApprovalActivitiesComponent, setId =', this.setId);
-    const setId = this.setId;
+    // FIX: Get the setId from the modalComponentData object
+    const setId = this.modalComponentData?.setId;
+
+    console.log('Init ViewApprovalActivitiesComponent, setId =', setId);
 
     if (!setId) {
-      console.error("No setId received in modal");
+      console.error("No setId received from modalComponentData");
+      console.log("Data received:", this.modalComponentData); // Added for easier debugging
       return;
     }
 
+    // The rest of your function will now work correctly
     this.approvalService.getApprovalActivitiesBySetId(setId).subscribe({
       next: (res: RawApproval[]) => {
         console.log("API Result:", res);
