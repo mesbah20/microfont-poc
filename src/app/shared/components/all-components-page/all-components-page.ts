@@ -1147,7 +1147,7 @@ debugFormState(): void {
   // Enhanced grid event handlers
   onTransactionEdit(serializedData: string): void {
     const transaction = JSON.parse(serializedData);
-
+    console.log(serializedData);
     // Pre-populate form with transaction data for editing
     this.frmGroup.patchValue({
       amount: transaction.amount,

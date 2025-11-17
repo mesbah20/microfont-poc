@@ -25,7 +25,11 @@ import { LdsModalComponent } from '../../../../../../shared/components/lds-modal
 import { Button } from '../../../../../../shared/components/input-types/button/button';
 import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/components/service-request-dialog/service-request-dialog';
 import { EditProfileModal } from '../../../../../../modules/landing/feature/edit-profile-modal/edit-profile-modal';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { ChatPreview, ChatService } from '../../../../../../shared/services/chat.service';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TextBaseInput } from '../../../../../../shared/components/input-types/text-base-input/text-base-input';
 
 @Component({
   selector: 'app-profile-drawer',
@@ -41,6 +45,10 @@ import { Subscription } from 'rxjs';
     LdsModalComponent,
     Button,
     EditProfileModal,
+    TextBaseInput,
+  MatProgressSpinnerModule,
+  FormsModule,
+  ReactiveFormsModule,
   ],
   templateUrl: './profile-drawer.html',
   standalone: true,
@@ -56,7 +64,12 @@ import { Subscription } from 'rxjs';
 export class ProfileDrawer {
   isNotificationsOpen = false;
   isMessagingOpen = false;
-
+searchForm = new FormGroup({
+  query: new FormControl('', { nonNullable: true })
+});
+searching = false;                     // spinner flag
+searchResults$!: Observable<string[]>; // raw user list
+  selectedChat?: ChatPreview;
   isChatOpen = signal(false);
   chatWith: string;
   private popoverOverlayRef: OverlayRef | null = null;
@@ -80,14 +93,53 @@ export class ProfileDrawer {
   showEditProfileModal = false;
   // modalComponent?: Type<any>;
   modalData?: any;
+  chatPreviews$!: Observable<ChatPreview[]>;
 
   constructor(
     public notificationService: NotificationService,
     private router: Router,
     public novuService: NovuService,
     private overlay: Overlay,
-    private ngZone: NgZone
-  ) {}
+    private ngZone: NgZone,
+    public chatService: ChatService
+  ) {
+    this.searchResults$ = this.chatService.searchResults$;
+  }
+
+  onSearchInput() {
+  const term = this.searchForm.get('query')?.value?.trim() ?? '';
+  this.searching = true;
+  this.chatService.setSearchTerm(term);
+  // hide spinner after debounce
+  setTimeout(() => this.searching = false, 350);
+}
+private currentUserId = localStorage.getItem('userId') || '';
+openChatFromSearch(user: string) {
+  const chatId = [this.currentUserId, user].sort().join('_');
+  const preview: ChatPreview = {
+    chatId,
+    partner: user,
+    lastMessage: '',
+    time: '',
+    unread: 0
+  };
+  this.openChat(preview);
+  this.searchForm.get('query')?.setValue('');
+}
+
+  async openChat(chat: ChatPreview) {
+  this.selectedChat = chat;
+  this.isChatOpen.set(true);
+  this.chatService.markChatAsRead(chat.chatId);
+
+  // রাখুন, অতিরিক্ত নিশ্চিততার জন্য
+  await this.novuService.refreshNow();
+
+  // clear search UI
+  this.searchForm.get('query')?.setValue('');
+  this.chatService.setSearchTerm(''); // hide suggestions
+  this.searching = false;
+}
 
   openEditProfileModal() {
     this.modalComponent = EditProfileModal;
@@ -235,6 +287,11 @@ export class ProfileDrawer {
       this.detailOverlayRef = null;
     });
   }
+
+  ngOnInit() {
+  // this.chatPreviews$ = this.chatService.getChatPreviews();
+  this.chatPreviews$ = this.chatService.getCombinedList();
+}
 
   ngOnDestroy() {
     this.overlayRef?.dispose();

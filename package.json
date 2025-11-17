@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "start:novu-hash": "node server/novu-hash-server.js"
   },
   "prettier": {
     "overrides": [
