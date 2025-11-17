@@ -18,7 +18,7 @@ export class UserProfileService {
   }
 
   getAllOffice(request: any): Observable<any> {
-    const url = `${environment.centrinoXchangeUrl}/api/get-all-office-info-exc`;
+    const url = `${environment.centrinoXchangeUrl}/get-all-office-info-exc`;
     return this.http.post<any>(url, request);
   }
   getAllUser(officeId: number): Observable<any> {

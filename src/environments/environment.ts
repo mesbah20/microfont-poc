@@ -26,7 +26,7 @@ export const environment = {
   centrinoEndpoint: 'http://192.168.20.93:8090/centrino',
   sentinelUrl: 'http://192.168.20.93:8090/sentinel',
   centrino:'http://192.168.20.93:8097/centrino/department/get-all',
-  keycloakApi:'http://192.168.10.56:8085/resource-manager/api/v1/resource',
+  keycloakApi:'http://192.168.10.56:8090/resource-manager/api/v1/resource',
   bffUrl: 'http://192.168.10.56:8085/',
   appId: '1',
   keycloak: {

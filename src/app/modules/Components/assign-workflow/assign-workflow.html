@@ -1,0 +1,188 @@
+<div class="page-wrapper">
+  <!-- Master Form -->
+  @if(masterFrmGroup) {
+  <form [formGroup]="masterFrmGroup" class="transaction-form">
+    <div class="panel">
+      <div class="transaction-grid-container">
+
+        <!-- Header Section -->
+        <section class="header-section">
+          <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'Assign Workflow'" />
+        </section>
+
+        <div class="form-grid-col-1">
+
+          <!-- Master Section -->
+          <section class="primary-fields-section bg-gray-50 rounded-lg mb-6 grid grid-cols-3 p-3">
+
+            <!-- Application Id -->
+            <div class="component-section">
+              <app-select-option-field [frmGroup]="masterFrmGroup" [controlName]="'appId'" [label]="'Application Id'"
+                [isVertical]="true" [options]="applicationOptions" [tooltip]="'Select application'">
+              </app-select-option-field>
+            </div>
+
+            <!-- Module Id -->
+            <div class="component-section">
+              <app-select-option-field [frmGroup]="masterFrmGroup" [controlName]="'moduleId'" [label]="'Module Id'"
+                [isVertical]="true" [options]="moduleOptions" [tooltip]="'Select module'">
+              </app-select-option-field>
+            </div>
+
+            <!-- Function Id -->
+            <div class="component-section">
+              <app-select-option-field [frmGroup]="masterFrmGroup" [controlName]="'functionId'" [label]="'Function Id'"
+                [isVertical]="true" [options]="functionOptions" [tooltip]="'Select function'">
+              </app-select-option-field>
+            </div>
+
+            <!-- Default Workflow -->
+            <div class="component-section">
+              <app-select-option-field [frmGroup]="masterFrmGroup" [controlName]="'workflowId'"
+                [label]="'Default Workflow'" [isVertical]="true" [options]="workflowOptions"
+                [tooltip]="'Select default workflow'">
+              </app-select-option-field>
+            </div>
+
+            <section class="action-buttons-section rounded-lg py-5">
+              <lds-btn id="addBtn" value="add" labelText="Show/Hide Condition" (onClick)="toggleConditionSection()"
+                [enable]="!isAddConditionDisabled">
+              </lds-btn>
+            </section>
+
+          </section>
+        </div>
+      </div>
+    </div>
+  </form>
+  }
+
+  <!-- Condition Form -->
+  @if(conditionFrmGroup && showConditionSection()) {
+  <form [formGroup]="conditionFrmGroup" class="transaction-form">
+    <div class="panel">
+      <div class="transaction-grid-container">
+
+        <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'Add Condition'" />
+
+        <!-- Dynamic Query Rows -->
+        <div formArrayName="rows">
+          <div *ngFor="let row of queryRows(); let i = index; trackBy: trackByRowId"
+            class="grid grid-cols-5 items-center gap-4 pt-1">
+
+            <!-- Action -->
+            <div class="component-section">
+              <label *ngIf="i === 0" class="block text-sm font-medium mb-2">Action</label>
+              <div class="flex gap-2 items-center">
+                <button type="button" (click)="addQueryRow()" class="p-1 text-xs" title="Add Row">
+                  ➕
+                </button>
+                <button type="button" (click)="removeQueryRow(row.id)" [disabled]="queryRows().length === 1"
+                  class="p-1 text-xs" title="Remove Row">
+                  ❌
+                </button>
+              </div>
+            </div>
+
+            <!-- And/Or -->
+            <div class="component-section">
+              <label *ngIf="i === 0" class="block text-sm font-medium mb-2">And/Or</label>
+              <app-select-option-field *ngIf="i > 0" [frmGroup]="getRowFormGroup(i)" [controlName]="'andOr'"
+                [label]="''" [isVertical]="true" [options]="andOrOptions" (onSelect)="onAndOrChange($event, row.id)">
+              </app-select-option-field>
+            </div>
+
+            <!-- Field -->
+            <div class="component-section">
+              <app-select-option-field [frmGroup]="getRowFormGroup(i)" [controlName]="'fieldName'"
+                [label]="i === 0 ? 'Field' : ''" [isVertical]="true" [options]="fieldOptions"
+                (onSelect)="onFieldChange($event, row.id)">
+              </app-select-option-field>
+            </div>
+
+            <!-- Operator -->
+            <div class="component-section">
+              <app-select-option-field [frmGroup]="getRowFormGroup(i)" [controlName]="'operator'"
+                [label]="i === 0 ? 'Operator' : ''" [isVertical]="true"
+                [options]="operatorMap[row.id] || operatorOptions" (onSelect)="onOperatorChange($event, row.id)">
+              </app-select-option-field>
+            </div>
+
+            <!-- Value -->
+            <div class="component-section">
+              <!-- Number -->
+              <lds-amount *ngIf="row.fieldType === 'N'" [frmGroup]="getRowFormGroup(i)" [controlName]="'value'"
+                [label]="i === 0 ? 'Value' : ''" [isVertical]="true" [decimalPlaces]="2" [allowLeadingZeros]="false"
+                [maxLen]="12" (onChanged)="onValueChange($event, row.id)">
+              </lds-amount>
+
+              <!-- String -->
+              <app-text-base-input *ngIf="row.fieldType === 'S'" [frmGroup]="getRowFormGroup(i)" [controlName]="'value'"
+                [label]="i === 0 ? 'Value' : ''" [isVertical]="true" [type]="'text'" [maxLength]="200"
+                (onChanged)="onValueChange($event, row.id)">
+              </app-text-base-input>
+
+              <!-- Dropdown -->
+              <app-select-option-field *ngIf="row.fieldType === 'D'" [isVertical]="true" [frmGroup]="getRowFormGroup(i)"
+                [controlName]="'value'" [label]="i === 0 ? 'Value' : ''"
+                [options]="convertToDropdownOptions(row.fieldValueOptions)" (onSelect)="onValueChange($event, row.id)">
+              </app-select-option-field>
+
+              <!-- Boolean -->
+              <app-select-option-field *ngIf="row.fieldType === 'B'" [isVertical]="true" [frmGroup]="getRowFormGroup(i)"
+                [controlName]="'value'" [label]="i === 0 ? 'Value' : ''"
+                [options]="[{ key: 'true', value: 'True' }, { key: 'false', value: 'False' }]"
+                (onSelect)="onValueChange($event, row.id)">
+              </app-select-option-field>
+
+              <!-- Default (when no field type selected) -->
+              <app-select-option-field *ngIf="!row.fieldType" [isVertical]="true" [frmGroup]="getRowFormGroup(i)"
+                [controlName]="'value'" [label]="i === 0 ? 'Value' : ''" [options]="[]"
+                (onSelect)="onValueChange($event, row.id)">
+              </app-select-option-field>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conditional Workflow Section -->
+        <section class="bg-gray-50 rounded-lg">
+          <div class="grid grid-cols-2 pt-3 px-3">
+
+            <!-- Conditional Workflow -->
+            <div class="component-section">
+              <app-select-option-field [frmGroup]="conditionFrmGroup" [controlName]="'conditionalWorkflowId'"
+                [label]="'Conditional Workflow'" [isVertical]="true" [options]="workflowOptions"
+                [tooltip]="'Select workflow for this condition'">
+              </app-select-option-field>
+            </div>
+
+            <!-- Add Button -->
+            <section class="action-buttons-section rounded-lg pt-5">
+              <lds-btn id="addConditionBtn" value="add" labelText="Add" (onClick)="addCurrentFormToGrid()">
+              </lds-btn>
+            </section>
+
+          </div>
+        </section>
+
+        <!-- Conditions List Grid Section -->
+        <section class="transaction-grid-section bg-white rounded-lg shadow-sm mt-6">
+          <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'Conditions List'" />
+
+          <div>
+            <lds-data-grid [id]="'workflow-conditions'" [dataSource]="sampleTransactions()" [initPageSize]="10"
+              [enableSelection]="false" [showEditButton]="true" [showDeleteButton]="true" [showViewButton]="false"
+              [showPrintButton]="false"
+              [selectedColumns]="['applicationName', 'moduleName', 'functionName', 'priority', 'condition', 'conditionalWorkflow']"
+              [rowDesignerList]="transactionRowDesigners()" [tblClass]="'enhanced-transaction-table'"
+              (onFHEditClick)="onEditCondition($event)" (onFHDeleteClick)="onTransactionDelete($event)"
+              (dataSourceChanged)="onTransactionDataChanged($event)">
+            </lds-data-grid>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </form>
+  }
+</div>

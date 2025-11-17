@@ -22,7 +22,6 @@ export const appConfig: { providers: (EnvironmentProviders | Provider[])[] } = {
     provideNativeDateAdapter(),
     provideAnimations(),
     provideToastr(),
-    provideHttpClient(),
     provideHttpClient(
       withInterceptors([tokenInterceptor])
     )

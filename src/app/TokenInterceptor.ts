@@ -5,17 +5,28 @@ import {AuthService} from './core/auth/auth.service';
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const token = auth.token;
-  console.log("token",token);
-  if (req.url.startsWith(environment.keycloakApi) || req.url.startsWith(environment.centrinoBaseUrl)
-    || req.url.startsWith(environment.sentinelUrl)|| req.url.startsWith(environment.centrinoXchangeUrl)) {
-    if (token) {
 
-      req = req.clone({
-        setHeaders: { Authorization: `Bearer ${token}` }
-      });
-    }
+  // APIs where token must be added
+  const shouldAttachToken =
+    req.url.startsWith(environment.keycloakApi) ||
+    req.url.startsWith(environment.sentinelUrl) ||
+    req.url.startsWith(environment.centrinoXchangeUrl)||
+    req.url.startsWith(environment.centrinoBaseUrl);
+
+  if (shouldAttachToken && token) {
+    console.log('🔐 Attaching token to:', req.url);
+    console.log('🔐 token:', token);
+
+    const authReq = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return next(authReq);
   }
 
+  // Default: no token added
   return next(req);
 };
 
