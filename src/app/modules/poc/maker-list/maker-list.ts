@@ -11,6 +11,8 @@ import { SelectOptionField } from '../../../shared/components/input-types/select
 import {ViewApprovalActivitiesComponent} from '../view-approval-activities/view-approval-activities.component';
 import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
 import {OtherComponentsPage} from '../../../shared/components/other-components-page/other-components-page';
+import { UserService } from '../../../core/user/user.service';
+import { User} from '../../../core/user/user.types';
 
 @Component({
   selector: 'app-maker-list',
@@ -32,6 +34,10 @@ export class MakerList implements OnInit {
   fb = inject(FormBuilder);
   dialog = inject(MatDialog);
 
+  // +++ 2. INJECT THE USER SERVICE +++
+  private userService = inject(UserService);
+  private currentUser: User | null = null;
+
   // Modal controls
   isModalVisible: boolean = false;
   modalTitle: string = '';
@@ -48,7 +54,7 @@ export class MakerList implements OnInit {
     { "functionId": 901003, "functionName": "GL Subsidiary",       "moduleName": "Accounts","accessLevel": "VIEW", "menuOrder": 3 },
     { "functionId": 901004, "functionName": "Employee Directory",  "moduleName": "HR", "accessLevel": "VIEW", "menuOrder": 4 },
     { "functionId": 901005, "functionName": "Inventory Management","moduleName": "Logistics", "accessLevel": "FULL", "menuOrder": 5 }
-  ];
+  ]; //function List
 
   apiResponseMaker: any[] = [
     // (same 10-record array you already use)
@@ -71,6 +77,26 @@ export class MakerList implements OnInit {
     this.buildForm();
     this.loadUserAccessList();
   }
+
+  // +++ 1. UPDATE ngOnInit TO SUBSCRIBE +++
+  // ngOnInit(): void {
+  //   this.userService.user$.subscribe(user => {
+  //     if (user) {
+  //       console.log("Logged in user (Maker):", user);
+  //       this.currentUser = user;
+  //       // Now that we have a user, build the form and load its options
+  //       this.buildForm();
+  //       this.loadUserAccessList();
+  //     } else {
+  //       // Handle user being logged out
+  //       console.log("Waiting for user login...");
+  //       this.currentUser = null;
+  //       if (this.frmGroup) {
+  //         this.resetMakerForm(); // Clear form if user logs out
+  //       }
+  //     }
+  //   });
+  // }
 
   private buildForm(): void {
     this.frmGroup = this.fb.group({
@@ -116,6 +142,47 @@ export class MakerList implements OnInit {
 
     this.showmakerList = this.makerList.length > 0;
   }
+
+  // loadMakerList(): void {
+  //   // Add a guard clause to ensure the user is logged in
+  //   if (!this.currentUser) {
+  //     console.warn("No user is logged in. Cannot load maker list.");
+  //     this.makerList = [];
+  //     this.showmakerList = false;
+  //     return;
+  //   }
+  //
+  //   // Get the username (e.g., "bob")
+  //   const myUsername = this.currentUser.username;
+  //
+  //   const { fromDate, toDate, functionId } = this.frmGroup.value || {};
+  //   const from = fromDate ? new Date(fromDate) : new Date('1900-01-01');
+  //   const to = toDate ? new Date(toDate) : new Date('2999-12-31');
+  //   to.setHours(23, 59, 59, 999);
+  //
+  //   const fnId = functionId ? Number(functionId) : null;
+  //
+  //   const filtered = this.apiResponseMaker.filter(item => {
+  //     const itemFn = Number(item.functionId);
+  //     const itemDate = new Date(item.createDate);
+  //
+  //     // Define all filter conditions
+  //     const fnOk = (fnId !== null) ? itemFn === fnId : true;
+  //     const dateOk = itemDate >= from && itemDate <= to;
+  //     const userOk = item.recordUserId === myUsername; // <-- THE NEW FILTER
+  //
+  //     return fnOk && dateOk && userOk; // <-- Add userOk to the final check
+  //   });
+  //
+  //   this.makerList = filtered.map(item => ({
+  //     ...item,
+  //     currentContext: this.safeJson(item.currentUxContent),
+  //     previousContext: this.safeJson(item.previousUxContent),
+  //   }));
+  //
+  //   this.showmakerList = this.makerList.length > 0;
+  //   console.log(`Loaded ${this.makerList.length} items for maker ${myUsername}`);
+  // }
 
   resetMakerForm(): void {
     this.frmGroup.reset();
