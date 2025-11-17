@@ -17,7 +17,11 @@ import {
 } from '../../../../../../shared/services/novu.service';
 import {  Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { EditProfileModal } from '../../../../../../modules/landing/feature/edit-profile-modal/edit-profile-modal';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { ChatPreview, ChatService } from '../../../../../../shared/services/chat.service';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TextBaseInput } from '../../../../../../shared/components/input-types/text-base-input/text-base-input';
 import { UserService } from '../../../../../../core/user/user.service';
 import { User } from '../../../../../../core/user/user.types';
 import { ToastHelperService } from '../../../../../../shared/services/toast-helper.service';
@@ -27,6 +31,7 @@ import { LdsModalComponent } from '../../../../../../shared/components/lds-modal
 import { ComponentPortal } from '@angular/cdk/portal';
 import { NotificationPopoverComponent } from '../../../../../../modules/swiftmx/components/notification/notification-popover.component';
 import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/components/service-request-dialog/service-request-dialog';
+import { Button } from '../../../../../../shared/components/input-types/button/button';
 
 @Component({
   selector: 'app-profile-drawer',
@@ -40,6 +45,12 @@ import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/componen
     RouterModule,
     CommonModule,
     LdsModalComponent,
+    Button,
+    EditProfileModal,
+    TextBaseInput,
+  MatProgressSpinnerModule,
+  FormsModule,
+  ReactiveFormsModule,
   ],
   templateUrl: './profile-drawer.html',
   standalone: true,
@@ -55,7 +66,12 @@ import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/componen
 export class ProfileDrawer implements OnInit, OnDestroy {
   isNotificationsOpen = false;
   isMessagingOpen = false;
-
+searchForm = new FormGroup({
+  query: new FormControl('', { nonNullable: true })
+});
+searching = false;                     // spinner flag
+searchResults$!: Observable<string[]>; // raw user list
+  selectedChat?: ChatPreview;
   isChatOpen = signal(false);
   chatWith: string;
   private popoverOverlayRef: OverlayRef | null = null;
@@ -79,7 +95,9 @@ export class ProfileDrawer implements OnInit, OnDestroy {
 
   showEditProfileModal = false;
   // modalComponent?: Type<any>;
-  modalData?: User;
+  modalData?: any;
+  chatPreviews$!: Observable<ChatPreview[]>;
+  //modalData?: User;
   currentUser?: User;
 
   constructor(
@@ -89,8 +107,49 @@ export class ProfileDrawer implements OnInit, OnDestroy {
     private toastHelper: ToastHelperService,
     public novuService: NovuService,
     private overlay: Overlay,
-    private ngZone: NgZone
-  ) {}
+    private ngZone: NgZone,
+    public chatService: ChatService
+  ) {
+    this.searchResults$ = this.chatService.searchResults$;
+  }
+
+  onSearchInput() {
+  const term = this.searchForm.get('query')?.value?.trim() ?? '';
+  this.searching = true;
+  this.chatService.setSearchTerm(term);
+  // hide spinner after debounce
+  setTimeout(() => this.searching = false, 350);
+}
+private currentUserId = localStorage.getItem('userId') || '';
+openChatFromSearch(user: string) {
+  const chatId = [this.currentUserId, user].sort().join('_');
+  const preview: ChatPreview = {
+    chatId,
+    partner: user,
+    lastMessage: '',
+    time: '',
+    unread: 0
+  };
+  this.openChat(preview);
+  this.searchForm.get('query')?.setValue('');
+}
+
+  openChat(chat: ChatPreview) {
+    this.selectedChat = chat;
+    this.isChatOpen.set(true);
+    this.chatService.markChatAsRead(chat.chatId);
+
+    // clear search UI
+    this.searchForm.get('query')?.setValue('');
+    this.chatService.setSearchTerm(''); // hide suggestions
+    this.searching = false;
+
+    // Ensure latest chat history is loaded for this subscriber
+    // so the chat box is not empty after a full page reload.
+    this.novuService
+      .refreshNow()
+      .catch((err) => console.error('NOVU: refreshNow failed on openChat:', err));
+  }
 
   ngOnInit(): void {
     this.userSubscription = this.userService.user$.subscribe({
@@ -101,6 +160,8 @@ export class ProfileDrawer implements OnInit, OnDestroy {
         console.error('Failed to load current user profile from stream', error);
       },
     });
+     // this.chatPreviews$ = this.chatService.getChatPreviews();
+    this.chatPreviews$ = this.chatService.getCombinedList();
   }
 
   openEditProfileModal() {
@@ -256,6 +317,8 @@ export class ProfileDrawer implements OnInit, OnDestroy {
       this.detailOverlayRef = null;
     });
   }
+
+
 
   ngOnDestroy() {
     this.overlayRef?.dispose();

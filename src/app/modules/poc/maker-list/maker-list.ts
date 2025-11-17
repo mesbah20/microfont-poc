@@ -11,6 +11,9 @@ import { SelectOptionField } from '../../../shared/components/input-types/select
 import {ViewApprovalActivitiesComponent} from '../view-approval-activities/view-approval-activities.component';
 import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
 import {OtherComponentsPage} from '../../../shared/components/other-components-page/other-components-page';
+import { UserService } from '../../../core/user/user.service';
+import { User} from '../../../core/user/user.types';
+import {ApprovalService} from '../../../shared/services/approval-service';
 
 @Component({
   selector: 'app-maker-list',
@@ -31,6 +34,11 @@ import {OtherComponentsPage} from '../../../shared/components/other-components-p
 export class MakerList implements OnInit {
   fb = inject(FormBuilder);
   dialog = inject(MatDialog);
+  private approvalService = inject(ApprovalService);
+
+  // +++ 2. INJECT THE USER SERVICE +++
+  private userService = inject(UserService);
+  private currentUser: User | null = null;
 
   // Modal controls
   isModalVisible: boolean = false;
@@ -48,10 +56,9 @@ export class MakerList implements OnInit {
     { "functionId": 901003, "functionName": "GL Subsidiary",       "moduleName": "Accounts","accessLevel": "VIEW", "menuOrder": 3 },
     { "functionId": 901004, "functionName": "Employee Directory",  "moduleName": "HR", "accessLevel": "VIEW", "menuOrder": 4 },
     { "functionId": 901005, "functionName": "Inventory Management","moduleName": "Logistics", "accessLevel": "FULL", "menuOrder": 5 }
-  ];
+  ]; //function List
 
   apiResponseMaker: any[] = [
-    // (same 10-record array you already use)
     { "createDate":"2025-10-22T10:20:11.001","updateDate":null,"createdBy":null,"updatedBy":null,"isEdited":false,"isDeleted":false,"isCreated":false,"actionType":"UPDATE","selector":"app-gl-subsidiary","remarks":"Record updated for test","approveFlag":"APPROVED","appId":901,"functionId":901003,"cloneObject":null,"setId":300,"noOfApprovalLevel":3,"minApprovalLevelReq":0,"lastApprovalLevel":1,"nextApprovalLevel":2,"primaryTableNm":"MREG_GL_AC_SUBSIDIARY","recordUserId":"anik","recordDt":"2025-10-22T10:18:55.000","previousUxContent":"{\"glAccSubNm\":\"Branch A\",\"glSubRefNo\":\"BR001\"}","currentUxContent":"{\"glAccSubNm\":\"Branch A Updated\",\"glSubRefNo\":\"BR001U\"}","functionName":"GL Subsidiary" },
     { "createDate":"2025-10-22T10:25:21.101","updateDate":null,"createdBy":null,"updatedBy":null,"isEdited":false,"isDeleted":false,"isCreated":true,"actionType":"CREATE","selector":"app-gl-subsidiary","remarks":"New subsidiary added","approveFlag":"PENDING","appId":901,"functionId":901003,"cloneObject":null,"setId":301,"noOfApprovalLevel":3,"minApprovalLevelReq":0,"lastApprovalLevel":0,"nextApprovalLevel":1,"primaryTableNm":"MREG_GL_AC_SUBSIDIARY","recordUserId":"rahim","recordDt":"2025-10-22T10:24:55.000","previousUxContent":null,"currentUxContent":"{\"glAccSubNm\":\"Branch B\",\"glSubRefNo\":\"BR002\"}","functionName":"GL Subsidiary" },
     { "createDate":"2025-10-22T11:30:35.501","updateDate":null,"createdBy":null,"updatedBy":null,"isEdited":true,"isDeleted":false,"isCreated":false,"actionType":"UPDATE","selector":"app-gl-subsidiary","remarks":"Correction in name","approveFlag":"PENDING","appId":901,"functionId":901003,"cloneObject":null,"setId":302,"noOfApprovalLevel":3,"minApprovalLevelReq":0,"lastApprovalLevel":0,"nextApprovalLevel":1,"primaryTableNm":"MREG_GL_AC_SUBSIDIARY","recordUserId":"karim","recordDt":"2025-10-22T11:29:55.000","previousUxContent":"{\"glAccSubNm\":\"Branch C\"}","currentUxContent":"{\"glAccSubNm\":\"Branch C Edited\"}","functionName":"GL Subsidiary" },
@@ -70,11 +77,12 @@ export class MakerList implements OnInit {
   ngOnInit(): void {
     this.buildForm();
     this.loadUserAccessList();
+    // DO NOT call loadMakerList() here - let user click Search button
   }
 
   private buildForm(): void {
     this.frmGroup = this.fb.group({
-      functionId: [''],
+      functionId: [null],  // Changed from [''] to [null] for empty dropdown
       fromDate: [''],
       toDate: [''],
     });
@@ -89,32 +97,40 @@ export class MakerList implements OnInit {
       key: x.functionId, value: x.functionName
     }));
 
-    if (!this.frmGroup.get('functionId')?.value && this.functionOptions.length) {
-      this.frmGroup.patchValue({ functionId: this.functionOptions[0].key });
-    }
+    // REMOVED the auto-select logic - dropdown will stay empty
+    // if (!this.frmGroup.get('functionId')?.value && this.functionOptions.length) {
+    //   this.frmGroup.patchValue({ functionId: this.functionOptions[0].key });
+    // }
   }
 
   loadMakerList(): void {
-    const { fromDate, toDate, functionId } = this.frmGroup.value || {};
-    const from = fromDate ? new Date(fromDate) : new Date('1900-01-01');
-    const to = toDate ? new Date(toDate) : new Date('2999-12-31');
-    to.setHours(23, 59, 59, 999);
+    const { functionId, fromDate, toDate } = this.frmGroup.value;
 
-    const fnId = functionId ? Number(functionId) : null;
-    const filtered = this.apiResponseMaker.filter(item => {
-      const itemFn = Number(item.functionId);
-      const itemDate = new Date(item.createDate);
-      const fnOk = (fnId !== null) ? itemFn === fnId : true;
-      return fnOk && itemDate >= from && itemDate <= to;
+    const payload = {
+      userId: this.currentUser ? this.currentUser.username : 'anik',
+      functionId: Number(functionId),
+      startDate: fromDate ? new Date(fromDate).toISOString().substring(0, 10) : "1900-01-01",
+      endDate: toDate ? new Date(toDate).toISOString().substring(0, 10) : "2999-12-31"
+    };
+
+    this.approvalService.getMakerList(payload).subscribe({
+      next: (response: any[]) => {
+        console.log("Maker API response:", response);
+
+        this.makerList = response.map(item => ({
+          ...item,
+          currentContext: this.safeJson(item.currentUxContent),
+          previousContext: this.safeJson(item.previousUxContent),
+        }));
+
+        this.showmakerList = this.makerList.length > 0;
+      },
+      error: err => {
+        console.error("Maker API Failed:", err);
+        this.makerList = [];
+        this.showmakerList = false;
+      }
     });
-
-    this.makerList = filtered.map(item => ({
-      ...item,
-      currentContext: this.safeJson(item.currentUxContent),
-      previousContext: this.safeJson(item.previousUxContent),
-    }));
-
-    this.showmakerList = this.makerList.length > 0;
   }
 
   resetMakerForm(): void {
@@ -128,7 +144,6 @@ export class MakerList implements OnInit {
   handleProgressClick(rowDataString: string): void {
     try {
       const rowData = JSON.parse(rowDataString);
-      // Pass the component and data to openModal
       this.openModal(
         ViewApprovalActivitiesComponent,
         rowData,
@@ -159,8 +174,9 @@ export class MakerList implements OnInit {
     //console.log('Modal Result:', result);
   }
 
-
-  private safeJson(s: string) { try { return JSON.parse(s || '{}'); } catch { return {}; } }
-
-
+  private safeJson(s: string | null) {
+    if (!s) return {};
+    try { return JSON.parse(s); }
+    catch { return {}; }
+  }
 }
