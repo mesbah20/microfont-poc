@@ -16,7 +16,7 @@
       ></app-expansion-panel-header>
 
       @if (selectionPanel()) {
-        <form [formGroup]="selectionForm" class="form-grid-3-col mt-4">
+        <form [formGroup]="selectionForm" class="form-grid-2-col my-2">
           <!-- Report ID with Lookup -->
       
           <lds-id-box
@@ -46,15 +46,6 @@
             (dotsClicked)="openReportModal()"
             (keyup.enter)="loadReportByFunctionId()"
            ></lds-id-box> -->
-           
-          <!-- App Code -->
-          <app-text-base-input
-            [frmGroup]="selectionForm"
-            controlName="appCode"
-            label="App Code"
-            [isVertical]="true"
-            placeholder="Enter application code"
-          ></app-text-base-input>
         </form>
       }
     </div>
@@ -218,14 +209,7 @@
                         <mat-icon class="text-red-600">picture_as_pdf</mat-icon>
                       } @else if (format === 'EXCEL') {
                         <mat-icon class="text-green-600">table_chart</mat-icon>
-                      } @else if (format === 'WORD') {
-                        <mat-icon class="text-blue-600">description</mat-icon>
-                      } @else if (format === 'HTML') {
-                        <mat-icon class="text-orange-600">language</mat-icon>
-                      } @else if (format === 'CSV') {
-                        <mat-icon class="text-gray-600">insert_drive_file</mat-icon>
-                      }
-                      
+                      }                       
                       <span class="font-medium text-gray-700">{{ format }}</span>
                     </label>
                   }

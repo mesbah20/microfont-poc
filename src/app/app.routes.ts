@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { Layout } from './layout/layout';
-import { Login } from './core/auth/login/login';
 import { Landing } from './modules/landing/landing/landing';
 
 export const routes: Routes = [
@@ -78,7 +77,7 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'report', component: Layout,
+    path: 'rpt', component: Layout,
     data: {
       layout: 'empty'
     },

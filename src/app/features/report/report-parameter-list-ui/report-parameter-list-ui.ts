@@ -8,13 +8,14 @@ import {
 } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { TextBaseInput } from '../../../shared/components/input-types/text-base-input/text-base-input';
 import { SelectOptionField } from '../../../shared/components/input-types/select-option-field/select-option-field';
 import { Button } from '../../../shared/components/input-types/button/button';
-import { DataSelectionModal } from '../../../shared/components/data-selection-modal/data-selection-modal';
-import { DialogUtils } from '../../../shared/service/dialog-utils';
+import { LdsModalComponent } from '../../../shared/components/lds-modal/lds-modal';
+import { ReportSelectionModalComponent } from '../components/report-selection-modal/report-selection-modal';
+import { FunctionSelectionModalComponent } from '../components/function-selection-modal/function-selection-modal';
+import { ParameterModalComponent } from '../components/parameter-modal/parameter-modal';
 import { BUTTON_VISIBILITY, MENU_NAME, ONCLICK_DELETE, ONCLICK_RESET, ONCLICK_SAVE, ONCLICK_UPDATE } from '../../../shared/constant/button-signals.constant';
 import { IdBoxComponent } from '../../../shared/components/input-types/id-box/id-box';
 import { ExpansionPanelHeader } from '../../../shared/components/expansion-panel-header/expansion-panel-header';
@@ -28,6 +29,9 @@ import { DatabaseConnectionService } from '../services/database-connection.servi
 import { ApiEndpointService } from '../services/api-endpoint.service';
 import { DateInput } from "../../../shared/components/input-types/date-input/date-input";
 import { NumberInput } from "../../../shared/components/input-types/number-input/number-input";
+import { AuthResourceService } from '../../../core/service/auth-resource-service';
+import { catchError, of } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 /**
  * Report Registration and Parameter Setup Page
@@ -52,7 +56,8 @@ import { NumberInput } from "../../../shared/components/input-types/number-input
     DataGridComponent,
     ExpansionSubPanelHeader,
     DateInput,
-    NumberInput
+    NumberInput,
+    LdsModalComponent
 ],
   templateUrl: './report-parameter-list-ui.html',
   styleUrl: './report-parameter-list-ui.scss'
@@ -61,11 +66,10 @@ export class ReportParameterListUI implements OnInit {
   // Injected services
   private formBuilder = inject(FormBuilder);
   private toastr = inject(ToastrService);
-  private dialogUtils = inject(DialogUtils);
-  private dialog = inject(MatDialog);
   private reportService = inject(ReportRegistrationService);
   private dbService = inject(DatabaseConnectionService);
   private apiService = inject(ApiEndpointService);
+  private authResourceService = inject(AuthResourceService);
 
   // Form and state properties
   reportForm!: FormGroup;
@@ -73,11 +77,15 @@ export class ReportParameterListUI implements OnInit {
   loading = signal<boolean>(false);
   reportInfoPanel: WritableSignal<boolean> = signal(true);
   parameterSubPanel: WritableSignal<boolean> = signal(true);
-  isParameterModalOpen = signal<boolean>(false);
   isEditingParameter = signal<boolean>(false);
   editingParameterIndex = signal<number>(-1);
   currentReportId = signal<number | null>(null);
   selectedReportFile: File | null = null;
+
+  // Modal properties
+  showModal = signal<boolean>(false);
+  modalComponent?: any;
+  modalComponentData?: any;
 
   // Report Category options
   reportCategoryOptions = [
@@ -90,8 +98,7 @@ export class ReportParameterListUI implements OnInit {
   // Data Source Type options
   dataSourceTypeOptions = [
     { key: 'DATABASE', value: 'Database' },
-    { key: 'API', value: 'API Endpoint' },
-    { key: 'BOTH', value: 'Both' },
+    { key: 'API', value: 'API Endpoint' }
   ];
 
   // Output Format options (for multi-select checkboxes)
@@ -100,7 +107,7 @@ export class ReportParameterListUI implements OnInit {
     { key: 'EXCEL', value: 'Excel' },
     // { key: 'WORD', value: 'Word' },
     // { key: 'HTML', value: 'HTML' },
-    { key: 'CSV', value: 'CSV' },
+   // { key: 'CSV', value: 'CSV' },
   ];
 
   // Parameter Data Type options
@@ -131,27 +138,8 @@ export class ReportParameterListUI implements OnInit {
   reportList: any[] = [];
 
   // Mock function list (can be replaced with real API later)
-  functionList = [
-    {
-      functionId: 'FN_ATT_001',
-      functionName: 'Attendance Management',
-      module: 'HR',
-    },
-    {
-      functionId: 'FN_FIN_001',
-      functionName: 'Financial Reports',
-      module: 'Finance',
-    },
-    {
-      functionId: 'FN_PAY_001',
-      functionName: 'Payroll Processing',
-      module: 'Finance',
-    },
-    {
-      functionId: 'FN_INV_001',
-      functionName: 'Inventory Management',
-      module: 'Operations',
-    },
+  functionList:any[] = [
+ 
   ];
 
   // Auto Generation Period options
@@ -226,44 +214,37 @@ export class ReportParameterListUI implements OnInit {
 
   ngOnInit() {
     this.initializeReportForm();
-    this.initializeParameterForm();
+    this.initializeParameterForm(); // Add this back for compatibility
     this.setupDataSourceListener();
-    this.setupParameterDataTypeListener();
-    this.setupDataSourceChangeListener();
-    this.setupDefaultValueListener();
     this.setupParameterColumns();
     this.setupFunctionIdListener();
     this.loadDatabaseConnections();
     this.loadApiEndpoints();
     this.loadReports();
+    this.loadReportFunctionsData();
   }
 
   /**
    * Setup listener for default value changes
    */
-  private setupDefaultValueListener() {
-    this.parameterForm.get('defaultValueType')?.valueChanges.subscribe((type) => {
-      if (type === 'custom') {
-        const customValue = this.parameterForm.get('customDefaultValue')?.value;
-        this.parameterForm.get('defaultValue')?.setValue(customValue);
-      } else {
-        // Clear custom value when switching to predefined
-        this.parameterForm.get('customDefaultValue')?.setValue('');
-      }
-    });
+  private loadReportFunctionsData(): void {
 
-    this.parameterForm.get('customDefaultValue')?.valueChanges.subscribe((value) => {
-      if (this.parameterForm.get('defaultValueType')?.value === 'custom') {
-        this.parameterForm.get('defaultValue')?.setValue(value);
-      }
-    });
-
-    // Handle BOOLEAN type switch
-    this.parameterForm.get('dataType')?.valueChanges.subscribe((dataType) => {
-      if (dataType === 'BOOLEAN') {
-        this.parameterForm.get('defaultValue')?.setValue(false);
-      }
-    });
+    // Fetch Applications
+    this.authResourceService.getFunctions(Number(environment.appId),2)
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading applications:', error);
+          return of([]);
+        })
+      )
+      .subscribe((functions) => {
+        console.log(functions);
+        this.functionList = functions.map(app => ({
+          functionId: app.functionId.toString(),
+          functionName: app.functionName
+        }));
+      });
+  
   }
 
   /**
@@ -387,7 +368,7 @@ export class ReportParameterListUI implements OnInit {
       reportFile: [null],
       reportFileName: ['', [Validators.maxLength(150)]],
       outputFormats: [['PDF'], [Validators.required]],
-      isVisible: [true],
+      // isVisible: [true],
       autoGenPeriod: [''],
       genBeforeEod: [false],
     });
@@ -753,54 +734,68 @@ export class ReportParameterListUI implements OnInit {
   }
 
   /**
-   * Open report selection modal
+   * Open report selection modal using new modal system
    */
   openReportModal() {
-    const pickTablePair = new Map<string, string>([
-      ['id', 'ID'],
-      ['reportName', 'Report Name'],
-      ['functionName', 'Function'],
-      ['status', 'Status'],
-    ]);
+    console.log('Opening report selection modal');
+    
+    // Reset modal state
+    this.showModal.set(false);
+    this.modalComponent = undefined;
 
-    const dialogRef = this.dialogUtils.openDialog(
-      DataSelectionModal,
-      pickTablePair,
-      this.reportList
-    );
+    setTimeout(() => {
+      this.modalComponent = ReportSelectionModalComponent;
+      
+      // Prepare modal data with configuration
+      this.modalComponentData = {
+        config: {
+          title: 'Select Report',
+          searchPlaceholder: 'Search reports by name, function ID...',
+          findButtonText: 'Search',
+          loadingText: 'Searching reports...',
+          noDataMessage: 'No reports found. Try different search criteria or contact administrator.',
+          allowMultiSelect: false,
+          showCreateNew: false
+        }
+      };
 
-    dialogRef.afterClosed().subscribe((selectedReport: any) => {
-      if (selectedReport) {
-        this.loadReportById(selectedReport.id);
-      }
-    });
+      console.log('Opening modal with data:', this.modalComponentData);
+      this.showModal.set(true);
+    }, 50);
   }
 
   /**
-   * Open function selection modal
+   * Open function selection modal using new modal system
    */
   openFunctionModal() {
-    const pickTablePair = new Map<string, string>([
-      ['functionId', 'Function Id'],
-      ['functionName', 'Function Name'],
-      ['module', 'Module'],
-    ]);
+    console.log('Opening function selection modal');
+    
+    // Reset modal state
+    this.showModal.set(false);
+    this.modalComponent = undefined;
 
-    const dialogRef = this.dialogUtils.openDialog(
-      DataSelectionModal,
-      pickTablePair,
-      this.functionList
-    );
+    setTimeout(() => {
+      this.modalComponent = FunctionSelectionModalComponent;
+      
+      // Prepare modal data with configuration
+      this.modalComponentData = {
+        dataSource: this.functionList,
+        config: {
+          title: 'Select Function',
+          searchPlaceholder: 'Search functions by ID, name, or module...',
+          findButtonText: 'Search',
+          loadingText: 'Searching functions...',
+          noDataMessage: 'No functions found. Try different search criteria or contact administrator.',
+          allowMultiSelect: false,
+          showCreateNew: false
+        }
+      };
 
-    dialogRef.afterClosed().subscribe((selectedFunction: any) => {
-      if (selectedFunction) {
-        this.reportForm.patchValue({
-          functionId: selectedFunction.functionId,
-        });
-        this.toastr.info('Function selected.', 'Function Selected');
-      }
-    });
+      console.log('Opening function modal with data:', this.modalComponentData);
+      this.showModal.set(true);
+    }, 50);
   }
+
 
   /**
    * Load report by ID from backend
@@ -825,7 +820,7 @@ export class ReportParameterListUI implements OnInit {
           apiEndpointId: report.apiEndpointId || '',
           reportFileName: report.reportFileName || '',
           outputFormats: report.outputFormats || ['PDF'],
-          isVisible: report.isVisible !== undefined ? report.isVisible : true,
+          // isVisible: report.isVisible !== undefined ? report.isVisible : true,
           autoGenPeriod: report.autoGenPeriod || '',
           genBeforeEod: report.genBeforeEod || false,
         });
@@ -868,7 +863,6 @@ export class ReportParameterListUI implements OnInit {
           reset: true,
         });
 
-        this.toastr.info('Report loaded successfully.', 'Report Selected');
         this.loading.set(false);
       },
       error: (err) => {
@@ -880,20 +874,35 @@ export class ReportParameterListUI implements OnInit {
   }
 
   /**
-   * Open parameter form for adding new parameter
+   * Open parameter form for adding new parameter using modal
    */
   openParameterForm() {
-    this.isEditingParameter.set(false);
-    this.editingParameterIndex.set(-1);
-    this.parameterForm.reset({
-      dataType: 'STRING',
-      inputType: 'TEXT',
-      isRequired: false,
-      isVisible: true,
-      isReadonly: false,
-      parameterOrder: this.parameters().length + 1,
-    });
-    this.isParameterModalOpen.set(true);
+    console.log('Opening parameter add modal');
+    
+    // Reset modal state
+    this.showModal.set(false);
+    this.modalComponent = undefined;
+
+    setTimeout(() => {
+      this.modalComponent = ParameterModalComponent;
+      
+      // Prepare modal data for adding new parameter
+      this.modalComponentData = {
+        initialData: {
+          parameter: null,
+          isEditing: false,
+          parameterOrder: this.parameters().length + 1
+        },
+        config: {
+          title: 'Add New Parameter',
+          saveButtonText: 'Add Parameter',
+          cancelButtonText: 'Cancel'
+        }
+      };
+
+      console.log('Opening parameter modal with data:', this.modalComponentData);
+      this.showModal.set(true);
+    }, 50);
   }
 
   /**
@@ -969,22 +978,18 @@ export class ReportParameterListUI implements OnInit {
       helpText: parameter.helpText,
     };
     
-    console.log('Form data to be patched:', formData);
-    this.parameterForm.patchValue(formData);
-    console.log('Form values after patch:', this.parameterForm.value);
+    console.log('Parameter data for edit modal:', formData);
     console.log('=== EDIT DEBUG END ===');
     
-    this.isParameterModalOpen.set(true);
+    // Open parameter edit modal instead of inline form
+    this.openParameterEditModal(parameter, index);
   }
 
   /**
    * Handle parameter delete from grid
    */
   onParameterDelete(eventData: any) {
-    console.log('=== DELETE DEBUG START ===');
-    console.log('Raw delete event data:', eventData);
-    console.log('Event data type:', typeof eventData);
-    
+   
     // Parse JSON string if needed
     let parameter = eventData;
     if (typeof eventData === 'string') {
@@ -1053,74 +1058,6 @@ export class ReportParameterListUI implements OnInit {
     }
   }
 
-  /**
-   * Add or update parameter
-   */
-  onAddParameter() {
-    if (this.parameterForm.invalid) {
-      this.toastr.error('Please fill all required fields correctly.', 'Validation Error');
-      console.log('Form errors:', this.parameterForm.errors);
-      console.log('Form value:', this.parameterForm.value);
-      
-      // Mark all fields as touched to show validation errors
-      Object.keys(this.parameterForm.controls).forEach(key => {
-        const control = this.parameterForm.get(key);
-        if (control?.invalid) {
-          console.log(`Field ${key} is invalid:`, control.errors);
-          control.markAsTouched();
-        }
-      });
-      return;
-    }
-
-    const formValue = this.parameterForm.value;
-    console.log('Form value before processing:', formValue);
-    
-    const parameter = {
-      sNo: this.isEditingParameter() ? this.parameters()[this.editingParameterIndex()].sNo : this.parameters().length + 1,
-      parameterName: formValue.parameterName,
-      parameterLabel: formValue.parameterLabel,
-      dataType: formValue.dataType,
-      inputType: formValue.inputType,
-      selectOptions: formValue.selectOptions,
-      dataSource: formValue.dataSource,
-      formatPattern: formValue.formatPattern,
-      isRequired: formValue.isRequired ? 'Yes' : 'No',
-      isVisible: formValue.isVisible ? 'Yes' : 'No',
-      isReadonly: formValue.isReadonly ? 'Yes' : 'No',
-      minLength: formValue.minLength,
-      maxLength: formValue.maxLength,
-      minValue: formValue.minValue,
-      maxValue: formValue.maxValue,
-      defaultValue: formValue.defaultValue,
-      parameterOrder: formValue.parameterOrder,
-      dependsOnParameter: formValue.dependsOnParameter,
-      helpText: formValue.helpText,
-    };
-
-    console.log('Parameter object created:', parameter);
-
-    if (this.isEditingParameter()) {
-      // Update existing parameter
-      const currentParams = [...this.parameters()];
-      currentParams[this.editingParameterIndex()] = parameter;
-      this.parameters.set(currentParams);
-      this.toastr.success('Parameter updated successfully.', 'Success');
-    } else {
-      // Add new parameter
-      this.parameters.set([...this.parameters(), parameter]);
-      this.toastr.success('Parameter added successfully.', 'Success');
-    }
-
-    this.isParameterModalOpen.set(false);
-  }
-
-  /**
-   * Cancel parameter form
-   */
-  onCancelParameter() {
-    this.isParameterModalOpen.set(false);
-  }
 
   onIdBoxChanged(value: string): void {
     console.log('IdBox changed:', value);
@@ -1392,5 +1329,117 @@ export class ReportParameterListUI implements OnInit {
     });
     
     this.toastr.info('Form has been reset.', 'Refresh');
+  }
+
+  /**
+   * Open parameter edit modal
+   */
+  openParameterEditModal(parameter: any, index: number) {
+    console.log('Opening parameter edit modal');
+    
+    // Reset modal state
+    this.showModal.set(false);
+    this.modalComponent = undefined;
+
+    setTimeout(() => {
+      this.modalComponent = ParameterModalComponent;
+      
+      // Prepare modal data for editing parameter
+      this.modalComponentData = {
+        initialData: {
+          parameter: parameter,
+          isEditing: true,
+          parameterOrder: parameter.sNo
+        },
+        config: {
+          title: 'Edit Parameter',
+          saveButtonText: 'Update Parameter',
+          cancelButtonText: 'Cancel'
+        }
+      };
+
+      // Store editing info for later use
+      this.isEditingParameter.set(true);
+      this.editingParameterIndex.set(index);
+
+      console.log('Opening parameter edit modal with data:', this.modalComponentData);
+      this.showModal.set(true);
+    }, 50);
+  }
+
+  /**
+   * Handle modal result
+   */
+  onModalResult(result: any) {
+
+    if (!result) {
+      this.showModal.set(false);
+      return;
+    }
+
+    // Handle report selection result
+    if (result.id && result.reportName && result.functionId) {
+      this.loadReportById(result.id);
+    }
+    // Handle function selection result
+    else if (result.functionId && result.functionName) {
+      this.reportForm.patchValue({
+        functionId: result.functionId,
+      });
+    }
+    // Handle parameter add/edit result
+    else if (result.parameterName && result.parameterLabel) {
+      this.handleParameterResult(result);
+    }
+
+    this.showModal.set(false);
+  }
+
+  /**
+   * Handle parameter add/edit result from modal
+   */
+  private handleParameterResult(parameterResult: any) {
+    const parameter = {
+      sNo: this.isEditingParameter() ? this.parameters()[this.editingParameterIndex()].sNo : this.parameters().length + 1,
+      parameterName: parameterResult.parameterName,
+      parameterLabel: parameterResult.parameterLabel,
+      dataType: parameterResult.dataType,
+      inputType: parameterResult.inputType,
+      selectOptions: parameterResult.selectOptions,
+      dataSource: parameterResult.dataSource,
+      formatPattern: parameterResult.formatPattern,
+      isRequired: parameterResult.isRequired ? 'Yes' : 'No',
+      isVisible: parameterResult.isVisible ? 'Yes' : 'No',
+      isReadonly: parameterResult.isReadonly ? 'Yes' : 'No',
+      minLength: parameterResult.minLength,
+      maxLength: parameterResult.maxLength,
+      minValue: parameterResult.minValue,
+      maxValue: parameterResult.maxValue,
+      defaultValue: parameterResult.defaultValue,
+      parameterOrder: parameterResult.parameterOrder,
+      dependsOnParameter: parameterResult.dependsOnParameter,
+      helpText: parameterResult.helpText,
+    };
+
+    if (this.isEditingParameter()) {
+      // Update existing parameter
+      const currentParams = [...this.parameters()];
+      currentParams[this.editingParameterIndex()] = parameter;
+      this.parameters.set(currentParams);
+    } else {
+      // Add new parameter
+      this.parameters.set([...this.parameters(), parameter]);
+    }
+
+    // Reset editing state
+    this.isEditingParameter.set(false);
+    this.editingParameterIndex.set(-1);
+  }
+
+  /**
+   * Handle modal close
+   */
+  onModalClose() {
+    this.showModal.set(false);
   }
 }

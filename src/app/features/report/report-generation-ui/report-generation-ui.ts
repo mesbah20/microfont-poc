@@ -226,14 +226,36 @@ onModalResult(result: any) {
    * Load all reports for selection
    */
   private loadReportList() {
-    this.reportRegistrationService.getAll().subscribe({
+    let resourceList = JSON.parse(localStorage.getItem('resourceList') || '[]');
+    if(!resourceList || resourceList.length === 0) {
+      console.warn('No resourceList found in localStorage');
+      return;
+    }
+    
+    // Filter resources where functionType is 'R' and extract functionIds
+    const reportFunctionIds: string[] = resourceList
+      .filter((item: any) => item?.attributes?.functionType === 'R')
+      .map((m: any) => m.attributes.functionId)
+      .filter((id: string) => id); // Remove any undefined/null values
+    
+    console.log('Report Function IDs to send:', reportFunctionIds);
+    
+    if (reportFunctionIds.length === 0) {
+      console.warn('No report functions found with type "R"');
+      this.toastr.warning('No report functions available for this user', 'Access Info');
+      return;
+    }
+
+    this.reportRegistrationService.getByUserFunctions(reportFunctionIds).subscribe({
       next: (reports) => {
+        console.log('Received reports from API:', reports);
         this.reportList = reports.map(report => ({
           id: report.id,
           reportName: report.reportName,
           functionId: report.functionId,
           status: report.isVisible ? 'Active' : 'Inactive'
         }));
+        console.log('Processed report list:', this.reportList);
       },
       error: (err) => {
         console.error('Error loading reports:', err);
@@ -706,7 +728,7 @@ console.log(param);
       link.target = '_blank';
       
       // Determine file extension
-      const extension = format === 'xlsx' ? 'xlsx' : format === 'xls' ? 'xls' : format;
+      const extension = format === 'xlsx' ? 'xlsx' : format === 'xls' || 'excel' ? 'xls' : format;
       const filename = `${reportName}_${new Date().getTime()}.${extension}`;
       link.download = filename;
       
@@ -724,23 +746,13 @@ console.log(param);
    * Show preview options dialog for non-PDF formats
    */
   private showPreviewDialog(url: string, filename: string, format: string) {
-    const message = `Report generated successfully!\n\nWhat would you like to do?`;
-    
-    // Create custom dialog buttons
-    const dialog = confirm(`${message}\n\nOK = Preview in new tab\nCancel = Download file`);
-    
-    if (dialog) {
-      // Preview in new tab
-      window.open(url, '_blank');
-    } else {
-      // Download file
       const link = document.createElement('a');
       link.href = url;
       link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    }
+    
   }
 
   /**
@@ -757,7 +769,7 @@ console.log(param);
   private onGenerateReportForDownload() {
     const metadata = this.reportMetadata();
     if (!metadata) return;
-    const appCode = this.selectionForm.get('appCode')?.value || 'DEFAULT_APP';
+    const appCode = this.selectionForm.get('appCode')?.value || 'ultimus';
     this.generating.set(true);
 
     const formValues = this.parameterForm.value;
@@ -770,9 +782,10 @@ console.log(param);
 
     this.reportBackendService.generateReportNew(request).subscribe({
       next: (blob) => {
+        console.log()
         // Direct download
         const format = this.selectedFormat().toLowerCase();
-        const extension = format === 'xlsx' ? 'xlsx' : format === 'xls' ? 'xls' : 'pdf';
+        const extension = format === 'xlsx' ? 'xlsx' : format === 'xls'|| 'excel' ? 'xls' : 'pdf';
         const filename = `${metadata.reportName}_${new Date().getTime()}.${extension}`;
         
         this.reportBackendService.downloadBlob(blob, filename);

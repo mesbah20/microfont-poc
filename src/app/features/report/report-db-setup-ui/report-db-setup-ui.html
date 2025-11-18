@@ -15,7 +15,7 @@
           <app-expansion-panel-header [isOpenSignal]="reportDbPanel" [panelTitle]="'Report DB Connection Information'"></app-expansion-panel-header>
 
           @if (reportDbPanel()) {
-          <div class="form-grid-col-1">
+          <div class="form-grid-2-col">
                 <!-- Connection ID (Auto-generated) -->
                 <lds-id-box
                   [frmGroup]="connectionForm"
@@ -32,21 +32,34 @@
                 ></lds-id-box>
               
 
-            <!-- Connection Name -->
+            <!-- Application Name -->
             <app-text-base-input
               [frmGroup]="connectionForm"
-              controlName="connectionName"
-              label="Connection Name"
+              controlName="vAppName"
+              label="Application Name"
               [isVertical]="true"
-              [maxLength]="100"
-              placeholder="e.g., Oracle Production Database"
+              [maxLength]="50"
+              placeholder="e.g., ultimus"
+              [tooltip]="'Only letters, numbers, hyphens (-), and underscores (_) allowed. No spaces.'"
             >
             </app-text-base-input>
+            
+            <!-- Validation Error Display -->
+            @if (connectionForm.get('vAppName')?.invalid && connectionForm.get('vAppName')?.touched) {
+              <div class="text-danger small mt-1">
+                @if (connectionForm.get('vAppName')?.errors?.['required']) {
+                  Application name is required.
+                }
+                @if (connectionForm.get('vAppName')?.errors?.['invalidAppName']) {
+                  {{ connectionForm.get('vAppName')?.errors?.['invalidAppName'].message }}
+                }
+              </div>
+            }
 
             <!-- Database Type -->
             <app-select-option-field
               [frmGroup]="connectionForm"
-              controlName="databaseType"
+              controlName="dbType"
               label="Database Type"
               [options]="databaseTypeOptions"
               [isVertical]="true"
@@ -55,36 +68,69 @@
             >
             </app-select-option-field>
 
-            <!-- DB Server Address -->
+            <!-- JDBC Driver (Auto-populated) -->
             <app-text-base-input
               [frmGroup]="connectionForm"
-              controlName="dbServerAddress"
-              label="DB Server Address"
+              controlName="driver"
+              label="JDBC Driver (Auto-populated)"
+              [isVertical]="true"
+              [isReadonly]="true"
+              placeholder="Driver will be set automatically"
+            >
+            </app-text-base-input>
+
+            <!-- Host -->
+            <app-text-base-input
+              [frmGroup]="connectionForm"
+              controlName="host"
+              label="Host Address"
               [isVertical]="true"
               [maxLength]="200"
-              placeholder="e.g., 192.168.1.100:1521"
+              placeholder="e.g., 192.168.20.77"
             >
             </app-text-base-input>
 
-            <!-- Database Name -->
+            <!-- Port -->
             <app-text-base-input
               [frmGroup]="connectionForm"
-              controlName="databaseName"
-              label="Database Name / Service Name"
+              controlName="port"
+              label="Port"
+              [isVertical]="true"
+              [maxLength]="10"
+              placeholder="e.g., 1521"
+            >
+            </app-text-base-input>
+
+            <!-- Service Name -->
+            <app-text-base-input
+              [frmGroup]="connectionForm"
+              controlName="service"
+              label="Service Name / Database Name"
               [isVertical]="true"
               [maxLength]="100"
-              placeholder="e.g., BUPRIM"
+              placeholder="e.g., microcubepdb"
             >
             </app-text-base-input>
 
-            <!-- User Name -->
+            <!-- Connection URL (Auto-generated) -->
             <app-text-base-input
               [frmGroup]="connectionForm"
-              controlName="userName"
-              label="User Name"
+              controlName="url"
+              label="Connection URL (Auto-generated)"
+              [isVertical]="true"
+              [isReadonly]="true"
+              placeholder="URL will be generated automatically"
+            >
+            </app-text-base-input>
+
+            <!-- Username -->
+            <app-text-base-input
+              [frmGroup]="connectionForm"
+              controlName="username"
+              label="Username"
               [isVertical]="true"
               [maxLength]="50"
-              placeholder="e.g., ultimus"
+              placeholder="e.g., centrino"
             >
             </app-text-base-input>
 
@@ -97,6 +143,17 @@
               [maxLength]="50"
               [type]="'password'"
               placeholder="Enter password"
+            >
+            </app-text-base-input>
+
+            <!-- Connection Name (Display Name) -->
+            <app-text-base-input
+              [frmGroup]="connectionForm"
+              controlName="connectionName"
+              label="Connection Name (Display Name)"
+              [isVertical]="true"
+              [maxLength]="100"
+              placeholder="e.g., Oracle Production Database"
             >
             </app-text-base-input>
 
@@ -139,4 +196,15 @@
         </div>
       </form>
     }
+
+    <!-- Modal for Connection Selection -->
+    <lds-modal
+      [isVisible]="showModal()"
+      [modalTitle]="'Select Database Connection'"
+      [cssClass]="'modal-lg'"
+      [modalComponent]="modalComponent"
+      [modalComponentData]="modalComponentData"
+      (modalClosed)="onModalClose()"
+      (modalResult)="onModalResult($event)">
+    </lds-modal>
 </div>

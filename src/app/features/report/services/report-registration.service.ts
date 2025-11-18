@@ -96,6 +96,13 @@ export class ReportRegistrationService {
   }
 
   /**
+   * Get reports by user functions - POST request with function IDs array
+   */
+  getByUserFunctions(functionIds: string[]): Observable<ReportDTO[]> {
+    return this.http.post<ReportDTO[]>(`${this.baseUrl}/functions/by-user`, { functionIds });
+  }
+
+  /**
    * Get public reports
    */
   getPublicReports(): Observable<ReportDTO[]> {

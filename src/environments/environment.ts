@@ -34,7 +34,7 @@ export const environment = {
     realm: 'MicroCube_dev',
     clientId: 'LauncherApp'
   },
-
+  
   reportManagementApiUrl: 'http://localhost:8083/api', // Report Management Backend API
   reportGenerationApiUrl: 'http://localhost:8083', // BIRT Report Generation Service
   sessionUrl:'http://192.168.20.93:8090/centrino/office-session/getOfficeSession'

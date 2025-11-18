@@ -9,14 +9,14 @@
 
     <!-- Form Content -->
     @if (!loading()) {
-      <form [formGroup]="reportForm" class="p-8">
+      <form [formGroup]="reportForm" class="p-4">
 
         <!-- Section 1: Report Information -->
         <div class="mb-8">
           <app-expansion-panel-header [isOpenSignal]="reportInfoPanel" [panelTitle]="'Report Information'"></app-expansion-panel-header>
 
           @if (reportInfoPanel()) {
-          <div class="form-grid-2-col mt-4">
+          <div class="form-grid-2-col">
             
             <!-- Report Id with Lookup -->
             <lds-id-box
@@ -27,7 +27,7 @@
               [isDotsVisible]="true"
               [tooltip]="'Click to select report'"
               [tooltipPosition]="'above'"
-              [placeholder]="'Auto-generated or select existing'"
+              [placeholder]=""
               [tooltipDelay]="300"
          
               (dotsClicked)="openReportModal()"
@@ -41,7 +41,6 @@
               label="Report Name"
               [isVertical]="true"
               [maxLength]="150"
-              placeholder="e.g., Employee Attendance Report"
             ></app-text-base-input>
 
             <!-- Function Id with Lookup -->
@@ -53,7 +52,7 @@
               [isDotsVisible]="true"
               [tooltip]="'Click to select function'"
               [tooltipPosition]="'above'"
-              [placeholder]="'e.g., FN_ATT_001'"
+              [placeholder]="'e.g., 901010'"
               [tooltipDelay]="300"
               (dotsClicked)="openFunctionModal()"
             ></lds-id-box>
@@ -105,6 +104,17 @@
               ></app-select-option-field>
             }
 
+            <!-- Modal for Report Selection -->
+            <lds-modal
+              [isVisible]="showModal()"
+              [modalTitle]="'Select Report'"
+              [cssClass]="'modal-lg'"
+              
+              [modalComponent]="modalComponent"
+              [modalComponentData]="modalComponentData"
+              (modalClosed)="onModalClose()"
+              (modalResult)="onModalResult($event)">
+            </lds-modal>
           </div>
 
           <!-- Full Width Fields -->
@@ -164,14 +174,14 @@
             ></app-select-option-field>
 
             <!-- Is Visible -->
-            <div class="mb-4">
+            <!-- <div class="mb-4">
               <lds-switch
                 [frmGroup]="reportForm"
                 [controlName]="'isVisible'"
                 [labelText]="'Is Visible'"
                 [isChecked]="reportForm.get('isVisible')?.value || false"
               ></lds-switch>
-            </div>
+            </div> -->
 
             <!-- Generate Before EOD -->
             <lds-switch
@@ -226,7 +236,7 @@
     }
 
     <!-- Parameter Form Modal -->
-    @if (isParameterModalOpen()) {
+    @if (false) {
       <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto m-4">
           
@@ -236,7 +246,7 @@
               <h2 class="text-xl font-bold text-white">
                 {{ isEditingParameter() ? 'Edit Parameter' : 'Add Parameter' }}
               </h2>
-              <button (click)="onCancelParameter()" class="text-white hover:text-gray-200">
+              <button (click)="onModalClose()" class="text-white hover:text-gray-200">
                 <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -490,12 +500,12 @@
               ></lds-switch>
 
               <!-- Is Visible -->
-              <lds-switch
+              <!-- <lds-switch
                 [frmGroup]="parameterForm"
                 [controlName]="'isVisible'"
                 [labelText]="'Visible Parameter'"
                 [isChecked]="parameterForm.get('isVisible')?.value || false"
-              ></lds-switch>
+              ></lds-switch> -->
 
               <!-- Is Readonly -->
               <lds-switch
@@ -515,7 +525,7 @@
               [labelText]="'Cancel'"
               [icon]="'close'"
               [enable]="true"
-              (onClick)="onCancelParameter()"
+              (onClick)="onModalClose()"
               [cssClass]="'bg-gray-500 hover:bg-gray-600 text-white'"
             ></lds-btn>
 
@@ -523,7 +533,7 @@
               [labelText]="isEditingParameter() ? 'Update' : 'Add to List'"
               [icon]="isEditingParameter() ? 'update' : 'add'"
               
-              (onClick)="onAddParameter()"
+              (onClick)="onModalClose()"
               [cssClass]="'bg-blue-600 hover:bg-blue-700 text-white'"
             ></lds-btn>
           </div>

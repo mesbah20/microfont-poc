@@ -104,10 +104,33 @@ export class ReportSelectionModalComponent implements OnInit {
   loadReports() {
     this.isLoading.set(true);
     
-    this.reportService.getAll().subscribe({
+    let resourceList = JSON.parse(localStorage.getItem('resourceList') || '[]');
+    if(!resourceList || resourceList.length === 0) {
+      console.warn('No resourceList found in localStorage');
+      this.toastr.warning('No report functions available for this user', 'Access Info');
+      this.isLoading.set(false);
+      return;
+    }
+    
+    // Filter resources where functionType is 'R' and extract functionIds
+    const reportFunctionIds: string[] = resourceList
+      .filter((item: any) => item?.attributes?.functionType === 'R')
+      .map((m: any) => m.attributes.functionId)
+      .filter((id: string) => id); // Remove any undefined/null values
+    
+    console.log('Report Function IDs to send:', reportFunctionIds);
+    
+    if (reportFunctionIds.length === 0) {
+      console.warn('No report functions found with type "R"');
+      this.toastr.warning('No report functions available for this user', 'Access Info');
+      this.isLoading.set(false);
+      return;
+    }
+
+    this.reportService.getByUserFunctions(reportFunctionIds).subscribe({
       next: (reports: any[]) => {
         console.log('Loaded reports from API:', reports);
-        // Transform the data to match the grid format exactly like parameter-list-ui
+        // Transform the data to match the grid format
         const transformedReports = reports.map((report: any) => ({
           id: report.id,
           reportName: report.reportName,
