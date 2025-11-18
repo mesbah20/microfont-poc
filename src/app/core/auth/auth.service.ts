@@ -6,6 +6,7 @@ import {AuthUtils} from './auth.utils';
 import {User} from '../user/user.types';
 import {UserService} from '../user/user.service';
 import {tap} from 'rxjs';
+import {UserDataResponse} from '../../modules/model/UserDataResponse';
 
 
 @Injectable({ providedIn: 'root' })
@@ -101,7 +102,112 @@ export class AuthService {
     user.clickStreamTrack = decodeToken.clickStreamTrack;
     user.userTerminalIP = decodeToken.userTerminalIP;
     this._userService.user = user;
+    this.getSessionData(user.officeId);
   }
+
+  getSessionData(officeId:string){
+    this.http.get(`${environment.sessionUrl}/${officeId}`).subscribe({
+      next: (officeData: any) => {
+        console.log("officeData...", officeData);
+        // Store office data in sessionStorage
+        sessionStorage.setItem('companyId', officeData.companyId);
+        sessionStorage.setItem('companyName', officeData.companyName);
+        sessionStorage.setItem('officeId', officeData.officeId);
+        sessionStorage.setItem('officeCode', officeData.officeCode);
+        sessionStorage.setItem('officeNm', officeData.officeNm);
+        sessionStorage.setItem('entityTypeId', officeData.entityTypeId);
+        sessionStorage.setItem('officeTypeId', officeData.officeTypeId);
+        sessionStorage.setItem('officeControlId', officeData.officeControlId);
+        sessionStorage.setItem('txnDt', officeData.txnDt);
+        sessionStorage.setItem('operationMode', officeData.operationMode);
+        sessionStorage.setItem('operationModeFunction', officeData.operationModeFunction);
+        sessionStorage.setItem('instituteType', officeData.instituteType);
+        sessionStorage.setItem('localCurrencyId', officeData.localCurrencyId);
+        sessionStorage.setItem('custProdIdLen', officeData.custProdIdLen);
+        sessionStorage.setItem('custAccountNoLen', officeData.custAccountNoLen);
+        sessionStorage.setItem('accountNoPtrnFlag', officeData.accountNoPtrnFlag);
+        sessionStorage.setItem('errorCode', officeData.errorCode);
+        sessionStorage.setItem('errorMessage', officeData.errorMessage);
+      },
+      error: (err) => {
+        console.error('Error loading office session:', err);
+      }
+    });
+  }
+
+  // loadUserDataResponse(): void {
+  //   const sentinelSession = environment.sentinelSessionUrl;
+  //   const centrinoSession = environment.centrinoSessionUrl;
+  //   const params = {
+  //     userId: localStorage.getItem('userId'),
+  //     appId: 901
+  //   };
+
+  //   this.isLoading = true;
+
+  //   this.http.get<UserDataResponse>(sentinelSession, { params: params as any }).subscribe({
+  //     next: (response) => {
+  //       // Store user profile
+  //       if (response.userProfile) {
+  //         localStorage.setItem('userProfile', JSON.stringify(response.userProfile));
+
+  //         // Call officeSessionApiUrl API only if homeOfficeId exists
+  //         const homeOfficeId = response.userProfile.homeOfficeId;
+  //         if (homeOfficeId) {
+
+  //           this.http.get(`${centrinoSession}/${homeOfficeId}`).subscribe({
+  //             next: (officeData: any) => {
+  //               console.log("officeData...", officeData);
+  //               // Store office data in sessionStorage
+  //               sessionStorage.setItem('companyId', officeData.companyId);
+  //               sessionStorage.setItem('companyName', officeData.companyName);
+  //               sessionStorage.setItem('officeId', officeData.officeId);
+  //               sessionStorage.setItem('officeCode', officeData.officeCode);
+  //               sessionStorage.setItem('officeNm', officeData.officeNm);
+  //               sessionStorage.setItem('entityTypeId', officeData.entityTypeId);
+  //               sessionStorage.setItem('officeTypeId', officeData.officeTypeId);
+  //               sessionStorage.setItem('officeControlId', officeData.officeControlId);
+  //               sessionStorage.setItem('txnDt', officeData.txnDt);
+  //               sessionStorage.setItem('operationMode', officeData.operationMode);
+  //               sessionStorage.setItem('operationModeFunction', officeData.operationModeFunction);
+  //               sessionStorage.setItem('instituteType', officeData.instituteType);
+  //               sessionStorage.setItem('localCurrencyId', officeData.localCurrencyId);
+  //               sessionStorage.setItem('custProdIdLen', officeData.custProdIdLen);
+  //               sessionStorage.setItem('custAccountNoLen', officeData.custAccountNoLen);
+  //               sessionStorage.setItem('accountNoPtrnFlag', officeData.accountNoPtrnFlag);
+  //               sessionStorage.setItem('errorCode', officeData.errorCode);
+  //               sessionStorage.setItem('errorMessage', officeData.errorMessage);
+  //             },
+  //             error: (err) => {
+  //               console.error('Error loading office session:', err);
+  //             }
+  //           });
+  //         }
+  //       }
+
+  //       // Store user access list
+  //       if (response.userAccessList) {
+  //         this.userAccessList = response.userAccessList;
+  //         localStorage.setItem('userAccessList', JSON.stringify(response.userAccessList));
+  //       }
+
+  //       // Store app access list if needed
+  //       if (response.appAccessList) {
+  //         localStorage.setItem('appAccessList', JSON.stringify(response.appAccessList));
+  //       }
+
+  //       console.log('User data loaded:', response);
+  //       console.log("homeOfficeId...", response.userProfile.homeOfficeId);
+  //       this.isLoading = false;
+  //     },
+  //     error: (err) => {
+  //       console.error('Error loading user data:', err);
+  //       this.error = 'Failed to load user data';
+  //       this.isLoading = false;
+  //     }
+  //   });
+  // }
+
 
   getResources(){
     const params = new HttpParams({
