@@ -71,16 +71,15 @@
           <div class="subsection component-section">
             <!-- Search and Controls Bar -->
             @if(searchEnabled()) {
-            <div class="controls-bar">
-              <div class="search-section">
-                <mat-form-field class="search-field">
-                  <mat-label>Search</mat-label>
-                  <input matInput type="text" placeholder="Search in all columns..."
-                    (input)="onSearch($any($event.target).value)" />
-                  <mat-icon matSuffix>search</mat-icon>
-                </mat-form-field>
-              </div>
-            </div>
+         <div class="controls-bar">
+          <div class="search-section">
+            <mat-form-field class="search-field">
+              <input matInput type="text" placeholder="Search in all columns..."
+                (input)="onSearch($any($event.target).value)" />
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
             }
           </div>
           <!-- Data Table -->
@@ -107,7 +106,7 @@
                 *ngIf="showEditButton() || showDeleteButton() || showViewButton() || showPrintButton() || showProgressButton()">
                 <th class="theme-primary-bg" mat-header-cell *matHeaderCellDef>Actions</th>
                 <td mat-cell *matCellDef="let element; let i = index">
-                  <div class="action-buttons">
+                  <div class="action-buttons" [class.even-row]="i % 2 === 0">
 
                     <!-- Edit Button -->
                     <button *ngIf="showEditButton()" mat-icon-button color="primary" matTooltip="Edit"
