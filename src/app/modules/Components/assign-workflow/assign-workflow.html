@@ -171,11 +171,11 @@
 
           <div>
             <lds-data-grid [id]="'workflow-conditions'" [dataSource]="sampleTransactions()" [initPageSize]="10"
-              [enableSelection]="false" [showEditButton]="true" [showDeleteButton]="true" [showViewButton]="false"
+              [enableSelection]="false" [showEditButton]="false" [showDeleteButton]="true" [showViewButton]="true"
               [showPrintButton]="false"
               [selectedColumns]="['applicationName', 'moduleName', 'functionName', 'priority', 'condition', 'conditionalWorkflow']"
               [rowDesignerList]="transactionRowDesigners()" [tblClass]="'enhanced-transaction-table'"
-              (onFHEditClick)="onEditCondition($event)" (onFHDeleteClick)="onTransactionDelete($event)"
+              (onFHViewClick)="onEditCondition($event)" (onFHDeleteClick)="onTransactionDelete($event)"
               (dataSourceChanged)="onTransactionDataChanged($event)">
             </lds-data-grid>
           </div>

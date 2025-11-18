@@ -360,7 +360,7 @@ export class AssignWorkflow implements OnInit {
       .subscribe((modules) => {
         this.moduleOptions = modules.map(module => ({
           key: module.moduleId.toString(),
-          value: module.moduleNm
+          value: module.moduleName
         }));
       });
 
@@ -385,7 +385,7 @@ export class AssignWorkflow implements OnInit {
       .subscribe((functions) => {
         this.functionOptions = functions.map(func => ({
           key: func.functionId.toString(),
-          value: func.functionNm
+          value: func.functionName
         }));
       });
   }
@@ -570,13 +570,15 @@ export class AssignWorkflow implements OnInit {
 
 
 
-  private getOptionLabel(options: any[], key: string): string {
-    if (!key) {
-      return 'N/A';
-    }
-    const option = options.find(opt => opt.key === key);
-    return option?.value || 'N/A';
+  private getOptionLabel(options: any[], key: any): string {
+    if (!key) return 'N/A';
+
+    const keyStr = key.toString();
+
+    const option = options.find(opt => opt.key === keyStr);
+    return option?.value ?? 'N/A';
   }
+
 
   // Master Section Validation
   private validateMasterSection(): boolean {
@@ -911,9 +913,9 @@ export class AssignWorkflow implements OnInit {
       // ===== Patch Master & Condition Form =====
       const masterValues = this.masterFrmGroup.value;
       const workflowId = condition.conditionalWorkflowId || this.findKeyByValue(this.workflowOptions, condition.conditionalWorkflow);
-
+      console.log('Selected workflowId:', workflowId);
       this.conditionFrmGroup.patchValue({
-        conditionalWorkflowId: workflowId
+        conditionalWorkflowId: workflowId?.toString()
       });
 
       // ===== Clear existing rows =====
@@ -922,7 +924,7 @@ export class AssignWorkflow implements OnInit {
 
       // ===== Parse condition string =====
       const conditions = condition.condition ? this.parseConditionString(condition.condition) : [];
-
+      console.log('Selected conditions', conditions);
       // ===== Patch rows =====
       conditions.forEach((cond, idx) => {
         const row = this.buildRow();
@@ -958,6 +960,7 @@ export class AssignWorkflow implements OnInit {
 
   // ===== Helper: Parse condition string =====
   private parseConditionString(conditionString: string): any[] {
+    console.log("conditionString on Update",conditionString);
     const parts = conditionString.split(/(AND|OR)/i);
     const parsed: any[] = [];
 

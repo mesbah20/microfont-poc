@@ -1,10 +1,11 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import Keycloak from 'keycloak-js';
 import {environment} from '../../../environments/environment';
 import {AuthUtils} from './auth.utils';
 import {User} from '../user/user.types';
 import {UserService} from '../user/user.service';
+import {tap} from 'rxjs';
 
 
 @Injectable({ providedIn: 'root' })
@@ -14,7 +15,6 @@ export class AuthService {
   private http: HttpClient= inject(HttpClient);
   private _userService = inject(UserService);
   private _token: string = '';
-  user!: User;
   get token(): string {
     return this._token;
   }
@@ -74,14 +74,14 @@ export class AuthService {
     });
   }
 
-
   logout(): void {
-    this.keycloak.logout({
-      redirectUri: 'http://localhost:4000'
-    });
+    this.keycloak.logout({redirectUri: 'http://localhost:4200/login'});
+    localStorage.clear();
+    sessionStorage.clear();
   }
 
   decodeToken(): void {
+    sessionStorage.setItem('access_token', this.keycloak.token || '')
     this.userInfo(this.keycloak.token || '');
   }
 
@@ -101,7 +101,27 @@ export class AuthService {
     user.clickStreamTrack = decodeToken.clickStreamTrack;
     user.userTerminalIP = decodeToken.userTerminalIP;
     this._userService.user = user;
-    console.log("USER INFO", user);
-    //console.log("this.keycloak.token", this.keycloak.token);
   }
+
+  getResources(){
+    const params = new HttpParams({
+      fromObject: { appId: environment.appId }
+    });
+    let url = environment.bffUrl + 'resource-manager/api/v1/resource/accessible-resource/app'
+    return this.http.get<any>(url, {params});
+  }
+
+  getUserWiseApplications(){
+    let url = environment.bffUrl + 'resource-manager/api/v1/resource/applications'
+    return this.http.get<any>(url);
+  }
+
+  getAllApplications(){
+    const params = new HttpParams({
+      fromObject: { appId: environment.appId }
+    });
+    let url = environment.bffUrl + 'resource-manager/api/v1/resource/applications-generic'
+    return this.http.get<any>(url, {params});
+  }
+
 }

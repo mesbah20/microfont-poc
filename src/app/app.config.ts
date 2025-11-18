@@ -14,7 +14,7 @@ import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {provideAuth} from './core/auth/auth.provider';
 import {tokenInterceptor} from './TokenInterceptor';
 
-export const appConfig: { providers: (EnvironmentProviders | Provider[])[] } = {
+export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({eventCoalescing: true}),
@@ -24,6 +24,7 @@ export const appConfig: { providers: (EnvironmentProviders | Provider[])[] } = {
     provideToastr(),
     provideHttpClient(
       withInterceptors([tokenInterceptor])
-    )
+    ),
+    provideAuth(),
   ]
 };
