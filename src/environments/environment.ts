@@ -28,13 +28,13 @@ export const environment = {
   centrino:'http://192.168.20.93:8090/centrino/department/get-all',
   keycloakApi:'http://192.168.10.56:8090/resource-manager/api/v1/resource',
   bffUrl: 'http://192.168.10.56:8090/',
-  appId: '901',
+  appId: '1',
   keycloak: {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',
     clientId: 'LauncherApp'
   },
-  
+
   reportManagementApiUrl: 'http://localhost:8083/api', // Report Management Backend API
   reportGenerationApiUrl: 'http://localhost:8083', // BIRT Report Generation Service
   sessionUrl:'http://192.168.20.93:8090/centrino/office-session/getOfficeSession'

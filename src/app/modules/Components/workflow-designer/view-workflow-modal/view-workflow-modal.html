@@ -1,15 +1,9 @@
-<div>
-  <lds-modal [isVisible]="showUserRolesModal" modalTitle="Role List"
-             cssClass="modal-fullscreen"
-             (modalClosed)="closeModal()">
+
     <form [formGroup]="modalForm">
-      <div class="panel bg-white">
-        <!--        <div class="modal-search-section p-4 my-4 ">
-                </div>-->
-        <div class="component-section mt-3" *ngIf="showUserModalGrid">
+        <div class="panel">
           <lds-data-grid [id]="'user-search'" [enableSelection]="false"
-                         [searchEnabled]="true"  [showEditButton]="true"
-                         [useInlineEdit]="false" [dataSource]="userRolesList" (onFHEditClick)="loadUserRoles($event)"
+                         [searchEnabled]="true"  [showPrintButton]="true"
+                         [useInlineEdit]="false" [dataSource]="userRolesList()" (onPrint)="loadUserRoles($event)"
                          [selectedColumns]="[
                                     'workflowId',
                                     'workflowName',
@@ -22,11 +16,5 @@
                         }">
           </lds-data-grid>
         </div>
-      </div>
     </form>
 
-    <!--    <div slot="footer">
-          <Button class="modal-btn modal-btn-primary" [hidden] = "isModalButtonHidden" (click)="btnModal_click()" >{{buttonText}}</Button>
-        </div>-->
-  </lds-modal>
-</div>
