@@ -25,13 +25,14 @@ export const environment = {
   centrinoXchangeUrl: 'http://192.168.20.93:8090/centrino/xchange-out',
   centrinoEndpoint: 'http://192.168.20.93:8090/centrino',
   sentinelUrl: 'http://192.168.20.93:8090/sentinel',
-  centrino:'http://192.168.20.93:8097/centrino/department/get-all',
+  centrino:'http://192.168.20.93:8090/centrino/department/get-all',
   keycloakApi:'http://192.168.10.56:8090/resource-manager/api/v1/resource',
   bffUrl: 'http://192.168.10.56:8090/',
-  appId: '1',
+  appId: '901',
   keycloak: {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',
     clientId: 'LauncherApp'
   },
+  sessionUrl:'http://192.168.20.93:8090/centrino/office-session/getOfficeSession'
 };
