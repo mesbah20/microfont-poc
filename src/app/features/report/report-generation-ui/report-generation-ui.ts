@@ -1253,7 +1253,6 @@ getAccountNumber(){
           this.updateParameterOptions(param.parameterName, optionsString);
           this.clearParameterLoading(param.parameterName);
           
-          this.toastr.success(`Options loaded for ${param.parameterLabel}`, 'Database Success');
         },
         error: (error) => {
           console.error(`Error loading options from Database for ${param.parameterName}:`, error);
