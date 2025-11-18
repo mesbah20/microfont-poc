@@ -13,7 +13,7 @@ export const environment = {
   keycloak: {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',
-    clientId: 'LauncherApp'
+    clientId: 'BFF'
   },
 
 };

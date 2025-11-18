@@ -6,6 +6,7 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import {provideToastr} from 'ngx-toastr';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {provideHttpClient} from '@angular/common/http';
+import {provideAuth} from './core/auth/auth.provider';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,6 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideNativeDateAdapter(),
     provideAnimations(),
     provideToastr(),
-    provideHttpClient()
+    provideHttpClient(),
+    provideAuth(),
   ]
 };

@@ -489,8 +489,8 @@ onModalResult(result: any) {
   }
   constructor(
     private formBuilder: FormBuilder,
-    private customToastService: CustomToastrService
-    
+    //private toastr: CustomToastrService
+
   ) {
     BUTTON_VISIBILITY.set({
       save: true,
@@ -819,10 +819,10 @@ openModal(componentToLoad?: Type<any>, data?: any) {
 
 private showFormValidationErrors(errors: any): void {
   const errorKeys = Object.keys(errors);
-  
+
   if (errorKeys.length === 0) {
     //this.showCustomToastMessage1('Form has validation errors but no specific errors found', 'Validation Error', 'error');
-    this.customToastService.error('Form has validation errors but no specific errors found', 'Validation Error', 'error');
+    this.toastr.error('Form has validation errors but no specific errors found', 'Validation Error');
     return;
   }
 
@@ -853,15 +853,14 @@ private showFormValidationErrors(errors: any): void {
 
     // Show toast with stacking
     //this.showCustomToastMessage1(message, 'Validation Error', 'error');
-    this.customToastService.error(message, 'Validation Error', 'error');
+    this.toastr.error(message, 'Validation Error');
   });
 
   // If more than 3 errors, show summary
   if (errorKeys.length > 3) {
-    this.customToastService.warning(
+    this.toastr.warning(
       `${errorKeys.length - 3} more validation errors found. Check form fields.`,
       'Additional Errors',
-      'warning'
     );
   }
 }
@@ -1250,8 +1249,8 @@ showDynamicToasts() {
       closeButton: true
     }
     );*/
-    //this.showCustomToast('Express processing enabled','Processing Mode' ); 
-    this.customToastService.success('Operation completed!', 'Processing Mode');
+    //this.showCustomToast('Express processing enabled','Processing Mode' );
+    this.toastr.success('Operation completed!', 'Processing Mode');
 
     } else {
       // Standard processing - restore full validation
@@ -1262,8 +1261,8 @@ showDynamicToasts() {
       closeButton: true
     }
     );*/
-    //this.showCustomToast('Standard processing mode','info'); 
-    this.customToastService.info('Standard processing mode', 'info');
+    //this.showCustomToast('Standard processing mode','info');
+    this.toastr.info('Standard processing mode', 'info');
 
     }
     this.frmGroup.get('textArea')?.updateValueAndValidity();

@@ -22,7 +22,8 @@ export const environment = {
   logoutUrl: 'http://192.168.20.250:9090/auth/logout',
   coreBaseUrl: 'http://192.168.20.93:8091/api/auth/userLogin',
   centrinoBaseUrl: 'http://192.168.20.93:8097/centrino',
-
+  bffUrl: 'http://192.168.10.56:8085/',
+  appId: '101',
   keycloak: {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',

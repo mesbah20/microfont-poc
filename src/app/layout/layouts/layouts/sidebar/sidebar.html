@@ -406,7 +406,7 @@
             <div class="group " routerLink="/login"
               [class.flex]="!sidebarExpanded"
               [class.justify-center]="!sidebarExpanded">
-            <div (click)="setActiveItem('logout')"
+            <div (click)="authService.logout()"
              class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-visible hover:bg-[var(--theme-accent)]"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"

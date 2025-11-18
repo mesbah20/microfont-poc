@@ -10,6 +10,7 @@ import {Title} from '@angular/platform-browser';
 import pkg from '../../package.json';
 import {KeyclockService} from './core/service/keyclock.service';
 import {AuthService} from './core/auth/auth.service';
+import {UserService} from './core/user/user.service';
 
 
 @Component({
@@ -34,15 +35,18 @@ export class App implements OnInit {
 
 
   async ngOnInit() {
+    this.authService.getResources().subscribe(res => {
+      localStorage.setItem('resourceList', JSON.stringify(res.data))
+    });
+    this.authService.getUserWiseApplications().subscribe(res => {
+      localStorage.setItem('appList', JSON.stringify(res.data))
+    });
     const isAuthenticated = await this.authService.init();
     //debugger;
     const currentPath = window.location.pathname;
 
     if (isAuthenticated) {
       this.authService.decodeToken();
-      // if (currentPath === '/login' || currentPath === '/') {
-      //   this.router.navigate(['/home']);
-      // }
     }
     else {
       if (currentPath !== '/login') {
