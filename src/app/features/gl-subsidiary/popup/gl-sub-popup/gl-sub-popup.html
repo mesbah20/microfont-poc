@@ -1,0 +1,48 @@
+<div>
+    <lds-modal [isVisible]="showModal" modalTitle="Account Search" cssClass="modal-md">
+        <div class="page-wrapper">
+            <div class="panel">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-1">
+                    <div class="component-section">
+                        <app-select-option-field [frmGroup]="mdForm" [controlName]="'officeId'"
+                            [label]="'Office'" [options]="officeOptions" [tooltip]="'Select Office'"
+                            [isVertical]="true"></app-select-option-field>
+                    </div>
+                    <div class="component-section">
+                        <app-text-base-input [frmGroup]="mdForm" [controlName]="'glAccSl'" [label]="'GL Key'"
+                            [isReadonly]="false" tooltip="Enter account number" tooltipPosition="above"
+                            [tooltipDelay]="200" [isVertical]="true" [customErrorMessages]="{
+                                        required: 'Account number is required',
+                                        minlength: 'At least 5 digits',
+                                        maxlength: 'Max 15 characters'
+                                    }" (onBlurred)="onGLSerialChange()">
+                        </app-text-base-input>
+                    </div>
+                  
+                     <div class="component-section">
+                                <div class="pt-4 mb-3">
+                                    <button type="button" class="px-4 py-2 mx-1 bg-blue-400 text-white rounded"
+                                         (click)="onSearch()">
+                                        Search
+                                    </button>
+                                </div>
+                            </div>
+                </div>
+                <!-- 📊 Data Grid -->
+                <div class="p-4">
+                    <lds-data-grid [id]="'enhanced-transactions'" [initPageSize]="8" [enableSelection]="true"
+                        [useInlineEdit]="true" [dataSource]="accounts" (onChecked)="onRowSelect($event)"
+                        [selectedColumns]="['officeId','glAccSl', 'glAccSubSl', 'glAccSubNm']"
+                        [customColumnNames]="{
+                            officeId : 'Office',
+                            glAccSl: 'GL Serial',
+                            glAccSubSl : ' GL Subsidiary Serial',
+                            glAccSubNm: 'GL Subsidiary Name'
+                    
+                        }">
+                    </lds-data-grid>
+                </div>
+            </div>
+        </div>
+    </lds-modal>
+</div>

@@ -10,10 +10,9 @@ import {
   signal,
   ChangeDetectorRef
 } from '@angular/core';
-import { ComponentRegistry } from '../component-registry';
 import { CommonModule } from '@angular/common';
 import { MatCard } from '@angular/material/card';
-import { ApprovalService } from '../../../shared/services/approval-service';
+import { ApprovalService } from '../../../shared/services/approval-service'
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { BUTTON_VISIBILITY } from '../../../shared/constant/button-signals.constant';
@@ -22,6 +21,7 @@ import { ToastrService } from 'ngx-toastr';
 import { HighlightService } from '../../../shared/services/highlight.service';
 import { ExpansionPanelHeader } from "../../../shared/components/expansion-panel-header/expansion-panel-header";
 import { FormsModule } from '@angular/forms';
+import { ComponentRegistry } from '../component-registry';
 
 type DiffMap = Record<string, boolean>;
 

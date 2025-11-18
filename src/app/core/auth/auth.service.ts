@@ -14,6 +14,11 @@ export class AuthService {
   private _keycloak: Keycloak | undefined;
   private http: HttpClient= inject(HttpClient);
   private _userService = inject(UserService);
+
+  private _token: string = '';
+  get token(): string {
+    return this._token;
+  }
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
     // -----------------------------------------------------------------------------------------------------
@@ -43,12 +48,24 @@ export class AuthService {
       checkLoginIframe: true,
       checkLoginIframeInterval: 5
     });
-
+    if (this._authenticated) {
+      this._token = this.keycloak.token || '';
+      this.decodeToken();
+    }
     // 🔔 Listen for global logout
     this.keycloak.onAuthLogout = () => {
       console.log('Detected logout from another client');
       this.login();
     };
+    // this.keycloak.onTokenExpired = () => {
+    //   this.keycloak.updateToken(30).then(refreshed => {
+    //     if (refreshed) {
+    //       console.log("Token refreshed");
+    //       this._token = this.keycloak.token || '';
+    //     }
+    //   });
+    // };
+
     return this._authenticated;
   }
 

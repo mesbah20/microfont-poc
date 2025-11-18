@@ -232,7 +232,7 @@ export class MenuDrawer implements OnInit {
       label: name,
       icon: this.getIcon(name)
     }));
-
+    
     this.groupedMenu = this.userAccessList.reduce((acc: { [key: string]: UserAccessItem[] }, item) => {
       if (!acc[item.ModuleName]) {
         acc[item.ModuleName] = [];
@@ -269,7 +269,7 @@ export class MenuDrawer implements OnInit {
   onMenuItemClick(item: UserAccessItem): void {
   // Step 1: Save FunctionId to localStorage
     console.log(item)
-  localStorage.setItem('currentFunctionId', item.FunctionId);
+   localStorage.setItem('currentFunctionId', item.FunctionId);
 
   // Optional: Log for debug
 }

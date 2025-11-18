@@ -1,4 +1,5 @@
 import { Component, HostListener, inject } from '@angular/core';
+import { MatIcon } from '@angular/material/icon';
 import { MenuDrawer } from './drawers/menu-drawer/menu-drawer';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { ProfileDrawer } from './drawers/profile-drawer/profile-drawer';
@@ -14,12 +15,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { environment } from '../../../../../environments/environment';
 import { ToastHelperService } from '../../../../shared/services/toast-helper.service';
-import {AuthService} from '../../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [
+    MatIcon,
     MenuDrawer,
     ModuleDrawer,
     TitleCasePipe,
@@ -55,7 +56,6 @@ export class Sidebar {
   private themeSub?: Subscription;
   private previousCount: number = 0;
   constructor(private themeService: ThemeService,
-    public authService: AuthService,
     private sidebarService: SidebarService, public notificationService: NotificationService, private novuService: NovuService
   ) {
     this.notifications$ = this.novuService.getUnreadCount();

@@ -15,7 +15,12 @@ export const environment = {
     realm: 'MicroCube_dev',
     clientId: 'BFF'
   },
-
+  novu: {
+    applicationIdentifier: '1uXpKIJUa3Rg',
+    apiUrl: 'http://192.168.10.56:3000/novu/api',
+    socketUrl: 'http://192.168.10.56:3002',
+    notificationApiBaseUrl: 'http://localhost:8080/api/demo',
+  },
+  notifyServiceBaseUrl: 'http://192.168.20.69:8088/Notify',
 };
-
 

@@ -24,7 +24,6 @@
         [matTooltipDisabled]="!tooltip()"
         class="custom-input peer block px-3 pt-4 pb-2  text-gray-900 bg-transparent border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 transition-all duration-200"
         (input)="onInputChange($event)"
-        (keydown)="onKeyDown($event)"
         (focus)="onFocus($event)"
         (blur)="onBlur()"
         (dateChange)="onDateSelected($event)"
@@ -84,7 +83,6 @@
         (input)="onInputChange($event)"
         (focus)="onFocus($event)"
         (blur)="onBlur()"
-        (keydown)="onKeyDown($event)"
         (dateChange)="onDateSelected($event)"
         class="custom-input"
         

@@ -1,21 +1,8 @@
-// ============================================================================
-// DATA GRID STYLES - Structured for consistent row heights
-// ============================================================================
-
 .data-grid-container {
   display: flex;
   flex-direction: column;
   background: #ffffff;
   font-family: 'Roboto', sans-serif;
-  
-  // ============================================================================
-  // GLOBAL ROW HEIGHT VARIABLES
-  // ============================================================================
-  --data-row-height: 25px;
-  --header-row-height: 30px;
-  --cell-padding: 0 12px;
-  --header-font-size: 12px;
-  --data-font-size: 13px;
 
   .controls-bar {
     display: flex;
@@ -112,20 +99,21 @@
         }
       }
 
-      // ============================================================================
-      // HEADER CELL STYLING - Consistent with data rows
-      // ============================================================================
       .mat-mdc-header-cell {
         background-color: var(--theme-primary, #1e40af);
         font-weight: 500;
-        font-size: 10px;
+        font-size: 12px;
         color: #ffffff;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        // border: 1px solid #ff0077;
-        line-height: calc(var(--header-row-height) - 4px) !important;
-        min-height: var(--header-row-height) !important;
-        // padding: 0px;
+        border-bottom: 1px solid #e5e7eb;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        height: 25px;
+        padding: 2px 6px;
+        line-height: 21px;
+        
         &.sortable {
           cursor: pointer;
           user-select: none;
@@ -138,7 +126,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            // border: 1px solid brown;
             justify-content: space-between;
 
             .sort-icon {
@@ -156,21 +143,16 @@
         }
       }
 
-      // ============================================================================
-      // DATA CELL STYLING - Consistent with headers
-      // ============================================================================
       .mat-mdc-cell {
         color: #1f2937;
-        font-weight: 500;
-        font-size: var(--data-font-size);
+        font-size: 12px;
         border-bottom: 1px solid #e5e7eb;
         border-left: none;
         border-right: none;
         border-top: none;
-        height: var(--data-row-height) !important;
-        padding: var(--cell-padding) !important;
-        line-height: calc(var(--data-row-height) - 4px) !important;
-        min-height: var(--data-row-height) !important;
+        height: 25px;
+        padding: 2px 6px;
+        line-height: 21px;
         text-align: left;
         vertical-align: middle;
         .numeric {
@@ -272,18 +254,19 @@
 
       // Selection column - ensure header and cell padding match
       .mat-column-selection {
-        width: 40px !important;
-        min-width: 40px !important;
-        max-width: 40px !important;
-        padding: 0 !important;
-        position: sticky;
-        left: 0;
-        z-index: 10;
-        flex: 0 0 40px !important;
+        width: 28px;
+        min-width: 28px;
+        max-width: 28px;
+        text-align: center;
+        vertical-align: middle;
         
         &.mat-mdc-header-cell {
           background-color: var(--theme-primary, #1e40af) !important;
           color: #ffffff !important;
+          padding: 2px 4px !important;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           
           // Ensure checkbox is visible in header
           ::ng-deep .mat-mdc-checkbox {
@@ -319,6 +302,7 @@
           background-color: var(--theme-primary, #1e40af) !important;
           color: #ffffff !important;
           border-left: 1px solid rgba(255, 255, 255, 0.2);
+          padding: 2px 6px !important;
         }
         
         &.mat-mdc-cell {
@@ -329,9 +313,9 @@
       }
     }
   }
-  
+
   th ::ng-deep .mat-mdc-checkbox{
-    padding: 0px;
+    padding: 12px;
     
   }
   th ::ng-deep .mat-mdc-checkbox .mdc-checkbox__native-control ~ .mdc-checkbox__background {
@@ -339,10 +323,8 @@
   height: 14px;
   width: 14px;
   margin-top: 1px;
-  margin-right: 12px;
  
 }
-
 
   td ::ng-deep .mat-mdc-checkbox .mdc-checkbox__native-control ~ .mdc-checkbox__background {
   height: 14px;
@@ -540,19 +522,15 @@
   //   }
   // }
 
-  // ============================================================================
-  // GLOBAL ROW HEIGHT ENFORCEMENT - All rows same height
-  // ============================================================================
+  // Enforce consistent row heights on MDC rows to match cell heights
   ::ng-deep .mat-mdc-row,
+  ::ng-deep .mat-mdc-header-row,
   ::ng-deep .mat-mdc-footer-row {
-    height: var(--data-row-height) !important;
-    min-height: var(--data-row-height) !important;
-    max-height: var(--data-row-height) !important;
+    height: 25px;
+    min-height: 25px;
   }
   
-  // ============================================================================
-  // MATERIAL TABLE OVERRIDES - Clean alignment without conflicts
-  // ============================================================================
+  // Override Material table default styles to ensure proper alignment
   ::ng-deep .data-table.mat-mdc-table {
     // Remove default borders that can cause misalignment
     .mat-mdc-header-cell,
@@ -562,28 +540,21 @@
       border-right: none !important;
     }
     
-    // All rows use the same height defined by CSS variables
+    // Ensure header row has consistent padding
     .mat-mdc-header-row {
-      height: var(--header-row-height) !important;
-      min-height: var(--header-row-height) !important;
-      
       .mat-mdc-header-cell {
-        // height: var(--header-row-height) !important;
-        // line-height: calc(var(--header-row-height) - 4px) !important;
-        padding: var(--cell-padding) !important;
-        font-size: var(--header-font-size) !important;
+        padding: 2px 6px !important;
+        height: 25px !important;
+        line-height: 21px !important;
       }
     }
     
+    // Ensure data rows have consistent padding matching headers
     .mat-mdc-row {
-      height: var(--data-row-height) !important;
-      min-height: var(--data-row-height) !important;
-      
       .mat-mdc-cell {
-        height: var(--data-row-height) !important;
-        line-height: calc(var(--data-row-height) - 4px) !important;
-        padding: var(--cell-padding) !important;
-        font-size: var(--data-font-size) !important;
+        padding: 2px 6px !important;
+        height: 25px !important;
+        line-height: 21px !important;
       }
     }
   }
@@ -642,7 +613,7 @@
       height: 12px;
       padding: 0 2px;
       line-height: 12px;
-      font-size: 12px;
+      font-size: 10px;
     }
   }
 
@@ -702,7 +673,7 @@
         
         .mat-mdc-header-cell,
         .mat-mdc-cell {
-          // padding: 8px 12px;
+          padding: 8px 12px;
           font-size: 13px;
         }
 
@@ -718,7 +689,6 @@
         .mat-column-selection {
           width: 40px;
           padding: 12px 8px;
-          
         }
       }
     }

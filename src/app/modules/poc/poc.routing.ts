@@ -5,6 +5,7 @@ import {ApprovalMovement} from './approval-movement/approval-movement';
 import {ViewApprovalActivitiesComponent} from './view-approval-activities/view-approval-activities.component';
 import {EmployeeOnboard} from './employee-onboard/employee-onboard';
 import {EmployeeList} from './employee-list/employee-list';
+import { GlSubsidiary } from '../../features/gl-subsidiary/gl-subsidiary';
 
 
 export const PocRouting: Routes = [
@@ -16,4 +17,5 @@ export const PocRouting: Routes = [
   {path: 'approval-items', component: ApprovalItems},
   {path: 'approval-movement', component: ApprovalMovement},
   {path: 'approval-activities', component: ViewApprovalActivitiesComponent},
+  {path: 'GlSubsidiary', component: GlSubsidiary },
 ];
