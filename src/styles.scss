@@ -218,9 +218,12 @@ input[type="number"]::placeholder {
 }
 
 .page-wrapper {
-  @apply w-full bg-white mx-auto shadow-lg rounded-lg pb-4;
+  @apply w-full bg-white mx-auto  shadow-lg rounded-lg pb-4;
   min-height: 100vh;
 
+}
+.grid-section{
+  @apply py-5;
 }
 
 .form-wrapper {

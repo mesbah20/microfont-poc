@@ -12,7 +12,7 @@ export const environment = {
   portalEndPoint : GATE_WAY_ENDPOINT + 'portal/' + VERSION_1,
   vehicleEndPoint: GATE_WAY_ENDPOINT + 'vehicle/' + VERSION_1,
   leaveAttendanceEndPoint: GATE_WAY_ENDPOINT + 'leave-attendance/' + VERSION_1,
-
+  sessionUrl:'http://192.168.20.93:8090/centrino/office-session/getOfficeSession',
   apiBaseUrl:'http://localhost:8092/centrino',
   // apiBaseUrl: 'http://localhost:8095/swiftFusionAPI/api/v1/',
   // coreBaseUrl: 'http://192.168.20.250:8090/api/user-login/signIn',
