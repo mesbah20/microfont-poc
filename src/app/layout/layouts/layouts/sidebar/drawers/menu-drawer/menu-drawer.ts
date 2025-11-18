@@ -267,12 +267,12 @@ export class MenuDrawer implements OnInit {
   }
 
   onMenuItemClick(item: UserAccessItem): void {
-  // Step 1: Save FunctionId to localStorage
+    // Step 1: Save FunctionId to localStorage
     console.log(item)
-  localStorage.setItem('currentFunctionId', item.FunctionId);
+    localStorage.setItem('currentFunctionId', item.FunctionId);
 
-  // Optional: Log for debug
-}
+    // Optional: Log for debug
+  }
 
   getItemsByMenu(menuName: string) {
     return this.groupedMenu[menuName] || [];

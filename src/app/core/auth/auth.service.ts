@@ -5,7 +5,8 @@ import {environment} from '../../../environments/environment';
 import {AuthUtils} from './auth.utils';
 import {User} from '../user/user.types';
 import {UserService} from '../user/user.service';
-
+import {tap} from 'rxjs';
+import {UserDataResponse} from '../../modules/model/UserDataResponse';
 
 
 @Injectable({ providedIn: 'root' })

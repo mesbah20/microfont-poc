@@ -66,6 +66,18 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'Sentinel', component: Layout,
+    data: {
+      layout: 'empty'
+    },
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./modules/Components/sentinel-routing').then(m => m.SentinelRouting)
+      },
+    ]
+  },
+  {
     path: 'report', component: Layout,
     data: {
       layout: 'empty'

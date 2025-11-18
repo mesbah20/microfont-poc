@@ -12,8 +12,8 @@ export const environment = {
   portalEndPoint : GATE_WAY_ENDPOINT + 'portal/' + VERSION_1,
   vehicleEndPoint: GATE_WAY_ENDPOINT + 'vehicle/' + VERSION_1,
   leaveAttendanceEndPoint: GATE_WAY_ENDPOINT + 'leave-attendance/' + VERSION_1,
-  sessionUrl:'http://192.168.20.93:8090/centrino/office-session/getOfficeSession',
-  apiBaseUrl:'http://localhost:8092/centrino',
+
+  apiBaseUrl:'http://192.168.20.93:8090/centrino',
   // apiBaseUrl: 'http://localhost:8095/swiftFusionAPI/api/v1/',
   // coreBaseUrl: 'http://192.168.20.250:8090/api/user-login/signIn',
   // coreBaseUrl: 'http://192.168.20.93:8091/api/auth/userLogin',
@@ -21,9 +21,14 @@ export const environment = {
   loginUrl: 'http://192.168.20.250:9090/oauth2/token',
   logoutUrl: 'http://192.168.20.250:9090/auth/logout',
   coreBaseUrl: 'http://192.168.20.93:8091/api/auth/userLogin',
-  centrinoBaseUrl: 'http://192.168.20.93:8097/centrino',
+  centrinoBaseUrl: 'http://192.168.20.93:8090/centrino',
+  centrinoXchangeUrl: 'http://192.168.20.93:8090/centrino/xchange-out',
+  centrinoEndpoint: 'http://192.168.20.93:8090/centrino',
+  sentinelUrl: 'http://192.168.20.93:8090/sentinel',
+  centrino:'http://192.168.20.93:8090/centrino/department/get-all',
+  keycloakApi:'http://192.168.10.56:8090/resource-manager/api/v1/resource',
   bffUrl: 'http://192.168.10.56:8090/',
-  appId: '101',
+  appId: '901',
   keycloak: {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',
@@ -32,4 +37,5 @@ export const environment = {
 
   reportManagementApiUrl: 'http://localhost:8083/api', // Report Management Backend API
   reportGenerationApiUrl: 'http://localhost:8083', // BIRT Report Generation Service
+  sessionUrl:'http://192.168.20.93:8090/centrino/office-session/getOfficeSession'
 };

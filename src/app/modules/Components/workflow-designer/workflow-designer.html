@@ -1,0 +1,335 @@
+﻿<div class="page-wrapper">
+  <div class="panel">
+    <div class="container space-y-6 p-4 my-4">
+      <app-expansion-panel-header
+        [isOpenSignal]="appPanelOpen"
+        [panelTitle]="'Workflow Designer'">
+      </app-expansion-panel-header>
+
+      <ng-container *ngIf="appPanelOpen()">
+<!--        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">-->
+<!--          <app-select-option-field-->
+<!--            [frmGroup]="selectorForm"-->
+<!--            [controlName]="'appId'"-->
+<!--            [label]="'Application'"-->
+<!--            [options]="applicationOptions()"-->
+<!--            [isVertical]="true"-->
+<!--            [placeholder]="'Select Application'">-->
+<!--          </app-select-option-field>-->
+
+<!--          <app-select-option-field-->
+<!--            [frmGroup]="selectorForm"-->
+<!--            [controlName]="'moduleId'"-->
+<!--            [label]="'Module'"-->
+<!--            [options]="moduleOptions()"-->
+<!--            [isVertical]="true"-->
+<!--            [placeholder]="'Select Module'"-->
+<!--            [isReadonly]="!selectorForm.get('appId')?.value">-->
+<!--          </app-select-option-field>-->
+
+<!--          <app-select-option-field-->
+<!--            [frmGroup]="selectorForm"-->
+<!--            [controlName]="'functionId'"-->
+<!--            [label]="'Function'"-->
+<!--            [options]="functionOptions()"-->
+<!--            [isVertical]="true"-->
+<!--            [placeholder]="'Select Function'"-->
+<!--            [isReadonly]="!selectorForm.get('moduleId')?.value">-->
+<!--          </app-select-option-field>-->
+<!--        </div>-->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-1 items-end">
+          <lds-id-box
+            [frmGroup]="levelForm"
+            [controlName]="'workflowId'"
+            [label]="'Workflow Id'"
+            [isReadonly]="false"
+            [isVertical]="true"
+            [tooltip]="'Enter ID'"
+            [allowSpecialChars]="true"
+            [isDotsVisible]="true"
+            (dotsClicked)="openModal()"
+            (onBlurred)="loadFunctionLevels($event)">
+          </lds-id-box>
+
+          <app-text-base-input
+            [frmGroup]="levelForm"
+            [controlName]="'workflowName'"
+            [label]="'Workflow Name'"
+            [tooltip]="'Workflow Name'"
+            [tooltipDelay]="200"
+            [isReadonly]="false"
+            [isVertical]="true">
+          </app-text-base-input>
+
+          <div class="flex justify-end items-end h-full">
+            <lds-btn
+              [labelText]="'Reset'"
+              [cssClass]="'bg-slate-500 text-white px-4'"
+              (onClick)="resetAll()">
+            </lds-btn>
+          </div>
+        </div>
+
+<div class="page-wrapper" *ngIf="levelForm.get('workflowName')?.value">
+  <div class="panel">
+    <div class="container space-y-6 p-4 my-4">
+      <app-sub-panel-header [subPanelTitle]="'Approval Level Configuration'"></app-sub-panel-header>
+
+      <div class="flex flex-wrap items-center gap-4 justify-between">
+
+        <lds-number
+          [frmGroup]="levelForm"
+          [controlName]="'numberOfApprovalLevel'"
+          [label]="'Number Of Levels'"
+          [isVertical]="true"
+          [minValue]="1"
+          [isReadonly]="!levelForm.get('workflowName')?.value"
+          class="flex-shrink-0">
+        </lds-number>
+                  <app-select-option-field
+                    [frmGroup]="levelForm"
+                    [controlName]="'appId'"
+                    [label]="'Application'"
+                    [options]="applicationOptions()"
+                    [isVertical]="true"
+                    [placeholder]="'Select Application'">
+                  </app-select-option-field>
+        <div class="flex gap-3">
+        <lds-btn
+          [labelText]="selectedLevel() ? 'Update Level' : 'Add Level'"
+          [enable]="!isSavingLevel()"
+          [icon]="isSavingLevel() ? 'hourglass_empty' : ''"
+          (onClick)="saveLevel()">
+        </lds-btn>
+
+        <lds-btn
+          [labelText]="'Delete Level'"
+          [cssClass]="'bg-rose-600 text-white px-4'"
+          [enable]="!!selectedLevel()"
+          (onClick)="deleteLevel()">
+        </lds-btn>
+
+        <lds-btn
+          [labelText]="'Clear Level Form'"
+          [cssClass]="'bg-slate-500 text-white px-4'"
+          (onClick)="resetLevelForm()">
+        </lds-btn>
+       </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="page-wrapper" *ngIf="levelForm.get('workflowName')?.value">
+  <div class="panel">
+    <div class="container space-y-6 p-4 my-4">
+      <app-sub-panel-header [subPanelTitle]="'Approval Level Details & Role Mapping'"></app-sub-panel-header>
+
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <lds-number
+          [frmGroup]="detailForm"
+          [controlName]="'approvalLevel'"
+          [label]="'Approval Level'"
+          [isVertical]="true"
+          [minValue]="1">
+        </lds-number>
+
+        <app-select-option-field
+          [frmGroup]="detailForm"
+          [controlName]="'approvalPolicy'"
+          [label]="'Approval Policy'"
+          [options]="approvalPolicyOptions()"
+          [isVertical]="true"
+          [placeholder]="'Select Policy'">
+        </app-select-option-field>
+        <lds-number
+          [frmGroup]="detailForm"
+          [controlName]="'approverNo'"
+          [label]="'No of Approver'"
+          [isVertical]="true"
+          [minValue]="1">
+        </lds-number>
+        </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+
+        <div class="component-section">
+<!--        <lds-number-->
+<!--          [frmGroup]="detailForm"-->
+<!--          [controlName]="'organizationLevel'"-->
+<!--          [label]="'Organisation Level'"-->
+<!--          [isVertical]="true"-->
+<!--          [minValue]="0">-->
+<!--        </lds-number>-->
+          <app-select-option-field
+            [frmGroup]="detailForm"
+            [controlName]="'organizationLevel'"
+            [label]="'Organisation Level'"
+            [options]="organizationLevelOptions()"
+            [isVertical]="true"
+            [placeholder]="'Select Organization Type'">
+          </app-select-option-field>
+        </div>
+
+
+        <app-select-option-field
+          [frmGroup]="detailForm"
+          [controlName]="'roleName'"
+          [label]="'Add Role'"
+          [options]="roleOptions()"
+          [isVertical]="true"
+          [placeholder]="'Select Role'"
+          (onSelect)="addRoleToSelection()">
+        </app-select-option-field>
+
+        <lds-number
+          [frmGroup]="detailForm"
+          [controlName]="'workflowDetailId'"
+          [label]="'Workflow Detail ID'"
+          [isVertical]="true"
+          [minValue]="1"
+          [isReadonly]="true">
+        </lds-number>
+      </div>
+
+
+
+
+      <div class="flex flex-col gap-2">
+        <span class="text-sm font-semibold text-slate-600">Selected Roles</span>
+        <div class="flex flex-wrap gap-2">
+          <div
+            class="role-chip"
+            *ngFor="let role of selectedRoles()">
+            <span class="role-chip__text">{{ role }}</span>
+            <button
+              type="button"
+              class="role-chip__remove"
+              (click)="removeRoleFromSelection(role)">
+              &times;
+            </button>
+          </div>
+        </div>
+        <div class="text-xs text-slate-500" *ngIf="selectedRoles().length === 0">
+          No roles selected for this level detail.
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3 justify-end items-end">
+        <lds-btn
+          [labelText]="selectedDetail() ? 'Update Detail' : 'Add Detail'"
+          [enable]="!isSavingDetail()"
+          (onClick)="saveDetail()">
+        </lds-btn>
+
+        <lds-btn
+          [labelText]="'Delete Detail'"
+          [cssClass]="'bg-rose-600 text-white px-4'"
+          [enable]="!!selectedDetail()"
+          (onClick)="deleteDetail()">
+        </lds-btn>
+
+        <lds-btn
+          [labelText]="'Clear Detail Form'"
+          [cssClass]="'bg-slate-500 text-white px-4'"
+          (onClick)="resetDetailForm()">
+        </lds-btn>
+      </div>
+      <div *ngIf="selectedLevel()?.numberOfApprovalLevel" class="p-3 rounded border" [ngClass]="detailCountState().valid ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700'">
+        <ng-container *ngIf="detailCountState().valid; else detailCountMismatch">
+          All approval levels are configured.
+        </ng-container>
+        <ng-template #detailCountMismatch>
+          Configure {{ detailCountState().required }} approval level detail{{ detailCountState().required === 1 ? '' : 's' }}. Currently configured: {{ detailCountState().actual }}.
+        </ng-template>
+      </div>
+      <lds-data-grid
+        [id]="'approval-detail-grid'"
+        [enableSelection]="true"
+        [dataSource]="levelDetails()"
+        [selectedColumns]="['workflowDetailId','approvalLevel','approvalPolicy','policyDescription','approverNo','organizationLevel','roleCount','roles']"
+        [customColumnNames]="{
+          workflowDetailId: 'Detail ID',
+          approvalLevel: 'Approval Level',
+          approvalPolicy: 'Policy',
+          policyDescription: 'Policy Description',
+          approverNo: 'Approver No',
+          organizationLevel: 'Org Level',
+          roleCount: 'Role Count',
+          roles: 'Assigned Roles'
+        }"
+        (onChecked)="onDetailSelection($event)"
+        [initPageSize]="5">
+      </lds-data-grid>
+<!--
+        [editableColumns]="['approvalLevel','approvalPolicy','approvalPolicy']"
+        [dropdownColumns]="transactionDropdownColumns()"
+        [dropdownOptions]="transactionDropdownOptions()"
+        -->
+    </div>
+  </div>
+</div>
+
+<div class="page-wrapper" *ngIf="levelForm.get('workflowName')?.value">
+  <div class="panel">
+    <div class="container space-y-6 p-4 my-4">
+      <app-sub-panel-header [subPanelTitle]="'Eligible Approver Preview'"></app-sub-panel-header>
+
+      <div class="flex flex-col md:flex-row items-end gap-4">
+                  <app-select-option-field
+                    [frmGroup]="selectorForm"
+                    [controlName]="'moduleId'"
+                    [label]="'Module'"
+                    [options]="moduleOptions()"
+                    [isVertical]="true"
+                    [placeholder]="'Select Module'"
+                    [isReadonly]="!levelForm.get('appId')?.value">
+                  </app-select-option-field>
+
+                  <app-select-option-field
+                    [frmGroup]="selectorForm"
+                    [controlName]="'functionId'"
+                    [label]="'Function'"
+                    [options]="functionOptions()"
+                    [isVertical]="true"
+                    [placeholder]="'Select Function'"
+                    [isReadonly]="!selectorForm.get('moduleId')?.value">
+                  </app-select-option-field>
+                  <app-text-base-input
+                    [frmGroup]="previewForm"
+                    [controlName]="'makerId'"
+                    [label]="'Maker User ID'"
+                    [isVertical]="true">
+                  </app-text-base-input>
+
+        <div class="md:self-end">
+          <lds-btn
+            [labelText]="isLoadingApprovers() ? 'Loading...' : 'Preview Approvers'"
+            [enable]="!isLoadingApprovers()"
+            (onClick)="previewApprovers()">
+          </lds-btn>
+        </div>
+      </div>
+
+      <div *ngIf="previewPanelOpen()">
+        <lds-data-grid
+          [id]="'eligible-approvers-grid'"
+          [dataSource]="approverRows()"
+          [selectedColumns]="['approvalLevel','approvalPolicy','userId','userName','homeOfficeId','roleNames']"
+          [customColumnNames]="{
+            approvalLevel: 'Level',
+            approvalPolicy: 'Policy',
+            userId: 'Approver ID',
+            userName: 'Approver Name',
+            homeOfficeId: 'Office',
+            roleNames: 'Roles'
+          }"
+          [initPageSize]="5">
+        </lds-data-grid>
+      </div>
+    </div>
+  </div>
+</div>
+<app-view-workflow-modal [showUserRolesModal]="showUserRolesModal" [roleName]="levelForm.get('workflowId')?.value ?? null"
+                      (roleSelected)="loadRole($event)"></app-view-workflow-modal>
