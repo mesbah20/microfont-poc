@@ -116,7 +116,7 @@ export class ReportDbSetupUI implements OnInit {
       service: ['', [Validators.required, Validators.maxLength(100)]], // Service name
       url: [''], // Auto-generated connection URL
       username: ['', [Validators.required, Validators.maxLength(50)]], // Username
-      password: ['', [Validators.required, Validators.minLength(6)]], // Password
+      password: [''], // Password
       connectionName: ['', [Validators.required, Validators.maxLength(100)]], // Display name
       isDefaultConnection: [false],
     });
@@ -255,6 +255,7 @@ export class ReportDbSetupUI implements OnInit {
         service: result.service || result.databaseName,
         username: result.username,
         vAppName: result.vAppName || 'ultimus',
+        appId: result.appId || 'ultimus',
         isDefaultConnection: result.isDefaultConnection,
         password: '' // Clear password for security
       });
@@ -320,10 +321,13 @@ export class ReportDbSetupUI implements OnInit {
       this.loading.set(true);
       this.dbService.getById(id).subscribe({
         next: (connection: any) => {
+          console.log('Loaded connection data:', connection);
+          console.log('vAppName from API:', connection.vAppName || connection.v_app_name);
+          
           // Populate form with fetched connection (handle both old and new formats)
           this.connectionForm.patchValue({
             id: connection.id,
-            vAppName: connection.vAppName || 'ultimus',
+            vAppName: connection.vAppName || connection.v_app_name || 'ultimus',
             dbType: connection.dbType || connection.databaseType || 'ORACLE',
             driver: connection.driver || 'oracle.jdbc.OracleDriver',
             host: connection.host || this.extractHostFromAddress(connection.dbServerAddress),
@@ -335,6 +339,8 @@ export class ReportDbSetupUI implements OnInit {
             isDefaultConnection: connection.isDefaultConnection,
             password: '' // Clear password for security
           });
+          
+          console.log('Form values after patch:', this.connectionForm.value);
           this.toastr.info('Connection loaded. Please enter password and verify details.', 'Connection Loaded');
           this.loading.set(false);
         },
@@ -356,11 +362,13 @@ export class ReportDbSetupUI implements OnInit {
    * Save or update connection
    */
   onSave() {
+   
     if (this.connectionForm.invalid) {
       this.toastr.error('Please fill all required fields correctly.', 'Validation Error');
       Object.keys(this.connectionForm.controls).forEach(key => {
         const control = this.connectionForm.get(key);
         if (control?.invalid) {
+          console.log(`Invalid field: ${key}`, control.errors);
           control.markAsTouched();
         }
       });
@@ -369,9 +377,12 @@ export class ReportDbSetupUI implements OnInit {
 
     this.loading.set(true);
     const userId = localStorage.getItem('userId');
+    
+    const vAppNameValue = this.connectionForm.get('vAppName')?.value;
+    
     const dto: any = {
       id: this.connectionForm.value.id || undefined,
-      vAppName: this.connectionForm.value.vAppName,
+      vappName: vAppNameValue || 'ultimus',
       appId: environment.appId,
       dbType: this.connectionForm.value.dbType,
       driver: this.connectionForm.value.driver,
@@ -457,7 +468,7 @@ export class ReportDbSetupUI implements OnInit {
     
     const dto: any = {
       id: this.connectionForm.value.id || undefined,
-      vAppName: this.connectionForm.value.vAppName,
+      vappName: this.connectionForm.value.vAppName,
       dbType: this.connectionForm.value.dbType,
       driver: this.connectionForm.value.driver,
       host: this.connectionForm.value.host,

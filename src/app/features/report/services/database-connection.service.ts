@@ -69,14 +69,23 @@ export interface BaseDTO {
 }
 
 /**
- * Database Connection DTO
+ * Database Connection DTO - Updated to match backend DTO
  */
 export interface DatabaseConnectionDTO extends BaseDTO {
   connectionName: string;
-  databaseType: string;
-  dbServerAddress: string;
-  databaseName?: string;
+  vappName: string;
+  appId: string;
+  dbType: string;
+  driver: string;
+  host: string;
+  port: string;
+  service: string;
+  url: string;
   username: string;
   password?: string; // Only sent on create/update, not returned
   isDefaultConnection: boolean;
+  // Legacy fields for backward compatibility
+  databaseType?: string;
+  dbServerAddress?: string;
+  databaseName?: string;
 }
