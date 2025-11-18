@@ -99,6 +99,11 @@ searchResults$!: Observable<string[]>; // raw user list
   chatPreviews$!: Observable<ChatPreview[]>;
   //modalData?: User;
   currentUser?: User;
+  
+  // Branch information from sessionStorage
+  officeCode?: string;
+  officeNm?: string;
+  txnDt?: string;
 
   constructor(
     public notificationService: NotificationService,
@@ -162,6 +167,18 @@ openChatFromSearch(user: string) {
     });
      // this.chatPreviews$ = this.chatService.getChatPreviews();
     this.chatPreviews$ = this.chatService.getCombinedList();
+    
+    // Load branch information from sessionStorage
+    this.loadBranchInfoFromSession();
+  }
+  
+  private loadBranchInfoFromSession(): void {
+    this.officeCode = sessionStorage.getItem('officeCode') || '';
+    this.officeNm = sessionStorage.getItem('officeNm') || '';
+    const rawDate = sessionStorage.getItem('txnDt');   // "2024-11-27 00:00:00"
+
+    this.txnDt = rawDate ? rawDate.split(' ')[0] : '';  
+
   }
 
   openEditProfileModal() {

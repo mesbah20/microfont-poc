@@ -37,7 +37,7 @@ export class Button {
 
   get buttonClasses(): string {
     const baseClasses =
-      'py-3 px-4 text-md font-medium cursor-pointer outline-none rounded-md transition-colors duration-200 focus:ring-2 focus:ring-offset-2 min-h-[32px] h-10';
+      'py-2 px-2 font-medium cursor-pointer outline-none rounded-md transition-colors duration-200 focus:ring-2 focus:ring-offset-2 min-h-[20px] ';
     
     const stateClasses = this.isDisabled
       ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'

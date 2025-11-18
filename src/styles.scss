@@ -218,9 +218,12 @@ input[type="number"]::placeholder {
 }
 
 .page-wrapper {
-  @apply w-full bg-white mx-auto shadow-lg rounded-lg pb-4;
+  @apply w-full bg-white mx-auto  shadow-lg rounded-lg pb-4;
   min-height: 100vh;
 
+}
+.grid-section{
+  @apply py-5;
 }
 
 .form-wrapper {
@@ -629,7 +632,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 // Input Label
 .input-label {
   @apply block font-medium text-gray-900;
-  @apply text-sm md:text-base w-72 max-w-full;
+  @apply text-sm  w-72 max-w-full;
 }
 
 
