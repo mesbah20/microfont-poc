@@ -1,89 +1,117 @@
-<div class="h-full overflow-y-auto pb-16 profile-drawer bg-[var(--theme-background)]">
-  <div class="p-6 space-y-4 pt-2">
+<div
+  class="h-full overflow-y-auto pb-16 profile-drawer bg-gradient-to-br from-[var(--theme-background)] to-gray-50"
+>
+  <div class="p-6 space-y-6 pt-4">
     <!-- Profile Section -->
-    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-      <div class="flex items-center space-x-3 mb-3">
-        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-          <mat-icon class="text-white">person</mat-icon>
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/60 shadow-lg">
+      <div class="flex items-center space-x-4 mb-4">
+        <div class="relative">
+          <div
+            class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg"
+          >
+            <mat-icon class="text-white text-2xl">person</mat-icon>
+          </div>
+          <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
         </div>
         <div>
-          <h3 class="font-medium text-gray-800">Saikat</h3>
-          <p class="text-sm text-gray-600">saikat.gmail.com</p>
+          <h3 class="font-medium text-gray-800">
+            {{ currentUser?.name || 'Loading user...' }}
+          </h3>
+          <p class="text-sm text-gray-600">
+            {{ currentUser?.email || 'Fetching email...' }}
+          </p>
         </div>
       </div>
       <button
-        class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
+        class="w-full bg-gradient-to-r from-[var(--theme-primary)] to-[var(--theme-accent)] text-white py-3 rounded-xl hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center font-medium"
         (click)="openEditProfileModal()">
         <mat-icon class="mr-2">edit</mat-icon>
         Edit Profile
       </button>
     </div>
 
-    <!-- Service Request -->
-    <div class="border-b border-gray-200 pb-2">
+    <!-- Quick Actions Grid -->
+    <div class="grid grid-cols-1 gap-4">
+      
+ 
+
+      <!-- Branch -->
       <button
-        class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
-        (click)="openServiceRequestModal()">
-        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-          <mat-icon class="text-green-600">support_agent</mat-icon>
+        class="w-full bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/60 shadow-sm hover:shadow-lg transition-all duration-200 transform hover:scale-[1.02] cursor-pointer"
+      >
+        <div class="flex items-center space-x-4">
+          <div
+            class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center shadow-md flex-shrink-0"
+          >
+            <mat-icon class="text-white text-xl">account_tree</mat-icon>
+          </div>
+          <div class="flex-1 text-left">
+            <p class="font-semibold text-gray-800 text-sm mb-1">Branch</p>
+            <div class="space-y-0.5">
+              <p class="text-xs font-medium text-gray-700"><span class="font-semibold">Office Code: </span>{{ officeCode || 'N/A' }}</p>
+              <p class="text-xs font-medium text-gray-700"><span class="font-semibold">Office Name: </span>{{ officeNm || 'No Name' }}</p>
+              <p class="text-xs font-medium text-gray-700"><span class="font-semibold">Txn Date: </span>{{ txnDt || 'No Date' }}</p>
+            </div>
+          </div>
         </div>
-        <div class="flex-1 text-left">
-          <p class="font-medium text-gray-800">Service Request</p>
-          <p class="text-sm text-gray-600">Request new services</p>
-        </div>
-        <mat-icon class="text-gray-400">chevron_right</mat-icon>
       </button>
     </div>
 
-    <!-- Branch -->
-    <div class="border-b border-gray-200 pb-2">
-      <button
-        class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer">
-        <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-          <mat-icon class="text-orange-600">account_tree</mat-icon>
-        </div>
-        <div class="flex-1 text-left">
-          <p class="font-medium text-gray-800">Branch</p>
-          <p class="text-sm text-gray-600">Current: Dhanmondi</p>
-        </div>
-        <mat-icon class="text-gray-400">chevron_right</mat-icon>
-      </button>
-    </div>
+    <!-- Menu Items -->
+    <div class="space-y-3">
 
-    <!-- Notes -->
-    <div class="border-b border-gray-200 pb-2">
-      <button
-        class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
-        (click)="goToNotes()">
-        <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-          <mat-icon class="text-green-600">list_alt</mat-icon>
-        </div>
-        <div class="flex-1 text-left">
-          <p class="font-medium text-gray-800">Notes</p>
-        </div>
-        <mat-icon class="text-gray-400">chevron_right</mat-icon>
-      </button>
-    </div>
-
-    <!-- Notifications -->
-    <div class="border-b border-gray-200 pb-2">
-      <div
-        class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
-        (click)="toggleNotificationsPopover($event)">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-            <mat-icon class="text-blue-600">notifications</mat-icon>
+           <button
+        class="w-full bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/60 shadow-sm hover:shadow-lg transition-all duration-200 transform hover:scale-[1.02] cursor-pointer"
+        (click)="openServiceRequestModal()" 
+      >
+        <div class="flex items-center space-x-4">
+          <div
+            class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center shadow-md"
+          >
+            <mat-icon class="text-white text-xl">support_agent</mat-icon>
           </div>
           <div>
-            <p class="font-medium text-gray-800">Notifications</p>
-            <p class="text-sm text-gray-600">Latest alerts</p>
+            <p class="font-semibold text-gray-800 text-sm">Service Request</p>
           </div>
         </div>
-        <div class="flex items-center space-x-2">
-          <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
-            {{ (novuService.getUnreadCount() | async) || 0 }}
-          </span>
-          <mat-icon class="text-slate-400">chevron_right</mat-icon>
+      </button>
+
+
+      <!-- Notes -->
+      <button
+        class="w-full bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/60 shadow-sm hover:shadow-lg transition-all duration-200 transform hover:scale-[1.02] cursor-pointer"
+        (click)="goToNotes()">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+            <mat-icon class="text-white text-xl">list_alt</mat-icon>
+          </div>
+          <div class="flex-1 text-left">
+            <p class="font-semibold text-gray-800">Notes</p>
+            <p class="text-sm text-gray-600">My personal notes</p>
+          </div>
+          <mat-icon class="text-gray-400 transform transition-transform group-hover:translate-x-1">chevron_right</mat-icon>
+        </div>
+      </button>
+
+      <!-- Notifications -->
+      <div
+        class="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/60 shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer"
+        (click)="toggleNotificationsPopover($event)">
+        <div class="flex items-center space-x-4">
+          <div class="relative">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+              <mat-icon class="text-white text-xl">notifications</mat-icon>
+            </div>
+            <div *ngIf="(novuService.getUnreadCount() | async) as unreadCount"
+                 class="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center border-2 border-white">
+              <span class="text-white text-xs font-bold">{{ unreadCount || 0 }}</span>
+            </div>
+          </div>
+          <div class="flex-1">
+            <p class="font-semibold text-gray-800">Notifications</p>
+            <p class="text-sm text-gray-600">Latest alerts and updates</p>
+          </div>
+          <mat-icon class="text-gray-400 transform transition-transform group-hover:translate-x-1">chevron_right</mat-icon>
         </div>
       </div>
     </div>
@@ -147,14 +175,14 @@
         </div>
         }
       </div>
-    </div>
+    </div> 
 
     <!-- Theme -->
     <div class="border-b border-gray-200 pb-2">
       <button
         class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer">
-        <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-          <mat-icon class="text-blue-600">palette</mat-icon>
+              <div class="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-600 rounded-xl flex items-center justify-center shadow-md">
+          <mat-icon class="text-white text-xl">palette</mat-icon>
         </div>
         <div class="flex-1 text-left">
           <p class="font-medium text-gray-800">Theme</p>
@@ -167,16 +195,23 @@
 </div>
 
 <!-- Chat Drawer -->
-<div class="fixed bottom-[20px] right-[10px] w-[400px] bg-white shadow-2xl transform transition-all duration-300 ease-in-out border border-gray-200
-    rounded-lg overflow-hidden flex flex-col z-50"
-  [style.transform]="isChatOpen() ? 'translateY(0)' : 'translateY(100%)'" [style.opacity]="isChatOpen() ? '1' : '0'"
+<div
+  class="fixed bottom-[20px] right-[10px] w-[300px] h-[380px] bg-white shadow-2xl 
+         transform transition-all duration-300 ease-in-out border border-gray-200
+         rounded-lg flex flex-col z-50"
+  [style.transform]="isChatOpen() ? 'translateY(0)' : 'translateY(100%)'"
+  [style.opacity]="isChatOpen() ? '1' : '0'"
   [style.visibility]="isChatOpen() ? 'visible' : 'hidden'">
-  <app-chat-box [chatId]="selectedChat?.chatId ?? ''" [partner]="selectedChat?.partner ?? ''"
+
+  <app-chat-box
+    class="flex-1"
+    [chatId]="selectedChat?.chatId ?? ''"
+    [partner]="selectedChat?.partner ?? ''"
     (closeChat)="closeChatFromChild()">
   </app-chat-box>
-  <div
-    class="absolute right-0 top-0 h-full w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize transition-colors duration-200">
-  </div>
+
+  <!-- Resize bar -->
+  <div class="absolute right-0 top-0 h-full w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize"></div>
 </div>
 
 <!-- Notification Detail Modal -->

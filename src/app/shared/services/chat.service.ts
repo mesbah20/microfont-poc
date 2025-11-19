@@ -4,7 +4,6 @@ import { BehaviorSubject, Observable, combineLatest, debounceTime, distinctUntil
 import { NovuService, ChatMessage } from './novu.service';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
 
 export interface ChatPreview {
   chatId: string;
@@ -22,7 +21,7 @@ function buildChatId(a: string, b: string): string {
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   // Notification service base (same API used for chat send)
-  private readonly api = environment.novu_service;
+  private readonly api = 'http://192.168.20.69:8088/Notify';
   public previews$ = new BehaviorSubject<ChatPreview[]>([]);
 
   private get currentUserId(): string {

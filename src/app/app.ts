@@ -11,8 +11,6 @@ import pkg from '../../package.json';
 import {KeyclockService} from './core/service/keyclock.service';
 import {AuthService} from './core/auth/auth.service';
 import {UserService} from './core/user/user.service';
-import { User } from './core/user/user.types';
-import { environment } from '../environments/environment';
 
 
 @Component({
@@ -25,8 +23,7 @@ import { environment } from '../environments/environment';
 export class App implements OnInit {
   protected title = 'LdsComponentProject';
   authService = inject(AuthService);
-  userId: string;
- private userService = inject(UserService);
+
   constructor(private themeService: ThemeService,
               public loaderService: LoaderService,
               private router: Router,
@@ -38,24 +35,15 @@ export class App implements OnInit {
 
 
   async ngOnInit() {
-    this.authService.getResources().subscribe(res => {
-      localStorage.setItem('resourceList', JSON.stringify(res.data))
-    });
-    this.authService.getUserWiseApplications().subscribe(res => {
-      localStorage.setItem('appList', JSON.stringify(res.data))
-    });
-
-    this.userService.user$.subscribe((user: User) => {
-
-    this.userId = user.username;
-
-    });
     const isAuthenticated = await this.authService.init();
     //debugger;
     const currentPath = window.location.pathname;
 
     if (isAuthenticated) {
       this.authService.decodeToken();
+      // if (currentPath === '/login' || currentPath === '/') {
+      //   this.router.navigate(['/home']);
+      // }
     }
     else {
       if (currentPath !== '/login') {
@@ -66,14 +54,13 @@ export class App implements OnInit {
     //console.log(this.authService.getToken())
     this.rootTitle.setTitle(pkg.name || 'Default Title');
     // Theme service will automatically initialize the saved theme
-    const userIdinit = this.userId;
-    if (userIdinit) {
-      console.log('Novu initializing for user:', userIdinit);
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      console.log('Novu initializing for user:', userId);
       // await this.novuService.init(userId, 'oH9Vf1VWV7s8');
-      await this.novuService.init(userIdinit, environment.novu_identifier);
+      await this.novuService.init(userId, 'EDstW_4loKyp');
     } else {
       console.warn('No userId found in localStorage. Novu not initialized.');
-      // অপশনাল: লগইন পেজে রিডাইরেক্ট করুন
       // this.router.navigate(['/login']);
     }
   }

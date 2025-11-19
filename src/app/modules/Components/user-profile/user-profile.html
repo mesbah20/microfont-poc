@@ -1,0 +1,277 @@
+<div class="page-wrapper">
+  <div class="panel">
+    <div class="profile-grid-container container p-4 my-4">
+      <app-expansion-panel-header
+        [isOpenSignal]="businessHeaderPanel"
+        [panelTitle]="'User Information'">
+      </app-expansion-panel-header>
+
+      <div class="flex flex-col md:flex-row md:items-start gap-25 mt-4">
+        <div class="flex-1 gap-8 mt-4 space-y-4">
+
+          <div class="grid grid-cols-2 md:grid-cols-2 gap-4">
+            <div class="component-section">
+              <lds-id-box
+                [frmGroup]="userForm"
+                [controlName]="'userId'"
+                [label]="'User ID'"
+                [isReadonly]="false"
+                [isVertical]="true"
+                [tooltip]="'ID'"
+                [tooltipDelay]="200"
+                [allowSpecialChars] = "true"
+                [isDotsVisible]="true"
+                (dotsClicked)="openModal()"
+                (onBlurred)="onUserIdChange($event)">
+              </lds-id-box>
+            </div>
+
+            <div class="component-section">
+              <app-text-base-input
+                [frmGroup]="userForm"
+                [controlName]="'userName'"
+                [label]="'User Name'"
+                [tooltip]="'User Name'"
+                [tooltipDelay]="200"
+                [isReadonly]="false"
+                [isVertical]="true">
+              </app-text-base-input>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4" *ngIf="showEmployeeDetails">
+            <div class="component-section">
+              <app-text-base-input [frmGroup]="userForm" [controlName]="'employeeId'"
+                                   [label]="'Employee Id'" [isVertical]="true">
+              </app-text-base-input>
+            </div>
+            <div class="component-section">
+              <app-text-base-input [frmGroup]="userForm" [controlName]="'employeeCode'"
+                                   [label]="'Employee Code'" [isVertical]="true">
+              </app-text-base-input>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="component-section">
+              <app-text-base-input [frmGroup]="userForm" [controlName]="'userEmailId'"
+                                   [label]="'Email Id'" [isVertical]="true">
+              </app-text-base-input>
+            </div>
+            <div class="component-section">
+              <app-text-base-input [frmGroup]="userForm" [controlName]="'mobileNumber'"
+                                   [label]="'Mobile No'" [isVertical]="true">
+              </app-text-base-input>
+            </div>
+          </div>
+
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="component-section">
+          <app-select-option-field [frmGroup]="userForm"
+                                   [controlName]="'homeOfficeId'" [label]="'Office ID'"
+                                   [isVertical]="true" [options]="officeOptions">
+          </app-select-option-field>
+        </div>
+        <div class="component-section">
+          <app-text-base-input [frmGroup]="userForm"
+                               [controlName]="'userDescription'" [label]="'User Description'"
+                               [isVertical]="true">
+          </app-text-base-input>
+        </div>
+      </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="component-section">
+              <lds-switch
+                [frmGroup]="userForm"
+                [controlName]="'bankStaffFlag'"
+                [isChecked]="frmGroup.get('user.bankStaffFlag')?.value || false"
+                [labelText]="'Bank Staff'" [enable]="isEmployeeInfoEnable"
+              ></lds-switch>
+            </div>
+          </div>
+      </div>
+        <div class="w-full md:w-1/4 flex flex-col items-center md:items-start">
+          <div class="border border-gray-300 rounded-lg bg-gray-50 shadow-sm w-[150px] h-[180px] flex items-center justify-center overflow-hidden">
+            <img *ngIf="imageBase64" [src]="imageBase64" alt="User Photo" class="object-cover w-full h-full rounded" />
+            <span *ngIf="!imageBase64" class="text-xs text-gray-400 text-center">No Image</span>
+          </div>
+          <div class="image-upload flex flex-col items-center">
+            <!--class="small-upload-btn"
+            small-upload-btn w-[100px] md:w-[120px] text-xs-->
+            <lds-file
+              #imgFileInput
+              class="small-upload-btn"
+              [id]="'user-photo-upload'"
+              [multipleFile]="false"
+              [fileExtension]="'.jpg,.jpeg'"
+              [isVertical]="true"
+              [labelText]="'Upload Image'"
+              [customFileName]="'user-photo'"
+              (selectedFilesChanged)="convertImageToBase64($event)">
+            </lds-file>
+          </div>
+        <!--  <div class="form-group form-inline">
+            <div class="file-upload-container">
+              <button type="button" class="btn-upload ml-4 flex items-center gap-2">
+                <input
+                  type="file"
+                  accept=".jpg,.jpeg"
+                  (change)="onFileSelected($event)"
+                />
+              </button>
+            </div>
+
+          </div>-->
+
+        </div>
+      </div>
+      <!--<div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-end">-->
+      <div class="flex-1 gap-8 mt-4 space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <div class="component-section">
+          <app-text-base-input [frmGroup]="userForm"
+                               [controlName]="'logInAppTerminalIp'" [label]="'App Terminal IP'"
+                               [placeholder]="'xxx.xxx.xxx.xxx'" [isVertical]="true">
+          </app-text-base-input>
+        </div>
+        <div class="component-section">
+          <app-text-base-input [frmGroup]="userForm"
+                               [controlName]="'macAddress'" [label]="'User MAC Address'"
+                               [placeholder]="'xx-xx-xx-xx'" [isVertical]="true">
+          </app-text-base-input>
+        </div>
+        <div class="component-section flex items-end gap-2">
+          <app-text-base-input [frmGroup]="userForm"
+                               [controlName]="'logInUserTerminalIp'" [label]="'User Terminal IP'"
+                               [placeholder]="'xxx.xxx.xxx.xxx'" [isVertical]="true">
+          </app-text-base-input>
+          <lds-btn labelText="ADD" class="!h-[36px] !px-4" (onClick)="addAddresses()"></lds-btn>
+        </div>
+      </div>
+      </div>
+
+      <div class="component-section mt-4" *ngIf="showUserIpGrid">
+        <lds-data-grid [id]="'ip-addresses'" [initPageSize]="5"
+                       [enableSelection]="false" [showEditButton]="true"
+                       [showDeleteButton]="true" (onFHDeleteClick)="removeAddresses($event)"
+                       (onFHEditClick)="editAddress($event)"
+                       [useInlineEdit]="true" [dataSource]="ipAddressList"
+                       [selectedColumns]="['logInUserTerminalIp']"
+                       [editableColumns]="['logInUserTerminalIp']"
+                       (dataSourceChanged)="onIpDataChanged($event)">
+        </lds-data-grid>
+      </div>
+      <div class="flex-1 gap-8 mt-4 space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div class="component-section">
+          <app-text-base-input [frmGroup]="userForm"
+                               [controlName]="'appLogInTime'" [label]="'User Business Hour From'"
+                               [isVertical]="true">
+          </app-text-base-input>
+        </div>
+        <div class="component-section">
+          <app-text-base-input [frmGroup]="userForm"
+                               [controlName]="'appLogOutTime'" [label]="'User Business Hour To'"
+                               [isVertical]="true">
+          </app-text-base-input>
+        </div>
+        <div class="component-section">
+          <app-text-base-input [frmGroup]="userForm"
+                               [controlName]="'sessionExpTime'" [label]="'Session Expired Time'"
+                               [isVertical]="true">
+          </app-text-base-input>
+        </div>
+      </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2" *ngIf="showUnassignedPackageGrid">
+        <div class="component-section">
+          <app-text-base-input [frmGroup]="userForm"
+                               [controlName]="'passwordString'" [label]="'Password for this user'"
+                               [isVertical]="true">
+          </app-text-base-input>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+                                                    <!--PACKAGE-->
+<div class="page-wrapper" *ngIf="showUnassignedPackageGrid">
+  <div class="panel">
+    <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'Assign Package to User'"/>
+    <div class="container space-y-6 p-4 my-4 ">
+    <div class="container flex items-start justify-center gap-6">
+
+      <!-- Unassigned Package Grid -->
+      <div class="w-1/2 min-w-[350px]" *ngIf="showUnassignedPackageGrid">
+        <section class="transaction-grid-section bg-white rounded-lg shadow-sm p-4 h-[600px]">
+          <app-sub-panel-header [subPanelTitle]="'Unassigned User Package'"/>
+          <ng-container *ngIf="showUnassignedGrid">
+            <lds-data-grid
+              [id]="'unassigned-packages'"
+              [enableSelection]="true"
+              [useInlineEdit]="true"
+              [dataSource]="unAssignedUserPackage"
+              [selectedColumns]="['packageId','packageName']"
+              (onChecked)="onAddPackageRowSelect($event)"
+              (onSelectAllChange)="onAddAllPackageRowSelect($event)"
+              [initPageSize]="5">
+            </lds-data-grid>
+          </ng-container>
+        </section>
+      </div>
+
+      <!-- Action Buttons -->
+      <!--<div class="w-1/5 min-w-[10px] flex justify-center">
+        <div class="flex flex-col gap-4 justify-end items-center h-full pb-200">-->
+      <div style="width: 10%; min-width: 97px !important; background: transparent; border: 0; box-shadow: none;" class="panel panel-info" ng-hide="userRole.hideGrids">
+        <div class="panel-body text-center ls-panel-body flex flex-col items-center gap-4"
+             style="position: relative; top:123px;">
+          <button mat-raised-button color="primary" class="action-btn" (click)="selectPackage()">
+            <mat-icon>keyboard_double_arrow_right</mat-icon>
+          </button>
+          <button mat-raised-button color="warn" class="action-btn" (click)="removePackage()">
+            <mat-icon>keyboard_double_arrow_left</mat-icon>
+          </button>
+        </div>
+
+      </div>
+
+
+
+      <!-- Assigned Package Grid -->
+      <div class="w-1/2 min-w-[350px]" *ngIf="showUnassignedPackageGrid">
+        <section class="transaction-grid-section bg-white rounded-lg shadow-sm p-4 h-[600px]">
+          <app-sub-panel-header [subPanelTitle]="'Assigned User Package'"/>
+          <ng-container *ngIf="showAssignedGrid">
+            <lds-data-grid
+              [id]="'assigned-packages'"
+              [enableSelection]="true"
+              [useInlineEdit]="true"
+              [dataSource]="assignedUserPackage"
+              [selectedColumns]="['packageId','packageName','fromDt','toDt']"
+              (onChecked)="onRemovePackageRowSelect($event)"
+              [editableColumns]="['fromDt','toDt']"
+              [initPageSize]="5"
+              [showEditButton]="true"
+              (onSelectAllChange)="onRemoveAllPackageRowSelect($event)"
+              (onFHEditClick)="editPackage($event)"
+              (dataSourceChanged)="onPackageChanged($event)">
+            </lds-data-grid>
+          </ng-container>
+        </section>
+      </div>
+
+    </div>
+  </div>
+  </div>
+</div>
+
+
+                                                  <!--MODAL-->
+<app-user-list-modal [showUserModal]="showUserModal" [userId]="userForm.get('user.userId')?.value ?? null"
+                     (userSelected)="loadUser($event)"></app-user-list-modal>
+

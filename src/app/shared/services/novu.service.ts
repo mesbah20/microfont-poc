@@ -4,7 +4,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Novu } from '@novu/js';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../environments/environment';
 
 export interface InAppNotification {
   _id: string;
@@ -31,7 +30,7 @@ export class NovuService {
   private notifications$ = new BehaviorSubject<InAppNotification[]>([]);
   private chatMessages$ = new BehaviorSubject<ChatMessage[]>([]);
   private unreadCount$ = new BehaviorSubject<number>(0);
-  private backendUrl = environment.novu_service;
+  private backendUrl = 'http://localhost:8080/api/demo';
   private RECONCILE_WINDOW_MS = 15000; // 15s
   private currentSubscriberHash?: string;
   private mapNotification(result: any): InAppNotification | null {
@@ -362,8 +361,10 @@ export class NovuService {
     const novuOptions: any = {
       applicationIdentifier: appId,
       subscriberId,
-      backendUrl: environment.novu_api,
-      socketUrl: environment.novu_socket,
+      // backendUrl: 'https://api.novu.co',
+      // socketUrl: 'https://ws.novu.co',
+      backendUrl: 'http://192.168.10.56:3000/novu/api',
+      socketUrl: 'http://192.168.10.56:3002',
     };
 
     if (normalizedHash) {
@@ -601,7 +602,8 @@ export class NovuService {
 
   getUnreadCount(): Observable<number> {
     return this.unreadCount$.asObservable();
-  }
+}
+
 
   async markAsRead(id: string): Promise<void> {
     if (!this.novu) return;

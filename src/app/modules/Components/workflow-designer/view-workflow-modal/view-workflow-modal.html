@@ -1,0 +1,20 @@
+
+    <form [formGroup]="modalForm">
+        <div class="panel">
+          <lds-data-grid [id]="'user-search'" [enableSelection]="false"
+                         [searchEnabled]="true"  [showPrintButton]="true"
+                         [useInlineEdit]="false" [dataSource]="userRolesList()" (onPrint)="loadUserRoles($event)"
+                         [selectedColumns]="[
+                                    'workflowId',
+                                    'workflowName',
+                                    'appId'
+                            ]"
+                         [customColumnNames]="{
+                            workflowId: 'ID',
+                            workflowName: 'WorkFlow Name',
+                            appId: 'App ID',
+                        }">
+          </lds-data-grid>
+        </div>
+    </form>
+

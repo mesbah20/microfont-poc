@@ -100,7 +100,9 @@ export class MenuDrawer implements OnInit {
     //------------ testing with dummy data ------------
     if(!resourceList)
       return;
-    const dummyData: UserAccessItem[] = resourceList.map((m: any) => ({
+    const dummyData: UserAccessItem[] = resourceList.filter((item:any) => 
+      item?.attributes?.functionType != 'R'
+    ).map((m: any) => ({
       FunctionId: m.attributes.functionId,
       FunctionName: m.attributes.functionName,
       HOFunctionFlag: '0',
@@ -225,14 +227,20 @@ export class MenuDrawer implements OnInit {
 
   generateMenuFromAccess() {
 
-    const uniqueMenuNames = [...new Set(this.userAccessList.map(x => x.ModuleName))];
+    const uniqueMenuNames = [
+      ...new Set(
+        this.userAccessList
+          //.filter(item => item.ModuleName?.toLowerCase() !== 'report')
+          .map(item => item.ModuleName)
+      )
+    ];
 
     this.menuSections = uniqueMenuNames.map(name => ({
       key: name.toLowerCase().replace(/\s+/g, ''),
       label: name,
       icon: this.getIcon(name)
     }));
-    
+
     this.groupedMenu = this.userAccessList.reduce((acc: { [key: string]: UserAccessItem[] }, item) => {
       if (!acc[item.ModuleName]) {
         acc[item.ModuleName] = [];
@@ -267,12 +275,12 @@ export class MenuDrawer implements OnInit {
   }
 
   onMenuItemClick(item: UserAccessItem): void {
-  // Step 1: Save FunctionId to localStorage
+    // Step 1: Save FunctionId to localStorage
     console.log(item)
-   localStorage.setItem('currentFunctionId', item.FunctionId);
+    localStorage.setItem('currentFunctionId', item.FunctionId);
 
-  // Optional: Log for debug
-}
+    // Optional: Log for debug
+  }
 
   getItemsByMenu(menuName: string) {
     return this.groupedMenu[menuName] || [];
