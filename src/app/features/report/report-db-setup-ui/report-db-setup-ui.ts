@@ -86,7 +86,7 @@ export class ReportDbSetupUI implements OnInit {
 
   ngOnInit() {
     this.initializeForm();
-    this.loadConnections();
+    // this.loadConnections();
   }
   private setupSignalEffects(): void {
     effect(() => {
@@ -382,7 +382,7 @@ export class ReportDbSetupUI implements OnInit {
     
     const dto: any = {
       id: this.connectionForm.value.id || undefined,
-      vappName: vAppNameValue || 'ultimus',
+      vAppName: vAppNameValue || 'ultimus',
       appId: environment.appId,
       dbType: this.connectionForm.value.dbType,
       driver: this.connectionForm.value.driver,
@@ -468,7 +468,7 @@ export class ReportDbSetupUI implements OnInit {
     
     const dto: any = {
       id: this.connectionForm.value.id || undefined,
-      vappName: this.connectionForm.value.vAppName,
+      vAppName: this.connectionForm.value.vAppName,
       dbType: this.connectionForm.value.dbType,
       driver: this.connectionForm.value.driver,
       host: this.connectionForm.value.host,

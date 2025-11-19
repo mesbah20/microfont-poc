@@ -701,7 +701,7 @@ export class ReportParameterListUI implements OnInit {
       },
       error: (err) => {
         console.error('Error loading API endpoints:', err);
-        this.toastr.error('Failed to load API endpoints', 'Error');
+        // this.toastr.error('Failed to load API endpoints', 'Error');
       }
     });
   }
@@ -1117,6 +1117,7 @@ export class ReportParameterListUI implements OnInit {
           control.markAsTouched();
         }
       });
+      this.onClickSave.set(false);
       return;
     }
 
@@ -1181,12 +1182,16 @@ export class ReportParameterListUI implements OnInit {
         // Refresh report list
         this.loadReports();
         this.loading.set(false);
+        this.onClickSave.set(false);
       },
       error: (err) => {
         console.error('Error saving report:', err);
         this.toastr.error('Failed to save report. Please try again.', 'Error');
         this.loading.set(false);
-      }
+        this.onClickSave.set(false);
+      },
+    
+      
     });
   }
 

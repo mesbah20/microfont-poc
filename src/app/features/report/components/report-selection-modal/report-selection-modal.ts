@@ -107,7 +107,6 @@ export class ReportSelectionModalComponent implements OnInit {
     let resourceList = JSON.parse(localStorage.getItem('resourceList') || '[]');
     if(!resourceList || resourceList.length === 0) {
       console.warn('No resourceList found in localStorage');
-      this.toastr.warning('No report functions available for this user', 'Access Info');
       this.isLoading.set(false);
       return;
     }

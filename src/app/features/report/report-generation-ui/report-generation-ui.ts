@@ -319,7 +319,7 @@ onModalResult(result: any) {
           reportId: metadata.id,
           functionId: metadata.functionId,
           reportName: metadata.reportName,
-          appCode: metadata?.dataSourceInfo?.vappName,
+          appCode: metadata?.dataSourceInfo?.vAppName,
         });
         
         // Sort parameters and rebuild form
@@ -671,7 +671,7 @@ console.log(param);
     this.generating.set(true);
 
     const formValues = this.parameterForm.value;
-    const appCode =  metadata?.dataSourceInfo?.vappName || 'ultimus';
+    const appCode =  metadata?.dataSourceInfo?.vAppName || 'ultimus';
     
     // Process template variables in parameter values before sending
     const processedParameters: { [key: string]: any } = {};
@@ -770,7 +770,7 @@ console.log(param);
   private onGenerateReportForDownload() {
     const metadata = this.reportMetadata();
     if (!metadata) return;
-    const appCode =  metadata?.dataSourceInfo?.vappName || 'ultimus';
+    const appCode =  metadata?.dataSourceInfo?.vAppName || 'ultimus';
     this.generating.set(true);
 
     const formValues = this.parameterForm.value;

@@ -73,7 +73,7 @@ export interface BaseDTO {
  */
 export interface DatabaseConnectionDTO extends BaseDTO {
   connectionName: string;
-  vappName: string;
+  vAppName: string;
   appId: string;
   dbType: string;
   driver: string;
