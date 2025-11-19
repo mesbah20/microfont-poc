@@ -1,11 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import {Router, RouterOutlet} from '@angular/router';
 import { ThemeService } from './shared/services/theme.service';
 import { GlobalActivityTrackerService } from './shared/services/global-activity-tracker.service';
 import { NovuService } from './shared/services/novu.service';
 import { LoaderService } from './shared/services/loader.service';
 import { LoaderComponent } from './shared/components/loader/loader.component';
+import {Title} from '@angular/platform-browser';
+import pkg from '../../package.json';
+import {KeyclockService} from './core/service/keyclock.service';
+import {AuthService} from './core/auth/auth.service';
+import {UserService} from './core/user/user.service';
+import { User } from './core/user/user.types';
+import { environment } from '../environments/environment';
 
 
 @Component({
@@ -17,22 +24,53 @@ import { LoaderComponent } from './shared/components/loader/loader.component';
 })
 export class App implements OnInit {
   protected title = 'LdsComponentProject';
-
-
-  constructor(private themeService: ThemeService,  public loaderService: LoaderService, private activityTracker: GlobalActivityTrackerService,private novuService: NovuService) {}
+  authService = inject(AuthService);
+  userId: string;
+ private userService = inject(UserService);
+  constructor(private themeService: ThemeService,
+              public loaderService: LoaderService,
+              private router: Router,
+              private activityTracker: GlobalActivityTrackerService,
+              private rootTitle: Title,
+              private novuService: NovuService) {}
 
 
 
 
   async ngOnInit() {
+    this.authService.getResources().subscribe(res => {
+      localStorage.setItem('resourceList', JSON.stringify(res.data))
+    });
+    this.authService.getUserWiseApplications().subscribe(res => {
+      localStorage.setItem('appList', JSON.stringify(res.data))
+    });
+
+    this.userService.user$.subscribe((user: User) => {
+
+    this.userId = user.username;
+
+    });
+    const isAuthenticated = await this.authService.init();
+    //debugger;
+    const currentPath = window.location.pathname;
+
+    if (isAuthenticated) {
+      this.authService.decodeToken();
+    }
+    else {
+      if (currentPath !== '/login') {
+        this.router.navigate(['/login']);
+      }
+    }
+
+    //console.log(this.authService.getToken())
+    this.rootTitle.setTitle(pkg.name || 'Default Title');
     // Theme service will automatically initialize the saved theme
-    const userId = localStorage.getItem('userId');
-    if (userId) {
-      console.log('Novu initializing for user:', userId);
-      const subscriberHash = localStorage.getItem('novuSubscriberHash') || undefined;
-      await this.novuService.init(userId, '1uXpKIJUa3Rg', subscriberHash);
+    const userIdinit = this.userId;
+    if (userIdinit) {
+      console.log('Novu initializing for user:', userIdinit);
       // await this.novuService.init(userId, 'oH9Vf1VWV7s8');
-      // await this.novuService.init(userId, 'EDstW_4loKyp');
+      await this.novuService.init(userIdinit, environment.novu_identifier);
     } else {
       console.warn('No userId found in localStorage. Novu not initialized.');
       // অপশনাল: লগইন পেজে রিডাইরেক্ট করুন

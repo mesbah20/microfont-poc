@@ -1,4 +1,4 @@
-import { Component, effect, inject, Inject, Input, OnInit, signal, SimpleChanges, Type, WritableSignal } from '@angular/core';
+import { Component, effect, inject, Inject, Input, OnInit, signal, SimpleChanges, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { GlService } from '../../services/gl-transaction-service';
@@ -24,7 +24,6 @@ import { FormControlHighlightDirective } from '../../shared/directives/form-cont
 import { HighlightService } from '../../shared/services/highlight.service';
 import { UserService } from '../../core/user/user.service';
 import { User } from '../../core/user/user.types';
-import { OtherComponentsPage } from '../../shared/components/other-components-page/other-components-page';
 
 
 @Component({
@@ -44,9 +43,9 @@ export class GlSubsidiary implements OnInit {
   @Input() isViewDetails: boolean | false;
   @Input() highlightMap: Record<string, boolean> | null = null;
   @Input() isApprovalView: boolean = false;
+ 
   private userService = inject(UserService);
-
-
+  
   frmGroup: FormGroup;
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
   toastr = inject(ToastrService);
@@ -74,11 +73,8 @@ export class GlSubsidiary implements OnInit {
 
   isRightSideEnabled: boolean = false;
   functionId: number;
+  userId : string;
   entityTypeId : string;
-  userId : String;
-  modalComponent?: Type<any>;
-  OtherComponentsPageComponent: Type<any> = OtherComponentsPage;
-    modalComponentData?: any = null;
   //End  Declarations
 
 
@@ -116,10 +112,9 @@ export class GlSubsidiary implements OnInit {
       }
     });
   }
-  
+
   ngOnInit(): void {
     this.onSubsidiaryReset();
-    this.loadSessionData();
     this.loadDataForOffice();
     this.loadDataForDept();
     if (this.isViewDetails) {
@@ -135,8 +130,16 @@ export class GlSubsidiary implements OnInit {
       console.log("this.isApprovalView in on changes ", this.isApprovalView);
 
     }
-    this.functionId = Number(localStorage.getItem('currentFunctionId'));
+    this.route.queryParams.subscribe(params => {
+      this.functionId = Number(params["functionId"]);
+    });
     console.log("FunctionId = ", this.functionId);
+
+    this.userService.user$.subscribe((user: User) => {
+    
+        this.userId = user.username;
+    
+ });
   }
 
   // End Page Load
@@ -163,13 +166,6 @@ export class GlSubsidiary implements OnInit {
       error: (err) => { console.error(err); alert('Error Fetching Data'); }
     });
   }
-  loadEntityType(officeid : number){
-    this.exchangeService.getEntityInfo(officeid).subscribe({
-      next:(res:any) => {
-       this.entityTypeId = res;
-      }
-    });    
-  }
   loadDataForDept() {
     const request = {};
     this.exchangeService.getAllDepartment(request).subscribe({
@@ -180,13 +176,6 @@ export class GlSubsidiary implements OnInit {
         }));
       },
       error: (err) => { console.error(err); alert('Error Fetching Data'); }
-    });
-  }
-
-  loadSessionData(){
-      this.userService.user$.subscribe((user: User) => {
-      this.userId = user.username;
-      console.log('User ID:', this.userId);
     });
   }
   // End Bindings
@@ -315,48 +304,21 @@ export class GlSubsidiary implements OnInit {
     this.frmGroup.get('employeeId')?.updateValueAndValidity();
   }
 
-  // openModal() {
-  //   this.showModal = false;
-  //   setTimeout(() => {
-  //     this.showModal = true;
-  //   }, 0);
-  // }
-
-  openModal(componentToLoad?: Type<any>, data?: any) {
-  console.log('=== OPENING MODAL ===');
-  console.log('Component to load:', componentToLoad);
-  console.log('Component name:', componentToLoad?.name);
-
-  // Reset modal state
-  this.showModal = false;
-  this.modalComponent = undefined;
-
-
-  setTimeout(() => {
-    this.modalComponent = componentToLoad || this.OtherComponentsPageComponent;
-
-    const currentFieldData = this.frmGroup?.getRawValue ? this.frmGroup.getRawValue() : {};
-    this.modalComponentData = {
-      initialData: currentFieldData,
-      ...(data || {})
-    };
-
-    console.log('Setting modal component:', this.modalComponent?.name);
-    console.log('Setting modal data:', this.modalComponentData);
-
-    this.showModal = true;
-
-    console.log('Modal should now be visible');
-  }, 50);
-}
+  openModal() {
+    this.showModal = false;
+    setTimeout(() => {
+      this.showModal = true;
+    }, 0);
+  }
   onSubmit() { }
 
   onBranchChange(event: any) {
     const fullBranchName = event.selectedOption.value;
-    this.loadEntityType(event.selectedOption.key);
     if (fullBranchName.glAccSl != '') {
       this.onGLSerialChange();
     }
+
+    this.loadEntityType(event.selectedOption.key);
 
   }
 
@@ -476,9 +438,7 @@ export class GlSubsidiary implements OnInit {
       pglAccSubSl: initFormValue.glAccSubSl,
       pqueueId: '' // or whatever your queue ID logic is
     };
-    if(initFormValue.glAccSubSl != '' && initFormValue.glAccSubSl  != null){
-    
-      try {
+    try {
       // Call service and wait for result
       const data: GLSubsidiaryModel[] = await this.glSubsidiaryService
         .getGLSubsidiaryAccountInfo(req)
@@ -500,8 +460,6 @@ export class GlSubsidiary implements OnInit {
     } catch (err) {
       console.error('Failed to fetch GL Subsidiary info:', err);
     }
-    }
-    
   }
   //End Events
 
@@ -585,6 +543,7 @@ export class GlSubsidiary implements OnInit {
     const payload: any = {
       ...formValue,
 
+      // 🔹 Add system/session fields
       recordUserId: this.userId,
       entityId: this.entityTypeId,
       functionId: this.functionId,
@@ -607,5 +566,12 @@ export class GlSubsidiary implements OnInit {
  ngOnDestroy(): void {
     this.hl.setMap({});
   }
-
+  loadEntityType(officeId : number){
+    this.exchangeService.getEntityInfo(officeId).subscribe({
+      next: (res: any) => {
+        this.entityTypeId = res;
+      },
+      error: (err) => { console.error(err); alert('Error Fetching Data'); }
+    });
+  }
 }

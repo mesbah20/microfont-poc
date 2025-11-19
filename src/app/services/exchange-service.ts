@@ -10,7 +10,7 @@ import { environment } from "../../environments/environment";
     //Transaction Date
     getTxnDate(pOfficeId: string): Observable<any> {
         const body = { pOfficeId };
-        const url = `${environment.centrinoBaseUrl}/get-txn-date`;
+        const url = `${environment.centrinoBaseUrl}/xchange-out/get-txn-date`;
         return this.http.post<any>(url, body);
     }
 
@@ -18,7 +18,7 @@ import { environment } from "../../environments/environment";
     getEntityInfo(pOfficeId: any): Observable<any> {
         console.log(pOfficeId);
         const body = { pOfficeId };
-        const url = `${environment.centrinoBaseUrl}/get-office-entity`;
+        const url = `${environment.centrinoBaseUrl}/xchange-out/get-office-entity`;
         return this.http.post(url, body,
             {
                 headers: {
@@ -37,7 +37,7 @@ import { environment } from "../../environments/environment";
             pEntityTypeId: entityType
         };
 
-        const url = `${environment.centrinoBaseUrl}/fx-rate-amt-category-ga`;
+        const url = `${environment.centrinoBaseUrl}/xchange-out/fx-rate-amt-category-ga`;
         return this.http.post<any>(url, body, {
             headers: {
                 'Content-Type': 'application/json',
@@ -49,14 +49,14 @@ import { environment } from "../../environments/environment";
     //Office List
     getOwnOfficeList(pCompanyId: string): Observable<any> {
         const body = { pCompanyId };
-        const url = `${environment.centrinoBaseUrl}/get-comp-office-list-exc`;
+        const url = `${environment.centrinoBaseUrl}/xchange-out/get-comp-office-list-exc`;
         return this.http.post<any>(url, body);
     }
 
     //User Info
     getUserProfileById(userId: string): Observable<any> {
         return this.http.get<any>(
-            `${environment.centrinoBaseUrl}/user-login/getUserProfileById/${userId}`
+            `${environment.centrinoBaseUrl}/sentinel/user-profile/${userId}`
         );
     }
 
@@ -69,23 +69,23 @@ import { environment } from "../../environments/environment";
             , pGlSl: pGlSl
         };
 
-        const url = `${environment.centrinoBaseUrl}/get-chg-rule-by-account`;
+        const url = `${environment.centrinoBaseUrl}/xchange-out/get-chg-rule-by-account`;
         return this.http.post<any>(url, body);
     }
 
     //Entity
     getEntityTypeList(request: any): Observable<any> {
-        const url = `${environment.centrinoBaseUrl}/get-office-entity-type-list`;
+        const url = `${environment.centrinoBaseUrl}/xchange-out/get-office-entity-type-list`;
         return this.http.post<any>(url, request);
     }
 
 
     getAllOffice(request: any): Observable<any> {
-    const url = `${environment.centrinoBaseUrl}/get-all-office-info-exc`;
+    const url = `${environment.centrinoBaseUrl}/xchange-out/get-all-office-info-exc`;
     return this.http.post<any>(url, request);
   }
    getAllDepartment(request: any): Observable<any> {
-    const url = `${environment.centrinoBaseUrl}/get-department-list`;
+    const url = `${environment.centrinoBaseUrl}/xchange-out/get-department-list`;
     return this.http.post<any>(url, request);
   }
 

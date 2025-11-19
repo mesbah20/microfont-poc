@@ -1,48 +1,40 @@
 <!-- chat-box.html -->
 <div class="h-screen pb-16 bg-gradient-to-br from-green-50 to-blue-50 flex flex-col max-w-md mx-auto shadow-xl max-h-[600px]">
   <div class="sticky top-0 z-20">
+    <!-- Chat header -->
     <div class="bg-gradient-to-r from-green-600 to-green-700 text-white px-5 py-4 flex items-center shadow-lg">
       <div class="w-12 h-12 rounded-full bg-white/20 mr-3 flex items-center justify-center text-white font-bold text-lg shadow-md">
-        {{ (partner || '?').charAt(0).toUpperCase() }}
+        {{ partner[0] }}
       </div>
       <div class="flex-1">
-        <h2 class="text-base font-semibold">{{ partner || 'Select a user' }}</h2>
-        <div class="flex items-center" *ngIf="partner">
+        <h2 class="text-base font-semibold">{{ partner }}</h2>
+        <div class="flex items-center">
           <div class="w-2 h-2 rounded-full bg-green-300 mr-2 animate-pulse"></div>
           <p class="text-xs text-green-100">Online</p>
         </div>
       </div>
       <div class="flex space-x-3">
-        <button (click)="toggleSearch()" class="bg-white/20 text-white px-3 py-1 rounded-full text-xs hover:bg-white/30 transition">
-          Search
-        </button>
-        <button (click)="onCloseClick()" class="bg-white/20 text-white px-3 py-1 rounded-full text-xs hover:bg-white/30 transition">
-          Close
-        </button>
+        <button (click)="toggleSearch()" class="...">Search</button>
+        <button (click)="onCloseClick()" class="...">Close</button>
       </div>
     </div>
 
+    <!-- Search Box -->
     <div
-      class="bg-white border-b border-gray-200 px-4 transition-all duration-500 ease-in-out overflow-hidden"
-      [style.max-height]="isSearchOpen ? '80px' : '0px'"
+      class="bg-white border-b border-gray-200 px-4 transition-all duration-500 ease-in-out"
       [style.opacity]="isSearchOpen ? '1' : '0'"
+      [style.max-height]="isSearchOpen ? '80px' : '0px'"
       [class.py-3]="isSearchOpen"
-      [class.pointer-events-none]="!isSearchOpen">
+      [class.pointer-events-auto]="isSearchOpen">
       <div class="flex items-center space-x-3">
-        <button (click)="closeSearch()" class="border border-gray-200 w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100">
-          ×
-        </button>
-        <input
-          [(ngModel)]="searchQuery"
-          (keydown)="onSearchEnter($event)"
-          type="text"
-          placeholder="Search messages..."
-          class="flex-1 border border-gray-200 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm" />
-        <button class="px-4 py-2 bg-green-500 text-white rounded-full text-sm">Search</button>
+        <button (click)="closeSearch()" class="...">X</button>
+        <input [(ngModel)]="searchQuery" (keydown)="onSearchEnter($event)" type="text" placeholder="Search messages..." #searchInput>
+        <button class="...">Search</button>
       </div>
     </div>
   </div>
 
+  <!-- Messages (scroll container) -->
   <div #messagesContainer class="flex-1 p-4 pb-8 space-y-4 overflow-y-auto">
     <div class="flex justify-center">
       <span class="bg-white/80 backdrop-blur-sm text-gray-500 text-xs px-3 py-1 rounded-full shadow-sm">Today</span>
@@ -50,10 +42,11 @@
 
     @for (msg of messages; track msg.timestamp) {
       <div class="animate-fadeInUp">
+        <!-- Received Message -->
         @if (getSender(msg) === 'other') {
           <div class="flex items-start">
             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 mr-3 mt-1 flex items-center justify-center text-sm font-semibold text-white shadow-md">
-              {{ (msg.senderUserId || '').charAt(0).toUpperCase() }}
+              {{ msg.senderUserId[0].toUpperCase() }}
             </div>
             <div class="bg-white p-3 rounded-2xl shadow-sm max-w-[75%] hover:shadow-md transition-shadow">
               <p class="text-sm text-gray-800">{{ msg.notificationBody }}</p>
@@ -62,6 +55,7 @@
           </div>
         }
 
+        <!-- Sent Message -->
         @if (getSender(msg) === 'me') {
           <div class="flex justify-end">
             <div class="bg-gradient-to-r from-green-100 to-green-50 p-3 rounded-2xl shadow-sm max-w-[75%] hover:shadow-md transition-shadow">
@@ -69,6 +63,7 @@
               <div class="flex justify-end items-center mt-2 space-x-1">
                 <p class="text-xs text-gray-400">{{ formatTime(msg.timestamp) }}</p>
                 <div class="flex">
+                  <!-- You can change icons based on msg.status (pending/failed/sent) -->
                   @if (msg.status === 'pending') {
                     <span class="text-xs text-yellow-600 ml-2">Sending...</span>
                   } @else if (msg.status === 'failed') {
@@ -86,10 +81,11 @@
       </div>
     }
 
+    <!-- Typing indicator -->
     @if (isTyping) {
       <div class="flex items-start">
         <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 mr-3 mt-1 flex items-center justify-center text-sm font-semibold text-white shadow-md">
-          {{ (partner || '?').charAt(0).toUpperCase() }}
+          {{ partner[0].toUpperCase() }}
         </div>
         <div class="bg-white p-3 rounded-2xl shadow-sm">
           <div class="flex space-x-1">
@@ -102,14 +98,16 @@
     }
   </div>
 
+  <!-- Input area -->
   <div class="bg-white/90 backdrop-blur-sm border-t border-gray-200 p-4 fixed bottom-0 left-0 right-0 shadow-lg max-w-md mx-auto">
     <div class="flex items-center space-x-3">
+      <!-- Removed Emoji & Attach (no functionality) -->
       <input
         [(ngModel)]="messageText"
         (keydown)="onEnterKey($event)"
         type="text"
         placeholder="Type a message..."
-        class="flex-1 border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm bg-gray-50 focus:bg-white transition-all" />
+        class="flex-1 border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm bg-gray-50 focus:bg-white transition-all">
       <button
         (click)="sendMessage()"
         class="p-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full hover:from-green-600 hover:to-green-700 transition-all hover:scale-105 shadow-md">
@@ -118,3 +116,4 @@
     </div>
   </div>
 </div>
+
