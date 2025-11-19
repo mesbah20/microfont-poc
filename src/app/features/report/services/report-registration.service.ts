@@ -23,7 +23,7 @@ export interface BaseDTO {
 })
 export class ReportRegistrationService {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.reportGenerationApiUrl}/api/reports`; // Using port 8083
+  private baseUrl = `${environment.reportManagementApiUrl}/reports`; // Using port 8083
 
   /**
    * Create a new report with file upload

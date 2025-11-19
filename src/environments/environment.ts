@@ -35,7 +35,7 @@ export const environment = {
     clientId: 'LauncherApp'
   },
   
-  reportManagementApiUrl: 'http://localhost:8083/api', // Report Management Backend API
-  reportGenerationApiUrl: 'http://localhost:8083', // BIRT Report Generation Service
+  reportManagementApiUrl: 'http://localhost:8092/centrino', // Report Management Backend API
+  reportGenerationApiUrl: 'http://localhost:8092', // BIRT Report Generation Service
   sessionUrl:'http://192.168.20.93:8090/centrino/office-session/getOfficeSession'
 };
