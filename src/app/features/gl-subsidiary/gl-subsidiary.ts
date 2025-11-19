@@ -271,7 +271,7 @@ export class GlSubsidiary implements OnInit {
         this.isReferenceNoDisabled = false;
         this.isDepartmentDisabled = false;
         this.isEmployeeDisabled = false;
-        this.updateField('glBankOffice', true);
+        this.updateField('glBankOffice', false);
         this.updateField('departmentId', true);
         this.isEmployeeDisabled = true;
         break;
@@ -281,8 +281,8 @@ export class GlSubsidiary implements OnInit {
         this.isReferenceNoDisabled = false;
         this.isDepartmentDisabled = true;
         this.isEmployeeDisabled = false;
-        this.updateField('glBankOffice', true)
-        this.updateField('departmentId', true)
+        this.updateField('glBankOffice', false)
+        this.updateField('departmentId', false)
         break;
 
       default:
@@ -339,7 +339,7 @@ export class GlSubsidiary implements OnInit {
     const deptNm = event.selectedOption.value;
     if (this.frmGroup.value.expRegType == 2 || this.frmGroup.value.expRegType == 3) {
       this.frmGroup.patchValue({
-        glAccSubNm: deptNm + "(" + this.selectedBranchNm + ")"
+        glAccSubNm: deptNm
       });
     }
   }
@@ -431,7 +431,8 @@ export class GlSubsidiary implements OnInit {
   async onGlAccSubSlChanged() {
     const initFormValue = this.frmGroup.value;
 
-    // Prepare request payload
+    if(initFormValue.glAccSubSl != null && initFormValue.glAccSubSl != ''){
+  // Prepare request payload
     const req = {
       pofficeId: initFormValue.officeId,
       pglAccSl: initFormValue.glAccSl,
@@ -460,6 +461,8 @@ export class GlSubsidiary implements OnInit {
     } catch (err) {
       console.error('Failed to fetch GL Subsidiary info:', err);
     }
+  }
+    
   }
   //End Events
 

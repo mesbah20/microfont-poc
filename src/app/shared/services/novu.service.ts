@@ -362,6 +362,7 @@ export class NovuService {
     const novuOptions: any = {
       applicationIdentifier: appId,
       subscriberId,
+      backendUrl: environment.novu_api,
       socketUrl: environment.novu_socket,
     };
 

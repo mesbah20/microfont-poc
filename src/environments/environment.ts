@@ -13,7 +13,7 @@ export const environment = {
   vehicleEndPoint: GATE_WAY_ENDPOINT + 'vehicle/' + VERSION_1,
   leaveAttendanceEndPoint: GATE_WAY_ENDPOINT + 'leave-attendance/' + VERSION_1,
 
-  apiBaseUrl:'http://localhost:8092/centrino',
+  apiBaseUrl:'http://localhost:8083/finbook/v1',
   // apiBaseUrl: 'http://localhost:8095/swiftFusionAPI/api/v1/',
   // coreBaseUrl: 'http://192.168.20.250:8090/api/user-login/signIn',
   // coreBaseUrl: 'http://192.168.20.93:8091/api/auth/userLogin',
@@ -21,7 +21,7 @@ export const environment = {
   loginUrl: 'http://192.168.20.250:9090/oauth2/token',
   logoutUrl: 'http://192.168.20.250:9090/auth/logout',
   coreBaseUrl: 'http://192.168.20.93:8091/api/auth/userLogin',
-  centrinoBaseUrl: 'http://192.168.10.56:8090/centrino',
+  centrinoBaseUrl: 'http://192.168.20.93:8090/centrino',
   bffUrl: 'http://192.168.10.56:8090/',
   appId: '901',
   keycloak: {
@@ -31,5 +31,6 @@ export const environment = {
   },
   novu_identifier: '1uXpKIJUa3Rg',
   novu_socket: 'http://192.168.10.56:3002',
+  novu_api: 'http://192.168.10.56:3000/novu/api',
   novu_service: 'http://192.168.20.69:8088/Notify',
 };
