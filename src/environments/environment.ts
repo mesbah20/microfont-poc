@@ -33,6 +33,7 @@ export const environment = {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',
     clientId: 'sentinelUI'
+    //clientId: 'FinBookUI'
   },
 
   reportManagementApiUrl: 'http://localhost:8092/centrino', // Report Management Backend API

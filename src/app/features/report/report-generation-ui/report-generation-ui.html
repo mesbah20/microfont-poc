@@ -18,7 +18,7 @@
       @if (selectionPanel()) {
         <form [formGroup]="selectionForm" class="form-grid-2-col my-2">
           <!-- Report ID with Lookup -->
-      
+
           <lds-id-box
             [frmGroup]="selectionForm"
             [controlName]="'reportName'"
@@ -52,7 +52,7 @@
 
     <!-- Main Content -->
     @if (!loading()&&reportMetadata()) {
-            
+
         <form [formGroup]="parameterForm"  class="p-6">
 
           <!-- Section 1: Report Parameters -->
@@ -60,11 +60,11 @@
             <app-expansion-panel-header [isOpenSignal]="parametersPanel" [panelTitle]="'Report Parameters'"></app-expansion-panel-header>
 
             @if (parametersPanel()) {
-              <div class="form-grid-col-2 mt-4">
-                
+              <div class="grid grid-col-2 grid-section  gap-3">
+
                 <!-- Dynamic Parameter Rendering -->
                 @for (param of sortedParameters(); track param.parameterName) {
-                  
+
                   <!-- TEXT/STRING Parameter -->
                   @if (param.dataType === 'TEXT' || (param.dataType === 'STRING' && param.inputType !== 'SELECT')) {
                     @if (param.inputType === 'MULTI') {
@@ -80,7 +80,7 @@
                           [maxLen]="param.maxLength || 500"
                           [enable]="param.isReadOnly === true"
                         ></lds-txt-area>
-                       
+
                       </div>
                     } @else {
                       <!-- Single-line Text -->
@@ -88,13 +88,13 @@
                         <app-text-base-input
                           [frmGroup]="parameterForm"
                           [controlName]="param.parameterName"
-                          [label]="param.parameterLabel + (param.required ? ' *' : '')"
+                          [label]="param.parameterLabel"
                           [isVertical]="true"
                           [maxLength]="param.maxLength || 255"
                           [placeholder]="'Enter ' + param.parameterLabel"
                           [isReadonly]="param.isReadOnly === true"
                         ></app-text-base-input>
-                        
+
                       </div>
                     }
                   }
@@ -105,14 +105,14 @@
                       <lds-number
                         [frmGroup]="parameterForm"
                         [controlName]="param.parameterName"
-                        [label]="param.parameterLabel + (param.required ? ' *' : '')"
+                        [label]="param.parameterLabel"
                         [isVertical]="true"
                         [minValue]="param.minValue"
                         [maxValue]="param.maxValue"
                         [placeholder]="'Enter ' + param.parameterLabel"
                         [isReadonly]="param.isReadOnly === true"
                       ></lds-number>
-                     
+
                     </div>
                   }
 
@@ -126,7 +126,7 @@
                         [isVertical]="true"
                         [isReadonly]="param.isReadOnly === true"
                       ></app-date-input>
-                    
+
                     </div>
                   }
 
@@ -143,14 +143,14 @@
                         [placeholder]="'-- Select ' + param.parameterLabel + ' --'"
                         [isReadonly]="isParameterDisabled(param)"
                       ></app-select-option-field>
-                      
+
                       @if (isParameterLoading(param.parameterName)) {
                         <p class="text-xs text-blue-600 mt-1 flex items-center gap-1">
                           <span class="animate-spin">⟳</span>
                           Loading options...
                         </p>
                       }
-                  
+
                       @if (param.dependsOnParameter && isParameterDisabled(param)) {
                         <p class="text-xs text-orange-600 mt-1 flex items-center gap-1">
                           Please select parent parameter first
@@ -186,10 +186,10 @@
                 <label class="block text-sm font-medium text-gray-700 mb-3">
                   Select Output Format <span class="text-red-500">*</span>
                 </label>
-                
+
                 <div class="flex gap-4 flex-wrap">
                   @for (format of availableFormats(); track format) {
-                    <label 
+                    <label
                       class="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-500 hover:bg-blue-50"
                       [class.border-blue-600]="selectedFormat() === format"
                       [class.bg-blue-50]="selectedFormat() === format"
@@ -203,13 +203,13 @@
                         (change)="selectedFormat.set(format)"
                         class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                       />
-                      
+
                       <!-- Format Icons -->
                       @if (format === 'PDF') {
                         <mat-icon class="text-red-600">picture_as_pdf</mat-icon>
                       } @else if (format === 'EXCEL') {
                         <mat-icon class="text-green-600">table_chart</mat-icon>
-                      }                       
+                      }
                       <span class="font-medium text-gray-700">{{ format }}</span>
                     </label>
                   }
@@ -227,7 +227,7 @@
               (onClick)="onGenerateReport()"
               [cssClass]="'bg-blue-600 hover:bg-blue-700 text-white'"
             ></lds-btn>
-            
+
             <lds-btn
               [labelText]="'Download Report'"
               [icon]="'file_download'"
@@ -237,7 +237,7 @@
             ></lds-btn>
           </div>
 
-        </form>   
+        </form>
     }
     <lds-modal
       [isVisible]="showModal"

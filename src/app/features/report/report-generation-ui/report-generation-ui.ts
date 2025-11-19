@@ -231,15 +231,15 @@ onModalResult(result: any) {
       console.warn('No resourceList found in localStorage');
       return;
     }
-    
+
     // Filter resources where functionType is 'R' and extract functionIds
     const reportFunctionIds: string[] = resourceList
       .filter((item: any) => item?.attributes?.functionType === 'R')
       .map((m: any) => m.attributes.functionId)
       .filter((id: string) => id); // Remove any undefined/null values
-    
+
     console.log('Report Function IDs to send:', reportFunctionIds);
-    
+
     if (reportFunctionIds.length === 0) {
       console.warn('No report functions found with type "R"');
       this.toastr.warning('No report functions available for this user', 'Access Info');
@@ -281,14 +281,14 @@ onModalResult(result: any) {
    */
   openReportModal() {
     console.log('=== OPENING REPORT SELECTION MODAL ===');
-    
+
     // Reset modal state
     this.showModal = false;
     this.modalComponent = undefined;
 
     setTimeout(() => {
       this.modalComponent = this.ReportSelectionModalComponent;
-      
+
       // Prepare modal data with configuration
       this.modalComponentData = {
         config: {
@@ -321,19 +321,19 @@ onModalResult(result: any) {
           reportName: metadata.reportName,
           appCode: metadata?.dataSourceInfo?.vAppName,
         });
-        
+
         // Sort parameters and rebuild form
         const sorted = [...metadata.parameters].sort((a, b) => a.parameterOrder - b.parameterOrder);
         this.sortedParameters.set(sorted);
         this.rebuildParameterForm(sorted);
-        
+
         // Set available formats (backend uses supportedFormats)
         const formats = metadata.supportedFormats || metadata.outputFormats || [];
         this.availableFormats.set(formats);
         if (formats.length > 0) {
           this.selectedFormat.set(formats[0]);
         }
-        
+
         this.loading.set(false);
        // this.toastr.success('Report loaded successfully', 'Success');
       },
@@ -351,7 +351,7 @@ onModalResult(result: any) {
   loadReportByFunctionId() {
     const functionId = this.selectionForm.get('functionId')?.value;
     const reportName = this.selectionForm.get('reportName')?.value;
-    
+
     if (!functionId && !reportName) {
       this.toastr.warning('Please enter a Function ID or Report Name', 'Warning');
       return;
@@ -372,15 +372,15 @@ onModalResult(result: any) {
    */
   private loadReportByIdentifier(type: 'functionId' | 'reportName', value: string) {
     let serviceCall;
-    
+
     if (type === 'functionId') {
       serviceCall = this.reportBackendService.getReportMetadataByFunctionId(value);
     } else {
       // For report name, find from the loaded report list first
-      const foundReport = this.reportList.find(report => 
+      const foundReport = this.reportList.find(report =>
         report.reportName.toLowerCase().includes(value.toLowerCase())
       );
-      
+
       if (foundReport) {
         serviceCall = this.reportBackendService.getReportMetadataById(foundReport.id);
       } else {
@@ -398,19 +398,19 @@ onModalResult(result: any) {
           reportName: metadata.reportName,
           functionId: metadata.functionId,
         });
-        
+
         // Sort parameters and rebuild form
         const sorted = [...metadata.parameters].sort((a, b) => a.parameterOrder - b.parameterOrder);
         this.sortedParameters.set(sorted);
         this.rebuildParameterForm(sorted);
-        
+
         // Set available formats (backend uses supportedFormats)
         const formats = metadata.supportedFormats || metadata.outputFormats || [];
         this.availableFormats.set(formats);
         if (formats.length > 0) {
           this.selectedFormat.set(formats[0]);
         }
-        
+
         this.loading.set(false);
        // this.toastr.success('Report loaded successfully', 'Success');
       },
@@ -427,7 +427,7 @@ onModalResult(result: any) {
    */
   private rebuildParameterForm(parameters: ReportParameterMetadata[]) {
     const group: any = {};
-    
+
     parameters.forEach(param => {
       const validators = [];
       if (param.isRequired) {
@@ -445,10 +445,10 @@ onModalResult(result: any) {
       if (param.maxValue !== undefined) {
         validators.push(Validators.max(param.maxValue));
       }
-      
+
       // Process template variables in default value
       let processedDefaultValue: any = this.processParameterTemplate(param.defaultValue || '');
-      
+
       // Special handling for date fields
       if (param.dataType === 'DATE' && processedDefaultValue) {
         // Convert date string to Date object for date inputs
@@ -456,15 +456,15 @@ onModalResult(result: any) {
           processedDefaultValue = new Date(processedDefaultValue + 'T00:00:00');
         }
       }
-      
+
       group[param.parameterName] = [processedDefaultValue, validators];
-      
+
       // Load dynamic options for parameters with dataSource
       if (param.inputType === 'SELECT' && param.dataSource) {
         this.loadParameterFromAPI(param);
       }
     });
-    
+
     this.parameterForm = this.formBuilder.group(group);
   }
 
@@ -517,7 +517,7 @@ console.log(param);
     this.sortedParameters().forEach(param => {
       if (param.dependsOnParameter) {
         const parentControl = this.parameterForm.get(param.dependsOnParameter);
-        
+
         if (parentControl) {
           // Disable dependent field initially if parent has no value
           if (!parentControl.value) {
@@ -585,7 +585,7 @@ console.log(param);
       if (param) {
         const optionsString = options.map((opt: any) => `${opt.value}:${opt.label}`).join(',');
         // Update the signal with new options
-        const updatedParams = this.sortedParameters().map(p => 
+        const updatedParams = this.sortedParameters().map(p =>
           p.parameterName === paramName ? { ...p, selectOptions: optionsString } : p
         );
         this.sortedParameters.set(updatedParams);
@@ -649,8 +649,8 @@ console.log(param);
         }
       });
       return;
-    }    
-    
+    }
+
     if (this.selectionForm.invalid) {
       this.toastr.error('Please fill all required fields correctly.', 'Validation Error');
       Object.keys(this.selectionForm.controls).forEach(key => {
@@ -672,21 +672,21 @@ console.log(param);
 
     const formValues = this.parameterForm.value;
     const appCode =  metadata?.dataSourceInfo?.vAppName || 'ultimus';
-    
+
     // Process template variables in parameter values before sending
     const processedParameters: { [key: string]: any } = {};
     Object.keys(formValues).forEach(key => {
       let value = formValues[key];
-      
+
       // Handle Date objects - convert to YYYY-MM-DD format
       if (value instanceof Date) {
         value = value.toISOString().split('T')[0];
       }
-      
+
       // Process template variables
       processedParameters[key] = this.processParameterTemplate(value);
     });
-    
+
     const request: ReportGenerationRequest = {
       reportId: metadata.id,
       outputFormat: this.selectedFormat(),
@@ -698,7 +698,7 @@ console.log(param);
       next: (blob) => {
         // Preview the report instead of downloading
         this.previewReport(blob, metadata.reportName);
-        
+
         this.toastr.success(`Report "${metadata.reportName}" generated successfully!`, 'Success');
         this.generating.set(false);
       },
@@ -715,10 +715,10 @@ console.log(param);
    */
   private previewReport(blob: Blob, reportName: string) {
     const format = this.selectedFormat().toLowerCase();
-    
+
     // Create object URL for the blob
     const url = window.URL.createObjectURL(blob);
-    
+
     if (format === 'pdf') {
       // For PDF, open in new tab for preview
       window.open(url, '_blank');
@@ -727,16 +727,16 @@ console.log(param);
       const link = document.createElement('a');
       link.href = url;
       link.target = '_blank';
-      
+
       // Determine file extension
-      const extension = format === 'xlsx' ? 'xlsx' : format === 'xls' || 'excel' ? 'xls' : format;
+      const extension = format === 'xlsx' ? 'xlsx' : (format === 'xls' || format === 'excel') ? 'xls' : 'pdf';
       const filename = `${reportName}_${new Date().getTime()}.${extension}`;
       link.download = filename;
-      
+
       // Show preview options dialog
       this.showPreviewDialog(url, filename, format);
     }
-    
+
     // Clean up the URL after some time
     setTimeout(() => {
       window.URL.revokeObjectURL(url);
@@ -753,7 +753,7 @@ console.log(param);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    
+
   }
 
   /**
@@ -783,12 +783,12 @@ console.log(param);
 
     this.reportBackendService.generateReportNew(request).subscribe({
       next: (blob) => {
-        console.log()
+        console.log(this.selectedFormat().toLowerCase())
         // Direct download
         const format = this.selectedFormat().toLowerCase();
-        const extension = format === 'xlsx' ? 'xlsx' : format === 'xls'|| 'excel' ? 'xls' : 'pdf';
+        const extension = format === 'xlsx' ? 'xlsx' : (format === 'xls' || format === 'excel') ? 'xls' : 'pdf';
         const filename = `${metadata.reportName}_${new Date().getTime()}.${extension}`;
-        
+
         this.reportBackendService.downloadBlob(blob, filename);
         this.generating.set(false);
       },
@@ -822,14 +822,14 @@ console.log(param);
   getHelpText(param: ReportParameterMetadata): string {
     return param.helpText || '';
   }
-  
+
   /**
    * Check if parameter has select options
    */
   hasSelectOptions(param: ReportParameterMetadata): boolean {
     return (param.inputType === 'SELECT' || param.dataType === 'SELECT') && !!param.selectOptions;
   }
-  
+
   /**
    * Parse select options from string (supports JSON format)
    */
@@ -838,12 +838,12 @@ console.log(param);
       // Return empty array if no options - user needs to configure them
       return [];
     }
-    
+
     try {
       // First, try to parse as JSON object format
       // e.g., {"ORACLE":"Oracle","POSTGRESQL":"PostGreSql","MYSQL":"MySql"}
       const parsedOptions = JSON.parse(param.selectOptions);
-      
+
       if (typeof parsedOptions === 'object' && !Array.isArray(parsedOptions)) {
         // Convert object to array of {key, value}
         return Object.entries(parsedOptions).map(([key, value]) => ({
@@ -851,7 +851,7 @@ console.log(param);
           value: value as string
         }));
       }
-      
+
       // If it's already an array format
       if (Array.isArray(parsedOptions)) {
         return parsedOptions.map(opt => ({
@@ -859,7 +859,7 @@ console.log(param);
           value: opt.value || opt.key
         }));
       }
-      
+
       return [];
     } catch (jsonError) {
       // If JSON parsing fails, try comma-separated "key:value" format
@@ -876,7 +876,7 @@ console.log(param);
       }
     }
   }
-  
+
   /**
    * Check if parameter should show as text input
    */
@@ -884,21 +884,21 @@ console.log(param);
     // Show as text input if STRING type and not SELECT input type
     return param.dataType === 'STRING' && param.inputType !== 'SELECT' && param.inputType !== 'TEXTAREA';
   }
-  
+
   /**
    * Check if parameter should show as text area
    */
   isTextArea(param: ReportParameterMetadata): boolean {
     return param.dataType === 'STRING' && param.inputType === 'TEXTAREA';
   }
-  
+
   /**
    * Check if parameter should show as number input
    */
   isNumberInput(param: ReportParameterMetadata): boolean {
     return param.dataType === 'NUMBER';
   }
-  
+
   /**
    * Check if parameter should show as date input
    */
@@ -947,7 +947,7 @@ console.log(param);
       'previousTransactionDate': this.getPreviousTransactionDate(),
       'functionID': this.getFunctionId(),
       'accountNumber': this.getAccountNumber()
-     
+
     };
 
     // Replace template variables {{variableName}}
@@ -1029,7 +1029,7 @@ getAccountNumber(){
   }
 
   /**
-   * Get transaction date 
+   * Get transaction date
    */
   private getTransactionDate(): string {
     return sessionStorage.getItem('transactionDate') || localStorage.getItem('transactionDate') || new Date().toISOString().split('T')[0];
@@ -1061,7 +1061,7 @@ getAccountNumber(){
     console.log('=== REFRESHING PARAMETER TEMPLATES ===');
     const currentFormValue = this.parameterForm.value;
     const parameters = this.sortedParameters();
-    
+
     parameters.forEach(param => {
       if (param.defaultValue && param.defaultValue.includes('{{')) {
         const processedValue = this.processParameterTemplate(param.defaultValue);
@@ -1097,7 +1097,7 @@ getAccountNumber(){
     let keyField = 'id';
     let valueField = 'name';
     let arrayPath = '';
-    
+
     if (param.selectOptions) {
       try {
         const fieldMapping = JSON.parse(param.selectOptions);
@@ -1126,15 +1126,15 @@ getAccountNumber(){
     })
     .then(data => {
       console.log(`API response for ${param.parameterName}:`, data);
-      
+
       // Extract array from nested object if arrayPath is specified
       let dataArray = data;
-      
+
       if (arrayPath && typeof data === 'object' && !Array.isArray(data)) {
         // Navigate to nested array using dot notation (e.g., "response.payload")
         const pathParts = arrayPath.split('.');
         let current = data;
-        
+
         for (const part of pathParts) {
           if (current && typeof current === 'object' && part in current) {
             current = current[part];
@@ -1142,33 +1142,33 @@ getAccountNumber(){
             throw new Error(`Array path "${arrayPath}" not found in API response`);
           }
         }
-        
+
         dataArray = current;
         console.log(`Extracted array from path "${arrayPath}":`, dataArray);
       }
-      
+
       // Convert API response to select options format using specified fields
       let optionsString = '';
-      
+
       if (Array.isArray(dataArray)) {
         const options: { [key: string]: string } = {};
-        
+
         dataArray.forEach(item => {
           const key = item[keyField];
           const value = item[valueField];
-          
+
           if (key !== undefined && value !== undefined) {
             options[String(key)] = String(value);
           }
         });
-        
+
         optionsString = JSON.stringify(options);
         console.log(`Converted ${dataArray.length} items to options using ${keyField}/${valueField}:`, optionsString);
       } else if (!arrayPath && typeof data === 'object') {
         // If no arrayPath specified and response is object, try common array properties
         const commonArrayProps = ['data', 'payload', 'items', 'results', 'content'];
         let foundArray = false;
-        
+
         for (const prop of commonArrayProps) {
           if (data[prop] && Array.isArray(data[prop])) {
             dataArray = data[prop];
@@ -1177,19 +1177,19 @@ getAccountNumber(){
             break;
           }
         }
-        
+
         if (foundArray && Array.isArray(dataArray)) {
           const options: { [key: string]: string } = {};
-          
+
           dataArray.forEach(item => {
             const key = item[keyField];
             const value = item[valueField];
-            
+
             if (key !== undefined && value !== undefined) {
               options[String(key)] = String(value);
             }
           });
-          
+
           optionsString = JSON.stringify(options);
         } else {
           // Use response as-is if it's already a key-value object
@@ -1217,11 +1217,11 @@ getAccountNumber(){
     if (!param.selectOptions) return;
 
     console.log(`Loading options from Database for parameter: ${param.parameterName}`);
-    
+
     // For database queries, we'll need to call a backend endpoint that executes the query
     const query = param.selectOptions.trim();
     const processedQuery = this.processParameterTemplate(query);
-    
+
     const requestPayload = {
       query: processedQuery,
       parameterName: param.parameterName
@@ -1232,7 +1232,7 @@ getAccountNumber(){
       .subscribe({
         next: (data) => {
           console.log(`Database response for ${param.parameterName}:`, data);
-          
+
           // Convert database response to select options format
           let optionsString = '';
           if (Array.isArray(data)) {
@@ -1253,7 +1253,7 @@ getAccountNumber(){
 
           this.updateParameterOptions(param.parameterName, optionsString);
           this.clearParameterLoading(param.parameterName);
-          
+
         },
         error: (error) => {
           console.error(`Error loading options from Database for ${param.parameterName}:`, error);
@@ -1267,7 +1267,7 @@ getAccountNumber(){
    * Update parameter options in the signal
    */
   private updateParameterOptions(parameterName: string, optionsString: string) {
-    const updatedParams = this.sortedParameters().map(p => 
+    const updatedParams = this.sortedParameters().map(p =>
       p.parameterName === parameterName ? { ...p, selectOptions: optionsString } : p
     );
     this.sortedParameters.set(updatedParams);
