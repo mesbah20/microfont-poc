@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, OnInit, signal, Type, ViewChild } from '@angular/core';
+import { Component, NgZone, signal, Type, ViewChild, inject, OnDestroy, OnInit,  } from '@angular/core';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { ChatBox } from './drawers/chat-box/chat-box';
 import { MatIcon } from '@angular/material/icon';
@@ -14,8 +14,17 @@ import { NotificationService } from '../../../../../../shared/services/notificat
 import {
   InAppNotification,
   NovuService,
+  ChatMessage,
 } from '../../../../../../shared/services/novu.service';
-import {  Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { RouterLink } from '@angular/router';
+import { ConnectedPosition, Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { ComponentPortal } from '@angular/cdk/portal';
+import { NotificationPopoverComponent } from '../../../../../../modules/swiftmx/components/notification/notification-popover.component';
+import { NotificationDetailModalComponent } from '../../../../../../modules/swiftmx/components/notification/notification-detail-modal.component';
+import { Router, RouterModule } from '@angular/router';
+import { LdsModalComponent } from '../../../../../../shared/components/lds-modal/lds-modal';
+import { Button } from '../../../../../../shared/components/input-types/button/button';
+import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/components/service-request-dialog/service-request-dialog';
 import { EditProfileModal } from '../../../../../../modules/landing/feature/edit-profile-modal/edit-profile-modal';
 import { Observable, Subscription } from 'rxjs';
 import { ChatPreview, ChatService } from '../../../../../../shared/services/chat.service';
@@ -24,14 +33,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TextBaseInput } from '../../../../../../shared/components/input-types/text-base-input/text-base-input';
 import { UserService } from '../../../../../../core/user/user.service';
 import { User } from '../../../../../../core/user/user.types';
-import { ToastHelperService } from '../../../../../../shared/services/toast-helper.service';
-import { Router, RouterModule } from '@angular/router';
-import { NotificationDetailModalComponent } from '../../../../../../modules/swiftmx/components/notification/notification-detail-modal.component';
-import { LdsModalComponent } from '../../../../../../shared/components/lds-modal/lds-modal';
-import { ComponentPortal } from '@angular/cdk/portal';
-import { NotificationPopoverComponent } from '../../../../../../modules/swiftmx/components/notification/notification-popover.component';
-import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/components/service-request-dialog/service-request-dialog';
-import { Button } from '../../../../../../shared/components/input-types/button/button';
+import {ToastHelperService} from '../../../../../../shared/services/toast-helper.service';
 
 @Component({
   selector: 'app-profile-drawer',
@@ -39,8 +41,8 @@ import { Button } from '../../../../../../shared/components/input-types/button/b
     ChatBox,
     MatIcon,
     ThemePickerComponent,
-    RouterModule,
     AsyncPipe,
+    RouterLink,
     NotificationDetailModalComponent,
     RouterModule,
     CommonModule,
@@ -87,6 +89,10 @@ searchResults$!: Observable<string[]>; // raw user list
   private modalSubscriptions: Subscription[] = [];
   private subscriptionCheckTimer: any = null;
   private userSubscription?: Subscription;
+  private novuSubscription?: Subscription;
+  private messageStreamSubscription?: Subscription;
+  private lastAutoOpenKey?: string;
+  private autoOpenInitialized = false;
 
   openSections: { [key: string]: boolean } = {
     notifications: false,
@@ -99,7 +105,7 @@ searchResults$!: Observable<string[]>; // raw user list
   chatPreviews$!: Observable<ChatPreview[]>;
   //modalData?: User;
   currentUser?: User;
-  
+
   // Branch information from sessionStorage
   officeCode?: string;
   officeNm?: string;
@@ -116,6 +122,65 @@ searchResults$!: Observable<string[]>; // raw user list
     public chatService: ChatService
   ) {
     this.searchResults$ = this.chatService.searchResults$;
+    this.syncCurrentUserId(this.novuService.getActiveSubscriberId() ?? undefined);
+    this.userSubscription = this.userService.user$.subscribe((user: User) => {
+      this.syncCurrentUserId(user?.username);
+    });
+    this.novuSubscription = this.novuService.onSubscriberIdChanged().subscribe((id) => {
+      this.syncCurrentUserId(id ?? undefined);
+    });
+    this.messageStreamSubscription = this.novuService
+      .getChatMessages()
+      .subscribe((messages) => this.handleIncomingMessages(messages));
+  }
+
+  private syncCurrentUserId(id?: string) {
+    if (!id) return;
+    if (this.currentUserId === id) return;
+    this.currentUserId = id;
+  }
+  private handleIncomingMessages(messages: ChatMessage[]) {
+    if (!this.currentUserId || !messages?.length) return;
+
+    const inbound = messages
+      .filter(
+        (msg) =>
+          msg.receiverUserId === this.currentUserId &&
+          msg.senderUserId !== this.currentUserId
+      )
+      .sort(
+        (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+      );
+
+    if (!inbound.length) return;
+
+    const latest = inbound[inbound.length - 1];
+    const key = `${latest.chatId}|${latest.timestamp}`;
+
+    if (!this.autoOpenInitialized) {
+      this.lastAutoOpenKey = key;
+      this.autoOpenInitialized = true;
+      return;
+    }
+
+    if (this.lastAutoOpenKey === key) return;
+
+    this.lastAutoOpenKey = key;
+    this.autoOpenInitialized = true;
+
+    const preview: ChatPreview = {
+      chatId: latest.chatId,
+      partner: latest.senderUserId,
+      lastMessage: latest.notificationBody,
+      time: this.formatPreviewTime(latest.timestamp),
+      unread: 1,
+    };
+
+    this.openChat(preview);
+  }
+  private formatPreviewTime(timestamp: string): string {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
   onSearchInput() {
@@ -126,18 +191,21 @@ searchResults$!: Observable<string[]>; // raw user list
   setTimeout(() => this.searching = false, 350);
 }
 private currentUserId = localStorage.getItem('userId') || '';
-openChatFromSearch(user: string) {
-  const chatId = [this.currentUserId, user].sort().join('_');
-  const preview: ChatPreview = {
-    chatId,
-    partner: user,
-    lastMessage: '',
-    time: '',
-    unread: 0
-  };
-  this.openChat(preview);
-  this.searchForm.get('query')?.setValue('');
-}
+  openChatFromSearch(user: string) {
+    if (!this.currentUserId) {
+      return;
+    }
+    const chatId = [this.currentUserId, user].sort().join('_');
+    const preview: ChatPreview = {
+      chatId,
+      partner: user,
+      lastMessage: '',
+      time: '',
+      unread: 0
+    };
+    this.openChat(preview);
+    this.searchForm.get('query')?.setValue('');
+  }
 
   openChat(chat: ChatPreview) {
     this.selectedChat = chat;
@@ -167,17 +235,17 @@ openChatFromSearch(user: string) {
     });
      // this.chatPreviews$ = this.chatService.getChatPreviews();
     this.chatPreviews$ = this.chatService.getCombinedList();
-    
+
     // Load branch information from sessionStorage
     this.loadBranchInfoFromSession();
   }
-  
+
   private loadBranchInfoFromSession(): void {
     this.officeCode = sessionStorage.getItem('officeCode') || '';
     this.officeNm = sessionStorage.getItem('officeNm') || '';
     const rawDate = sessionStorage.getItem('txnDt');   // "2024-11-27 00:00:00"
 
-    this.txnDt = rawDate ? rawDate.split(' ')[0] : '';  
+    this.txnDt = rawDate ? rawDate.split(' ')[0] : '';
 
   }
 
@@ -360,24 +428,24 @@ openChatFromSearch(user: string) {
       description: 'Fill out the service request form',
     });
   }
- 
+
   openModal(componentToLoad?: Type<any>, data?: any) {
     console.log('=== OPENING MODAL ===');
     console.log('Component to load:', componentToLoad);
     console.log('Component name:', componentToLoad?.name);
- 
+
     console.log('Data to pass:', data);
     // Reset modal state
     this.showModal = false;
     this.modalComponent = undefined;
     this.modalOkButtonText.set('Submit Request'); // Reset to default
- 
+
     setTimeout(() => {
       this.modalComponent = componentToLoad;
       this.modalComponentData = data;
       this.showModal = true;
       console.log('Modal opened with component:', this.modalComponent?.name);
- 
+
       // Re-subscribe to child outputs after modal is opened
       setTimeout(() => this.subscribeToChildOutputs(), 500);
     }, 50);
@@ -387,13 +455,13 @@ openChatFromSearch(user: string) {
     // Clear any existing subscriptions
     this.modalSubscriptions.forEach((sub) => sub.unsubscribe());
     this.modalSubscriptions = [];
- 
+
     // Clear any pending timer
     if (this.subscriptionCheckTimer) {
       clearInterval(this.subscriptionCheckTimer);
       this.subscriptionCheckTimer = null;
     }
- 
+
     // Check periodically if modal component instance is available
     this.subscriptionCheckTimer = setInterval(() => {
       if (
@@ -410,20 +478,20 @@ openChatFromSearch(user: string) {
             }
           );
           this.modalSubscriptions.push(sub);
- 
+
           // Set initial button text from the child's getter
           if (childInstance.okButtonText) {
             setTimeout(() => {
               this.modalOkButtonText.set(childInstance.okButtonText);
             }, 0);
           }
- 
+
           clearInterval(this.subscriptionCheckTimer);
           this.subscriptionCheckTimer = null;
         }
       }
     }, 100);
- 
+
     // Clear interval after 3 seconds if not found
     setTimeout(() => {
       if (this.subscriptionCheckTimer) {
@@ -461,20 +529,20 @@ openChatFromSearch(user: string) {
     }
     console.log('Modal visibility changed to:', isVisible);
   }
- 
+
   onModalResult(result: any) {
     console.log('Modal result received:', result);
- 
+
     if (!result) return;
 
     // Handle different modal types
     if (this.showEditProfileModal) {
       this.onProfileUpdated(result);
     } else {
-   
+
     }
   }
- 
+
   onModalClosed() {
     // Close whichever modal was open
     if (this.showEditProfileModal) {
@@ -483,7 +551,7 @@ openChatFromSearch(user: string) {
       this.showModal = false;
     }
   }
- 
+
   onOkButtonTextChange(text: string) {
     console.log('OK button text changed to:', text);
     // Only update if modal is visible to avoid change detection errors during modal close
@@ -491,6 +559,6 @@ openChatFromSearch(user: string) {
       this.modalOkButtonText.set(text);
     }
   }
-  
+
 
 }

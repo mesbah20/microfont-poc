@@ -9,6 +9,7 @@ import {
   OnChanges,
   SimpleChanges,
   OnDestroy,
+  inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -16,6 +17,8 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { ChatMessage, NovuService } from '../../../../../../../../shared/services/novu.service';
+import { UserService } from '../../../../../../../../core/user/user.service';
+import { User } from '../../../../../../../../core/user/user.types';
 
 @Component({
   selector: 'app-chat-box',
@@ -40,12 +43,28 @@ export class ChatBox implements AfterViewInit, OnChanges, OnDestroy {
   isTyping = false;
 
   private messagesSub?: Subscription;
+  private userSub?: Subscription;
+  private novuSub?: Subscription;
+  private userService = inject(UserService);
+  private currentUserId = '';
 
-  private get currentUserId(): string {
-    return localStorage.getItem('userId') || '';
+  constructor(private novuService: NovuService, private http: HttpClient) {
+    this.syncCurrentUserId(this.novuService.getActiveSubscriberId() ?? undefined);
+
+    this.userSub = this.userService.user$.subscribe((user: User) => {
+      this.syncCurrentUserId(user?.username);
+    });
+
+    this.novuSub = this.novuService.onSubscriberIdChanged().subscribe((id) => {
+      this.syncCurrentUserId(id ?? undefined);
+    });
   }
 
-  constructor(private novuService: NovuService, private http: HttpClient) {}
+  private syncCurrentUserId(id?: string) {
+    if (!id) return;
+    if (this.currentUserId === id) return;
+    this.currentUserId = id;
+  }
 
   ngAfterViewInit() {
     // small delay to ensure DOM ready
@@ -75,11 +94,13 @@ export class ChatBox implements AfterViewInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     this.messagesSub?.unsubscribe();
+    this.userSub?.unsubscribe();
+    this.novuSub?.unsubscribe();
   }
 
   sendMessage() {
     const text = this.messageText.trim();
-    if (!text) return;
+    if (!text || !this.partner || !this.currentUserId) return;
 
     const chatId = [this.currentUserId, this.partner].sort().join('_');
 

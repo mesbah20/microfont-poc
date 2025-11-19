@@ -34,6 +34,7 @@ export class NovuService {
   private backendUrl = environment.novu_service;
   private RECONCILE_WINDOW_MS = 15000; // 15s
   private currentSubscriberHash?: string;
+  private subscriberId$ = new BehaviorSubject<string | null>(null);
   private mapNotification(result: any): InAppNotification | null {
     if (!result) return null;
     const identifier = result?.workflow?.identifier;
@@ -305,6 +306,41 @@ export class NovuService {
     }
   }
 
+  private isSameMessage(a: ChatMessage, b: ChatMessage): boolean {
+    if (a.clientId && b.clientId && a.clientId === b.clientId) {
+      return true;
+    }
+
+    if (a.chatId !== b.chatId) return false;
+    if (a.notificationBody !== b.notificationBody) return false;
+
+    const aTime = new Date(a.timestamp).getTime();
+    const bTime = new Date(b.timestamp).getTime();
+
+    return Math.abs(aTime - bTime) <= this.RECONCILE_WINDOW_MS;
+  }
+
+  private mergeChatCollections(existing: ChatMessage[], incoming: ChatMessage[]): ChatMessage[] {
+    if (!incoming.length) {
+      return [...existing];
+    }
+
+    const merged = [...incoming];
+
+    for (const msg of existing) {
+      const hasMatch = merged.some((candidate) => this.isSameMessage(candidate, msg));
+      if (!hasMatch) {
+        merged.push({ ...msg });
+      }
+    }
+
+    merged.sort(
+      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
+
+    return merged;
+  }
+
   // -------------------------
   // Parse __CHAT__ markers
   // Format:
@@ -339,6 +375,7 @@ export class NovuService {
       this.novu.subscriberId === subscriberId &&
       this.currentSubscriberHash === normalizedHash
     ) {
+      this.subscriberId$.next(subscriberId);
       await this.refresh();
       return;
     }
@@ -348,6 +385,7 @@ export class NovuService {
       this.novu.socket?.disconnect();
       this.novu = null;
       this.currentSubscriberHash = undefined;
+      this.subscriberId$.next(null);
       this.notifications$.next([]);
       this.chatMessages$.next([]);
       this.unreadCount$.next(0);
@@ -372,6 +410,7 @@ export class NovuService {
 
     this.novu = new Novu(novuOptions);
     this.currentSubscriberHash = normalizedHash;
+    this.subscriberId$.next(subscriberId);
 
     this.attachDiagnosticLogging(this.novu);
 
@@ -576,12 +615,13 @@ export class NovuService {
           new Date(b.timestamp).getTime()
       );
 
-      this.chatMessages$.next(chatMsgs);
+      const mergedChatMessages = this.mergeChatCollections(this.chatMessages$.value, chatMsgs);
+      this.chatMessages$.next(mergedChatMessages);
 
       console.log('NOVU DEBUG: refresh success', {
         notificationCount: notifications.length,
         unreadCount,
-        chatMessageCount: chatMsgs.length,
+        chatMessageCount: mergedChatMessages.length,
       });
     } catch (err) {
       console.error('NOVU: refresh error:', err);
@@ -660,5 +700,13 @@ export class NovuService {
     } catch (err) {
       console.error('NOVU: deleteNotification → failed', err);
     }
+  }
+
+  getActiveSubscriberId(): string | null {
+    return this.subscriberId$.value;
+  }
+
+  onSubscriberIdChanged(): Observable<string | null> {
+    return this.subscriberId$.asObservable();
   }
 }

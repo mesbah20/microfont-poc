@@ -8,7 +8,7 @@ import { CheckboxChangeEvent, DataGridComponent } from '../../../../shared/compo
   standalone: true,
   imports: [CommonModule, DataGridComponent],
   templateUrl: './notification-center.component.html',
-  styleUrl: './notification-center.component.scss'
+  styleUrl: './notification-center.component.scss',
 })
 export class NotificationCenterComponent implements OnInit, OnDestroy {
   notifications: InAppNotification[] = [];
