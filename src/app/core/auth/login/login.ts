@@ -230,8 +230,14 @@ export class Login implements OnInit {
           this.loadUserDataResponse();
           try {
             console.log('Initializing Novu for user:', userId);
+              const subscriberHash = await this.fetchSubscriberHash(userId);
+            if (subscriberHash) {
+              localStorage.setItem('novuSubscriberHash', subscriberHash);
+            } else {
+              localStorage.removeItem('novuSubscriberHash');
+            }
             // await this.novuService.init(userId, 'oH9Vf1VWV7s8');
-            await this.novuService.init(userId, 'EDstW_4loKyp');
+            await this.novuService.init(userId, '1uXpKIJUa3Rg');
             console.log('Novu initialized successfully!');
           } catch (err) {
             console.error('Failed to initialize Novu:', err);

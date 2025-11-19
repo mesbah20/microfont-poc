@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, OnInit, signal, Type, ViewChild } from '@angular/core';
+import { Component, NgZone, signal, Type, ViewChild } from '@angular/core';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { ChatBox } from './drawers/chat-box/chat-box';
 import { MatIcon } from '@angular/material/icon';
@@ -15,23 +15,21 @@ import {
   InAppNotification,
   NovuService,
 } from '../../../../../../shared/services/novu.service';
-import {  Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { RouterLink } from '@angular/router';
+import { ConnectedPosition, Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { ComponentPortal } from '@angular/cdk/portal';
+import { NotificationPopoverComponent } from '../../../../../../modules/swiftmx/components/notification/notification-popover.component';
+import { NotificationDetailModalComponent } from '../../../../../../modules/swiftmx/components/notification/notification-detail-modal.component';
+import { Router, RouterModule } from '@angular/router';
+import { LdsModalComponent } from '../../../../../../shared/components/lds-modal/lds-modal';
+import { Button } from '../../../../../../shared/components/input-types/button/button';
+import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/components/service-request-dialog/service-request-dialog';
 import { EditProfileModal } from '../../../../../../modules/landing/feature/edit-profile-modal/edit-profile-modal';
 import { Observable, Subscription } from 'rxjs';
 import { ChatPreview, ChatService } from '../../../../../../shared/services/chat.service';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TextBaseInput } from '../../../../../../shared/components/input-types/text-base-input/text-base-input';
-import { UserService } from '../../../../../../core/user/user.service';
-import { User } from '../../../../../../core/user/user.types';
-import { ToastHelperService } from '../../../../../../shared/services/toast-helper.service';
-import { Router, RouterModule } from '@angular/router';
-import { NotificationDetailModalComponent } from '../../../../../../modules/swiftmx/components/notification/notification-detail-modal.component';
-import { LdsModalComponent } from '../../../../../../shared/components/lds-modal/lds-modal';
-import { ComponentPortal } from '@angular/cdk/portal';
-import { NotificationPopoverComponent } from '../../../../../../modules/swiftmx/components/notification/notification-popover.component';
-import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/components/service-request-dialog/service-request-dialog';
-import { Button } from '../../../../../../shared/components/input-types/button/button';
 
 @Component({
   selector: 'app-profile-drawer',
@@ -39,8 +37,8 @@ import { Button } from '../../../../../../shared/components/input-types/button/b
     ChatBox,
     MatIcon,
     ThemePickerComponent,
-    RouterModule,
     AsyncPipe,
+    RouterLink,
     NotificationDetailModalComponent,
     RouterModule,
     CommonModule,
@@ -63,7 +61,7 @@ import { Button } from '../../../../../../shared/components/input-types/button/b
     ]),
   ],
 })
-export class ProfileDrawer implements OnInit, OnDestroy {
+export class ProfileDrawer {
   isNotificationsOpen = false;
   isMessagingOpen = false;
 searchForm = new FormGroup({
@@ -86,7 +84,6 @@ searchResults$!: Observable<string[]>; // raw user list
   modalOkButtonText = signal('Submit Request'); // Use signal for button text
   private modalSubscriptions: Subscription[] = [];
   private subscriptionCheckTimer: any = null;
-  private userSubscription?: Subscription;
 
   openSections: { [key: string]: boolean } = {
     notifications: false,
@@ -97,19 +94,10 @@ searchResults$!: Observable<string[]>; // raw user list
   // modalComponent?: Type<any>;
   modalData?: any;
   chatPreviews$!: Observable<ChatPreview[]>;
-  //modalData?: User;
-  currentUser?: User;
-  
-  // Branch information from sessionStorage
-  officeCode?: string;
-  officeNm?: string;
-  txnDt?: string;
 
   constructor(
     public notificationService: NotificationService,
-    private userService: UserService,
     private router: Router,
-    private toastHelper: ToastHelperService,
     public novuService: NovuService,
     private overlay: Overlay,
     private ngZone: NgZone,
@@ -156,61 +144,29 @@ openChatFromSearch(user: string) {
       .catch((err) => console.error('NOVU: refreshNow failed on openChat:', err));
   }
 
-  ngOnInit(): void {
-    this.userSubscription = this.userService.user$.subscribe({
-      next: (user) => {
-        this.currentUser = user;
-      },
-      error: (error) => {
-        console.error('Failed to load current user profile from stream', error);
-      },
-    });
-     // this.chatPreviews$ = this.chatService.getChatPreviews();
-    this.chatPreviews$ = this.chatService.getCombinedList();
-    
-    // Load branch information from sessionStorage
-    this.loadBranchInfoFromSession();
-  }
-  
-  private loadBranchInfoFromSession(): void {
-    this.officeCode = sessionStorage.getItem('officeCode') || '';
-    this.officeNm = sessionStorage.getItem('officeNm') || '';
-    const rawDate = sessionStorage.getItem('txnDt');   // "2024-11-27 00:00:00"
-
-    this.txnDt = rawDate ? rawDate.split(' ')[0] : '';  
-
-  }
-
   openEditProfileModal() {
-    const openModalWithUser = (user: User) => {
-      this.modalComponent = EditProfileModal;
-      this.modalData = user;
-      this.showEditProfileModal = true;
+    this.modalComponent = EditProfileModal;
+    this.modalData = {
+      initialData: {
+        user_id: 'USR002',
+        user_nm: 'Saikat',
+        user_descrip: 'Software Engineer',
+        home_office_id: 'DHK001',
+        login_id: 'saikat01',
+        user_email_id: 'saikat.gmail.com',
+        mobile_number: '017XXXXXXXX',
+        user_img: 'assets/profile.png',
+      },
     };
-
-    if (!this.currentUser) {
-      console.warn('User profile is not available yet; cannot open edit modal.');
-      return;
-    }
-
-    openModalWithUser(this.currentUser);
+    this.showEditProfileModal = true;
   }
-
-
 
   closeEditProfileModal() {
     this.showEditProfileModal = false;
   }
 
-
-  /** ✅ Modal result  */
-  // onProfileUpdated(result: any) {
-  //   console.log('✅ Profile updated:', result);
-  //   this.showEditProfileModal = false;
-  // }
   onProfileUpdated(updatedData: any) {
     console.log('🟢 Updated profile data received from modal:', updatedData);
-    this.toastHelper.success('Profile updated', 'Success');
   }
 
   toggleChat(chatWith: string) {
@@ -335,23 +291,19 @@ openChatFromSearch(user: string) {
     });
   }
 
-
+  ngOnInit() {
+  // this.chatPreviews$ = this.chatService.getChatPreviews();
+  this.chatPreviews$ = this.chatService.getCombinedList();
+}
 
   ngOnDestroy() {
     this.overlayRef?.dispose();
     this.detailOverlayRef?.dispose();
-    this.modalSubscriptions.forEach((sub) => sub.unsubscribe());
-    if (this.subscriptionCheckTimer) {
-      clearInterval(this.subscriptionCheckTimer);
-      this.subscriptionCheckTimer = null;
-    }
-    this.userSubscription?.unsubscribe();
   }
 
   goToNotes() {
-    this.router.navigate(['/feature/usernote']);
+    this.router.navigate(['/usernote']);
   }
-
 
   // Modal related methods
   openServiceRequestModal() {
@@ -432,26 +384,26 @@ openChatFromSearch(user: string) {
       }
     }, 3000);
   }
-
+ 
   onModalClose(isVisible: boolean) {
     console.log('Modal visibility changed:', isVisible);
     this.showModal = isVisible;
-
+ 
     if (!isVisible) {
       // Clean up subscriptions when modal closes
       this.modalSubscriptions.forEach((sub) => sub.unsubscribe());
       this.modalSubscriptions = [];
-
+ 
       if (this.subscriptionCheckTimer) {
         clearInterval(this.subscriptionCheckTimer);
         this.subscriptionCheckTimer = null;
       }
-
+ 
       // Don't clear modalComponent/modalComponentData here - let Angular handle it
       // This prevents the ExpressionChangedAfterItHasBeenCheckedError
     }
   }
-
+ 
   onModalVisibilityChange(isVisible: boolean) {
     // Update both modal flags based on which one was open
     if (this.showEditProfileModal) {
@@ -491,6 +443,5 @@ openChatFromSearch(user: string) {
       this.modalOkButtonText.set(text);
     }
   }
-  
 
 }

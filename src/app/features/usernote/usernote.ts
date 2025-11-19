@@ -16,8 +16,6 @@ import { MatDivider } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {UserService} from '../../core/user/user.service';
-import {User} from '../../core/user/user.types';
 
 @Component({
   selector: 'app-usernote',
@@ -48,15 +46,11 @@ export class Usernote implements OnInit {
   userNoteId: number = 0;
   saveButtonText: string = "Create";
   reminderTime: string;
-  private userService = inject(UserService);
 
-  officeId!: string;
-  userId!: string;
-  employeeId!: string;
 
   constructor(private formBuilder: FormBuilder,
-              public loaderService: LoaderService,
-              private userNoteService: UserNoteService
+    public loaderService: LoaderService,
+    private userNoteService: UserNoteService
   ) { }
 
   ngOnInit() {
@@ -69,48 +63,33 @@ export class Usernote implements OnInit {
       reminderTime: ['']
 
     });
-    this.userService.user$.subscribe((user: User) => {
-      this.officeId = user.officeId;
-      this.userId = user.username;
-      this.employeeId = user.employeeId;
 
-      console.log('Office ID:', this.officeId);
-      console.log('User ID:', this.userId);
-    });
     this.getUserNoteByUserId();
   }
 
   getUserNoteByUserId() {
-    const userId = this.userId;
-
+    const userId = localStorage.getItem('userId') ;
+    this.loaderService.showLoader();  
     this.userNoteService
-      .getUserNoteByUserId(userId || '')
-      .subscribe({
-        next: (response) => {
-          this.userNoteList = response as IUserNote[];
-        },
-        error: (err) => {
-          console.error(err);
-        },
-        complete: () => {
-          this.loaderService.hideLoader();
-        }
+      .getUserNoteByUserId(userId ?? '')
+      .subscribe((Response) => {
+        // if (Response.Status == 'OK') {
+        this.userNoteList = Response as IUserNote[];//06/07/2023      
       });
+      this.loaderService.hideLoader();
   }
-
 
   // Create/Update Note
   createNote() {
     this.loaderService.showLoader();
 
     this.userNote.noteId = String(this.userNoteId);
-    //this.userNote.userId = localStorage.getItem('userId') ?? '';
-    this.userNote.userId = this.userId;
+    this.userNote.userId = localStorage.getItem('userId') ?? '';
     this.userNote.noteTitle = this.form['title'].value;
     this.userNote.noteContent = this.form['content'].value;
     this.userNote.isPinned = this.form['isPinned'].value ? 1 : 0;
     this.userNote.isReminder = this.form['isReminder'].value ? 1 : 0;
-    if (this.userNote.isReminder == 1) {
+    if (this.userNote.isReminder == 1) {     
       this.userNote.reminderDate = this.convertToIsoDateTime(this.form['reminderDate'].value, this.reminderTime)
     }
     else
@@ -150,7 +129,7 @@ export class Usernote implements OnInit {
     this.loaderService.hideLoader();
   }
 
-  updateNote(note: IUserNote) {
+  updateNote(note: IUserNote) {    
     this.userNoteId = Number(note.noteId);
     this.form['title'].setValue(note.noteTitle);
     this.form['content'].setValue(note.noteContent);
@@ -158,7 +137,7 @@ export class Usernote implements OnInit {
     this.form['isReminder'].setValue(note.isReminder);
     if (note.isReminder == 1) {
       const { date, time } = this.splitFromIsoDateTime(note.reminderDate ?? '');
-
+    
       this.form['reminderDate'].setValue(date);
       this.form['reminderTime'].setValue(time);
     }

@@ -3,7 +3,7 @@
     <div class="grid grid-cols-1 md:grid-cols-1 gap-0">
       <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'Maker List'" />
 
-      <div class="px-4">
+      <div class="container">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
           <app-select-option-field
             [frmGroup]="frmGroup"
@@ -39,7 +39,7 @@
               [showProgressButton]="true"
               [showEditButton]="false"
               [showDeleteButton]="false"
-              [showViewButton]="false"
+              [showViewButton]="true"
               [showPrintButton]="false"
               [useInlineEdit]="false"
               [dataSource]="makerList"

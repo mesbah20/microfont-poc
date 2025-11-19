@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Type } from '@angular/core';
-import { GlSubsidiary } from './gl-subsidiary/gl-subsidiary';
-import {TextBaseInput} from './text-base-input/text-base-input';
+import {TextBaseInput} from '../../shared/components/input-types/text-base-input/text-base-input';
 
 @Injectable({ providedIn: 'root' })
 export class ComponentRegistry {

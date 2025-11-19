@@ -1,10 +1,8 @@
-import {inject, Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import {UserService} from '../user/user.service';
-import {User} from '../user/user.types';
 
 export interface ServiceRequest {
   // Client-side fields (for form)
@@ -85,13 +83,6 @@ export interface Department {
   providedIn: 'root',
 })
 export class ServiceRequestService {
-
-  private userService = inject(UserService);
-
-  officeId!: string;
-  userId!: string;
-  employeeId!: string;
-
   private get createApiUrl(): string {
     return `${environment.centrinoBaseUrl}/serviceRequest/create`;
   }
@@ -128,16 +119,7 @@ export class ServiceRequestService {
     return `${environment.centrinoBaseUrl}/xchange-out/get-all-office-info-exc`;
   }
 
-  constructor(private http: HttpClient) {
-    this.userService.user$.subscribe((user: User) => {
-      this.officeId = user.officeId;
-      this.userId = user.username;
-      this.employeeId = user.employeeId;
-
-      console.log('Office ID:', this.officeId);
-      console.log('User ID:', this.userId);
-    });
-  }
+  constructor(private http: HttpClient) {}
 
   /**
    * Get HTTP headers with Bearer token
@@ -145,7 +127,7 @@ export class ServiceRequestService {
   private getHeaders(): HttpHeaders {
     const token =
       localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
-console.log("Token in service-request",token);
+
     if (token) {
       return new HttpHeaders({
         'Content-Type': 'application/json',
@@ -161,7 +143,8 @@ console.log("Token in service-request",token);
   /** GET all service requests from the server (filtered by logged-in user) */
   getServiceRequests(): Observable<ServiceRequest[]> {
     // Get the logged-in user's ID from localStorage
-    const userId =this.userId;
+    const userId =
+      localStorage.getItem('userId') || sessionStorage.getItem('userId');
 
     if (!userId) {
       console.error('No userId found in storage');
@@ -369,9 +352,8 @@ console.log("Token in service-request",token);
     }
 
     // Preserve display fullName but send actual userId (issuer) to backend.
-    // const userId =
-    //   localStorage.getItem('userId') || sessionStorage.getItem('userId') || '';
-    const userId =this.userId;
+    const userId =
+      localStorage.getItem('userId') || sessionStorage.getItem('userId') || '';
     if (!userId) {
       console.warn('No userId found for issuerName – falling back to fullName');
     }

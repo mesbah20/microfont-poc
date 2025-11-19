@@ -8,7 +8,7 @@ import {
   signal,
   WritableSignal,
   ChangeDetectorRef,
-  ViewChild, computed,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -34,13 +34,6 @@ import {
   ServiceRequestLog,
 } from '../../../../core/services/service-request-log.service';
 import { DataGridComponent } from '../../../../shared/components/data-grid/data-grid';
-import {MetaAppFunctionItem, MetaAppListItem, MetaAppModuleItem} from '../../../model/approval-workflow.model';
-import {catchError} from 'rxjs/operators';
-import {of} from 'rxjs';
-import {WorkflowDesignerService} from '../../../Components/workflow-designer/services/workflow-designer.service';
-import {AuthService} from '../../../../core/auth/auth.service';
-import {UserService} from '../../../../core/user/user.service';
-import {User} from '../../../../core/user/user.types';
 
 @Component({
   selector: 'service-request-dialog',
@@ -79,23 +72,6 @@ export class ServiceRequestDialog implements OnInit {
   @Output() okButtonTextChange = new EventEmitter<string>();
   @Input() modalParent?: { close(result?: any): void; closeModal(): void };
   @Input() initialData?: any;
-
-  //remove later
-  private readonly workflowService = inject(WorkflowDesignerService);
-  //private readonly applications = signal<MetaAppListItem[]>([]);
-  //private readonly applications = signal<MetaAppModuleItem[]>([]);
-  private readonly applications = signal<MetaAppFunctionItem[]>([]);
-  readonly applicationOptions = computed(() =>
-    this.applications().map(item => ({
-      key: item.functionId,
-      value: `${item.functionId} - ${item.functionName}`
-    }))
-  );
-  private userService = inject(UserService);
-
-  officeId!: string;
-  userId!: string;
-  employeeId!: string;
 
   // Getter for OK button text based on current mode
   get okButtonText(): string {
@@ -226,26 +202,7 @@ export class ServiceRequestDialog implements OnInit {
 
     // Load service requests for the grid
     this.loadServiceRequests();
-    this.userService.user$.subscribe((user: User) => {
-      this.officeId = user.officeId;
-      this.userId = user.username;
-      this.employeeId = user.employeeId;
-
-      console.log('Office ID:', this.officeId);
-      console.log('User ID:', this.userId);
-    });
-
   }
-  private loadInitialData(): void {
-    this.workflowService.getFunctions(901,1)
-      .subscribe(apps => {
-        console.log("Applications array:", apps);
-        this.applications.set(apps);
-      });
-  }
-
-
-
   loadDepartments(): void {
     this.serviceRequestService.getDepartmentOptions().subscribe({
       next: (options) => {
@@ -263,10 +220,10 @@ export class ServiceRequestDialog implements OnInit {
   }
   loadServiceRequests(): void {
     // Get the logged-in user's id (issuer) for filtering API
-    // const userId =
-    //   localStorage.getItem('userId') || sessionStorage.getItem('userId') || '';
+    const userId =
+      localStorage.getItem('userId') || sessionStorage.getItem('userId') || '';
 
-    this.serviceRequestService.getServiceRequestsByIssuer(this.userId).subscribe({
+    this.serviceRequestService.getServiceRequestsByIssuer(userId).subscribe({
       next: (requests) => {
         // Transform the requests to add readable text for IDs
         const nameFromForm =
@@ -347,7 +304,7 @@ export class ServiceRequestDialog implements OnInit {
       const decodedToken: any = jwtDecode(token);
 
       // Extract employee ID from the decoded token
-      const employeeId = this.userId;
+      const employeeId = decodedToken.employeeId;
 
       if (employeeId) {
         // Populate the employee ID field (it's disabled but can still be set)
@@ -525,7 +482,7 @@ export class ServiceRequestDialog implements OnInit {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      console.log("serviceRequest--- ",serviceRequest);
+
       // Call backend service
       this.serviceRequestService.addServiceRequest(serviceRequest).subscribe({
         next: (response) => {

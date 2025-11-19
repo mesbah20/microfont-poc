@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Layout } from './layout/layout';
+import { Login } from './core/auth/login/login';
 import { Landing } from './modules/landing/landing/landing';
 
 export const routes: Routes = [
@@ -24,7 +25,8 @@ export const routes: Routes = [
     children: [
       { path: 'mx', loadChildren: () => import('./modules/swiftmx/swiftmx.routing').then(m => m.SwiftmxRouting) },
       { path: 'dashboard', loadChildren: () => import('./modules/landing/landing.routing').then(m => m.landingRouting) },
-      { path: 'WF', loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting) },
+      { path: 'hrm', loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting) },
+      { path: 'gl', loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting) },
     ]
   },
    {
@@ -62,27 +64,6 @@ export const routes: Routes = [
     },
     children: [
       { path: '', loadChildren: () => import('./features/feature.routing').then(m => m.featureRoutes) },
-    ]
-  },
-  {
-    path: 'Sentinel', component: Layout,
-    data: {
-      layout: 'empty'
-    },
-    children: [
-      {
-        path: '',
-        loadChildren: () => import('./modules/Components/sentinel-routing').then(m => m.SentinelRouting)
-      },
-    ]
-  },
-  {
-    path: 'rpt', component: Layout,
-    data: {
-      layout: 'empty'
-    },
-    children: [
-      { path: '', loadChildren: () => import('./features/report/report.routing').then(m => m.reportRoutes) },
     ]
   },
 ];
