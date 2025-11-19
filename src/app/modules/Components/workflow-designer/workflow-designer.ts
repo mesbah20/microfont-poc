@@ -6,7 +6,7 @@ import {
   computed,
   effect,
   inject,
-  signal
+  signal, ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -158,7 +158,7 @@ export class WorkflowDesigner implements OnInit {
   modalComponent: any = null;
   modalComponentData: any = {};
 
-  constructor() {
+  constructor(private cdr: ChangeDetectorRef) {
     BUTTON_VISIBILITY.set({
       save: false,
       update: false,
@@ -531,6 +531,7 @@ export class WorkflowDesigner implements OnInit {
           numberOfApprovalLevel: targetLevel.numberOfApprovalLevel
         }, { emitEvent: false });
 
+        this.cdr.detectChanges();
         this.levelForm.markAsPristine();
         this.levelForm.markAsUntouched();
 

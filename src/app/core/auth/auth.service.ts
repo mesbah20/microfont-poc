@@ -42,8 +42,8 @@ export class AuthService {
     this._authenticated = await this.keycloak.init({
       onLoad: 'check-sso',
       // onLoad: 'login-required',
-      //redirectUri: 'http://localhost:4200/login',
-      silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
+      redirectUri: 'http://localhost:4001/landing/home',
+      //silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
       pkceMethod: 'S256',
       checkLoginIframe: true,
       checkLoginIframeInterval: 5
@@ -71,12 +71,12 @@ export class AuthService {
 
   login(): void {
     this.keycloak.login({
-      redirectUri: 'http://localhost:4200' + '/landing/home'
+      redirectUri: 'http://localhost:4001' + '/landing/home'
     });
   }
 
   logout(): void {
-    this.keycloak.logout({redirectUri: 'http://localhost:4200/login'});
+    this.keycloak.logout({redirectUri: 'http://localhost:4000/login'});
     localStorage.clear();
     sessionStorage.clear();
   }

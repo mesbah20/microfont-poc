@@ -32,10 +32,14 @@ export const environment = {
   keycloak: {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',
-    clientId: 'LauncherApp'
+    clientId: 'sentinelUI'
   },
-  
+
   reportManagementApiUrl: 'http://localhost:8092/centrino', // Report Management Backend API
-  reportGenerationApiUrl: 'http://localhost:8092', // BIRT Report Generation Service
-  sessionUrl:'http://192.168.20.93:8090/centrino/office-session/getOfficeSession'
+  reportGenerationApiUrl: 'http://localhost:8092',
+  sessionUrl:'http://192.168.20.93:8090/centrino/office-session/getOfficeSession',
+  novu_identifier: '1uXpKIJUa3Rg',
+  novu_socket: 'http://192.168.10.56:3002',
+  novu_api: 'http://192.168.10.56:3000/novu/api',
+  novu_service: 'http://192.168.20.69:8088/Notify'
 };
