@@ -32,7 +32,7 @@ export const environment = {
   keycloak: {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',
-    clientId: 'LauncherApp'
+    clientId: 'sentinelUI'
   },
 
   reportManagementApiUrl: 'http://localhost:8083/api', // Report Management Backend API
