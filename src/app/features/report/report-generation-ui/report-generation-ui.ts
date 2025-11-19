@@ -319,6 +319,7 @@ onModalResult(result: any) {
           reportId: metadata.id,
           functionId: metadata.functionId,
           reportName: metadata.reportName,
+          appCode: metadata?.dataSourceInfo?.vappName,
         });
         
         // Sort parameters and rebuild form
@@ -670,7 +671,7 @@ console.log(param);
     this.generating.set(true);
 
     const formValues = this.parameterForm.value;
-    const appCode = this.selectionForm.get('appCode')?.value || 'ultimus';
+    const appCode =  metadata?.dataSourceInfo?.vappName || 'ultimus';
     
     // Process template variables in parameter values before sending
     const processedParameters: { [key: string]: any } = {};
@@ -769,7 +770,7 @@ console.log(param);
   private onGenerateReportForDownload() {
     const metadata = this.reportMetadata();
     if (!metadata) return;
-    const appCode = this.selectionForm.get('appCode')?.value || 'ultimus';
+    const appCode =  metadata?.dataSourceInfo?.vappName || 'ultimus';
     this.generating.set(true);
 
     const formValues = this.parameterForm.value;
@@ -1253,7 +1254,6 @@ getAccountNumber(){
           this.updateParameterOptions(param.parameterName, optionsString);
           this.clearParameterLoading(param.parameterName);
           
-          this.toastr.success(`Options loaded for ${param.parameterLabel}`, 'Database Success');
         },
         error: (error) => {
           console.error(`Error loading options from Database for ${param.parameterName}:`, error);
