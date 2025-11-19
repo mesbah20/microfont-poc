@@ -513,7 +513,7 @@ export class ServiceRequestProcess implements OnInit, AfterViewInit, OnDestroy {
 
   onTransactionView(serializedData: string): void {
     const serviceRequest = JSON.parse(serializedData);
-    console.log("Selected serviceRequest", serviceRequest);
+
     // Ensure dates are properly mapped
     const mappedRequest = {
       ...serviceRequest,
@@ -526,15 +526,10 @@ export class ServiceRequestProcess implements OnInit, AfterViewInit, OnDestroy {
     };
 
     // Open modal with service request details
-    console.log("this.serviceRequestDetails", this.serviceRequestDetails);
-
-    this.openModal(
-      this.serviceRequestDetails,
-      {
-        selectedRequest: mappedRequest,
-        isViewOnly: true,
-      }
-    );
+    this.openModal(this.serviceRequestDetails, {
+      selectedRequest: mappedRequest,
+      isViewOnly: true,
+    });
     this.toastr.info(
       `Viewing service request from ${
         mappedRequest.issuerName || mappedRequest.fullName

@@ -27,9 +27,7 @@ export class Search implements OnInit {
       let resourceList = JSON.parse(localStorage.getItem('resourceList') || '');
       if(!resourceList)
         return;
-      const menuItems: UserAccessItem[] = resourceList.filter((item:any) => 
-        item?.attributes?.functionType !== 'R'
-      ).map((m: any) => ({
+      const menuItems: UserAccessItem[] = resourceList.map((m: any) => ({
         FunctionId: m.attributes.functionId,
         FunctionName: m.attributes.functionName,
         HOFunctionFlag: '0',
@@ -50,13 +48,13 @@ export class Search implements OnInit {
         QuickRouteNo: m.attributes.quickRoute,
         IsFinancial: '0'
       }));
-
         this.userAccessList = menuItems;
     }
 
     handleFastPath(input: any) {
         const enteredCode = input.value.trim();
         if (!enteredCode) return;
+debugger;
         const match = this.userAccessList.find(
             x => x.QuickRouteNo.toString() === enteredCode
         );

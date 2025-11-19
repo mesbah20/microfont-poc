@@ -32,8 +32,6 @@ import {
   ServiceRequestLog,
   ServiceRequestLogService,
 } from '../../../core/services/service-request-log.service';
-import {UserService} from '../../../core/user/user.service';
-import {User} from '../../../core/user/user.types';
 
 @Component({
   selector: 'service-request-details',
@@ -69,11 +67,6 @@ export class ServiceRequestDetails implements OnInit {
   @Input() modalParent?: { close(result?: any): void; closeModal(): void };
   @Input() initialData?: any;
 
-  private userService = inject(UserService);
-
-  officeId!: string;
-  userId!: string;
-  employeeId!: string;
   // Getter for OK button text based on current mode
   get okButtonText(): string {
     if (this.tabIndex() === 0) {
@@ -83,7 +76,7 @@ export class ServiceRequestDetails implements OnInit {
   }
 
   // Selected service request to display
-  @Input() selectedRequest: ServiceRequest | null = null;
+  selectedRequest: ServiceRequest | null = null;
 
   // Active tab using signal
   tabIndex = signal<number>(0);
@@ -278,20 +271,10 @@ export class ServiceRequestDetails implements OnInit {
 
     // Always load service requests list for the grid
     this.loadServiceRequests();
-
-    this.userService.user$.subscribe((user: User) => {
-      this.officeId = user.officeId;
-      this.userId = user.username;
-      this.employeeId = user.employeeId;
-
-      console.log('Office ID:', this.officeId);
-      console.log('User ID:', this.userId);
-    });
   }
   loadServiceRequests(): void {
     // Get the logged-in user's name from localStorage
-    //const userName = localStorage.getItem('userName') || 'Hasibul Haque';
-    const userName = this.userId;
+    const userName = localStorage.getItem('userName') || 'Hasibul Haque';
 
     this.serviceRequestService.getServiceRequestsByIssuer(userName).subscribe({
       next: (requests) => {
@@ -700,18 +683,18 @@ export class ServiceRequestDetails implements OnInit {
       subject: `Service Request Update: ${requestType}`,
       message: `
         Dear ${employeeName},
-
+        
         Your service request has been updated:
-
+        
         Status: ${request.status || this.getStatus()}
         Request Type: ${requestType}
         Department: ${department}
-
+        
         HR/IT Comment:
         ${comment}
-
+        
         If you have any questions, please contact the IT department.
-
+        
         Best regards,
         IT Support Team
       `,
