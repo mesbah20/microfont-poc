@@ -24,7 +24,7 @@ export const routes: Routes = [
     children: [
       { path: 'mx', loadChildren: () => import('./modules/swiftmx/swiftmx.routing').then(m => m.SwiftmxRouting) },
       { path: 'dashboard', loadChildren: () => import('./modules/landing/landing.routing').then(m => m.landingRouting) },
-      { path: 'hrm', loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting) },
+      { path: 'WF', loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting) },
     ]
   },
    {

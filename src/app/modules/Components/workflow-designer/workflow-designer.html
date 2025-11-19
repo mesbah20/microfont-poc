@@ -47,7 +47,7 @@
             [tooltip]="'Enter ID'"
             [allowSpecialChars]="true"
             [isDotsVisible]="true"
-            (dotsClicked)="openModal()"
+            (dotsClicked)="openWorkflowModal()"
             (onBlurred)="loadFunctionLevels($event)">
           </lds-id-box>
 
@@ -70,8 +70,8 @@
           </div>
         </div>
 
-<div class="page-wrapper" *ngIf="levelForm.get('workflowName')?.value">
-  <div class="panel">
+<!--<div class="page-wrapper" *ngIf="levelForm.get('workflowName')?.value">-->
+  <div class="panel" *ngIf="levelForm.get('workflowName')?.value">
     <div class="container space-y-6 p-4 my-4">
       <app-sub-panel-header [subPanelTitle]="'Approval Level Configuration'"></app-sub-panel-header>
 
@@ -118,11 +118,11 @@
       </div>
     </div>
   </div>
-</div>
+<!--</div>-->
 
 
-<div class="page-wrapper" *ngIf="levelForm.get('workflowName')?.value">
-  <div class="panel">
+<!--<div class="page-wrapper" *ngIf="levelForm.get('workflowName')?.value">-->
+  <div class="panel"  *ngIf="levelForm.get('workflowName')?.value">
     <div class="container space-y-6 p-4 my-4">
       <app-sub-panel-header [subPanelTitle]="'Approval Level Details & Role Mapping'"></app-sub-panel-header>
 
@@ -269,10 +269,10 @@
         -->
     </div>
   </div>
-</div>
+<!--</div>-->
 
-<div class="page-wrapper" *ngIf="levelForm.get('workflowName')?.value">
-  <div class="panel">
+<!--<div class="page-wrapper" *ngIf="levelForm.get('workflowName')?.value">-->
+  <div class="panel" *ngIf="levelForm.get('workflowName')?.value">
     <div class="container space-y-6 p-4 my-4">
       <app-sub-panel-header [subPanelTitle]="'Eligible Approver Preview'"></app-sub-panel-header>
 
@@ -330,6 +330,16 @@
       </div>
     </div>
   </div>
-</div>
-<app-view-workflow-modal [showUserRolesModal]="showUserRolesModal" [roleName]="levelForm.get('workflowId')?.value ?? null"
-                      (roleSelected)="loadRole($event)"></app-view-workflow-modal>
+<!--</div>-->
+<!--<app-view-workflow-modal [showUserRolesModal]="showUserRolesModal" [roleName]="levelForm.get('workflowId')?.value ?? null"
+                      (roleSelected)="loadRole($event)"></app-view-workflow-modal>-->
+        <lds-modal
+          [isVisible]="showModal()"
+          [modalTitle]="'Select Workflow'"
+          [cssClass]="'modal-xl'"
+          [modalComponent]="modalComponent"
+          [modalComponentData]="modalComponentData"
+          (modalClosed)="onModalClose()"
+          (modalResult)="onModalResult($event)">
+        </lds-modal>
+

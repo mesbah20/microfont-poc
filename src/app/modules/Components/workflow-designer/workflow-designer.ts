@@ -153,6 +153,11 @@ export class WorkflowDesigner implements OnInit {
   conditionPayload : string;
   saveDetailList:ApprovalLevelViewModel[]=[];
 
+  //modal
+  showModal = signal<boolean>(false);
+  modalComponent: any = null;
+  modalComponentData: any = {};
+
   constructor() {
     BUTTON_VISIBILITY.set({
       save: false,
@@ -1374,6 +1379,39 @@ export class WorkflowDesigner implements OnInit {
     setTimeout(() => {
       this.showUserRolesModal = true;
     }, 0);
+  }
+  openWorkflowModal() {
+    console.log("Opening workflow modal...");
+
+    this.showModal.set(false);
+    this.modalComponent = undefined;
+
+    setTimeout(() => {
+      import('../workflow-designer/view-workflow-modal/view-workflow-modal').then(module => {
+
+        this.modalComponent = module.ViewWorkflowModal;
+
+        this.modalComponentData = {
+          workflowId: this.levelForm.get('workflowId')?.value ?? null
+        };
+
+        this.showModal.set(true);
+      });
+    }, 20);
+  }
+
+  onModalClose() {
+    this.showModal.set(false);
+  }
+
+  onModalResult(result: any) {
+    console.log("Workflow selected:", result);
+
+    if (result) {
+      this.loadRole(result);
+    }
+
+    this.showModal.set(false);
   }
 }
 

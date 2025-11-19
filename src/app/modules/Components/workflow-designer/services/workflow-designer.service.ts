@@ -167,12 +167,12 @@ export class WorkflowDesignerService {
   }
 
   getRoles(): Observable<UserRolesModel[]> {
-    const url = `${environment.centrinoBaseUrl}/roles/get-all`;
+    const url = `${environment.sentinelUrl}/api/roles/get-all`;
     return this.http.get<UserRolesModel[]>(url);
   }
 
   getEligibleApprovers(appId: number, functionId: number, makerId: string, conditionPayload: string): Observable<ApprovalEligibleApproverModel[]> {
-    const url = `${environment.centrinoBaseUrl}/approval/workflow/eligible-approvers`;
+    const url = `${environment.sentinelUrl}/api/approval/workflow/eligible-approvers`;
     return this.http.post<ApprovalEligibleApproverModel[]>(url, {
       appId,
       functionId,

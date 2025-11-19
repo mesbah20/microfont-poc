@@ -102,7 +102,7 @@ export class AuthService {
     user.clickStreamTrack = decodeToken.clickStreamTrack;
     user.userTerminalIP = decodeToken.userTerminalIP;
     this._userService.user = user;
-    this.getSessionData(user.officeId);
+    if(user.officeId){this.getSessionData(user.officeId);}
   }
 
   getSessionData(officeId:string){

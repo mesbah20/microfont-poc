@@ -1,4 +1,4 @@
-import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
+import {Component, EventEmitter, inject, Input, Output, signal} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {UserRolesModel} from '../../../model/UserRoles.model';
 import {ToastrService} from 'ngx-toastr';
@@ -11,51 +11,64 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {CommonModule} from '@angular/common';
 import {WorkflowDesignerService} from '../services/workflow-designer.service';
+import {ApprovalFunctionLevelModel} from '../../../model/approval-workflow.model';
+import {ServiceRequest} from '../../../../core/services/service-request.service';
 
 @Component({
   selector: 'app-view-workflow-modal',
-  imports: [Button, DataGridComponent,LdsModalComponent, MatMenuModule,
+  standalone: true,
+  imports: [Button, DataGridComponent, MatMenuModule,
     MatIconModule, ReactiveFormsModule, MatButtonModule, CommonModule],
   templateUrl: './view-workflow-modal.html',
   styleUrl: './view-workflow-modal.scss'
 })
 export class ViewWorkflowModal {
-  @Input() showUserRolesModal!: boolean;
-  @Output() roleSelected = new EventEmitter<any>();
-  @Input() roleName: any | null = null;
+  @Input() modalComponentData: any;
+  @Output() modalResult = new EventEmitter<any>();
 
+  workFlowId: any = null;
   modalForm!: FormGroup;
-  userRolesList: UserRolesModel[] = [];
+//  userRolesList: ApprovalFunctionLevelModel[] = [];
+  userRolesList = signal<ApprovalFunctionLevelModel[]>([]);
   showUserModalGrid = false;
-  toastr = inject(ToastrService);
 
-  constructor(private formBuilder: FormBuilder, private service:WorkflowDesignerService) {}
-  ngOnInit(): void {
+  constructor(
+    private formBuilder: FormBuilder,
+    private service: WorkflowDesignerService,
+    private toastr: ToastrService
+  ) {}
+
+  ngOnInit() {
     this.modalForm = this.formBuilder.group({
-      roleName: [''],
+      workFlowId: [''],
     });
     this.getAllRoles();
+    // Take incoming roleName
+    if (this.modalComponentData) {
+      this.workFlowId = this.modalComponentData.workflowId;
+    }
+
   }
 
-  closeModal() {
-    this.showUserRolesModal = false;
-  }
   getAllRoles() {
     this.service.getAllFunctionLevels().subscribe({
-      next: (res: any) => {
-        console.log("workflow List....  ", res)
-        this.userRolesList = res
-        if(this.userRolesList!=null){
-          this.showUserModalGrid = true;
-        }
-      },
-      error: (err) => { console.error(err); alert('Error Fetching Data'); }
-    });
+      next: (res) => {
+        const transformedRequests: ApprovalFunctionLevelModel[] = (res || []).map((request) => ({
+          workflowId: request.workflowId ?? null, // match optional number | null
+          workflowName: request.workflowName != null ? String(request.workflowName) : null, // ensure string | null
+          appId: request.appId ?? null,           // match optional number | null
+          numberOfApprovalLevel: request.numberOfApprovalLevel ?? 0, // required field
+        }));
 
+        this.userRolesList.set(transformedRequests);
+        this.showUserModalGrid = true;
+      },
+      error: () => this.toastr.error("Error fetching workflow list")
+    });
   }
-  loadUserRoles(serializedData: string): void {
+  loadUserRoles(serializedData: string) {
     const selectedRole = JSON.parse(serializedData);
-    this.roleSelected.emit(selectedRole);
-    this.closeModal();
+    this.modalResult.emit(selectedRole);
   }
 }
+
