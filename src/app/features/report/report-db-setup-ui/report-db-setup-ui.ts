@@ -17,6 +17,8 @@ import { BUTTON_VISIBILITY, MENU_NAME, ONCLICK_RESET, ONCLICK_SAVE } from '../..
 import { IdBoxComponent } from "../../../shared/components/input-types/id-box/id-box";
 import { ExpansionPanelHeader } from "../../../shared/components/expansion-panel-header/expansion-panel-header";
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../core/auth/auth.service';
+import { UserService } from '../../../core/user/user.service';
 
 /**
  * Report DB Connection Setup Page
@@ -44,6 +46,8 @@ export class ReportDbSetupUI implements OnInit {
   private formBuilder = inject(FormBuilder);
   private toastr = inject(ToastrService);
   private dbService = inject(DatabaseConnectionService);
+  private _authService = inject(AuthService);
+  private _userService = inject(UserService);
 
   // Form and state properties
   connectionForm!: FormGroup;
@@ -374,9 +378,9 @@ export class ReportDbSetupUI implements OnInit {
       });
       return;
     }
-
+    this._authService.userInfo("token");
     this.loading.set(true);
-    const userId = localStorage.getItem('userId');
+    const userId = this._userService?.user?.username??'admin';
     
     const vAppNameValue = this.connectionForm.get('vAppName')?.value;
     
@@ -394,8 +398,8 @@ export class ReportDbSetupUI implements OnInit {
       password: this.connectionForm.value.password,
       connectionName: this.connectionForm.value.connectionName,
       isDefaultConnection: this.connectionForm.value.isDefaultConnection,
-      createdBy: userId,
-      updatedBy: userId,
+      modifyBy: userId,
+      modifiedDate: new Date().toISOString(),
     };
 
     // Check if updating existing or creating new
@@ -416,6 +420,8 @@ export class ReportDbSetupUI implements OnInit {
         }
       });
     } else {
+      dto.createdBy= userId;
+      dto.createdDate = new Date().toISOString();
       // Create new
       this.dbService.create(dto).subscribe({
         next: (result) => {

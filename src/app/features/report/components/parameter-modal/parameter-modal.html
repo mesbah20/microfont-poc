@@ -6,8 +6,8 @@
       [isOpenSignal]="parameterFormPanel"
     ></app-expansion-panel-header>
     @if(parameterFormPanel()){
-    <div class="component-section pb-2">
-      <form [formGroup]="parameterForm">
+    <div class="component-section  py-2">
+      <form [formGroup]="parameterForm" class="flex flex-col gap-2">
         <app-text-base-input
           [label]="'Parameter Name (Required)'"
           [controlName]="'parameterName'"
@@ -93,30 +93,33 @@
     >
     </app-expansion-panel-header>
     @if(validationPanel()){
-    <div class="component-section pb-2">
-      <form [formGroup]="parameterForm">
+    <div class="component-section py-2">
+      <form [formGroup]="parameterForm" class="flex flex-col gap-2">
         <lds-switch
           [labelText]="'Required Field'"
-          [controlName]="'isRequired'"
+          [controlName]="'required'"
           [frmGroup]="parameterForm"
           [matTooltip]="'User must provide a value'"
+          [isChecked]="parameterForm.get('isRequired')?.value ?? false"
         >
         </lds-switch>
 
         <!-- Visible Toggle -->
         <lds-switch
           [labelText]="'Visible to User'"
-          [controlName]="'isVisible'"
+          [controlName]="'visible'"
           [frmGroup]="parameterForm"
+          [isChecked]="parameterForm.get('isVisible')?.value ?? true"
         >
         </lds-switch>
 
         <!-- Readonly Toggle -->
         <lds-switch
           [labelText]="'Read Only'"
-          [controlName]="'isReadonly'"
+          [controlName]="'readonly'"
           [frmGroup]="parameterForm"
           [matTooltip]="'User cannot modify the value'"
+          [isChecked]="parameterForm.get('isReadonly')?.value ?? false"
         >
         </lds-switch>
 
@@ -189,8 +192,8 @@
     >
     </app-expansion-panel-header>
     @if(defaultValuePanel()){
-    <div class="component-section">
-      <form [formGroup]="parameterForm">
+    <div class="component-section py-2">
+      <form [formGroup]="parameterForm" class="flex flex-col gap-2">
         <lds-number
           [label]="'Display Order'"
           [controlName]="'parameterOrder'"

@@ -119,6 +119,10 @@ export class ParameterModalComponent implements OnInit {
     if (this.initialData?.parameter && this.initialData?.isEditing) {
       this.populateForm(this.initialData.parameter);
     }
+
+    // Check if the form value is correct
+    console.log('Form visible value:', this.parameterForm.get('visible')?.value);
+    console.log('Form control:', this.parameterForm.get('visible'));
   }
 
   private initializeForm() {
@@ -130,9 +134,9 @@ export class ParameterModalComponent implements OnInit {
       selectOptions: [''],
       dataSource: ['', [this.urlValidator]],
       formatPattern: [''],
-      isRequired: [false],
-      isVisible: [true],
-      isReadonly: [false],
+      required: [false],
+      visible: [true],
+      readonly: [false],
       minLength: [null],
       maxLength: [null],
       minValue: [null],
@@ -143,7 +147,13 @@ export class ParameterModalComponent implements OnInit {
       parameterOrder: [this.initialData?.parameterOrder || 1],
       dependsOnParameter: [''],
       helpText: ['', [Validators.maxLength(200)]],
-    });  this.parameterForm.markAsTouched();
+    });
+    
+    // Force update to ensure switch components reflect initial values
+    setTimeout(() => {
+      this.parameterForm.updateValueAndValidity();
+      console.log('Form values after timeout:', this.parameterForm.value);
+    }, 100);
   }
 
   get frmGroup() {
@@ -201,9 +211,9 @@ export class ParameterModalComponent implements OnInit {
       selectOptions: parameter.selectOptions,
       dataSource: parameter.dataSource,
       formatPattern: parameter.formatPattern,
-      isRequired: parameter.isRequired === 'Yes' || parameter.isRequired === true,
-      isVisible: parameter.isVisible === 'Yes' || parameter.isVisible === true,
-      isReadonly: parameter.isReadonly === 'Yes' || parameter.isReadonly === true,
+      required: parameter.required === true,
+      visible:  parameter.visible === true,
+      readonly: parameter.readonly === true,
       minLength: parameter.minLength ? Number(parameter.minLength) : null,
       maxLength: parameter.maxLength ? Number(parameter.maxLength) : null,
       minValue: parameter.minValue !== null && parameter.minValue !== undefined ? Number(parameter.minValue) : null,

@@ -20,6 +20,7 @@ import { IdBoxComponent } from "../../../shared/components/input-types/id-box/id
 import { ExpansionPanelHeader } from "../../../shared/components/expansion-panel-header/expansion-panel-header";
 import { TextArea } from "../../../shared/components/input-types/text-area/text-area";
 import { NumberInput } from "../../../shared/components/input-types/number-input/number-input";
+import { UserService } from '../../../core/user/user.service';
 
 /**
  * API Endpoint Setup Page
@@ -50,7 +51,7 @@ export class ReportApiSetupUI implements OnInit {
   private toastr = inject(ToastrService);
   private dialogUtils = inject(DialogUtils);
   private apiService = inject(ApiEndpointService);
-
+  private _userService = inject(UserService);
   // Form and state properties
   endpointForm!: FormGroup;
   loading = signal<boolean>(false);
@@ -314,7 +315,7 @@ export class ReportApiSetupUI implements OnInit {
     }
 
     this.loading.set(true);
-    
+    const userId = this._userService?.user?.username??'admin';
     const dto: ApiEndpointDTO = {
       id: this.endpointForm.value.id || undefined,
       endpointName: this.endpointForm.value.endpointName,
@@ -327,6 +328,8 @@ export class ReportApiSetupUI implements OnInit {
       headers: this.endpointForm.value.headers,
       timeout: this.endpointForm.value.timeout,
       isDefaultEndpoint: this.endpointForm.value.isDefaultEndpoint,
+      modifyBy: userId,
+      modifiedDate: new Date().toISOString(),
     };
 
     // Check if updating existing or creating new
@@ -347,6 +350,8 @@ export class ReportApiSetupUI implements OnInit {
         }
       });
     } else {
+      dto.createdBy= userId;
+      dto.createdDate = new Date().toISOString();
       // Create new
       this.apiService.create(dto).subscribe({
         next: (result) => {

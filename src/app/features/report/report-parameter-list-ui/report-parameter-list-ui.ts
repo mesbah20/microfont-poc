@@ -32,6 +32,8 @@ import { NumberInput } from "../../../shared/components/input-types/number-input
 import { AuthResourceService } from '../../../core/service/auth-resource-service';
 import { catchError, of } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { UserService } from '../../../core/user/user.service';
+import { AuthService } from '../../../core/auth/auth.service';
 
 /**
  * Report Registration and Parameter Setup Page
@@ -70,6 +72,8 @@ export class ReportParameterListUI implements OnInit {
   private dbService = inject(DatabaseConnectionService);
   private apiService = inject(ApiEndpointService);
   private authResourceService = inject(AuthResourceService);
+  private _authService = inject(AuthService);
+  private _userService = inject(UserService);
 
   // Form and state properties
   reportForm!: FormGroup;
@@ -220,7 +224,7 @@ export class ReportParameterListUI implements OnInit {
     this.setupFunctionIdListener();
     this.loadDatabaseConnections();
     this.loadApiEndpoints();
-    this.loadReports();
+    // this.loadReports();
     this.loadReportFunctionsData();
   }
 
@@ -368,7 +372,7 @@ export class ReportParameterListUI implements OnInit {
       reportFile: [null],
       reportFileName: ['', [Validators.maxLength(150)]],
       outputFormats: [['PDF'], [Validators.required]],
-      // isVisible: [true],
+      // visible: [true],
       autoGenPeriod: [''],
       genBeforeEod: [false],
     });
@@ -386,9 +390,9 @@ export class ReportParameterListUI implements OnInit {
       selectOptions: [''],
       dataSource: ['', [this.urlValidator]],
       formatPattern: [''],
-      isRequired: [false],
-      isVisible: [true],
-      isReadonly: [false],
+      required: [false],
+      visible: [true],
+      readonly: [false],
       minLength: [null],
       maxLength: [null],
       minValue: [null],
@@ -407,14 +411,14 @@ export class ReportParameterListUI implements OnInit {
    */
   private setupParameterColumns() {
     this.parameterColumns = [
-      { property: 'sNo', header: 'S.No.', isEditable: false, isNumeric: true, isVisible: true, width: '80px' },
-      { property: 'parameterName', header: 'Parameter Name', isEditable: false, isNumeric: false, isVisible: true, width: '150px' },
-      { property: 'parameterLabel', header: 'Parameter Label', isEditable: false, isNumeric: false, isVisible: true, width: '150px' },
-      { property: 'dataType', header: 'Data Type', isEditable: false, isNumeric: false, isVisible: true, width: '120px' },
-      { property: 'isRequired', header: 'Required', isEditable: false, isNumeric: false, isVisible: true, width: '100px' },
-      { property: 'isVisible', header: 'Visible', isEditable: false, isNumeric: false, isVisible: true, width: '100px' },
-      { property: 'isReadonly', header: 'Readonly', isEditable: false, isNumeric: false, isVisible: true, width: '100px' },
-      { property: 'defaultValue', header: 'Default Value', isEditable: false, isNumeric: false, isVisible: true, width: '150px' },
+      { property: 'sNo', header: 'S.No.', isEditable: false, isNumeric: true, visible: true, width: '80px' },
+      { property: 'parameterName', header: 'Parameter Name', isEditable: false, isNumeric: false, visible: true, width: '150px' },
+      { property: 'parameterLabel', header: 'Parameter Label', isEditable: false, isNumeric: false, visible: true, width: '150px' },
+      { property: 'dataType', header: 'Data Type', isEditable: false, isNumeric: false, visible: true, width: '120px' },
+      { property: 'required', header: 'Required', isEditable: false, isNumeric: false, visible: true, width: '100px' },
+      { property: 'visible', header: 'Visible', isEditable: false, isNumeric: false, visible: true, width: '100px' },
+      { property: 'readonly', header: 'Readonly', isEditable: false, isNumeric: false, visible: true, width: '100px' },
+      { property: 'defaultValue', header: 'Default Value', isEditable: false, isNumeric: false, visible: true, width: '150px' },
     ];
   }
 
@@ -709,29 +713,29 @@ export class ReportParameterListUI implements OnInit {
   /**
    * Load reports from backend
    */
-  private loadReports() {
-    this.loading.set(true);
-    this.reportService.getAll().subscribe({
-      next: (reports) => {
-        this.reportList = reports.map(report => {
-          const func = this.functionList.find(f => f.functionId === report.functionId);
-          return {
-            id: report.id,
-            reportName: report.reportName,
-            functionName: func?.functionName || report.functionId,
-            status: report.isVisible ? 'Active' : 'Inactive',
-            functionId: report.functionId
-          };
-        });
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading reports:', err);
-        this.toastr.error('Failed to load reports from server', 'Error');
-        this.loading.set(false);
-      }
-    });
-  }
+  // private loadReports() {
+  //   this.loading.set(true);
+  //   this.reportService.getAll().subscribe({
+  //     next: (reports) => {
+  //       this.reportList = reports.map(report => {
+  //         const func = this.functionList.find(f => f.functionId === report.functionId);
+  //         return {
+  //           id: report.id,
+  //           reportName: report.reportName,
+  //           functionName: func?.functionName || report.functionId,
+  //           status: report.visible ? 'Active' : 'Inactive',
+  //           functionId: report.functionId
+  //         };
+  //       });
+  //       this.loading.set(false);
+  //     },
+  //     error: (err) => {
+  //       console.error('Error loading reports:', err);
+  //       this.toastr.error('Failed to load reports from server', 'Error');
+  //       this.loading.set(false);
+  //     }
+  //   });
+  // }
 
   /**
    * Open report selection modal using new modal system
@@ -820,7 +824,7 @@ export class ReportParameterListUI implements OnInit {
           apiEndpointId: report.apiEndpointId || '',
           reportFileName: report.reportFileName || '',
           outputFormats: report.outputFormats || ['PDF'],
-          // isVisible: report.isVisible !== undefined ? report.isVisible : true,
+          // visible: report.visible !== undefined ? report.visible : true,
           autoGenPeriod: report.autoGenPeriod || '',
           genBeforeEod: report.genBeforeEod || false,
         });
@@ -833,9 +837,9 @@ export class ReportParameterListUI implements OnInit {
             parameterLabel: param.parameterLabel,
             dataType: param.dataType,
             dataSource: param.dataSource,
-            isRequired: param.isRequired ? 'Yes' : 'No',
-            isVisible: param.isVisible !== undefined ? (param.isVisible ? 'Yes' : 'No') : 'Yes',
-            isReadonly: param.isReadonly !== undefined ? (param.isReadonly ? 'Yes' : 'No') : 'No',
+            required: param.required ? true : false,
+            visible: param.visible !== undefined ? (param.visible ? true : false) : true,
+            readonly: param.readonly !== undefined ? (param.readonly ? true : false) : false,
             defaultValue: param.defaultValue || '',
             inputType: param.inputType,
             selectOptions: param.selectOptions,
@@ -934,9 +938,7 @@ export class ReportParameterListUI implements OnInit {
       parameter = eventData.item;
       console.log('Using eventData.item:', parameter);
     }
-    
-    console.log('Final parameter object:', parameter);
-    console.log('All current parameters:', this.parameters());
+
     
     if (!parameter || !parameter.sNo) {
       console.error('No valid parameter data found in event');
@@ -945,7 +947,6 @@ export class ReportParameterListUI implements OnInit {
     }
     
     const index = this.parameters().findIndex(p => p.sNo === parameter.sNo);
-    console.log('Found parameter at index:', index);
     
     if (index === -1) {
       console.error('Parameter not found in array');
@@ -957,30 +958,27 @@ export class ReportParameterListUI implements OnInit {
     this.editingParameterIndex.set(index);
     
     // Populate form with parameter data
-    const formData = {
-      parameterName: parameter.parameterName,
-      parameterLabel: parameter.parameterLabel,
-      dataType: parameter.dataType,
-      inputType: parameter.inputType,
-      selectOptions: parameter.selectOptions,
-      dataSource: parameter.dataSource,
-      formatPattern: parameter.formatPattern,
-      isRequired: parameter.isRequired === 'Yes' || parameter.isRequired === true,
-      isVisible: parameter.isVisible === 'Yes' || parameter.isVisible === true,
-      isReadonly: parameter.isReadonly === 'Yes' || parameter.isReadonly === true,
-      minLength: parameter.minLength ? Number(parameter.minLength) : null,
-      maxLength: parameter.maxLength ? Number(parameter.maxLength) : null,
-      minValue: parameter.minValue !== null && parameter.minValue !== undefined ? Number(parameter.minValue) : null,
-      maxValue: parameter.maxValue !== null && parameter.maxValue !== undefined ? Number(parameter.maxValue) : null,
-      defaultValue: parameter.defaultValue,
-      parameterOrder: parameter.parameterOrder || parameter.sNo,
-      dependsOnParameter: parameter.dependsOnParameter,
-      helpText: parameter.helpText,
-    };
-    
-    console.log('Parameter data for edit modal:', formData);
-    console.log('=== EDIT DEBUG END ===');
-    
+    // const formData = {
+    //   parameterName: parameter.parameterName,
+    //   parameterLabel: parameter.parameterLabel,
+    //   dataType: parameter.dataType,
+    //   inputType: parameter.inputType,
+    //   selectOptions: parameter.selectOptions,
+    //   dataSource: parameter.dataSource,
+    //   formatPattern: parameter.formatPattern,
+    //   required:parameter.required === true,
+    //   visible: parameter.visible === true,
+    //   readonly: parameter.readonly === true,
+    //   minLength: parameter.minLength ? Number(parameter.minLength) : null,
+    //   maxLength: parameter.maxLength ? Number(parameter.maxLength) : null,
+    //   minValue: parameter.minValue !== null && parameter.minValue !== undefined ? Number(parameter.minValue) : null,
+    //   maxValue: parameter.maxValue !== null && parameter.maxValue !== undefined ? Number(parameter.maxValue) : null,
+    //   defaultValue: parameter.defaultValue,
+    //   parameterOrder: parameter.parameterOrder || parameter.sNo,
+    //   dependsOnParameter: parameter.dependsOnParameter,
+    //   helpText: parameter.helpText,
+    // };
+
     // Open parameter edit modal instead of inline form
     this.openParameterEditModal(parameter, index);
   }
@@ -1125,7 +1123,7 @@ export class ReportParameterListUI implements OnInit {
       this.toastr.warning('Please add at least one parameter for the report.', 'Warning');
       return;
     }
-
+    const userId = this._userService?.user?.username??'admin';
     this.loading.set(true);
 
     const formValue = this.reportForm.value;
@@ -1138,9 +1136,14 @@ export class ReportParameterListUI implements OnInit {
       databaseConnectionId: formValue.databaseConnectionId || undefined,
       apiEndpointId: formValue.apiEndpointId || undefined,
       outputFormats: formValue.outputFormats,
-      isVisible: formValue.isVisible,
+      isVisible: formValue.visible,
       autoGenPeriod: formValue.autoGenPeriod || "D",
       genBeforeEod: formValue.genBeforeEod,
+      createdBy: userId,
+      modifyBy: userId,
+      createdDate: new Date().toISOString(),
+      modifiedDate: new Date().toISOString(),
+
       parameters: this.parameters().map(param => ({
         parameterName: param.parameterName,
         parameterLabel: param.parameterLabel,
@@ -1149,9 +1152,9 @@ export class ReportParameterListUI implements OnInit {
         selectOptions: param.selectOptions,
         dataSource: param.dataSource,
         formatPattern: param.formatPattern,
-        isRequired: param.isRequired === 'Yes',
-        isVisible: param.isVisible === 'Yes',
-        isReadonly: param.isReadonly === 'Yes',
+        required: param.required,
+        visible: param.visible,
+        readonly: param.readonly,
         minLength: param.minLength,
         maxLength: param.maxLength,
         minValue: param.minValue,
@@ -1159,7 +1162,11 @@ export class ReportParameterListUI implements OnInit {
         defaultValue: param.defaultValue,
         parameterOrder: param.sNo,
         dependsOnParameter: param.dependsOnParameter,
-        helpText: param.helpText
+        helpText: param.helpText,
+        createdBy: userId,
+        modifyBy: userId,
+        createdDate: new Date().toISOString(),
+        modifiedDate: new Date().toISOString(),
       }))
     };
 
@@ -1180,15 +1187,17 @@ export class ReportParameterListUI implements OnInit {
         });
         
         // Refresh report list
-        this.loadReports();
+        // this.loadReports();
         this.loading.set(false);
         this.onClickSave.set(false);
+        this.onClickUpdate.set(false);
       },
       error: (err) => {
         console.error('Error saving report:', err);
         this.toastr.error('Failed to save report. Please try again.', 'Error');
         this.loading.set(false);
         this.onClickSave.set(false);
+        this.onClickUpdate.set(false);
       },
     
       
@@ -1210,7 +1219,11 @@ export class ReportParameterListUI implements OnInit {
       });
       return;
     }
-
+    const token = sessionStorage.getItem("access_token")??"token";
+    this._authService.userInfo(token);
+    console.log(this._userService?.user);
+    const userId = this._userService?.user?.username??'admin';
+    console.log(userId);
     const reportId = this.currentReportId();
     if (!reportId) {
       this.toastr.error('No report selected for update.', 'Error');
@@ -1234,9 +1247,11 @@ export class ReportParameterListUI implements OnInit {
       databaseConnectionId: formValue.databaseConnectionId || undefined,
       apiEndpointId: formValue.apiEndpointId || undefined,
       outputFormats: formValue.outputFormats,
-      isVisible: formValue.isVisible,
+      isVisible: formValue.visible,
       autoGenPeriod: formValue.autoGenPeriod || undefined,
       genBeforeEod: formValue.genBeforeEod,
+      modifyBy: userId,
+      modifiedDate: new Date().toISOString(),
       parameters: this.parameters().map(param => ({
         parameterName: param.parameterName,
         parameterLabel: param.parameterLabel,
@@ -1245,9 +1260,9 @@ export class ReportParameterListUI implements OnInit {
         selectOptions: param.selectOptions,
         dataSource: param.dataSource,
         formatPattern: param.formatPattern,
-        isRequired: param.isRequired === 'Yes',
-        isVisible: param.isVisible === 'Yes',
-        isReadonly: param.isReadonly === 'Yes',
+        required: param.required,
+        visible: param.visible,
+        readonly: param.readonly,
         minLength: param.minLength,
         maxLength: param.maxLength,
         minValue: param.minValue,
@@ -1255,7 +1270,9 @@ export class ReportParameterListUI implements OnInit {
         defaultValue: param.defaultValue,
         parameterOrder: param.sNo,
         dependsOnParameter: param.dependsOnParameter,
-        helpText: param.helpText
+        helpText: param.helpText,
+        modifyBy: userId,
+        modifiedDate: new Date().toISOString()
       }))
     };
 
@@ -1265,13 +1282,15 @@ export class ReportParameterListUI implements OnInit {
         this.toastr.success('Report updated successfully!', 'Success');
         
         // Refresh report list
-        this.loadReports();
+        // this.loadReports();
         this.loading.set(false);
+        this.onClickUpdate.set(false);
       },
       error: (err) => {
         console.error('Error updating report:', err);
         this.toastr.error('Failed to update report. Please try again.', 'Error');
         this.loading.set(false);
+        this.onClickUpdate.set(false);
       }
     });
   }
@@ -1298,7 +1317,7 @@ export class ReportParameterListUI implements OnInit {
         
         // Refresh and reset form
         this.onRefresh();
-        this.loadReports();
+        // this.loadReports();
         this.loading.set(false);
       },
       error: (err) => {
@@ -1315,7 +1334,7 @@ export class ReportParameterListUI implements OnInit {
   onRefresh() {
     this.reportForm.reset({
       outputFormats: ['PDF'],
-      isVisible: true,
+      visible: true,
       genBeforeEod: false,
       autoGenPeriod: '',
     });
@@ -1404,6 +1423,7 @@ export class ReportParameterListUI implements OnInit {
    * Handle parameter add/edit result from modal
    */
   private handleParameterResult(parameterResult: any) {
+    console.log("Fuck!! ", parameterResult);
     const parameter = {
       sNo: this.isEditingParameter() ? this.parameters()[this.editingParameterIndex()].sNo : this.parameters().length + 1,
       parameterName: parameterResult.parameterName,
@@ -1413,9 +1433,9 @@ export class ReportParameterListUI implements OnInit {
       selectOptions: parameterResult.selectOptions,
       dataSource: parameterResult.dataSource,
       formatPattern: parameterResult.formatPattern,
-      isRequired: parameterResult.isRequired ? 'Yes' : 'No',
-      isVisible: parameterResult.isVisible ? 'Yes' : 'No',
-      isReadonly: parameterResult.isReadonly ? 'Yes' : 'No',
+      required: parameterResult.required,
+      visible: parameterResult.visible,
+      readonly: parameterResult.readonly,
       minLength: parameterResult.minLength,
       maxLength: parameterResult.maxLength,
       minValue: parameterResult.minValue,

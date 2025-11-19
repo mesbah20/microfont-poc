@@ -1,22 +1,23 @@
-import { Component, OnInit, Input, Output, EventEmitter, inject, signal } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, inject, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { DataGridComponent } from '../../../../shared/components/data-grid/data-grid';
-import { PanelHeader } from '../../../../shared/components/panel-header/panel-header';
 import { Button } from '../../../../shared/components/input-types/button/button';
 import { ReportRegistrationService } from '../../services/report-registration.service';
 import { ToastrService } from 'ngx-toastr';
+import { ExpansionPanelHeader } from "../../../../shared/components/expansion-panel-header/expansion-panel-header";
 
 // Data interfaces matching the grid format
 export interface ReportItem {
   id: number;
   reportName: string;
   functionId: string;
-  status: string;
+  status?: string;
   description?: string;
   dateCreated?: string;
   lastModified?: string;
   createdBy?: string;
+  parameters?: number;
 }
 
 export interface ReportSelectionConfig {
@@ -37,9 +38,9 @@ export interface ReportSelectionConfig {
     FormsModule,
     ReactiveFormsModule,
     DataGridComponent,
-    PanelHeader,
-    Button
-  ],
+    Button,
+    ExpansionPanelHeader
+],
   templateUrl: './report-selection-modal.html',
   styleUrls: ['./report-selection-modal.scss']
 })
@@ -62,13 +63,14 @@ export class ReportSelectionModalComponent implements OnInit {
   filteredReports = signal<ReportItem[]>([]);
   selectedReports = signal<ReportItem[]>([]);
   isLoading = signal<boolean>(false);
+  availableReportsPanel: WritableSignal<boolean> = signal(true);
   reportList: any[] = [];
   // Grid configuration - following the all-components-page pattern
   gridColumns = [
     'id',
     'reportName',
     'functionId', 
-    'status',
+    'parameters',
   ];
 
   // Remove row designers as they're not being used in the grid
@@ -134,7 +136,7 @@ export class ReportSelectionModalComponent implements OnInit {
           id: report.id,
           reportName: report.reportName,
           functionId: report.functionId,
-          status: report.isVisible ? 'Active' : 'Inactive'
+          parameters: report?.parameters?.length??0
         }));
         this.dataSource.set(transformedReports);
         this.filteredReports.set(transformedReports);
@@ -187,8 +189,7 @@ export class ReportSelectionModalComponent implements OnInit {
 
     const filtered = (this.dataSource() || []).filter((report: any) =>
       report.reportName.toLowerCase().includes(searchTerm) ||
-      report.functionId.toLowerCase().includes(searchTerm) ||
-      report.status.toLowerCase().includes(searchTerm)
+      report.functionId.toLowerCase().includes(searchTerm) 
     );
     
     this.filteredReports.set(filtered);

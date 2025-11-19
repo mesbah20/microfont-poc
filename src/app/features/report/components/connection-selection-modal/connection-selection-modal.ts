@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, inject, signal } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, inject, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { DataGridComponent } from '../../../../shared/components/data-grid/data-grid';
@@ -7,6 +7,7 @@ import { TextBaseInput } from '../../../../shared/components/input-types/text-ba
 import { Button } from '../../../../shared/components/input-types/button/button';
 import { DatabaseConnectionService } from '../../services/database-connection.service';
 import { ToastrService } from 'ngx-toastr';
+import { ExpansionPanelHeader } from "../../../../shared/components/expansion-panel-header/expansion-panel-header";
 
 // Data interfaces matching the grid format
 export interface ConnectionItem {
@@ -45,8 +46,9 @@ export interface ConnectionSelectionConfig {
     DataGridComponent,
     PanelHeader,
     TextBaseInput,
-    Button
-  ],
+    Button,
+    ExpansionPanelHeader
+],
   templateUrl: './connection-selection-modal.html',
   styleUrls: ['./connection-selection-modal.scss']
 })
@@ -71,7 +73,7 @@ export class ConnectionSelectionModalComponent implements OnInit {
   filteredConnections = signal<ConnectionItem[]>([]);
   selectedConnections = signal<ConnectionItem[]>([]);
   isLoading = signal<boolean>(false);
-
+  availableConnectionsPanel: WritableSignal<boolean> = signal(true);
   // Grid configuration - using connection-specific columns
   gridColumns = [
     'id',

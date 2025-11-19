@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, inject, signal } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, inject, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { DataGridComponent } from '../../../../shared/components/data-grid/data-grid';
@@ -6,6 +6,7 @@ import { PanelHeader } from '../../../../shared/components/panel-header/panel-he
 import { TextBaseInput } from '../../../../shared/components/input-types/text-base-input/text-base-input';
 import { Button } from '../../../../shared/components/input-types/button/button';
 import { ToastrService } from 'ngx-toastr';
+import { ExpansionPanelHeader } from "../../../../shared/components/expansion-panel-header/expansion-panel-header";
 
 // Data interfaces matching the grid format
 export interface FunctionItem {
@@ -35,7 +36,8 @@ export interface FunctionSelectionConfig {
     ReactiveFormsModule,
     DataGridComponent,
     PanelHeader,
-    Button
+    Button,
+    ExpansionPanelHeader
 ],
   templateUrl: './function-selection-modal.html',
   styleUrls: ['./function-selection-modal.scss']
@@ -60,6 +62,7 @@ export class FunctionSelectionModalComponent implements OnInit {
   filteredFunctions = signal<FunctionItem[]>([]);
   selectedFunctions = signal<FunctionItem[]>([]);
   isLoading = signal<boolean>(false);
+  availableFunctionsPanel: WritableSignal<boolean> = signal(true);
 
   // Grid configuration - using function-specific columns
   gridColumns = [

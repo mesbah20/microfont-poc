@@ -8,10 +8,10 @@ import { environment } from '../../../../environments/environment';
  */
 export interface BaseDTO {
   id?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  createdDate?: string;
+  modifiedDate?: string;
   createdBy?: string;
-  updatedBy?: string;
+  modifyBy?: string;
 }
 
 /**
@@ -145,9 +145,9 @@ export interface ReportParameterDTO {
   selectOptions?: string; // JSON format
   dataSource?: string;
   formatPattern?: string;
-  isRequired: boolean;
-  isVisible?: boolean;
-  isReadonly?: boolean;
+  required: boolean;
+  visible?: boolean;
+  readonly?: boolean;
   minLength?: number;
   maxLength?: number;
   minValue?: number;

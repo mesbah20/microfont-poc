@@ -1008,7 +1008,7 @@ getAccountNumber(){
    * Get user's home branch from session/localStorage
    */
   private getHomeBranch(): string {
-    const userBranch = sessionStorage.getItem('homeBranchId') || localStorage.getItem('homeBranchId')|| '';
+    const userBranch = sessionStorage.getItem('homeBranchId') || localStorage.getItem('homeBranchId')|| '0031';
     return userBranch;
   }
 

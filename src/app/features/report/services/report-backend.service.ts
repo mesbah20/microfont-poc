@@ -239,10 +239,10 @@ export interface ReportMetadata {
   genBeforeEod: boolean;
   dataSourceInfo?: any;
   parameters: ReportParameterMetadata[];
-  createdAt?: string;
-  updatedAt?: string;
+  createdDate?: string;
+  modifiedDate?: string;
   createdBy?: string;
-  updatedBy?: string;
+  modifyBy?: string;
 }
 
 export interface ReportParameterMetadata {

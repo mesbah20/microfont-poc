@@ -76,8 +76,8 @@
                   [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
                   [selectedColumns]="['id', 'amount', 'currency']"
 
+                  (onRowDoubleClick)="onRowDblClick($event)"
                   ></lds-data-grid>
-<!--                  (onRowDoubleClick)="onRowDblClick($event)"-->
               </div>
             </section>
          </div>
