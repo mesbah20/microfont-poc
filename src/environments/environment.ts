@@ -27,7 +27,7 @@ export const environment = {
   keycloak: {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',
-    clientId: 'sentinelUI'
+    clientId: 'LauncherApp'
   },
   novu_identifier: '1uXpKIJUa3Rg',
   novu_socket: 'http://192.168.10.56:3002',

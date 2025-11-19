@@ -7,7 +7,6 @@ import {User} from '../user/user.types';
 import {UserService} from '../user/user.service';
 import {tap} from 'rxjs';
 import {UserDataResponse} from '../../modules/model/UserDataResponse';
-import {jwtDecode, JwtPayload} from 'jwt-decode';
 
 
 @Injectable({ providedIn: 'root' })
@@ -43,8 +42,8 @@ export class AuthService {
     this._authenticated = await this.keycloak.init({
       onLoad: 'check-sso',
       // onLoad: 'login-required',
-      redirectUri: 'http://localhost:4001/landing/home',
-      //silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
+      //redirectUri: 'http://localhost:4200/login',
+      silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
       pkceMethod: 'S256',
       checkLoginIframe: true,
       checkLoginIframeInterval: 5
@@ -72,44 +71,23 @@ export class AuthService {
 
   login(): void {
     this.keycloak.login({
-      redirectUri: 'http://localhost:4001' + '/landing/home'
+      redirectUri: 'http://localhost:4200' + '/landing/home'
     });
   }
 
   logout(): void {
-    this.keycloak.logout({redirectUri: 'http://localhost:4000/login'});
+    this.keycloak.logout({redirectUri: 'http://localhost:4200/login'});
     localStorage.clear();
     sessionStorage.clear();
   }
 
   decodeToken(): void {
-    sessionStorage.setItem('access_token', this.keycloak.token || '');
+    sessionStorage.setItem('access_token', this.keycloak.token || '')
     this.userInfo(this.keycloak.token || '');
-  }
-  tokenObject: any;
-  loadDataFromToken() {
-    // this.userAccessList = this.tokenObject.userAccessList;
-    // console.log("User Access List : ", this.userAccessList);
-    //localStorage.setItem('userAccessList', JSON.stringify(this.tokenObject.userAccessList));
-
-  }
-  decodeKcToken(token: string) {
-    try {
-      const decoded = jwtDecode<JwtPayload>(token);
-      this.tokenObject = decoded;
-      console.log("Decoded Token:", decoded);
-      this.loadDataFromToken();
-      return decoded;
-    } catch (error) {
-      console.error("Invalid token:", error);
-      return null;
-    }
   }
 
   userInfo(token: string){
     const decodeToken = AuthUtils._decodeToken(this.keycloak.token || '');
-    //this.decodeKcToken(this.keycloak.token || '');
-    console.log("TOKEN FROM AUTH.Service", this.tokenObject);
     if(!decodeToken)
       return;
     let user = {} as User;
@@ -124,7 +102,6 @@ export class AuthService {
     user.clickStreamTrack = decodeToken.clickStreamTrack;
     user.userTerminalIP = decodeToken.userTerminalIP;
     this._userService.user = user;
-    console.log("USER", user);
     if(user.officeId){this.getSessionData(user.officeId);}
   }
 

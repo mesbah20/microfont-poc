@@ -74,11 +74,7 @@
               "buildTarget": "SwiftFusion:build:development"
             }
           },
-          "defaultConfiguration": "development",
-          "options": {
-            "port": 4001,
-            "host": "localhost"
-          }
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"
