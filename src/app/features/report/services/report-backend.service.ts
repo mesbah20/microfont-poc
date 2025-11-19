@@ -12,7 +12,7 @@ import { environment } from '../../../../environments/environment';
 })
 export class ReportBackendService {
   private http = inject(HttpClient);
-  private baseUrl = environment.reportGenerationApiUrl;
+  private baseUrl = environment.reportManagementApiUrl;
 
   /**
    * Upload a BIRT report design file (.rptdesign)
@@ -64,7 +64,7 @@ export class ReportBackendService {
    */
   generateReport(
     title: string,
-    format: 'pdf' | 'xls' | 'xlsx',
+    format: string,
     params: ReportParamDTO
   ): Observable<Blob> {
     return this.http.post(
@@ -126,21 +126,21 @@ export class ReportBackendService {
    * Get report metadata by report ID
    */
   getReportMetadataById(reportId: number): Observable<ReportMetadata> {
-    return this.http.get<ReportMetadata>(`${this.baseUrl}/api/reports/metadata/id/${reportId}`);
+    return this.http.get<ReportMetadata>(`${this.baseUrl}/reportsExc/metadata/id/${reportId}`);
   }
 
   /**
    * Get report metadata by function ID
    */
   getReportMetadataByFunctionId(functionId: string): Observable<ReportMetadata> {
-    return this.http.get<ReportMetadata>(`${this.baseUrl}/api/reports/metadata/function/${functionId}`);
+    return this.http.get<ReportMetadata>(`${this.baseUrl}/reportsExc/metadata/function/${functionId}`);
   }
 
   /**
    * Generate report with parameters (new API)
    */
   generateReportNew(request: ReportGenerationRequest): Observable<Blob> {
-    return this.http.post(`${this.baseUrl}/api/reports/generate`, request, {
+    return this.http.post(`${this.baseUrl}/reportsExc/generate`, request, {
       responseType: 'blob'
     });
   }
@@ -161,7 +161,7 @@ export class ReportBackendService {
       httpParams = httpParams.set('appCode', appCode);
     }
 
-    return this.http.get(`${this.baseUrl}/api/reports/generate/${reportId}/${format}`, {
+    return this.http.get(`${this.baseUrl}/reportsExc/generate/${reportId}/${format}`, {
       params: httpParams,
       responseType: 'blob'
     });
@@ -171,7 +171,7 @@ export class ReportBackendService {
    * Execute parameter query for dynamic options
    */
   executeParameterQuery(request: { query: string, parameterName: string }): Observable<any[]> {
-    return this.http.post<any[]>(`${this.baseUrl}/api/reports/parameter-query`, request);
+    return this.http.post<any[]>(`${this.baseUrl}/reportsExc/parameter-query`, request);
   }
 
   /**
@@ -239,10 +239,10 @@ export interface ReportMetadata {
   genBeforeEod: boolean;
   dataSourceInfo?: any;
   parameters: ReportParameterMetadata[];
-  createdAt?: string;
-  updatedAt?: string;
+  createdDate?: string;
+  modifiedDate?: string;
   createdBy?: string;
-  updatedBy?: string;
+  modifyBy?: string;
 }
 
 export interface ReportParameterMetadata {

@@ -8,10 +8,10 @@ import { environment } from '../../../../environments/environment';
  */
 export interface BaseDTO {
   id?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  createdDate?: string;
+  modifiedDate?: string;
   createdBy?: string;
-  updatedBy?: string;
+  modifyBy?: string;
 }
 
 /**
@@ -23,7 +23,7 @@ export interface BaseDTO {
 })
 export class ReportRegistrationService {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.reportGenerationApiUrl}/api/reports`; // Using port 8083
+  private baseUrl = `${environment.reportManagementApiUrl}/reports`; // Using port 8083
 
   /**
    * Create a new report with file upload
@@ -145,9 +145,9 @@ export interface ReportParameterDTO {
   selectOptions?: string; // JSON format
   dataSource?: string;
   formatPattern?: string;
-  isRequired: boolean;
-  isVisible?: boolean;
-  isReadonly?: boolean;
+  required: boolean;
+  visible?: boolean;
+  readonly?: boolean;
   minLength?: number;
   maxLength?: number;
   minValue?: number;

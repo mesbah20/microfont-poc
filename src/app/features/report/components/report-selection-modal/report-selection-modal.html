@@ -1,9 +1,11 @@
 
+<div class="page-wrapper">
   <!-- Results Section -->
-  <div class="panel">
-    <app-panel-header [panelTitle]="'Available Reports (' + getResultsCount() + ')'"></app-panel-header>
+  <div class="panel mb-2">
+    <app-expansion-panel-header [panelTitle]="'Available Reports (' + getResultsCount() + ')'" [isOpenSignal]="availableReportsPanel"></app-expansion-panel-header>
     
-    <div class="p-0">
+    @if(availableReportsPanel()){
+      <div class="component-section pb-2">
       @if (isLoading()) {
         <div class="text-center p-4">
           <div class="spinner-border" role="status">
@@ -19,6 +21,7 @@
           [showEditButton]="false"
           [showDeleteButton]="false"
           [showViewButton]="true"
+          [searchEnabled]="true"
           [showPrintButton]="false"
           [useInlineEdit]="false"
           [selectedColumns]="gridColumns"
@@ -46,5 +49,7 @@
           </div>
         }
       }
-    </div>
+      </div>
+    }
   </div>
+</div>
