@@ -49,22 +49,22 @@ export class OtherComponentsPage implements OnInit {
       amountToWord: ['', [Validators.required, Validators.max(1000000), Validators.min(1)]],
     });
 
-      // if (this.initialData) {
-      //   console.log('Modal received initialData:', this.initialData);
-      //   try {
-      //     const patch: any = {};
-      //     Object.keys(this.frmGroup.controls).forEach(key => {
-      //       if (this.initialData[key] !== undefined) {
-      //         patch[key] = this.initialData[key];
-      //       }
-      //     });
-      //     if (Object.keys(patch).length) {
-      //       this.frmGroup.patchValue(patch);
-      //     }
-      //   } catch (e) {
-      //     console.warn('Failed to apply initialData to modal form', e);
-      //   }
-      // }
+      if (this.initialData) {
+        console.log('Modal received initialData:', this.initialData);
+        try {
+          const patch: any = {};
+          Object.keys(this.frmGroup.controls).forEach(key => {
+            if (this.initialData[key] !== undefined) {
+              patch[key] = this.initialData[key];
+            }
+          });
+          if (Object.keys(patch).length) {
+            this.frmGroup.patchValue(patch);
+          }
+        } catch (e) {
+          console.warn('Failed to apply initialData to modal form', e);
+        }
+      }
 
   }
 
@@ -240,6 +240,7 @@ export class OtherComponentsPage implements OnInit {
   onRowDblClick(serialized: string): void {
     try {
       const row: any = JSON.parse(serialized);
+      console.log('row',row);
       const pickedId = row?.id ;
       if (pickedId) {
         this.modalResult.emit({ field: 'id', value: pickedId });

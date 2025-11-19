@@ -200,11 +200,11 @@ input[type="number"]::placeholder {
 }
 
 .input-container-horizontal {
-  @apply w-full flex flex-col sm:flex-row justify-start items-start sm:items-center gap-2;
+  @apply w-full flex flex-col sm:flex-row justify-start items-start sm:items-center gap-0;
 }
 
 .input-container-vertical {
-  @apply w-full flex flex-col justify-start;
+  @apply w-full flex flex-col justify-start ;
 }
 .input-container-vertical .input-wrapper {
   align-self: flex-start;
@@ -642,7 +642,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 
 .custom-input,
 .custom-select {
-  @apply w-full px-3 py-1 pb-0 pe-8 text-sm rounded-md border border-slate-400 bg-slate-50 text-gray-900
+  @apply w-full px-3 py-1 pb-0 pe-8 text-sm rounded-md border border-slate-500 bg-slate-50 text-gray-900
          placeholder:text-slate-400 placeholder:text-sm
          transition-all duration-200 ease-in-out
          focus:outline-none focus:ring-1 focus:ring-[#106ebe] focus:border-[#106ebe] focus:bg-white
@@ -665,7 +665,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 .floating-input-label {
   @apply absolute top-1 bg-white text-xs font-medium transform -translate-y-4 scale-93 left-2 text-[#106ebe]
          px-1 transition-all duration-300
-         peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-gray-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2
+         peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-gray-700 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2
          peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-[#106ebe]
          peer-[&:not(:placeholder-shown)]:top-1 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-[#106ebe];
 }
@@ -768,7 +768,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: 1px;
   display: flex;
   align-items: center;
   justify-content: center;

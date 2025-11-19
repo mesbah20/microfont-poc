@@ -25,6 +25,7 @@ import { CommonModule } from '@angular/common';
 import { Button } from '../input-types/button/button';
 import { CustomToastrService } from '../../services/custom-toastr.service';
 import {ToastHelperService} from '../../services/toast-helper.service';
+import { AmountInput } from '../input-types/amount-input/amount-input';
 
 // Types for data selection modal
 export interface AccountData {
@@ -63,6 +64,7 @@ export interface DataSelectionConfig {
     OfficeBoxComponent,
     LdsModalComponent,
     NumberInput,
+    AmountInput,  
     DataGridComponent,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
@@ -82,6 +84,7 @@ export class AllComponentsPage implements OnInit {
   static instance: Type<AllComponentsPage> = AllComponentsPage;
   isDataSelectionModalOpen = signal(false);
   onClickSave = ONCLICK_SAVE;
+  @ViewChild('transactionGrid') gridComponent!: DataGridComponent;
 
   // Methods for modal events
   onModalClosed() {
@@ -133,6 +136,7 @@ onModalResult(result: any) {
   modalComponent?: Type<any>;
   OtherComponentsPageComponent: Type<any> = OtherComponentsPage;
   modalComponentData?: any = null;
+  selectedRowIds = signal<Set<string>>(new Set());
 
   // Data Selection Modal Configuration
   modalConfig: DataSelectionConfig = {
@@ -948,7 +952,160 @@ debugFormState(): void {
   });
 }
 
+private restoreGridSelections(): void {
+  try {
+    // Try to get multiple selections first
+    const multipleSelectionsData = localStorage.getItem('selectedRows');
+    if (multipleSelectionsData) {
+      const selectedRowIds = JSON.parse(multipleSelectionsData);
+      console.log('ss',selectedRowIds);
+      if (Array.isArray(selectedRowIds) && selectedRowIds.length > 0) {
+        const transactions = this.sampleTransactions();
+        
+        // Restore all selected rows
+        selectedRowIds.forEach((rowId: string, index: number) => {
+          const rowIndex = transactions.findIndex(t => t.id === rowId);
+          
+          if (rowIndex !== -1) {
+            // Add to selected IDs signal
+            this.selectedRowIds.update(ids => {
+              const newIds = new Set(ids);
+              newIds.add(rowId);
+              return newIds;
+            });
 
+            // Stagger the row selections to avoid timing issues
+            setTimeout(() => {
+              this.selectRowInGrid(rowIndex, rowId);
+            }, 500 + (index * 100));
+          }
+        });
+        
+        console.log('Restored multiple selections:', selectedRowIds);
+        this.toastr.info(`Restored ${selectedRowIds.length} selected rows`, 'Grid Selection');
+        return;
+      }
+    }
+    
+    // Fallback: try single row selection for backward compatibility
+    const storedData = localStorage.getItem('rowData');
+    if (storedData) {
+      const rowData = JSON.parse(storedData);
+      
+      if (rowData.id) {
+        const transactions = this.sampleTransactions();
+        const rowIndex = transactions.findIndex(t => t.id === rowData.id);
+        
+        if (rowIndex !== -1) {
+          this.selectedRowIds.update(ids => {
+            const newIds = new Set(ids);
+            newIds.add(rowData.id);
+            return newIds;
+          });
+
+          setTimeout(() => {
+            this.selectRowInGrid(rowIndex, rowData.id);
+          }, 500);
+          
+          console.log('Restored single selection for row:', rowData.id);
+          this.toastr.info(`Restored selection: ${rowData.id}`, 'Grid Selection');
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error restoring grid selections:', error);
+  }
+}
+
+
+private selectRowInGrid(index: number, rowId?: string): void {
+  const transactions = this.sampleTransactions();
+  if (index >= 0 && index < transactions.length) {
+    const transaction = transactions[index];
+    
+    
+    if (this.gridComponent) {
+      try {
+        
+        this.gridComponent.onRowSelect(index, true);
+        console.log('Grid row selected via component method');
+      } catch (error) {
+        console.log('Grid component selection method not available, using fallback:', error);
+      }
+    }
+    
+    // this.onTransactionRowSelect({
+    //   data: JSON.stringify(transaction),
+    //   checked: true
+    // });
+
+    // Force change detection if needed
+    console.log(`Selected row ${rowId || transaction.id} at index ${index}`);
+  }
+}
+
+// Multiple selection localStorage methods
+private saveMultipleSelectionsToStorage(): void {
+  try {
+    const selectedIds = Array.from(this.selectedRowIds());
+    localStorage.setItem('selectedRows', JSON.stringify(selectedIds));
+    console.log('Saved multiple selections to localStorage:', selectedIds);
+  } catch (error) {
+    console.error('Error saving multiple selections to localStorage:', error);
+  }
+}
+
+private removeSelectionFromStorage(rowId: string): void {
+  try {
+    const selectedIds = Array.from(this.selectedRowIds());
+    localStorage.setItem('selectedRows', JSON.stringify(selectedIds));
+    
+    // Also remove single selection if it matches
+    const currentRowData = localStorage.getItem('rowData');
+    if (currentRowData) {
+      const storedRowData = JSON.parse(currentRowData);
+      if (storedRowData.id === rowId) {
+        localStorage.removeItem('rowData');
+      }
+    }
+  } catch (error) {
+    console.error('Error removing selection from localStorage:', error);
+  }
+}
+
+onTransactionRowSelect(event: { data: string, checked: boolean }): void {
+  console.log('Row selection event:', event);
+  
+  const rowData = JSON.parse(event.data);
+  
+  if (event.checked) {
+    // Add to selected rows
+    this.selectedRowIds.update(ids => {
+      const newIds = new Set(ids);
+      newIds.add(rowData.id);
+      return newIds;
+    });
+    
+    // Store all selected rows in localStorage
+    this.saveMultipleSelectionsToStorage();
+    
+    console.log(`Row ${rowData.id} selected and stored in localStorage`);
+    this.toastr.info(`Transaction ${rowData.id} selected. Total: ${this.selectedRowIds().size}`, 'Row Selected');
+  } else {
+    // Remove from selected rows
+    this.selectedRowIds.update(ids => {
+      const newIds = new Set(ids);
+      newIds.delete(rowData.id);
+      return newIds;
+    });
+    
+    // Update localStorage with remaining selections
+    this.removeSelectionFromStorage(rowData.id);
+    
+    console.log(`Row ${rowData.id} deselected`);
+    this.toastr.info(`Transaction ${rowData.id} deselected. Total: ${this.selectedRowIds().size}`, 'Row Deselected');
+  }
+}
 
 
   ngOnInit(): void {
@@ -976,11 +1133,22 @@ debugFormState(): void {
       calculatedTax: [{ value: 0, disabled: true }],
       totalAmount: [{ value: 0, disabled: true }],
       riskLevel: [{ value: '', disabled: true }],
-      requiresApproval: [{ value: false, disabled: true }]
+      requiresApproval: [{ value: false, disabled: true }],
+
+      // Horizontal display mode controls (same as outline section)
+      textBoxHorizontal: ['', [Validators.minLength(3), Validators.maxLength(20), Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
+      currencyHorizontal: ['EUR'],
+      amountToWordHorizontal: ['', [Validators.max(1000000), Validators.min(1)]],
+      dropdownHorizontal: [''],
+      multiSelectHorizontal: [[]],
+      numberHorizontal: ['', [Validators.pattern('^[0-9]*$')]],
+      officeCodeHorizontal: ['', [Validators.maxLength(10), Validators.minLength(3)]]
     });
 
     this.setupFieldRelationships();
-
+    setTimeout(() => {
+      this.restoreGridSelections();
+    }, 100);
 
   }
 
@@ -1960,16 +2128,65 @@ private recalculateTransactionAmounts(transaction: any): any {
     this.toastr.success(`Printing transaction: ${transaction.id}`, 'Print');
   }
 
-  onTransactionRowSelect(event: { data: string, checked: boolean }): void {
-  const rowData = JSON.parse(event.data);
+// onTransactionRowSelect(event: { data: string, checked: boolean }): void {
+//   const rowData = JSON.parse(event.data);
 
-  if (event.checked) {
-    console.log('Row CHECKED:', rowData);
+//   if (event.checked) {
+//     console.log('Row CHECKED:', rowData);
+    
+//     // Store in localStorage
+//     localStorage.setItem('rowData', JSON.stringify(rowData));
+    
+//     // Update selected IDs signal
+//     this.selectedRowIds.update(ids => {
+//       const newIds = new Set(ids);
+//       newIds.add(rowData.id);
+//       return newIds;
+//     });
+    
+//     this.toastr.success(`Row selected: ${rowData.id}`, 'Selection');
+    
+//   } else {
+//     console.log('Row UNCHECKED:', rowData);
+    
+//     // Remove from localStorage if it's the unchecked row
+//     const storedData = localStorage.getItem('rowData');
+//     if (storedData) {
+//       const stored = JSON.parse(storedData);
+//       if (stored.id === rowData.id) {
+//         localStorage.removeItem('rowData');
+//       }
+//     }
+    
+//     // Update selected IDs signal
+//     this.selectedRowIds.update(ids => {
+//       const newIds = new Set(ids);
+//       newIds.delete(rowData.id);
+//       return newIds;
+//     });
+    
+//     this.toastr.info(`Row deselected: ${rowData.id}`, 'Selection');
+//   }
+// }
 
-  } else {
-    console.log('Row UNCHECKED:', rowData);
+// 6. Enhanced method to check if a specific row should be pre-selected
+isRowPreSelected(rowId: string): boolean {
+  return this.selectedRowIds().has(rowId);
+}
 
-  }
+// 7. Method to get initially selected indices for the grid
+getInitiallySelectedIndices(): number[] {
+  const selectedIds = this.selectedRowIds();
+  const transactions = this.sampleTransactions();
+  const indices: number[] = [];
+  
+  transactions.forEach((transaction, index) => {
+    if (selectedIds.has(transaction.id)) {
+      indices.push(index);
+    }
+  });
+  
+  return indices;
 }
 
 onSwitchToggled(event:any): void {

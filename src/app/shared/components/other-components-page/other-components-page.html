@@ -13,7 +13,7 @@
           </section>
 
 
-             <section class="primary-fields-section bg-gray-50 rounded-lg  mb-6 grid grid-cols-1">
+             <section class="primary-fields-section bg-gray-50 rounded-lg  mb-6 grid grid-cols-1 gap-2">
 
               <!-- Transaction Reference Subsection -->
               <div class=" component-section">
@@ -75,9 +75,9 @@
                   [editableColumns]="['amount', 'status', 'priority', 'currency', 'country', 'productCategory', 'subCategory', 'assignedRole']"
                   [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
                   [selectedColumns]="['id', 'amount', 'currency']"
+                  (onRowDoubleClick)="onRowDblClick($event)"
 
                   ></lds-data-grid>
-<!--                  (onRowDoubleClick)="onRowDblClick($event)"-->
               </div>
             </section>
          </div>

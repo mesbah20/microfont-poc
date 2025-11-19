@@ -158,7 +158,7 @@
       [class.flex]="!sidebarExpanded"
       [class.justify-center]="!sidebarExpanded">
         <div routerLink="/landing/dashboard" (click)="setActiveItem('dashboard')"
-             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
+             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-visible"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
              [class.hover:bg-gray-100]="activeItem !== 'dashboard'"
@@ -277,7 +277,7 @@
       [class.justify-center]="!sidebarExpanded">
         <div (click)="setActiveItem('security')"
              routerLink="/poc/approval-items"
-             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-hidden"
+             class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-visible"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
              [class.hover:bg-gray-100]="activeItem !== 'approval'"

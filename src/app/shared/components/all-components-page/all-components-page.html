@@ -9,115 +9,173 @@
               [isOpenSignal]="businessHeaderPanel"
               [panelTitle]="'Transaction Management'"
             />
-            
           </section>
 
-          <div class="form-grid-col-1  grid-section">
-            <!-- Primary Fields Section -->
-            <section class="primary-fields-section bg-gray-50 rounded-lg  mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
-         
-              <!-- Transaction Reference Subsection -->
-              <div class=" component-section">
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [controlName]="'textBox'"
-                  [label]="'Transaction Reference'"
-                  [isReadonly]="false"
-                  displayMode = "outline"
-                  [tooltip]="'Auto-generated based on currency and category'"
-                  [tooltipPosition]="'above'"
-                  [tooltipDelay]="300"
-                  [tooltipClass]="'success-tooltip'"
-                  (onBlurred)="onBlur($event)"
-                  (onChanged)="onTextBoxChanged($event)"
-                  [customErrorMessages]="{
-                    required: 'Transaction reference is required',
-                    minlength: 'Minimum 3 characters required',
-                    maxlength: 'Maximum 20 characters allowed',
-                    pattern: 'Only alphanumeric characters and underscores are allowed'
-                  }"
-                ></app-text-base-input>
-              </div>
+          <div class="form-grid-col-1 ">
+            
+            <!-- SECTION 1: OUTLINE MODE COMPONENTS -->
+            <section class="rounded-lg  grid-section">
+             
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                <!-- Transaction Reference -->
+                <div class="">
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [controlName]="'textBox'"
+                    [label]="'Transaction Reference'"
+                    [isReadonly]="false"
+                    displayMode="outline"
+                    [tooltip]="'Auto-generated based on currency and category'"
+                    [tooltipPosition]="'above'"
+                    [tooltipDelay]="300"
+                    [tooltipClass]="'success-tooltip'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onTextBoxChanged($event)"
+                    [customErrorMessages]="{
+                      required: 'Transaction reference is required',
+                      minlength: 'Minimum 3 characters required',
+                      maxlength: 'Maximum 20 characters allowed',
+                      pattern: 'Only alphanumeric characters and underscores are allowed'
+                    }"
+                  ></app-text-base-input>
+                </div>
 
-              <!-- Account ID Subsection -->
-              <div class=" component-section">
-                <lds-id-box
-                  [frmGroup]="frmGroup"
-                  [controlName]="'id'"
-                  [label]="'Account ID'"
-                  [allowSpecialChars]="true"
-                  [isDotsVisible]="true"
-                  [tooltip]="'Click to select account ID'"
-                  [tooltipPosition]="'above'"
-                  [tooltipDelay]="300"
-                  displayMode = "vertical"
-                  (onBlurred)="onBlur($event)"
-                  (dotsClicked)="openModal()"
-                  (onChanged)="onIdBoxChanged($event)"
-                ></lds-id-box>
-              </div>
-
- <div class=" component-section">
-                    <app-select-option-field
+                <!-- Currency Selection -->
+                <div class="">
+                  <app-select-option-field
                     [frmGroup]="frmGroup"
                     [controlName]="'currency'"
                     [label]="'Currency'"
-                    displayMode = "outline"  
+                    displayMode="outline"  
                     [options]="currencyOptions"
                     [tooltip]="'Currency selection affects country and tax rate'"
                     [searchable]="false"
                     (onSelect)="handleCategorySelection($event)"
                   ></app-select-option-field>
- </div>
-
-
-              <!-- Account Selection Modal Subsection -->
-               <!-- @if(showModal){
-                <div class=" component-section">
-                  <lds-modal
-                    [isVisible]="showModal"
-                    [modalTitle]="'Modal Title'"
-                    [cssClass]="'modal-sm'"
-                      [modalComponent]="OtherComponentsPageComponent"
-                      [modalComponentData]="modalComponentData || modalConfig"
-                    (modalClosed)="onModalClose(false)"
-                  ></lds-modal>
                 </div>
-               } -->
-            
 
-           
-
-              <!-- Amount in Words Subsection -->
-              <div class=" component-section">
-                <app-amount-to-word-input
+                <div class="">
+                  <lds-amount
                   [frmGroup]="frmGroup"
-                  [controlName]="'amountToWord'"
-                  [label]="'Amount in Words'"
-                  displayMode = "outline"
-                  [currency]="selectedCurrency()"
+                  [controlName]="'amount'"
+                  [label]="'Transaction Amount'"
+                  displayMode ="outline"
                   [decimalPlaces]="2"
+                  [allowLeadingZeros]="false"
                   [maxLen]="12"
-                  [tooltip]="'Automatically synced with amount field'"
+                  [tooltip]="'Amount affects tax calculation and approval requirements'"
                   (onBlurred)="onBlur($event)"
-                  (onChanged)="onAmountToWordChanged($event)"
-                ></app-amount-to-word-input>
+                  (onChanged)="onAmountChanged($event)"
+                ></lds-amount>
+                </div>
+
+                <!-- Amount in Words -->
+                <div class="">
+                  <app-amount-to-word-input
+                    [frmGroup]="frmGroup"
+                    [controlName]="'amountToWord'"
+                    [label]="'Amount in Words'"
+                    displayMode="outline"
+                    [currency]="selectedCurrency()"
+                    [decimalPlaces]="2"
+                    [maxLen]="12"
+                    [tooltip]="'Automatically synced with amount field'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onAmountToWordChanged($event)"
+                  ></app-amount-to-word-input>
+                </div>
+
+                <!-- Priority Level -->
+                <div class="">
+                  <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'dropdown'"
+                    [label]="'Priority Level'"
+                    displayMode="outline"
+                    [options]="dropdownOptions"
+                    [tooltip]="'Select transaction priority'"
+                    (onSelect)="handleCategorySelection($event)"
+                  ></app-select-option-field>
+                </div>
+
+                <!-- Additional Services -->
+                <div class="">
+                  <app-multi-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'multiSelect'"
+                    [label]="'Additional Services'"
+                    displayMode="outline"
+                    [options]="dropdownOptions"
+                  ></app-multi-select-option-field>
+                </div>
+
+                <!-- Reference Number -->
+                <div class="">
+                  <lds-number
+                    [frmGroup]="frmGroup"
+                    [controlName]="'number'"
+                    [label]="'Reference Number'"
+                    displayMode="outline"
+                    [minValue]="1"
+                    [maxValue]="9999"
+                    [maxLen]="4"
+                    [placeholder]="'Auto-generated number'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onNumberChanged($event)"
+                  ></lds-number>
+                </div>
+
+                <!-- Office Code -->
+                <div class="">
+                  <lds-office-box
+                    [frmGroup]="frmGroup"
+                    [controlName]="'officeCode'"
+                    [labelText]="'Office Code'"
+                    displayMode="outline"
+                    [enable]="true"
+                    [visible]="true"
+                    [maxLen]="4"
+                    [placeholder]="'Auto-suggested based on currency'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onOfficeBoxChanged($event)"
+                  ></lds-office-box>
+                </div>
               </div>
             </section>
 
-            <section class="sub-panel">
+            <!-- SECTION 2: VERTICAL MODE COMPONENTS -->
+            <section class=" rounded-lg ">
               <app-expansion-sub-panel-header
-              [isOpenSignal]="subPanel1"
-              [subPanelTitle]="'Configure fields'"
-            />
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-2">
-                <!-- Currency Subsection -->
-                <div class="subsection component-section">
+                [isOpenSignal]="subPanel1"
+                [subPanelTitle]="'Configuration Fields'"
+              />
+                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 grid-section">
+         
+                <!-- Account ID -->
+                <div class="component-section">
+                  <lds-id-box
+                    [frmGroup]="frmGroup"
+                    [controlName]="'id'"
+                    [label]="'Account ID'"
+                    [allowSpecialChars]="true"
+                    [isDotsVisible]="true"
+                    [tooltip]="'Click to select account ID'"
+                    [tooltipPosition]="'above'"
+                    [tooltipDelay]="300"
+                    displayMode="vertical"
+                    (onBlurred)="onBlur($event)"
+                    (dotsClicked)="openModal()"
+                    (onChanged)="onIdBoxChanged($event)"
+                  ></lds-id-box>
+                </div>
+
+                <!-- Currency (Vertical) -->
+                <div class="component-section">
                   <app-select-option-field
                     [frmGroup]="frmGroup"
                     [controlName]="'currency'"
                     [label]="'Currency'"
-            
                     [isVertical]="true"
                     [options]="currencyOptions"
                     [tooltip]="'Currency selection affects country and tax rate'"
@@ -126,8 +184,8 @@
                   ></app-select-option-field>
                 </div>
 
-                <!-- Country Subsection -->
-                <div class="subsection component-section">
+                <!-- Country -->
+                <div class="component-section">
                   <app-select-option-field
                     [frmGroup]="frmGroup"
                     [controlName]="'country'"
@@ -139,8 +197,8 @@
                   ></app-select-option-field>
                 </div>
 
-                <!-- Product Category Subsection -->
-                <div class="subsection component-section">
+                <!-- Product Category -->
+                <div class="component-section">
                   <app-select-option-field
                     [frmGroup]="frmGroup"
                     [controlName]="'productCategory'"
@@ -151,8 +209,8 @@
                   ></app-select-option-field>
                 </div>
 
-                <!-- Subcategory Subsection -->
-                <div class="subsection component-section">
+                <!-- Subcategory -->
+                <div class="component-section">
                   <app-select-option-field
                     [frmGroup]="frmGroup"
                     [controlName]="'subCategory'"
@@ -162,132 +220,72 @@
                     [tooltip]="'Subcategory sets minimum amount requirements'"
                   ></app-select-option-field>
                 </div>
-              </div>
-              <app-expansion-sub-panel-header
-              [isOpenSignal]="subPanel1"
-              [subPanelTitle]="'Calculated Fields'"
-            />
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ">
-              <!-- Tax Rate Subsection -->
-              <div class="subsection component-section">
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [controlName]="'taxRate'"
-                  [label]="'Tax Rate (%)'"
-                  [isReadonly]="true"
-                  [isVertical]="true"
-                  [tooltip]="'Calculated based on currency and product category'"
-                ></app-text-base-input>
-              </div>
 
-              <!-- Calculated Tax Subsection -->
-              <div class="subsection component-section">
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [controlName]="'calculatedTax'"
-                  [label]="'Tax Amount'"
-                  [isReadonly]="true"
-                  [isVertical]="true"
-                  [tooltip]="'Auto-calculated: Amount × Tax Rate'"
-                ></app-text-base-input>
-              </div>
-
-              <!-- Total Amount Subsection -->
-              <div class="subsection component-section">
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [controlName]="'totalAmount'"
-                  [label]="'Total Amount'"
-                  [isReadonly]="true"
-                  [isVertical]="true"
-                  [tooltip]="'Auto-calculated: Amount + Tax'"
-                ></app-text-base-input>
-              </div>
-            </div>
-            </section>
-
-            
-
-            <!-- Standard Fields Section -->
-            <section style="margin-top: 10px;" class="bg-gray-50 rounded-lg ">
-              <app-expansion-panel-header
-              [isOpenSignal]="businessHeaderPanel"
-              [panelTitle]="'Standard Fields'"
-            />
-              <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 p-2">
-                <!-- Priority Level Subsection -->
-                <div class="subsection component-section">
-                  <app-select-option-field
-                    [frmGroup]="frmGroup"
-                    [controlName]="'dropdown'"
-                    [label]="'Priority Level'"
-                    displayMode = "outline"
-                    [options]="dropdownOptions"
-                    [tooltip]="'Select transaction priority'"
-                    (onSelect)="handleCategorySelection($event)"
-                  ></app-select-option-field>
-                </div>
-
-                <!-- Additional Services Subsection -->
-                <div class="subsection component-section">
-                  <app-multi-select-option-field
-                    [frmGroup]="frmGroup"
-                    [controlName]="'multiSelect'"
-                    [label]="'Additional Services'"
-                    displayMode = "outline"
-                    [options]="dropdownOptions"
-                  ></app-multi-select-option-field>
-                </div>
-
-                <!-- Transaction Date Subsection -->
-                <div class="subsection component-section">
+                <!-- Transaction Date -->
+                <div class="component-section">
                   <app-date-input
                     [frmGroup]="frmGroup"
                     [controlName]="'date'"
                     [label]="'Transaction Date'"
-                    displayMode = "vertical"
+                    displayMode="vertical"
                     [dateFormat]="'YYYY-MM-DD'"
                     [maxYear]="2034"
-                    [includeTime]=2
+                    [includeTime]="2"
                     [enableYearRangeValidation]="false"
                     (onBlurred)="onBlur($event)"
                   ></app-date-input>
                 </div>
 
-                <!-- Reference Number Subsection -->
-                <div class="subsection component-section">
-                  <lds-number
+                <!-- Tax Rate (Read-only) -->
+                <div class="component-section">
+                  <app-text-base-input
                     [frmGroup]="frmGroup"
-                    [controlName]="'number'"
-                    [label]="'Reference Number'"
-                    displayMode = "outline"
-                    [minValue]="1"
-                    [maxValue]="9999"
-                    [maxLen]="4"
-                    [placeholder]="'Auto-generated number'"
-                    (onBlurred)="onBlur($event)"
-                    (onChanged)="onNumberChanged($event)"
-                  ></lds-number>
+                    [controlName]="'taxRate'"
+                    [label]="'Tax Rate (%)'"
+                    [isReadonly]="true"
+                    [isVertical]="true"
+                    [tooltip]="'Calculated based on currency and product category'"
+                  ></app-text-base-input>
                 </div>
 
-                <!-- Office Code Subsection -->
-                <div class="subsection component-section">
-                  <lds-office-box
+                <!-- Calculated Tax (Read-only) -->
+                <div class="component-section">
+                  <app-text-base-input
                     [frmGroup]="frmGroup"
-                    [controlName]="'officeCode'"
-                    [labelText]="'Office Code'"
-                    displayMode = "outline"
-                    [enable]="true"
-                    [visible]="true"
-                    [maxLen]="4"
-                    [placeholder]="'Auto-suggested based on currency'"
-                    (onBlurred)="onBlur($event)"
-                    (onChanged)="onOfficeBoxChanged($event)"
-                  ></lds-office-box>
+                    [controlName]="'calculatedTax'"
+                    [label]="'Tax Amount'"
+                    [isReadonly]="true"
+                    [isVertical]="true"
+                    [tooltip]="'Auto-calculated: Amount × Tax Rate'"
+                  ></app-text-base-input>
                 </div>
 
-                <!-- Express Processing Subsection -->
-                <div class="subsection component-section">
+                <!-- Total Amount (Read-only) -->
+                <div class="component-section">
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [controlName]="'totalAmount'"
+                    [label]="'Total Amount'"
+                    [isReadonly]="true"
+                    [isVertical]="true"
+                    [tooltip]="'Auto-calculated: Amount + Tax'"
+                  ></app-text-base-input>
+                </div>
+              </div>
+            </section>
+
+
+
+            <!-- SECTION 4: DOCUMENT UPLOAD & NOTES (HORIZONTAL MODE) -->
+            <section class="grid-section">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="subPanel1"
+                [subPanelTitle]="'Document Upload & Notes'"
+              />
+              <div class="space-y-6 mt-4">
+                
+                <!-- Express Processing Switch -->
+                <div class="component-section">
                   <lds-switch
                     [frmGroup]="frmGroup"
                     [controlName]="'switch'"
@@ -298,76 +296,46 @@
                     Express processing reduces validation requirements
                   </div>
                 </div>
+
+                <!-- PDF File Upload  -->
+                <div class="component-section">
+                  <lds-file
+                    #pdfFileInput
+                    [id]="'pdf-upload'"
+                    [multipleFile]="false"
+                    [fileExtension]="'.pdf'"
+                    [isVertical]="false"
+                    [labelText]="'Upload Supporting Document'"
+                    [cssClass]="'border-green-300 bg-green-50'"
+                    [savePath]="'documents/transactions'"
+                    [customFileName]="'transaction-document'"
+                    (selectedFilesChanged)="onPdfSelected($event)"
+                    (onFileChanged)="onFileInputChanged('Transaction Document')"
+                  />
+                </div>
+
+                <!-- Text Area  -->
+                <div class="component-section">
+                  <lds-txt-area
+                    [frmGroup]="frmGroup"
+                    [controlName]="'textArea'"
+                    [labelText]="'Transaction Notes'"
+                    [isVertical]="false"
+                    [rows]="3"
+                    [minRows]="2"
+                    [width]="'100%'"
+                    [maxRows]="10"
+                    [maxCols]="80"
+                    [placeholder]="'Enter transaction description and notes...'"
+                    [showRowCount]="true"
+                    (onChanged)="onTextAreaChanged($event)"
+                  ></lds-txt-area>
+                </div>
               </div>
-
-              <!-- subsection -->
-              <app-expansion-sub-panel-header
-              [isOpenSignal]="subPanel1"
-              [subPanelTitle]="'Document upload'"
-            />
-            <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4 p-2">
-
-            <div class="component-section ">
-              <lds-file
-                #pdfFileInput
-                [id]="'pdf-upload'"
-                [multipleFile]="false"
-                [fileExtension]="'.pdf'"
-                [isVertical] ="false"
-                [labelText]="'Upload Supporting Document'"
-                [cssClass]="'border-purple-300 bg-purple-50'"
-                [savePath]="'documents/transactions'"
-                [customFileName]="'transaction-document'"
-                (selectedFilesChanged)="onPdfSelected($event)"
-                (onFileChanged)="onFileInputChanged('Transaction Document')"
-              />
-             
-            </div>
-
-            <div class="component-section">
-              <lds-txt-area
-              [frmGroup]="frmGroup"
-              [controlName]="'textArea'"
-              [labelText]="'Transaction Notes'"
-              [isVertical]="false"
-              [rows]="3"
-              [minRows]="2"
-               [width]="'300px'"
-              [maxRows]="10"
-              [maxCols]="80"
-              [placeholder]="'Enter transaction description and notes...'"
-              [showRowCount]="true"
-              
-              
-              (onChanged)="onTextAreaChanged($event)"
-            ></lds-txt-area>
-            </div>
-            </div>
-
             </section>
 
-      
-
-      
-
             <!-- Action Buttons Section -->
-            <!-- <section class="action-buttons-section rounded-lg p-4 mb-6 mt-6">
-              <div class="flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded shadow"
-                  (click)="addCurrentFormToGrid()"
-                  [disabled]="frmGroup.invalid"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                  </svg>
-                  <span>Add to Grid</span>
-                </button>
-              </div>
-            </section> -->
-
-            <section class="action-buttons-section rounded-lg p-4 mb-6 mt-6">
+            <section class="action-buttons-section rounded-lg p-4 mb-6">
               <div class="flex gap-4">
                 <lds-btn
                   id="saveBtn"
@@ -387,16 +355,136 @@
             </section>
 
 
+
+                    
+            <section class=" rounded-lg ">
+              <app-expansion-panel-header
+                [isOpenSignal]="businessHeaderPanel"
+                [panelTitle]="'Transaction Management'"
+              />
+              
+              <div class="space-y-6 grid-section">
+                <!-- Text Input - Horizontal -->
+                <div class="component-section">
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [controlName]="'textBoxHorizontal'"
+                    [label]="'Transaction Reference '"
+                    [isReadonly]="false"
+                    displayMode="horizontal"
+                    [tooltip]="'Auto-generated based on currency and category'"
+                    [tooltipPosition]="'above'"
+                    [tooltipDelay]="300"
+                    [tooltipClass]="'success-tooltip'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onTextBoxChanged($event)"
+                    [customErrorMessages]="{
+                      required: 'Transaction reference is required',
+                      minlength: 'Minimum 3 characters required',
+                      maxlength: 'Maximum 20 characters allowed',
+                      pattern: 'Only alphanumeric characters and underscores are allowed'
+                    }"
+                  ></app-text-base-input>
+                </div>
+
+                <!-- Currency Select - Horizontal -->
+                <div class="component-section">
+                  <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'currencyHorizontal'"
+                    [label]="'Currency '"
+                    displayMode="horizontal"
+                    [options]="currencyOptions"
+                    [tooltip]="'Currency selection affects country and tax rate'"
+                    [searchable]="false"
+                    (onSelect)="handleCategorySelection($event)"
+                  ></app-select-option-field>
+                </div>
+
+                <!-- Amount in Words - Horizontal -->
+                <div class="component-section">
+                  <app-amount-to-word-input
+                    [frmGroup]="frmGroup"
+                    [controlName]="'amountToWordHorizontal'"
+                    [label]="'Amount in Words '"
+                    displayMode="horizontal"
+                    [currency]="selectedCurrency()"
+                    [decimalPlaces]="2"
+                    [maxLen]="12"
+                    [tooltip]="'Automatically synced with amount field'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onAmountToWordChanged($event)"
+                  ></app-amount-to-word-input>
+                </div>
+
+                <!-- Priority Level - Horizontal -->
+                <div class="component-section">
+                  <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'dropdownHorizontal'"
+                    [label]="'Priority Level '"
+                    displayMode="horizontal"
+                    [options]="dropdownOptions"
+                    [tooltip]="'Select transaction priority'"
+                    (onSelect)="handleCategorySelection($event)"
+                  ></app-select-option-field>
+                </div>
+
+                <!-- Multi-Select Services - Horizontal -->
+                <div class="component-section">
+                  <app-multi-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'multiSelectHorizontal'"
+                    [label]="'Additional Services '"
+                    displayMode="horizontal"
+                    [options]="dropdownOptions"
+                  ></app-multi-select-option-field>
+                </div>
+
+                <!-- Reference Number - Horizontal -->
+                <div class="component-section">
+                  <lds-number
+                    [frmGroup]="frmGroup"
+                    [controlName]="'numberHorizontal'"
+                    [label]="'Reference Number '"
+                    displayMode="horizontal"
+                    [minValue]="1"
+                    [maxValue]="9999"
+                    [maxLen]="4"
+                    [placeholder]="'Auto-generated number'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onNumberChanged($event)"
+                  ></lds-number>
+                </div>
+
+                <!-- Office Code - Horizontal -->
+                <div class="component-section">
+                  <lds-office-box
+                    [frmGroup]="frmGroup"
+                    [controlName]="'officeCodeHorizontal'"
+                    [labelText]="'Office Code '"
+                    displayMode="horizontal"
+                    [enable]="true"
+                    [visible]="true"
+                    [maxLen]="4"
+                    [placeholder]="'Auto-suggested based on currency'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onOfficeBoxChanged($event)"
+                  ></lds-office-box>
+                </div>
+              </div>
+            </section>
+
             <!-- Transaction Grid Section -->
             <section class="transaction-grid-section bg-white rounded-lg shadow-sm">
               <app-expansion-panel-header
-              [isOpenSignal]="businessHeaderPanel"
-              [panelTitle]="'Transaction Grid'"
-            />
+                [isOpenSignal]="businessHeaderPanel"
+                [panelTitle]="'Transaction Grid'"
+              />
               
               <div class="p-4">
-                <!-- summaryGridPosition : above/below -->
-                <lds-data-grid
+                <lds-data-grid 
+                  #transactionGrid
                   [id]="'enhanced-transactions'"
                   [dataSource]="sampleTransactions()"
                   [initPageSize]="8"
@@ -404,7 +492,7 @@
                   [showEditButton]="true"
                   [showDeleteButton]="true"
                   [showViewButton]="true"
-                  [searchEnabled]= "true"
+                  [searchEnabled]="true"
                   [showPrintButton]="true"
                   [useInlineEdit]="true"
                   [editableColumns]="['amount', 'status', 'priority', 'currency', 'country', 'productCategory', 'subCategory', 'assignedRole']"
@@ -427,8 +515,7 @@
                   (onChecked)="onTransactionRowSelect($event)"
                   (onSelectAllChange)="onTransactionSelectAll($event)"
                   (dataSourceChanged)="onTransactionDataChanged($event)"
-                  
-                  ></lds-data-grid>
+                ></lds-data-grid>
               </div>
             </section>
           </div>
@@ -437,15 +524,15 @@
     </form>
 
     <!-- Data Selection Modal -->
-<lds-modal
-  [isVisible]="showModal"
-  [modalTitle]="'Account Selection'"
-  [cssClass]="'modal-sm'"
-  [okButtonText]="'Process'"
-  [modalComponent]="modalComponent"
-  [modalComponentData]="modalComponentData"
-  (modalClosed)="onModalClose(false)"
-  (modalResult)="onModalResult($event)"
-></lds-modal>
+    <lds-modal
+      [isVisible]="showModal"
+      [modalTitle]="'Account Selection'"
+      [cssClass]="'modal-sm'"
+      [okButtonText]="'Process'"
+      [modalComponent]="modalComponent"
+      [modalComponentData]="modalComponentData"
+      (modalClosed)="onModalClose(false)"
+      (modalResult)="onModalResult($event)"
+    ></lds-modal>
   }
 </div>
