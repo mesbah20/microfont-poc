@@ -11,7 +11,8 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
     req.url.startsWith(environment.keycloakApi) ||
     req.url.startsWith(environment.sentinelUrl) ||
     req.url.startsWith(environment.centrinoXchangeUrl)||
-    req.url.startsWith(environment.centrinoBaseUrl);
+    req.url.startsWith(environment.centrinoBaseUrl)||
+    req.url.startsWith(environment.bffUrl);
 
   if (shouldAttachToken && token) {
     console.log('🔐 Attaching token to:', req.url);

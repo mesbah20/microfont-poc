@@ -662,7 +662,7 @@ console.log("Token in service-request",token);
             office.officeId?.toString() ||
             office.officeCode?.toString() ||
             (index + 1).toString(),
-          value: office.officeName || office.officeCd || `Office ${index + 1}`,
+          value: office.OFFICE_NAME || office.officeCd || `Office ${index + 1}`,
         }));
         console.log('Converted office options:', options);
         return options;
