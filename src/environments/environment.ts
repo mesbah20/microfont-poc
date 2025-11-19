@@ -30,4 +30,6 @@ export const environment = {
     clientId: 'LauncherApp'
   },
   novu_identifier: '1uXpKIJUa3Rg',
+  novu_socket: 'http://192.168.10.56:3002',
+  novu_service: 'http://192.168.20.69:8088/Notify',
 };
