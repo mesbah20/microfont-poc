@@ -1,0 +1,50 @@
+
+  <!-- Results Section -->
+  <div class="panel">
+    <app-panel-header [panelTitle]="'Available Reports (' + getResultsCount() + ')'"></app-panel-header>
+    
+    <div class="p-0">
+      @if (isLoading()) {
+        <div class="text-center p-4">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">{{ config.loadingText || 'Loading reports...' }}</p>
+        </div>
+      } @else {
+        <!-- Data Grid -->
+        <lds-data-grid
+          [dataSource]="filteredReports()"
+          [initPageSize]="10"
+          [showEditButton]="false"
+          [showDeleteButton]="false"
+          [showViewButton]="true"
+          [showPrintButton]="false"
+          [useInlineEdit]="false"
+          [selectedColumns]="gridColumns"
+          [tblClass]="'enhanced-transaction-table'"
+          [gridTitle]="''"
+          [groupOptionEnabled]="false"
+          [summaryGridEnabled]="false"
+          (onFHViewClick)="onReportEdit($event)"
+          (onChecked)="onReportRowSelect($event)"
+          (dataSourceChanged)="onReportDataChanged($event)">
+        </lds-data-grid>
+
+        <!-- No Data Message -->
+        @if (filteredReports().length === 0) {
+          <div class="text-center p-4">
+            <div class="mb-3" style="font-size: 4rem; opacity: 0.5;">📋</div>
+            <h5>No Reports Found</h5>
+            <p class="text-muted">{{ config.noDataMessage || 'No reports match your search criteria. Try different keywords or check if reports are available.' }}</p>
+            @if (config.showCreateNew) {
+              <lds-btn
+                labelText="Create New Report"
+                (onClick)="onCreateNewClick($event)">
+              </lds-btn>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
