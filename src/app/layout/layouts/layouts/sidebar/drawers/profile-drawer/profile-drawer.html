@@ -118,20 +118,21 @@
 
     <!-- Messaging -->
     <div
-      class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
+      class="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/60 shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer"
       (click)="toggleSection('messaging')">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
           <mat-icon class="text-indigo-600">mail</mat-icon>
         </div>
         <div>
           <p class="font-medium text-gray-800">Messaging</p>
           <p class="text-sm text-gray-600">Send and receive messages</p>
         </div>
-      </div>
-      <mat-icon class="text-slate-400">
+              <mat-icon class="text-slate-400">
         {{ isSectionOpen('messaging') ? 'expand_less' : 'expand_more' }}
       </mat-icon>
+      </div>
+
     </div>
 
     <div [@expandCollapse]="isSectionOpen('messaging') ? 'open' : 'closed'" class="overflow-hidden">
