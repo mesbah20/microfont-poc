@@ -1,0 +1,205 @@
+<div class="page-wrapper">
+  <div class="panel">
+    <div class="profile-grid-container container p-4 my-4">
+      <app-expansion-panel-header
+        [isOpenSignal]="businessHeaderPanel"
+        [panelTitle]="'Define Roles'">
+      </app-expansion-panel-header>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="component-section">
+          <lds-id-box
+            [frmGroup]="rolesForm"
+            [controlName]="'roleName'"
+            [label]="'Role Name'"
+            [isReadonly]="false"
+            [isVertical]="true"
+            [tooltip]="'Enter Role Name'"
+            [allowSpecialChars] = "true"
+            [isDotsVisible]="true"
+            (dotsClicked)="openModal()"
+            (onBlurred)="onRoleNameChange($event)">
+          </lds-id-box>
+          <app-user-roles-modal [showUserRolesModal]="showUserRolesModal" [roleName]="rolesForm.get('roles.roleName')?.value ?? null"
+                               (roleSelected)="loadRole($event)"></app-user-roles-modal>
+        </div>
+        <div class="component-section">
+          <lds-txt-area
+            [frmGroup]="rolesForm"
+            [controlName]="'roleDescrip'"
+            [labelText]="'Description'"
+            [isVertical]="true"
+            [tooltip]="'Enter Description'">
+          </lds-txt-area>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="profile-grid-container container p-4 my-4"   *ngIf="showAssignedRoleGrid">
+      <app-expansion-panel-header
+        [isOpenSignal]="businessHeaderPanel"
+        [panelTitle]="'Assigned Functions'">
+      </app-expansion-panel-header>
+
+      <div class="component-section">
+        <lds-data-grid
+          [id]="'assigned-roles'"
+          [enableSelection]="true"
+          [useInlineEdit]="false"
+          [dataSource]="assignedUserFunction"
+          [checkboxSelectAllColumns]="[
+          'allowMaintAddFlag',
+          'allowMaintEditFlag',
+          'allowMaintDelFlag',
+          'allowMaintViewFlag',
+          'allowMaintAuthFlag',
+          'allowProcessFlag',
+          'allowReportViewFlag',
+          'allowReportPrintFlag',
+          'allowReportGenFlag'
+        ]"
+          [checkboxColumns]="[
+          'allowMaintAddFlag',
+          'allowMaintEditFlag',
+          'allowMaintDelFlag',
+          'allowMaintViewFlag',
+          'allowMaintAuthFlag',
+          'allowAnyOfficeOpsFlag',
+          'allowProcessFlag',
+          'allowReportViewFlag',
+           'allowReportPrintFlag',
+          'allowReportGenFlag'
+        ]"
+          [selectedColumns]="[
+          'functionId',
+          'functionNm',
+          'allowMaintAddFlag',
+          'allowMaintEditFlag',
+          'allowMaintDelFlag',
+          'allowMaintViewFlag',
+          'allowMaintAuthFlag',
+          'allowAnyOfficeOpsFlag',
+          'allowProcessFlag',
+          'allowReportViewFlag',
+           'allowReportPrintFlag',
+          'allowReportGenFlag'
+        ]"
+          [initPageSize]="5"
+          (onCheckboxValueChange)="handleCheckboxChange($event)"
+          [customColumnNames]="{
+          functionId: '',
+          functionNm: 'Function Name',
+          allowMaintAddFlag: 'Add',
+          allowMaintEditFlag: 'Edit',
+          allowMaintDelFlag: 'Delete',
+          allowMaintViewFlag: 'View',
+          allowMaintAuthFlag: 'Auth',
+          allowAnyOfficeOpsFlag:'Allow Any Office',
+          allowProcessFlag: 'Process',
+          allowReportViewFlag: 'Rpt View',
+          allowReportPrintFlag: 'Rpt Print',
+          allowReportGenFlag: 'Rpt Gen',
+        }"
+          (onChecked)="onRemovePackageRowSelect($event)"
+          (onSelectAllChange)="onRemoveAllPackageRowSelect($event)"
+        >
+        </lds-data-grid>
+      </div>
+
+      <div class="flex justify-center my-6 gap-4">
+        <button mat-raised-button color="primary" class="action-btn" (click)="selectPackage()">
+          <mat-icon>keyboard_double_arrow_up</mat-icon>
+        </button>
+        <button mat-raised-button color="warn" class="action-btn" (click)="removePackage()">
+          <mat-icon>keyboard_double_arrow_down</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Section -->
+  <div class="panel">
+    <div class="profile-grid-container container p-4 my-4">
+      <app-sub-panel-header [subPanelTitle]="'Category'">
+      </app-sub-panel-header>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <app-select-option-field
+          [frmGroup]="selectorForm"
+          [controlName]="'appId'"
+          [label]="'Application'"
+          [options]="applicationOptions()"
+          [isVertical]="true"
+          [placeholder]="'Select Application'">
+        </app-select-option-field>
+
+        <app-select-option-field
+          [frmGroup]="selectorForm"
+          [controlName]="'moduleId'"
+          [label]="'Module'"
+          [options]="moduleOptions()"
+          [isVertical]="true"
+          [placeholder]="'Select Module'"
+          [isReadonly]="!selectorForm.get('appId')?.value">
+        </app-select-option-field>
+
+        <app-select-option-field
+          [frmGroup]="selectorForm"
+          [controlName]="'itemType'"
+          [label]="'Item'"
+          [options]="itemTypeOptions"
+          [isVertical]="true"
+          [placeholder]="'Select Item'">
+        </app-select-option-field>
+
+        <div class="flex flex-wrap gap-3 justify-end items-end">
+          <lds-btn
+            [labelText]="'Search'"
+            (onClick)="searchFunction()">
+          </lds-btn>
+          <lds-btn
+            [labelText]="'Reset'"
+            [cssClass]="'bg-slate-500 text-white px-4'"
+            (onClick)="resetAll()">
+          </lds-btn>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unassigned Section -->
+    <div class="panel" *ngIf="showUnassignedGrid">
+      <app-expansion-panel-header
+        [isOpenSignal]="businessHeaderPanel"
+        [panelTitle]="'Unassigned Functions'">
+      </app-expansion-panel-header>
+
+      <div class="component-section">
+        <lds-data-grid
+          [id]="'unassigned-roles'"
+          [enableSelection]="true"
+          [useInlineEdit]="false"
+          [dataSource]="unassignedUserFunction"
+          [initPageSize]="5"
+          (onChecked)="onAddPackageRowSelect($event)"
+          (onSelectAllChange)="onAddAllPackageRowSelect($event)"
+          [selectedColumns]="[
+          'functionId',
+          'functionNm',
+          'appRoute',
+          'quickRouteNo',
+          'appId'
+        ]"
+          [customColumnNames]="{
+          functionId: '',
+          functionNm: 'Function Name',
+          appRoute: 'App Route',
+          quickRouteNo: 'Quick Route',
+          appId: 'App ID'
+        }"
+        >
+        </lds-data-grid>
+    <!--    -->
+      </div>
+    </div>
+  </div>
+
+</div>

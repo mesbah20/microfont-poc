@@ -17,22 +17,22 @@ export class NotificationCenterComponent implements OnInit, OnDestroy {
   constructor(private novuService: NovuService) {}
 
   ngOnInit() {
-  console.log('NotificationCenter ngOnInit');
+    console.log('NotificationCenter ngOnInit');
 
-  // প্রথমে রিফ্রেশ করুন
-  this.novuService.refreshNow();
+    // প্রথমে রিফ্রেশ করুন
+    this.novuService.refreshNow();
 
-  // তারপর সাবস্ক্রাইব করুন
-  this.novuService.getNotifications().subscribe(notifs => {
-    console.log('Notifications updated:', notifs);
-    this.notifications = notifs;
-  });
+    // তারপর সাবস্ক্রাইব করুন
+    this.novuService.getNotifications().subscribe(notifs => {
+      console.log('Notifications updated:', notifs);
+      this.notifications = notifs;
+    });
 
-  this.novuService.getUnreadCount().subscribe(count => {
-    console.log('Unread count:', count);
-    this.unreadCount = count;
-  });
-}
+    this.novuService.getUnreadCount().subscribe(count => {
+      console.log('Unread count:', count);
+      this.unreadCount = count;
+    });
+  }
 
   ngOnDestroy() {}
 

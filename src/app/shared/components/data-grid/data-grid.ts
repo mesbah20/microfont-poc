@@ -138,7 +138,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly groupByColumns = input<string[]>([]);
 
 
-  
+
   // Basic Outputs
   readonly onSelectAllChange = output<{
     isSelectAll: boolean,
@@ -201,7 +201,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
 
   constructor(private formBuilder: FormBuilder,
     public loaderService: LoaderService
-  ) {    
+  ) {
     // Data source effect
     effect(() => {
       const data = this.dataSource();
@@ -940,8 +940,8 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
     this._totalSummary.set({ totalCount, totals: totalTotals });
   }
 
-  generateSelectedGroupSummary(): void {    
-    this.loaderService.showLoader();   
+  generateSelectedGroupSummary(): void {
+    this.loaderService.showLoader();
     this.selectedGroupSummary();
     this.loaderService.hideLoader();
   }

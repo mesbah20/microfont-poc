@@ -4,6 +4,9 @@ import { BehaviorSubject, Observable, combineLatest, debounceTime, distinctUntil
 import { NovuService, ChatMessage } from './novu.service';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
+import { UserService } from '../../core/user/user.service';
+import { User } from '../../core/user/user.types';
 
 export interface ChatPreview {
   chatId: string;
@@ -21,12 +24,9 @@ function buildChatId(a: string, b: string): string {
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   // Notification service base (same API used for chat send)
-  private readonly api = 'http://192.168.20.69:8088/Notify';
+  private readonly api = environment.novu_service;
   public previews$ = new BehaviorSubject<ChatPreview[]>([]);
-
-  private get currentUserId(): string {
-    return localStorage.getItem('userId') || '';
-  }
+  private currentUserId = '';
 
   private searchTerm$ = new BehaviorSubject<string>('');
   public searchResults$ = this.searchTerm$.pipe(
@@ -46,10 +46,30 @@ export class ChatService {
     )
   );
 
-  constructor(private novuService: NovuService, private http: HttpClient) {
+  constructor(
+    private novuService: NovuService,
+    private http: HttpClient,
+    private userService: UserService
+  ) {
+    this.syncCurrentUserId(this.novuService.getActiveSubscriberId() ?? undefined);
+
+    this.userService.user$.subscribe((user: User) => {
+      this.syncCurrentUserId(user?.username);
+    });
+
+    this.novuService.onSubscriberIdChanged().subscribe((id) => {
+      this.syncCurrentUserId(id ?? undefined);
+    });
+
     this.novuService.getChatMessages().subscribe((messages) => {
       this.buildPreviews(messages);
     });
+  }
+
+  private syncCurrentUserId(id?: string) {
+    if (!id) return;
+    if (this.currentUserId === id) return;
+    this.currentUserId = id;
   }
 
   private buildPreviews(messages: ChatMessage[]) {

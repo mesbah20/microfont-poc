@@ -35,7 +35,7 @@ export interface UserAppAccessList {
   appName:string,
   appDesc:string
 }
- 
+
 export interface UserDataResponse {
   userAccessList: UserAccessItem[];
   appAccessList: UserAppAccessList[];
@@ -76,9 +76,9 @@ export interface UserProfileModel {
   macAddress : string;
   approveFlag : boolean;
   userImg : string;
- 
+
   employeeCode : string;
- 
+
   //additional for loginInfo
   terminalIp : string;
   browser : string;
@@ -87,10 +87,10 @@ export interface UserProfileModel {
   loginAt : string;
   appId : number;
   clientPCName : string;
- 
+
   //additional for forgetPassword Info
   remarks : string;
- 
+
   mregUserGrantPackageRequestList : UserGrantPackageModel[];
 }
 export interface UserGrantPackageModel {
@@ -115,7 +115,7 @@ export class Login implements OnInit {
   fb = inject(FormBuilder);
   router = inject(Router);
   private novuService = inject(NovuService);
-  private readonly notifyBaseUrl = 'http://192.168.20.69:8088/Notify';
+  private readonly notifyBaseUrl = environment.novu_service;
   frmGroup: FormGroup;
   loginError: boolean = false;
   coreBaseUrl: string = environment.loginUrl;
@@ -230,8 +230,14 @@ export class Login implements OnInit {
           this.loadUserDataResponse();
           try {
             console.log('Initializing Novu for user:', userId);
+            const subscriberHash = await this.fetchSubscriberHash(userId);
+            if (subscriberHash) {
+              localStorage.setItem('novuSubscriberHash', subscriberHash);
+            } else {
+              localStorage.removeItem('novuSubscriberHash');
+            }
             // await this.novuService.init(userId, 'oH9Vf1VWV7s8');
-            await this.novuService.init(userId, 'EDstW_4loKyp');
+            await this.novuService.init(userId, '1uXpKIJUa3Rg');
             console.log('Novu initialized successfully!');
           } catch (err) {
             console.error('Failed to initialize Novu:', err);
@@ -371,23 +377,23 @@ export class Login implements OnInit {
 
     this.isLoading = true;
 
-      sessionStorage.setItem('companyId', this.tokenObject.companyId);
-          sessionStorage.setItem('companyName', this.tokenObject.companyName);
-          sessionStorage.setItem('officeId', this.tokenObject.homeOfficeId);
-          sessionStorage.setItem('officeCode', this.tokenObject.officeCode);
-          sessionStorage.setItem('officeName', this.tokenObject.officeName);
-          sessionStorage.setItem('entityTypeId', this.tokenObject.entityTypeId);
-          sessionStorage.setItem('officeTypeId', this.tokenObject.officeTypeId);
-          sessionStorage.setItem('officeControlId', this.tokenObject.officeControlId);
-          sessionStorage.setItem('txnDt', this.tokenObject.transactionDate);
-          sessionStorage.setItem('operationMode', this.tokenObject.operationMode);
-          sessionStorage.setItem('operationModeFunction', this.tokenObject.operationModeFunction);
-          sessionStorage.setItem('instituteType', this.tokenObject.instituteType);
-          sessionStorage.setItem('localCurrencyId', this.tokenObject.localCurrencyId);
-          sessionStorage.setItem('custProdIdLen', this.tokenObject.customerProductIdLength);
-          sessionStorage.setItem('custAccountNoLen', this.tokenObject.customerAccountNoLength);
-          sessionStorage.setItem('accountNoPtrnFlag', this.tokenObject.accountNoPatternFlag);
-            this.isLoading = false;
+    sessionStorage.setItem('companyId', this.tokenObject.companyId);
+    sessionStorage.setItem('companyName', this.tokenObject.companyName);
+    sessionStorage.setItem('officeId', this.tokenObject.homeOfficeId);
+    sessionStorage.setItem('officeCode', this.tokenObject.officeCode);
+    sessionStorage.setItem('officeName', this.tokenObject.officeName);
+    sessionStorage.setItem('entityTypeId', this.tokenObject.entityTypeId);
+    sessionStorage.setItem('officeTypeId', this.tokenObject.officeTypeId);
+    sessionStorage.setItem('officeControlId', this.tokenObject.officeControlId);
+    sessionStorage.setItem('txnDt', this.tokenObject.transactionDate);
+    sessionStorage.setItem('operationMode', this.tokenObject.operationMode);
+    sessionStorage.setItem('operationModeFunction', this.tokenObject.operationModeFunction);
+    sessionStorage.setItem('instituteType', this.tokenObject.instituteType);
+    sessionStorage.setItem('localCurrencyId', this.tokenObject.localCurrencyId);
+    sessionStorage.setItem('custProdIdLen', this.tokenObject.customerProductIdLength);
+    sessionStorage.setItem('custAccountNoLen', this.tokenObject.customerAccountNoLength);
+    sessionStorage.setItem('accountNoPtrnFlag', this.tokenObject.accountNoPatternFlag);
+    this.isLoading = false;
   }
 
   generatePayload(): any {

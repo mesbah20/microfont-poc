@@ -211,12 +211,11 @@
           </div>
         </div>
       </div>
-
       <!-- Transaction Menu -->
       <div class="group "
       [class.flex]="!sidebarExpanded"
       [class.justify-center]="!sidebarExpanded">
-        <div (click)="setActiveItem('transaction')"
+        <div  routerLink="/rpt/report-generation" (click)="setActiveItem('transaction')"
              class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-visible"
              [class.w-10]="!sidebarExpanded"
              [class.h-10]="!sidebarExpanded"
@@ -273,8 +272,8 @@
 
       <!-- Approval Menu -->
       <div class="group "
-      [class.flex]="!sidebarExpanded"
-      [class.justify-center]="!sidebarExpanded">
+           [class.flex]="!sidebarExpanded"
+           [class.justify-center]="!sidebarExpanded">
         <div (click)="setActiveItem('security')"
              routerLink="/poc/approval-items"
              class="rounded-lg cursor-pointer transition-all duration-200 relative flex items-center overflow-visible"
@@ -286,34 +285,34 @@
              [class.justify-center]="!sidebarExpanded"
              [class.justify-start]="sidebarExpanded">
 
-            @if(activeTheme === 'blue') {
-            <img src="/asset/icons/security.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+          @if(activeTheme === 'blue') {
+          <img src="/asset/icons/security.svg"
+             class="flex-shrink-0"
+             [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'rose') {
-            <img src="/asset/icons/roseSecurity.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+          <img src="/asset/icons/roseSecurity.svg"
+             class="flex-shrink-0"
+             [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'MidnightBlue') {
-            <img src="/asset/icons/midnightSecurity.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+          <img src="/asset/icons/midnightSecurity.svg"
+             class="flex-shrink-0"
+             [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'emerald') {
-            <img src="/asset/icons/greenSecurity.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+          <img src="/asset/icons/greenSecurity.svg"
+             class="flex-shrink-0"
+             [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'purple') {
-            <img src="/asset/icons/purpleSecurity.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+          <img src="/asset/icons/purpleSecurity.svg"
+             class="flex-shrink-0"
+             [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'Lavendar') {
-            <img src="/asset/icons/lavendarSecurity.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+          <img src="/asset/icons/lavendarSecurity.svg"
+             class="flex-shrink-0"
+             [class.filter]="activeItem === 'menu'"/>
           } @else if(activeTheme === 'dark') {
-            <img src="/asset/icons/blackSecurity.svg"
-               class="flex-shrink-0"
-               [class.filter]="activeItem === 'menu'"/>
+          <img src="/asset/icons/blackSecurity.svg"
+             class="flex-shrink-0"
+             [class.filter]="activeItem === 'menu'"/>
           }
 
           <span class="ml-4 text-sm font-medium text-gray-700 whitespace-nowrap transition-all duration-300"

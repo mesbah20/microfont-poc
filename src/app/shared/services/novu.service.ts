@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Novu } from '@novu/js';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface InAppNotification {
   _id: string;
@@ -30,9 +31,10 @@ export class NovuService {
   private notifications$ = new BehaviorSubject<InAppNotification[]>([]);
   private chatMessages$ = new BehaviorSubject<ChatMessage[]>([]);
   private unreadCount$ = new BehaviorSubject<number>(0);
-  private backendUrl = 'http://localhost:8080/api/demo';
+  private backendUrl = environment.novu_service;
   private RECONCILE_WINDOW_MS = 15000; // 15s
   private currentSubscriberHash?: string;
+  private subscriberId$ = new BehaviorSubject<string | null>(null);
   private mapNotification(result: any): InAppNotification | null {
     if (!result) return null;
     const identifier = result?.workflow?.identifier;
@@ -304,6 +306,41 @@ export class NovuService {
     }
   }
 
+  private isSameMessage(a: ChatMessage, b: ChatMessage): boolean {
+    if (a.clientId && b.clientId && a.clientId === b.clientId) {
+      return true;
+    }
+
+    if (a.chatId !== b.chatId) return false;
+    if (a.notificationBody !== b.notificationBody) return false;
+
+    const aTime = new Date(a.timestamp).getTime();
+    const bTime = new Date(b.timestamp).getTime();
+
+    return Math.abs(aTime - bTime) <= this.RECONCILE_WINDOW_MS;
+  }
+
+  private mergeChatCollections(existing: ChatMessage[], incoming: ChatMessage[]): ChatMessage[] {
+    if (!incoming.length) {
+      return [...existing];
+    }
+
+    const merged = [...incoming];
+
+    for (const msg of existing) {
+      const hasMatch = merged.some((candidate) => this.isSameMessage(candidate, msg));
+      if (!hasMatch) {
+        merged.push({ ...msg });
+      }
+    }
+
+    merged.sort(
+      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
+
+    return merged;
+  }
+
   // -------------------------
   // Parse __CHAT__ markers
   // Format:
@@ -338,6 +375,7 @@ export class NovuService {
       this.novu.subscriberId === subscriberId &&
       this.currentSubscriberHash === normalizedHash
     ) {
+      this.subscriberId$.next(subscriberId);
       await this.refresh();
       return;
     }
@@ -347,6 +385,7 @@ export class NovuService {
       this.novu.socket?.disconnect();
       this.novu = null;
       this.currentSubscriberHash = undefined;
+      this.subscriberId$.next(null);
       this.notifications$.next([]);
       this.chatMessages$.next([]);
       this.unreadCount$.next(0);
@@ -357,14 +396,12 @@ export class NovuService {
     }
 
     console.log('NOVU: init START for:', subscriberId);
-
+    localStorage.setItem('userId',subscriberId);
     const novuOptions: any = {
       applicationIdentifier: appId,
       subscriberId,
-      // backendUrl: 'https://api.novu.co',
-      // socketUrl: 'https://ws.novu.co',
-      backendUrl: 'http://192.168.10.56:3000/novu/api',
-      socketUrl: 'http://192.168.10.56:3002',
+      backendUrl: environment.novu_api,
+      socketUrl: environment.novu_socket,
     };
 
     if (normalizedHash) {
@@ -373,6 +410,7 @@ export class NovuService {
 
     this.novu = new Novu(novuOptions);
     this.currentSubscriberHash = normalizedHash;
+    this.subscriberId$.next(subscriberId);
 
     this.attachDiagnosticLogging(this.novu);
 
@@ -577,12 +615,13 @@ export class NovuService {
           new Date(b.timestamp).getTime()
       );
 
-      this.chatMessages$.next(chatMsgs);
+      const mergedChatMessages = this.mergeChatCollections(this.chatMessages$.value, chatMsgs);
+      this.chatMessages$.next(mergedChatMessages);
 
       console.log('NOVU DEBUG: refresh success', {
         notificationCount: notifications.length,
         unreadCount,
-        chatMessageCount: chatMsgs.length,
+        chatMessageCount: mergedChatMessages.length,
       });
     } catch (err) {
       console.error('NOVU: refresh error:', err);
@@ -602,8 +641,7 @@ export class NovuService {
 
   getUnreadCount(): Observable<number> {
     return this.unreadCount$.asObservable();
-}
-
+  }
 
   async markAsRead(id: string): Promise<void> {
     if (!this.novu) return;
@@ -662,5 +700,13 @@ export class NovuService {
     } catch (err) {
       console.error('NOVU: deleteNotification → failed', err);
     }
+  }
+
+  getActiveSubscriberId(): string | null {
+    return this.subscriberId$.value;
+  }
+
+  onSubscriberIdChanged(): Observable<string | null> {
+    return this.subscriberId$.asObservable();
   }
 }

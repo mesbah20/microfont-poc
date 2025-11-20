@@ -1,0 +1,281 @@
+<div class="page-wrapper">
+  <!-- Parameter Basic Info Section -->
+  <div class="panel mb-2">
+    <app-expansion-panel-header
+      [panelTitle]="'Parameter Basic Information'"
+      [isOpenSignal]="parameterFormPanel"
+    ></app-expansion-panel-header>
+    @if(parameterFormPanel()){
+    <div class="component-section  py-2">
+      <form [formGroup]="parameterForm" class="flex flex-col gap-2">
+        <app-text-base-input
+          [label]="'Parameter Name (Required)'"
+          [controlName]="'parameterName'"
+          [frmGroup]="parameterForm"
+          [tooltip]="
+            'Only letters, numbers, and underscores allowed. Used internally.'
+          "
+          [isVertical]="true"
+        >
+        </app-text-base-input>
+
+        <app-text-base-input
+          [label]="'Parameter Label (Required)'"
+          [controlName]="'parameterLabel'"
+          [frmGroup]="parameterForm"
+          [tooltip]="'Display name shown to users'"
+          [isVertical]="true"
+        >
+        </app-text-base-input>
+
+        <app-select-option-field
+          [label]="'Data Type (Required)'"
+          [controlName]="'dataType'"
+          [frmGroup]="parameterForm"
+          [options]="parameterDataTypeOptions"
+          [isVertical]="true"
+          [searchable]="true"
+        >
+        </app-select-option-field>
+        <app-select-option-field
+          [label]="'Input Type'"
+          [controlName]="'inputType'"
+          [frmGroup]="parameterForm"
+          [options]="getFilteredInputTypeOptions()"
+          [isVertical]="true"
+          [searchable]="true"
+        >
+        </app-select-option-field>
+
+        <!-- Dropdown Options Section -->
+        @if (showDropdownOptions()) {
+        <lds-txt-area
+          [labelText]="getSelectOptionsLabel()"
+          [controlName]="'selectOptions'"
+          [frmGroup]="parameterForm"
+          [placeholder]="getSelectOptionsPlaceholder()"
+          [tooltip]="'Enter valid JSON format'"
+          [isVertical]="true"
+          [rows]="3"
+        >
+        </lds-txt-area>
+        }
+
+        <!-- Data Source - Only shown for dropdown/select types -->
+        @if (showDropdownOptions()) {
+        <app-text-base-input
+          [label]="'Data Source (Optional)'"
+          [controlName]="'dataSource'"
+          [frmGroup]="parameterForm"
+          [placeholder]="'URL, SQL query, or JSON data'"
+          [tooltip]="
+            'API endpoint, database query, or static JSON for populating dropdown options'
+          "
+          [isVertical]="true"
+        >
+        </app-text-base-input>
+
+        @if (getDataSourceError()) {
+        <div class="text-danger small mt-1">
+          {{ getDataSourceError() }}
+        </div>
+        } }
+      </form>
+    </div>
+    }
+  </div>
+
+  <!-- Parameter Validation Section -->
+  <div class="panel mb-2">
+    <app-expansion-panel-header
+      [panelTitle]="'Validation & Constraints'"
+      [isOpenSignal]="validationPanel"
+    >
+    </app-expansion-panel-header>
+    @if(validationPanel()){
+    <div class="component-section py-2">
+      <form [formGroup]="parameterForm" class="flex flex-col gap-2">
+        <lds-switch
+          [labelText]="'Required Field'"
+          [controlName]="'required'"
+          [frmGroup]="parameterForm"
+          [matTooltip]="'User must provide a value'"
+          [isChecked]="parameterForm.get('isRequired')?.value ?? false"
+        >
+        </lds-switch>
+
+        <!-- Visible Toggle -->
+        <lds-switch
+          [labelText]="'Visible to User'"
+          [controlName]="'visible'"
+          [frmGroup]="parameterForm"
+          [isChecked]="parameterForm.get('isVisible')?.value ?? true"
+        >
+        </lds-switch>
+
+        <!-- Readonly Toggle -->
+        <lds-switch
+          [labelText]="'Read Only'"
+          [controlName]="'readonly'"
+          [frmGroup]="parameterForm"
+          [matTooltip]="'User cannot modify the value'"
+          [isChecked]="parameterForm.get('isReadonly')?.value ?? false"
+        >
+        </lds-switch>
+
+        <!-- Text Validation Section -->
+        @if (showTextValidation()) {
+        <lds-number
+          [label]="'Minimum Length'"
+          [controlName]="'minLength'"
+          [frmGroup]="parameterForm"
+          [placeholder]="'e.g., 3'"
+          [tooltip]="'Minimum number of characters'"
+          [isVertical]="true"
+        >
+        </lds-number>
+        <lds-number
+          [label]="'Maximum Length'"
+          [controlName]="'maxLength'"
+          [frmGroup]="parameterForm"
+          [placeholder]="'e.g., 50'"
+          [tooltip]="'Maximum number of characters'"
+          [isVertical]="true"
+        >
+        </lds-number>
+        }
+
+        <!-- Number Validation Section -->
+        @if (showNumberValidation()) {
+        <lds-number
+          [label]="'Minimum Value'"
+          [controlName]="'minValue'"
+          [frmGroup]="parameterForm"
+          [placeholder]="'e.g., 0'"
+          [tooltip]="'Minimum allowed value'"
+          [isVertical]="true"
+        >
+        </lds-number>
+        <lds-number
+          [label]="'Maximum Value'"
+          [controlName]="'maxValue'"
+          [frmGroup]="parameterForm"
+          [placeholder]="'e.g., 100'"
+          [tooltip]="'Maximum allowed value'"
+          [isVertical]="true"
+        >
+        </lds-number>
+        }
+
+        <!-- Date Format Section -->
+        @if (showDateFormat()) {
+        <app-text-base-input
+          [label]="'Date Format Pattern'"
+          [controlName]="'formatPattern'"
+          [frmGroup]="parameterForm"
+          [placeholder]="'e.g., yyyy-MM-dd, dd/MM/yyyy'"
+          [tooltip]="'Expected date format for validation'"
+          [isVertical]="true"
+        >
+        </app-text-base-input>
+        }
+      </form>
+    </div>
+    }
+  </div>
+
+  <!-- Default Value Section -->
+  <div class="panel">
+    <app-expansion-panel-header
+      [panelTitle]="'Default Value & Settings'"
+      [isOpenSignal]="defaultValuePanel"
+    >
+    </app-expansion-panel-header>
+    @if(defaultValuePanel()){
+    <div class="component-section py-2">
+      <form [formGroup]="parameterForm" class="flex flex-col gap-2">
+        <lds-number
+          [label]="'Display Order'"
+          [controlName]="'parameterOrder'"
+          [frmGroup]="parameterForm"
+          [placeholder]="'e.g., 1, 2, 3'"
+          [tooltip]="'Order in which parameters appear'"
+          [isVertical]="true"
+        >
+        </lds-number>
+        <app-select-option-field
+          [label]="'Default Value Type'"
+          [controlName]="'defaultValueType'"
+          [frmGroup]="parameterForm"
+          [options]="[
+            { key: 'predefined', value: 'Predefined Value' },
+            { key: 'custom', value: 'Custom Value' }
+          ]"
+          [isVertical]="true"
+        >
+        </app-select-option-field>
+
+        <!-- Predefined Default Value -->
+        @if (parameterForm.get('defaultValueType')?.value === 'predefined') {
+        <app-select-option-field
+          [label]="'Default Value'"
+          [controlName]="'defaultValue'"
+          [frmGroup]="parameterForm"
+          [options]="getFilteredPredefinedValues()"
+          [isVertical]="true"
+          [searchable]="true"
+          [placeholder]="'Select a predefined value'"
+        >
+        </app-select-option-field>
+        }
+
+        <!-- Custom Default Value -->
+        @if (parameterForm.get('defaultValueType')?.value === 'custom') {
+        <app-text-base-input
+          [label]="'Custom Default Value'"
+          [controlName]="'customDefaultValue'"
+          [frmGroup]="parameterForm"
+          [placeholder]="'Enter custom default value'"
+          [tooltip]="'Custom value to use as default'"
+          [isVertical]="true"
+        >
+        </app-text-base-input>
+        }
+
+        <!-- SELECT Default Value Options -->
+        @if (showDropdownOptions() && getSelectOptionsForDefault().length > 0) {
+        <app-select-option-field
+          [label]="'Default Selected Option'"
+          [controlName]="'defaultValue'"
+          [frmGroup]="parameterForm"
+          [options]="getSelectOptionsForDefault()"
+          [isVertical]="true"
+          [placeholder]="'Select default option'"
+        >
+        </app-select-option-field>
+        }
+
+        <app-text-base-input
+          [label]="'Depends on Parameter'"
+          [controlName]="'dependsOnParameter'"
+          [frmGroup]="parameterForm"
+          [placeholder]="'e.g., userId, branchCode'"
+          [tooltip]="'Parameter name this depends on'"
+          [isVertical]="true"
+        >
+        </app-text-base-input>
+        <lds-txt-area
+          [labelText]="'Help Text'"
+          [controlName]="'helpText'"
+          [frmGroup]="parameterForm"
+          [placeholder]="'Additional help or instructions for users'"
+          [tooltip]="'Shown as tooltip or help text'"
+          [isVertical]="true"
+          [rows]="2"
+        >
+        </lds-txt-area>
+      </form>
+    </div>
+    }
+  </div>
+</div>

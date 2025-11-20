@@ -36,7 +36,7 @@
 
       <!-- Dynamic Menu Routes -->
       <div *ngFor="let item of getItemsByMenu(section.label)" [routerLink]="item.AppRoute"
-       (click)="onMenuItemClick(item)" class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
+           (click)="onMenuItemClick(item)" class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
 
         <mat-icon class="text-blue-600">view_headline</mat-icon>
 
