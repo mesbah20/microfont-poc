@@ -1,12 +1,13 @@
 import { Routes } from '@angular/router';
 import { AllComponentsPage } from '../../shared/components/all-components-page/all-components-page';
-import { PersonFormComponent } from './components/person-form/person-form.component';
-import { ActivityTrackerTogglePage } from './activity-tracker-toggle/activity-tracker-toggle.page';
-import { FormPageComponent } from './components/form-page/form-page.component';
-import { NotificationCenterComponent } from './components/notification-center/notification-center.component';
-import { ServiceRequestProcess } from './components/service-request-process/service-request-process';
-import {ApprovalItems} from '../poc/approval-items/approval-items';
-import {ApprovalMovement} from '../poc/approval-movement/approval-movement';
+import { ServiceRequestProcess } from '../../features/service-request/service-request-process/service-request-process';
+import { ApprovalItems } from '../../features/poc/approval-items/approval-items';
+import { ApprovalMovement } from '../../features/poc/approval-movement/approval-movement';
+import { ActivityTrackerTogglePage } from '../../features/activity-tracker-toggle/activity-tracker-toggle.page';
+import { PersonFormComponent } from '../../features/components/person-form/person-form.component';
+import { NotificationCenterComponent } from '../../features/components/notification-center/notification-center.component';
+import { FormPageComponent } from '../../features/components/form-page/form-page.component';
+
 
 export const SwiftmxRouting: Routes = [
   { path: 'components', component: AllComponentsPage },

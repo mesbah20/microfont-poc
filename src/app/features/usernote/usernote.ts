@@ -7,8 +7,8 @@ import { ExpansionPanelHeader } from '../../shared/components/expansion-panel-he
 import { Switch } from '../../shared/components/input-types/switch/switch';
 import { TextArea } from '../../shared/components/input-types/text-area/text-area';
 import { LoaderService } from '../../shared/services/loader.service';
-import { UserNoteService } from '../../services/usernote.service';
-import { IUserNote } from '../../models/usernote.model';
+import { UserNoteService } from '../sevices/usernote.service';
+import { IUserNote } from '../models/usernote.model';
 import { ToastrService } from 'ngx-toastr';
 import { Button } from '../../shared/components/input-types/button/button';
 import { CommonModule } from '@angular/common';

@@ -19,12 +19,9 @@ import {
 import { RouterLink } from '@angular/router';
 import {  Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { NotificationPopoverComponent } from '../../../../../../modules/swiftmx/components/notification/notification-popover.component';
-import { NotificationDetailModalComponent } from '../../../../../../modules/swiftmx/components/notification/notification-detail-modal.component';
 import { Router, RouterModule } from '@angular/router';
 import { LdsModalComponent } from '../../../../../../shared/components/lds-modal/lds-modal';
-import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/components/service-request-dialog/service-request-dialog';
-import { EditProfileModal } from '../../../../../../modules/landing/feature/edit-profile-modal/edit-profile-modal';
+import { ServiceRequestDialog } from '../../../../../../features/service-request/service-request-dialog/service-request-dialog';
 import { Observable, Subscription } from 'rxjs';
 import { ChatPreview, ChatService } from '../../../../../../shared/services/chat.service';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -33,6 +30,9 @@ import { TextBaseInput } from '../../../../../../shared/components/input-types/t
 import { UserService } from '../../../../../../core/user/user.service';
 import { User } from '../../../../../../core/user/user.types';
 import {ToastHelperService} from '../../../../../../shared/services/toast-helper.service';
+import { EditProfileModal } from '../../../../../../features/landing/feature/edit-profile-modal/edit-profile-modal';
+import { NotificationDetailModalComponent } from '../../../../../../features/components/notification/notification-detail-modal.component';
+import { NotificationPopoverComponent } from '../../../../../../features/components/notification/notification-popover.component';
 
 @Component({
   selector: 'app-profile-drawer',

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { Layout } from './layout/layout';
-import { Landing } from './modules/landing/landing/landing';
+import { Landing } from './features/landing/landing/landing';
 
 export const routes: Routes = [
 
@@ -13,7 +13,7 @@ export const routes: Routes = [
       layout: 'empty'
     },
     children: [
-      { path: '', loadChildren: () => import('./modules/landing/landing.routing').then(m => m.landingRouting) },
+      { path: '', loadChildren: () => import('./features/landing/landing.routing').then(m => m.landingRouting) },
     ]
   },
   {
@@ -23,8 +23,8 @@ export const routes: Routes = [
     },
     children: [
       { path: 'mx', loadChildren: () => import('./modules/swiftmx/swiftmx.routing').then(m => m.SwiftmxRouting) },
-      { path: 'dashboard', loadChildren: () => import('./modules/landing/landing.routing').then(m => m.landingRouting) },
-      { path: 'WF', loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting) },
+      { path: 'dashboard', loadChildren: () => import('./features/landing/landing.routing').then(m => m.landingRouting) },
+      { path: 'WF', loadChildren: () => import('./features/poc/poc.routing').then(m => m.PocRouting) },
     ]
   },
   {path: '', redirectTo: 'usernote', pathMatch: 'full'},
@@ -36,7 +36,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting)
+        loadChildren: () => import('./features/poc/poc.routing').then(m => m.PocRouting)
       },
     ]
   },
@@ -57,7 +57,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./modules/Components/sentinel-routing').then(m => m.SentinelRouting)
+        loadChildren: () => import('./modules/Sentinel/sentinel-routing').then(m => m.SentinelRouting)
       },
     ]
   },
