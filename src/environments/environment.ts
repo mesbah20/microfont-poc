@@ -14,6 +14,7 @@ export const environment = {
   leaveAttendanceEndPoint: GATE_WAY_ENDPOINT + 'leave-attendance/' + VERSION_1,
 
   apiBaseUrl:'http://192.168.20.250:8090/centrino',
+  finbookUrl:'http://192.168.10.56:8090/finbook/v1',
   // apiBaseUrl: 'http://localhost:8095/swiftFusionAPI/api/v1/',
   // coreBaseUrl: 'http://192.168.20.250:8090/api/user-login/signIn',
   // coreBaseUrl: 'http://192.168.20.93:8091/api/auth/userLogin',
@@ -28,11 +29,11 @@ export const environment = {
   centrino:'http://192.168.20.250:8090/centrino/department/get-all',
   keycloakApi:'http://192.168.10.56:8090/resource-manager/api/v1/resource',
   bffUrl: 'http://192.168.10.56:8090/',
-  appId: '1',
+  appId: '901',
   keycloak: {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',
-    clientId: 'sentinelUI'
+    clientId: 'FinBookUI'
     //clientId: 'FinBookUI'
   },
 

@@ -8,7 +8,7 @@ export interface Step {
   subtitle: string;
   form: string;
   formContent: TemplateRef<any>;
-  icon?: TemplateRef<any>; 
+  icon?: TemplateRef<any>;
 }
 
 @Component({

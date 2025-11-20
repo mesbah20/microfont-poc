@@ -1,9 +1,9 @@
-import {Component, Inject, signal, computed, OnInit, Input} from '@angular/core';
+import {Component, signal, OnInit, Input} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import {MatTooltip} from '@angular/material/tooltip';
-import {ApprovalService} from '../../../shared/services/approval-service';
+import { ApprovalService } from '../../../shared/services/approval-service';
 
 // Raw JSON structure from your approval service
 interface RawApproval {
@@ -18,6 +18,7 @@ interface RawApproval {
 }
 
 interface ApproverDetail {
+  queueId: number;
   performedBy: string;
   role: string;
   status: 'APPROVED' | 'REJECTED' | 'PENDING' | 'CREATED';
@@ -46,59 +47,57 @@ interface ApprovalStep {
 export class ViewApprovalActivitiesComponent implements OnInit{
   /** Data coming from modalComponentData */
   @Input() modalComponentData: any;
-  @Input() setId!: number;
   /**  Provided automatically by <lds-modal> for closing / emitting results */
   modalParent?: { close: (result?: any) => void };
 
   selectedStepId = signal<number | null>(null);
-
-  rawData: RawApproval[] = [];
   steps: ApprovalStep[] = [];
+  isLoadingHistory = false;
+  historyError: string | null = null;
 
-  // overall computed timeline status
-  timelineStatus = computed(() => {
-    if (this.steps.some(s => this.getStepStatus(s.historyList) === 'REJECTED')) return 'REJECTED';
-    if (this.steps.some(s => this.getStepStatus(s.historyList) === 'PENDING')) return 'PENDING';
-    if (this.steps.every(s => this.getStepStatus(s.historyList) === 'APPROVED')) return 'APPROVED';
-    return 'CREATED';
-  });
-
-  constructor(private approvalService: ApprovalService) {}
-
-
-  // ... inside ViewApprovalActivitiesComponent.ts
+  constructor(
+    private approvalService: ApprovalService
+  ) {}
 
   ngOnInit(): void {
-    // FIX: Get the setId from the modalComponentData object
-    const setId = this.modalComponentData?.setId;
+    console.log('data in view : ', this.modalComponentData);
 
-    console.log('Init ViewApprovalActivitiesComponent, setId =', setId);
-
-    if (!setId) {
-      console.error("No setId received from modalComponentData");
-      console.log("Data received:", this.modalComponentData); // Added for easier debugging
-      return;
+    if (this.modalComponentData?.setId) {
+      this.loadApprovalHistory(this.modalComponentData.setId);
+    } else {
+      this.historyError = 'No Set ID provided to load approval activities.';
     }
-
-    // The rest of your function will now work correctly
-    this.approvalService.getApprovalActivitiesBySetId(setId).subscribe({
-      next: (res: RawApproval[]) => {
-        console.log("API Result:", res);
-
-        this.rawData = res;
-        this.steps = this.transformToSteps(res);
-
-        const active = this.steps.find(s =>
-          ['PENDING', 'CREATED'].includes(this.getStepStatus(s.historyList))
-        );
-
-        if (active) this.selectedStepId.set(active.stepOrder);
-      },
-      error: err => console.error("API error:", err)
-    });
   }
 
 
+  private loadApprovalHistory(setId: number): void {
+    console.log("?????SETID????????", setId);
+    this.isLoadingHistory = true;
+    this.historyError = null;
+    this.steps = [];
+    this.selectedStepId.set(null);
+
+    this.approvalService.getApprovalQueue(setId).subscribe({
+      next: (response: RawApproval[]) => {
+        const payload = Array.isArray(response) ? response : [];
+        console.log("PAYLOAD IN APPROVAL ACTIVITY", payload);
+        this.steps = this.transformToSteps(payload);
+        const activeStep = this.steps.find(s =>
+          ['PENDING', 'CREATED'].includes(this.getStepStatus(s.historyList))
+        );
+        if (activeStep) {
+          this.selectedStepId.set(activeStep.stepOrder);
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load approval activities', err);
+        this.historyError = 'Unable to load approval history.';
+      },
+      complete: () => {
+        this.isLoadingHistory = false;
+      }
+    });
+  }
 
   // --- Transform JSON → Step model ---
   private transformToSteps(json: RawApproval[]): ApprovalStep[] {
@@ -117,6 +116,7 @@ export class ViewApprovalActivitiesComponent implements OnInit{
           stepName: this.getStepName(level),
           minReqSupervisor: Math.max(...approvers.map((a: RawApproval) => a.approverNo ?? 1)),
           historyList: approvers.map((a: RawApproval) => ({
+            queueId: a.queueId,
             performedBy: a.userId,
             role: this.getRoleName(a.userId),
             status: this.mapFlag(a.approveFlag),

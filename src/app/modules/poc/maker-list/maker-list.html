@@ -3,7 +3,7 @@
     <div class="grid grid-cols-1 md:grid-cols-1 gap-0">
       <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'Maker List'" />
 
-      <div class="px-4">
+      <div class="container">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
           <app-select-option-field
             [frmGroup]="frmGroup"
@@ -31,34 +31,34 @@
         </div>
 
         @if (showmakerList) {
-          <div class="component-section mt-3">
-            <lds-data-grid
-              [id]="'maker-list'"
-              [initPageSize]="5"
-              [enableSelection]="false"
-              [showProgressButton]="true"
-              [showEditButton]="false"
-              [showDeleteButton]="false"
-              [showViewButton]="false"
-              [showPrintButton]="false"
-              [useInlineEdit]="false"
-              [dataSource]="makerList"
-              [selectedColumns]="[
-        'setId',
-        'functionName',
-        'actionType',
-        'remarks',
-        'recordUserId',
-        'createDate'
-      ]"
-              [customColumnNames]="{
+        <div class="component-section mt-3">
+          <lds-data-grid
+            [id]="'maker-list'"
+            [initPageSize]="5"
+            [enableSelection]="false"
+            [showProgressButton]="true"
+            [showEditButton]="false"
+            [showDeleteButton]="false"
+            [showViewButton]="true"
+            [showPrintButton]="false"
+            [useInlineEdit]="false"
+            [dataSource]="makerList"
+            [selectedColumns]="[
+      'setId',
+      'functionName',
+      'actionType',
+      'remarks',
+      'recordUserId',
+      'createDate'
+    ]"
+            [customColumnNames]="{
         setId: 'Set',
         functionName: 'Function',
         actionType: 'Last Action',
         remarks: 'Remarks',
         recordUserId: 'Record User',
         createDate: 'Created Date'
-      }"
+        }"
               (onFHProgressClick)="handleProgressClick($event)"
             >
             </lds-data-grid>

@@ -2,9 +2,9 @@
 <div class="lds-stepper" [class]="cssClass" [id]="id">
   <!-- Stepper Header -->
   <div class="stepper-header">
-    <div *ngFor="let step of steps; let i = index" 
-         class="step" 
-         [class.active]="i === currentStepIndex" 
+    <div *ngFor="let step of steps; let i = index"
+         class="step"
+         [class.active]="i === currentStepIndex"
          (click)="goToStep(i)">
       <div class="step-icon">
         <ng-container *ngIf="step.icon; else defaultIcon">

@@ -6,9 +6,9 @@ import { DataGridComponent } from '../../../shared/components/data-grid';
 import { ExpansionPanelHeader } from '../../../shared/components/expansion-panel-header/expansion-panel-header';
 import {ViewApprovalActivitiesComponent} from '../view-approval-activities/view-approval-activities.component';
 import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
+import { ApprovalService } from '../../../shared/services/approval-service';
 import { UserService } from '../../../core/user/user.service';
-import { User} from '../../../core/user/user.types';
-import {ApprovalService} from '../../../shared/services/approval-service';
+import { User } from '../../../core/user/user.types';
 
 @Component({
   selector: 'app-checker-list',
@@ -20,11 +20,9 @@ import {ApprovalService} from '../../../shared/services/approval-service';
 export class CheckerList implements OnInit {
   router = inject(Router);
   dialog = inject(MatDialog);
-  private approvalService = inject(ApprovalService);
-  // +++ 2. INJECT THE USER SERVICE +++
+  approvalService = inject(ApprovalService);
   private userService = inject(UserService);
-  private currentUser: User | null = null;
-
+  userId : string;
   // Modal controls
   isModalVisible: boolean = false;
   modalTitle: string = '';
@@ -36,184 +34,43 @@ export class CheckerList implements OnInit {
   selectedColumns = ['setId', 'functionName', 'actionType', 'remarks', 'recordUserId', 'currentUxContent'];
   dataSource: any[] = [];
 
-  // Dummy list
-  apiResponse: any[] = [
-    {
-      "setId": 240,
-      "functionName": "GL Subsidiary",
-      "actionType": "UPDATE",
-      "remarks": "Checked and pending",
-      "recordUserId": "anik",
-      "approveFlag": "PENDING",
-      "previousUxContent": "{\"glAccSubNm\":\"Principal Branch 1\"}",
-      "currentUxContent": "{\"glAccSubNm\":\"Principal Branch 1 edited\"}"
-    },
-    {
-      "setId": 241,
-      "functionName": "GL Subsidiary",
-      "actionType": "UPDATE",
-      "remarks": "Awaiting verification",
-      "recordUserId": "rahim",
-      "approveFlag": "PENDING",
-      "previousUxContent": "{\"glAccSubNm\":\"Principal Branch 2\"}",
-      "currentUxContent": "{\"glAccSubNm\":\"Principal Branch 2 edited\"}"
-    },
-    {
-      "setId": 242,
-      "functionName": "GL Subsidiary",
-      "actionType": "UPDATE",
-      "remarks": "Auto review pending",
-      "recordUserId": "karim",
-      "approveFlag": "PENDING",
-      "previousUxContent": "{\"glAccSubNm\":\"Principal Branch 3\"}",
-      "currentUxContent": "{\"glAccSubNm\":\"Principal Branch 3 edited\"}"
-    },
-    {
-      "setId": 243,
-      "functionName": "GL Subsidiary",
-      "actionType": "UPDATE",
-      "remarks": "Manual verification",
-      "recordUserId": "anik",
-      "approveFlag": "PENDING",
-      "previousUxContent": "{\"glAccSubNm\":\"Principal Branch 4\"}",
-      "currentUxContent": "{\"glAccSubNm\":\"Principal Branch 4 edited\"}"
-    },
-    {
-      "setId": 244,
-      "functionName": "GL Subsidiary",
-      "actionType": "UPDATE",
-      "remarks": "Checked and pending",
-      "recordUserId": "rahim",
-      "approveFlag": "PENDING",
-      "previousUxContent": "{\"glAccSubNm\":\"Principal Branch 5\"}",
-      "currentUxContent": "{\"glAccSubNm\":\"Principal Branch 5 edited\"}"
-    },
-    {
-      "setId": 245,
-      "functionName": "GL Subsidiary",
-      "actionType": "UPDATE",
-      "remarks": "Awaiting manager review",
-      "recordUserId": "karim",
-      "approveFlag": "PENDING",
-      "previousUxContent": "{\"glAccSubNm\":\"Principal Branch 6\"}",
-      "currentUxContent": "{\"glAccSubNm\":\"Principal Branch 6 edited\"}"
-    },
-    {
-      "setId": 246,
-      "functionName": "GL Subsidiary",
-      "actionType": "UPDATE",
-      "remarks": "Checked and pending",
-      "recordUserId": "anik",
-      "approveFlag": "PENDING",
-      "previousUxContent": "{\"glAccSubNm\":\"Principal Branch 7\"}",
-      "currentUxContent": "{\"glAccSubNm\":\"Principal Branch 7 edited\"}"
-    },
-    {
-      "setId": 247,
-      "functionName": "GL Subsidiary",
-      "actionType": "UPDATE",
-      "remarks": "Awaiting verification",
-      "recordUserId": "rahim",
-      "approveFlag": "PENDING",
-      "previousUxContent": "{\"glAccSubNm\":\"Principal Branch 8\"}",
-      "currentUxContent": "{\"glAccSubNm\":\"Principal Branch 8 edited\"}"
-    },
-    {
-      "setId": 248,
-      "functionName": "GL Subsidiary",
-      "actionType": "UPDATE",
-      "remarks": "Auto review pending",
-      "recordUserId": "karim",
-      "approveFlag": "PENDING",
-      "previousUxContent": "{\"glAccSubNm\":\"Principal Branch 9\"}",
-      "currentUxContent": "{\"glAccSubNm\":\"Principal Branch 9 edited\"}"
-    },
-    {
-      "setId": 249,
-      "functionName": "GL Subsidiary",
-      "actionType": "UPDATE",
-      "remarks": "Manual verification",
-      "recordUserId": "anik",
-      "approveFlag": "PENDING",
-      "previousUxContent": "{\"glAccSubNm\":\"Principal Branch 10\"}",
-      "currentUxContent": "{\"glAccSubNm\":\"Principal Branch 10 edited\"}"
-    }
-  ];
 
   ngOnInit(): void {
-    //this.loadPending();
-    this.loadPendingItems();
-  }
-
-  // ngOnInit(): void {
-  //   // We subscribe to the user$ observable
-  //   this.userService.user$.subscribe(user => {
-  //     if (user) {
-  //       // Once we have a user, store it and load their data
-  //       console.log("Logged in user:", user);
-  //       this.currentUser = user;
-  //       this.loadPending(); // <-- Now we load the data
-  //     } else {
-  //       // Handle case where user is logged out or null
-  //       console.log("Waiting for user login...");
-  //       this.currentUser = null;
-  //       this.dataSource = []; // Clear data
-  //     }
-  //   });
-  // }
-
-  loadPendingItems(): void {
-    this.approvalService.getCheckerManagerList().subscribe({
-      next: (response: any[]) => {
-
-        this.dataSource = response.map(item => ({
-          ...item,
-          currentContext: this.safeParse(item.currentUxContent),
-          previousContext: this.safeParse(item.previousUxContent)
-        }));
-
-        console.log("DataSource:", this.dataSource);
-      },
-      error: err => {
-        console.error("Failed to load approval list", err);
-        this.dataSource = [];
+    this.userService.user$.subscribe((user: User) => {
+      this.userId = user?.username;
+      if (this.userId) {
+        this.loadPending();
       }
     });
   }
-  // loadPending(): void {
-  //   // Add a "guard clause" to ensure we have a user
-  //   if (!this.currentUser) {
-  //     console.warn("loadPending called, but no user is logged in.");
-  //     this.dataSource = [];
-  //     return;
-  //   }
-  //
-  //   // Get the username (e.g., "bob")
-  //   const myUsername = this.currentUser.username;
-  //
-  //   //
-  //   // NOTE: This filters your local 'apiResponse' list.
-  //   // In a real app, you would send 'myUsername' to your backend API
-  //   // (e.g., this.myApiService.getPendingItems(myUsername).subscribe(...))
-  //   //
-  //   const myPendingItems = this.apiResponse.filter(
-  //     item => item.recordUserId === myUsername
-  //   );
-  //
-  //   // Now, map the filtered items
-  //   this.dataSource = myPendingItems.map((item: any) => ({
-  //     ...item,
-  //     currentContext: this.parseJson(item.currentUxContent),
-  //     previousContext: this.parseJson(item.previousUxContent),
-  //   }));
-  //
-  //   console.log(`Loaded ${this.dataSource.length} items for user ${myUsername}`);
-  // }
 
-  view(row: any): void {
-    this.router.navigateByUrl('mx/approval-movement', {state: {data: row}});
+  loadPending(): void {
+    if (!this.userId) {
+      return;
+    }
+    this.approvalService.getUnApprovedList(this.userId).subscribe({
+      next: (response: any) => {
+
+        this.dataSource = response.map((item: any) => ({
+          ...item,
+          currentContext: this.parseJson(item.currentUxContent),
+          previousContext: this.parseJson(item.previousUxContent),
+        }));
+      }
+
+    });
+
   }
 
+  view(row: any): void {
+    const parsedRow = typeof row === 'string' ? this.parseJson(row) : row;
+    if (!parsedRow || typeof parsedRow !== 'object') {
+      console.error('Invalid row data for approval movement', row);
+      return;
+    }
+    console.log(' parsed row ', parsedRow);
+    this.router.navigateByUrl('poc/approval-movement', {state: {data: parsedRow}});
+  }
   // showApprovalSteps(row: any): void {
   //   this.modalTitle = 'Approval Activities';
   //   this.modalComponent = ViewApprovalActivitiesComponent;
@@ -225,13 +82,19 @@ export class CheckerList implements OnInit {
   // }
 
   handleProgressClick(rowDataString: string): void {
-    const rowData = JSON.parse(rowDataString);
+    try {
 
-    this.openModal(
-      ViewApprovalActivitiesComponent,
-      { setId: rowData.setId },
-      'Approval Activities'
-    );
+      const rowData = JSON.parse(rowDataString);
+      console.log("RAWDATA", rowData);
+      // Pass the component and data to openModal
+      this.openModal(
+        ViewApprovalActivitiesComponent,
+        rowData,
+        'Approval Activities'
+      );
+    } catch (e) {
+      console.error('Failed to parse row data for modal:', e);
+    }
   }
 
   openModal(componentToLoad: Type<any>, data: any, title: string = 'Modal') {
@@ -254,6 +117,7 @@ export class CheckerList implements OnInit {
     //console.log('Modal Result:', result);
   }
 
+
   private parseJson(jsonStr: string): any {
     try {
       return JSON.parse(jsonStr || '{}');
@@ -261,14 +125,5 @@ export class CheckerList implements OnInit {
       return {};
     }
   }
-
-    private safeParse(str: string | null): any {
-      if (!str) return {};
-      try { return JSON.parse(str); }
-      catch (e) {
-        console.warn("JSON parse error:", str);
-        return {};
-      }
-    }
 
 }

@@ -15,7 +15,12 @@ import {AssignWorkflow} from '../Components/assign-workflow/assign-workflow';
 
 export const PocRouting: Routes = [
 
-
+  {path: 'employee-onboard', component: EmployeeOnboard},
+  {path: 'employee-list', component: EmployeeList},
+  {path: 'components', component: AllComponentsPage},
+  {path: 'approval-items', component: ApprovalItems},
+  {path: 'approval-movement', component: ApprovalMovement},
+  {path: 'approval-activities', component: ViewApprovalActivitiesComponent},
   { path: 'AllComponent', component: AllComponentsPage },
   { path: 'UserProfile', component: UserProfile },
   { path: 'AssignRoleToUser', component: AssignRolesToUser },
