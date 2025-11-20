@@ -40,7 +40,7 @@ export class UserNoteService {
         let httpParams = new HttpParams().set('userId', userId);
         // return this.cacheService.cacheRequest("UserAccountListBY" + accountType, () => {
         return this.http.get<IUserNote[]>(
-            `${environment.apiBaseUrl}/note/getUserNoteByUserId`,
+            `${environment.apiBaseUrl}/api/note/getUserNoteByUserId`,
             { headers: reqHeader, params: httpParams }
         );
         // });
@@ -54,7 +54,7 @@ export class UserNoteService {
         });
 
         return this.http.post<IUserNote>(
-            `${environment.apiBaseUrl}/note/createUserNote`,
+            `${environment.apiBaseUrl}/api/note/createUserNote`,
             userNoteParam,
             { headers: reqHeader }
         );
@@ -68,7 +68,7 @@ export class UserNoteService {
         let httpParams = new HttpParams().set('noteId', noteId);
 
         return this.http.post<IUserNote>(
-            `${environment.apiBaseUrl}/note/deleteUserNote`, {},
+            `${environment.apiBaseUrl}/api/note/deleteUserNote`, {},
             { headers: reqHeader, params: httpParams }
         );
     }

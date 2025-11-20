@@ -137,13 +137,13 @@ export class ReportParameterListUI implements OnInit {
   // Dynamic data for dropdowns
   databaseConnections: { key: string, value: string }[] = [];
   apiEndpoints: { key: string, value: string }[] = [];
-  
+
   // Report list loaded from backend
   reportList: any[] = [];
 
   // Mock function list (can be replaced with real API later)
   functionList:any[] = [
- 
+
   ];
 
   // Auto Generation Period options
@@ -248,7 +248,7 @@ export class ReportParameterListUI implements OnInit {
           functionName: app.functionName
         }));
       });
-  
+
   }
 
   /**
@@ -256,24 +256,24 @@ export class ReportParameterListUI implements OnInit {
    */
   getFilteredPredefinedValues(): Array<{ key: string, value: string }> {
     const dataType = this.parameterForm.get('dataType')?.value;
-    
+
     switch (dataType) {
       case 'DATE':
-        return this.predefinedDefaultValues.filter(item => 
-          item.key.toLowerCase().includes('date') || 
-          item.key === 'TODAY' || 
+        return this.predefinedDefaultValues.filter(item =>
+          item.key.toLowerCase().includes('date') ||
+          item.key === 'TODAY' ||
           item.key === '{{transactionDate}}' ||
           item.key === '{{systemDate}}'
         );
       case 'STRING':
-        return this.predefinedDefaultValues.filter(item => 
-          !item.key.toLowerCase().includes('date') && 
+        return this.predefinedDefaultValues.filter(item =>
+          !item.key.toLowerCase().includes('date') &&
           !item.key.toLowerCase().includes('amount') &&
           item.key !== 'TODAY'
         );
       case 'NUMBER':
-        return this.predefinedDefaultValues.filter(item => 
-          item.key.toLowerCase().includes('amount') || 
+        return this.predefinedDefaultValues.filter(item =>
+          item.key.toLowerCase().includes('amount') ||
           item.key === '{{userID}}' ||
           item.key === '{{accountNumber}}' ||
           item.key === 'UserInput'
@@ -288,7 +288,7 @@ export class ReportParameterListUI implements OnInit {
    */
   getSelectOptionsForDefault(): Array<{ key: string, value: string }> {
     const selectOptionsValue = this.parameterForm.get('selectOptions')?.value;
-    
+
     if (!selectOptionsValue) {
       return [];
     }
@@ -303,7 +303,7 @@ export class ReportParameterListUI implements OnInit {
       return [];
     }
   }
-  
+
   /**
    * Setup listener for dataSource field changes
    */
@@ -311,12 +311,12 @@ export class ReportParameterListUI implements OnInit {
     this.parameterForm.get('dataSource')?.valueChanges.subscribe(() => {
       this.updateSelectOptionsValidators();
     });
-    
+
     // Also listen to dataType and inputType changes
     this.parameterForm.get('dataType')?.valueChanges.subscribe(() => {
       this.updateSelectOptionsValidators();
     });
-    
+
     this.parameterForm.get('inputType')?.valueChanges.subscribe(() => {
       this.updateSelectOptionsValidators();
     });
@@ -467,9 +467,9 @@ export class ReportParameterListUI implements OnInit {
   private updateParameterValidators(dataType: string) {
     const selectOptionsControl = this.parameterForm.get('selectOptions');
     const inputTypeControl = this.parameterForm.get('inputType');
-    
+
     selectOptionsControl?.clearValidators();
-    
+
     // Set default input type based on data type
     if (dataType === 'NUMBER') {
       inputTypeControl?.setValue('NUMBER');
@@ -483,7 +483,7 @@ export class ReportParameterListUI implements OnInit {
       selectOptionsControl?.setValidators([Validators.required]);
       inputTypeControl?.setValue('SELECT');
     }
-    
+
     selectOptionsControl?.updateValueAndValidity();
   }
 
@@ -495,20 +495,20 @@ export class ReportParameterListUI implements OnInit {
     const dataSourceControl = this.parameterForm.get('dataSource');
     const dataTypeControl = this.parameterForm.get('dataType');
     const inputTypeControl = this.parameterForm.get('inputType');
-    
+
     selectOptionsControl?.clearValidators();
-    
+
     const dataType = dataTypeControl?.value;
     const inputType = inputTypeControl?.value;
     const dataSourceValue = dataSourceControl?.value?.trim();
-    
+
     // Only require selectOptions for SELECT/DROPDOWN types without dataSource
     const isSelectType = dataType === 'SELECT' || inputType === 'SELECT' || dataType === 'DROPDOWN';
-    
+
     if (isSelectType && !dataSourceValue) {
       selectOptionsControl?.setValidators([Validators.required]);
     }
-    
+
     selectOptionsControl?.updateValueAndValidity();
   }
 
@@ -530,35 +530,35 @@ export class ReportParameterListUI implements OnInit {
    */
   getFilteredInputTypeOptions(): { key: string, value: string }[] {
     const dataType = this.parameterForm.get('dataType')?.value;
-    
+
     if (dataType === 'NUMBER') {
       // For NUMBER data type, only show Number Box and Amount Box
-      return this.inputTypeOptions.filter(option => 
+      return this.inputTypeOptions.filter(option =>
         ['NUMBER', 'AMOUNT'].includes(option.key)
       );
     } else if (dataType === 'STRING') {
       // For STRING data type, show Text, TextArea, and Dropdown
-      return this.inputTypeOptions.filter(option => 
+      return this.inputTypeOptions.filter(option =>
         ['TEXT', 'TEXTAREA', 'SELECT'].includes(option.key)
       );
     } else if (dataType === 'DATE') {
       // For DATE data type, only show Date Picker
-      return this.inputTypeOptions.filter(option => 
+      return this.inputTypeOptions.filter(option =>
         option.key === 'DATE'
       );
     } else if (dataType === 'BOOLEAN') {
       // For BOOLEAN data type, show Select dropdown
-      return this.inputTypeOptions.filter(option => 
+      return this.inputTypeOptions.filter(option =>
         option.key === 'SWITCH'
       );
-    } 
+    }
     // else if (dataType === 'SELECT') {
     //   // For SELECT data type, only show Dropdown
-    //   return this.inputTypeOptions.filter(option => 
+    //   return this.inputTypeOptions.filter(option =>
     //     option.key === 'SELECT'
     //   );
     // }
-    
+
     // Default: return all options
     return this.inputTypeOptions;
   }
@@ -595,14 +595,14 @@ export class ReportParameterListUI implements OnInit {
     if (!control.value) {
       return null; // Allow empty values
     }
-    
+
     const value = control.value.trim();
-    
+
     // Allow template variables
     if (value.includes('{{') && value.includes('}}')) {
       return null;
     }
-    
+
     try {
       // Check if it's a valid URL
       new URL(value);
@@ -610,17 +610,17 @@ export class ReportParameterListUI implements OnInit {
     } catch (error) {
       // If not a URL, check if it might be a SQL query or function
       const lowerValue = value.toLowerCase();
-      
+
       // Allow SQL queries
       if (lowerValue.startsWith('select ') || lowerValue.includes('from ')) {
         return null;
       }
-      
+
       // Allow function calls
       if (lowerValue.includes('()') || lowerValue.match(/^[a-zA-Z_][a-zA-Z0-9_]*\s*\(/)) {
         return null;
       }
-      
+
       // Allow static JSON
       try {
         JSON.parse(value);
@@ -640,7 +640,7 @@ export class ReportParameterListUI implements OnInit {
     }
     return 'Enter options as JSON: {"key1":"Label 1","key2":"Label 2"}';
   }
-  
+
   /**
    * Get select options label based on whether dataSource is provided
    */
@@ -650,7 +650,7 @@ export class ReportParameterListUI implements OnInit {
     }
     return 'Select Options (Required)';
   }
-  
+
   /**
    * Check if dataSource is provided
    */
@@ -664,13 +664,13 @@ export class ReportParameterListUI implements OnInit {
    */
   getDataSourceError(): string | null {
     const dataSourceControl = this.parameterForm.get('dataSource');
-    
+
     if (dataSourceControl?.errors && dataSourceControl?.touched) {
       if (dataSourceControl.errors['invalidDataSource']) {
         return 'Please enter a valid URL, SQL query, function call, or JSON object';
       }
     }
-    
+
     return null;
   }
 
@@ -742,14 +742,14 @@ export class ReportParameterListUI implements OnInit {
    */
   openReportModal() {
     console.log('Opening report selection modal');
-    
+
     // Reset modal state
     this.showModal.set(false);
     this.modalComponent = undefined;
 
     setTimeout(() => {
       this.modalComponent = ReportSelectionModalComponent;
-      
+
       // Prepare modal data with configuration
       this.modalComponentData = {
         config: {
@@ -759,7 +759,8 @@ export class ReportParameterListUI implements OnInit {
           loadingText: 'Searching reports...',
           noDataMessage: 'No reports found. Try different search criteria or contact administrator.',
           allowMultiSelect: false,
-          showCreateNew: false
+          showCreateNew: false,
+          manage:true
         }
       };
 
@@ -773,14 +774,14 @@ export class ReportParameterListUI implements OnInit {
    */
   openFunctionModal() {
     console.log('Opening function selection modal');
-    
+
     // Reset modal state
     this.showModal.set(false);
     this.modalComponent = undefined;
 
     setTimeout(() => {
       this.modalComponent = FunctionSelectionModalComponent;
-      
+
       // Prepare modal data with configuration
       this.modalComponentData = {
         dataSource: this.functionList,
@@ -809,10 +810,10 @@ export class ReportParameterListUI implements OnInit {
     this.reportService.getById(reportId).subscribe({
       next: (report) => {
         this.currentReportId.set(report.id!);
-        
+
         // Find and set function name
         const selectedFunction = this.functionList.find(f => f.functionId === report.functionId);
-        
+
         // Populate form with fetched report data
         this.reportForm.patchValue({
           id: report.id,
@@ -882,14 +883,14 @@ export class ReportParameterListUI implements OnInit {
    */
   openParameterForm() {
     console.log('Opening parameter add modal');
-    
+
     // Reset modal state
     this.showModal.set(false);
     this.modalComponent = undefined;
 
     setTimeout(() => {
       this.modalComponent = ParameterModalComponent;
-      
+
       // Prepare modal data for adding new parameter
       this.modalComponentData = {
         initialData: {
@@ -916,7 +917,7 @@ export class ReportParameterListUI implements OnInit {
     console.log('=== EDIT DEBUG START ===');
     console.log('Raw event data received:', eventData);
     console.log('Event data type:', typeof eventData);
-    
+
     // Parse JSON string if needed
     let parameter = eventData;
     if (typeof eventData === 'string') {
@@ -939,24 +940,24 @@ export class ReportParameterListUI implements OnInit {
       console.log('Using eventData.item:', parameter);
     }
 
-    
+
     if (!parameter || !parameter.sNo) {
       console.error('No valid parameter data found in event');
       this.toastr.error('Invalid parameter data for editing', 'Error');
       return;
     }
-    
+
     const index = this.parameters().findIndex(p => p.sNo === parameter.sNo);
-    
+
     if (index === -1) {
       console.error('Parameter not found in array');
       this.toastr.error('Parameter not found for editing.', 'Error');
       return;
     }
-    
+
     this.isEditingParameter.set(true);
     this.editingParameterIndex.set(index);
-    
+
     // Populate form with parameter data
     // const formData = {
     //   parameterName: parameter.parameterName,
@@ -987,7 +988,7 @@ export class ReportParameterListUI implements OnInit {
    * Handle parameter delete from grid
    */
   onParameterDelete(eventData: any) {
-   
+
     // Parse JSON string if needed
     let parameter = eventData;
     if (typeof eventData === 'string') {
@@ -1009,29 +1010,29 @@ export class ReportParameterListUI implements OnInit {
       parameter = eventData.item;
       console.log('Using eventData.item:', parameter);
     }
-    
+
     console.log('Final parameter object for delete:', parameter);
-    
+
     if (!parameter || !parameter.sNo) {
       console.error('No valid parameter data found in delete event');
       this.toastr.error('Invalid parameter data for deletion', 'Error');
       return;
     }
-    
+
     if (confirm('Are you sure you want to delete this parameter?')) {
       const currentParams = [...this.parameters()];
       console.log('Current parameters before delete:', currentParams);
       console.log('Parameter to delete - sNo:', parameter.sNo);
-      
+
       // Find and remove the parameter by sNo
       const filteredParams = currentParams.filter(p => {
         console.log(`Comparing ${p.sNo} !== ${parameter.sNo} (types: ${typeof p.sNo} vs ${typeof parameter.sNo})`);
         return p.sNo !== parameter.sNo;
       });
-      
+
       console.log('Filtered parameters after delete:', filteredParams);
       console.log('Original length:', currentParams.length, 'New length:', filteredParams.length);
-      
+
       // Renumber S.No. to maintain sequence
       const renumberedParams = filteredParams.map((p, index) => {
         const newParam = { ...p };
@@ -1039,19 +1040,19 @@ export class ReportParameterListUI implements OnInit {
         newParam.parameterOrder = index + 1;
         return newParam;
       });
-      
+
       console.log('Renumbered parameters:', renumberedParams);
-      
+
       // Force signal update with empty array first, then new data
       this.parameters.set([]);
-      
+
       // Use setTimeout to ensure proper signal update
       setTimeout(() => {
         this.parameters.set(renumberedParams);
         console.log('Parameters signal updated. New value:', this.parameters());
         this.toastr.success('Parameter deleted successfully.', 'Success');
       }, 100);
-      
+
       console.log('=== DELETE DEBUG END ===');
     }
   }
@@ -1074,7 +1075,7 @@ export class ReportParameterListUI implements OnInit {
    */
   onOutputFormatChange(event: any, formatKey: string) {
     const currentFormats = this.reportForm.get('outputFormats')?.value || [];
-    
+
     if (event.target.checked) {
       // Add format if not already present
       if (!currentFormats.includes(formatKey)) {
@@ -1127,7 +1128,7 @@ export class ReportParameterListUI implements OnInit {
     this.loading.set(true);
 
     const formValue = this.reportForm.value;
-    
+
     // Prepare ReportDTO
     const reportDTO: ReportDTO = {
       reportName: formValue.reportName,
@@ -1175,7 +1176,7 @@ export class ReportParameterListUI implements OnInit {
       next: (response) => {
         this.toastr.success('Report registered successfully!', 'Success');
         this.currentReportId.set(response.id!);
-        
+
         // Update button visibility for edit mode
         BUTTON_VISIBILITY.set({
           save: false,
@@ -1185,7 +1186,7 @@ export class ReportParameterListUI implements OnInit {
           exit: false,
           reset: true,
         });
-        
+
         // Refresh report list
         // this.loadReports();
         this.loading.set(false);
@@ -1199,8 +1200,8 @@ export class ReportParameterListUI implements OnInit {
         this.onClickSave.set(false);
         this.onClickUpdate.set(false);
       },
-    
-      
+
+
     });
   }
 
@@ -1238,7 +1239,7 @@ export class ReportParameterListUI implements OnInit {
     this.loading.set(true);
 
     const formValue = this.reportForm.value;
-    
+
     // Prepare ReportDTO
     const reportDTO: ReportDTO = {
       reportName: formValue.reportName,
@@ -1280,7 +1281,7 @@ export class ReportParameterListUI implements OnInit {
     this.reportService.update(reportId, reportDTO, this.selectedReportFile || undefined).subscribe({
       next: (response) => {
         this.toastr.success('Report updated successfully!', 'Success');
-        
+
         // Refresh report list
         // this.loadReports();
         this.loading.set(false);
@@ -1314,7 +1315,7 @@ export class ReportParameterListUI implements OnInit {
     this.reportService.delete(reportId).subscribe({
       next: () => {
         this.toastr.success('Report deleted successfully!', 'Success');
-        
+
         // Refresh and reset form
         this.onRefresh();
         // this.loadReports();
@@ -1341,7 +1342,7 @@ export class ReportParameterListUI implements OnInit {
     this.parameters.set([]);
     this.currentReportId.set(null);
     this.selectedReportFile = null;
-    
+
     // Reset button visibility
     BUTTON_VISIBILITY.set({
       save: true,
@@ -1351,7 +1352,7 @@ export class ReportParameterListUI implements OnInit {
       exit: false,
       reset: true,
     });
-    
+
     this.toastr.info('Form has been reset.', 'Refresh');
   }
 
@@ -1360,14 +1361,14 @@ export class ReportParameterListUI implements OnInit {
    */
   openParameterEditModal(parameter: any, index: number) {
     console.log('Opening parameter edit modal');
-    
+
     // Reset modal state
     this.showModal.set(false);
     this.modalComponent = undefined;
 
     setTimeout(() => {
       this.modalComponent = ParameterModalComponent;
-      
+
       // Prepare modal data for editing parameter
       this.modalComponentData = {
         initialData: {
@@ -1423,7 +1424,6 @@ export class ReportParameterListUI implements OnInit {
    * Handle parameter add/edit result from modal
    */
   private handleParameterResult(parameterResult: any) {
-    console.log("Fuck!! ", parameterResult);
     const parameter = {
       sNo: this.isEditingParameter() ? this.parameters()[this.editingParameterIndex()].sNo : this.parameters().length + 1,
       parameterName: parameterResult.parameterName,

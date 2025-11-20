@@ -9,13 +9,13 @@
               [isOpenSignal]="businessHeaderPanel"
               [panelTitle]="'Transaction Management'"
             />
-            
+
           </section>
 
           <div class="form-grid-col-1  grid-section">
             <!-- Primary Fields Section -->
             <section class="primary-fields-section bg-gray-50 rounded-lg  mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
-         
+
               <!-- Transaction Reference Subsection -->
               <div class=" component-section">
                 <app-text-base-input
@@ -62,7 +62,7 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'currency'"
                     [label]="'Currency'"
-                    displayMode = "outline"  
+                    displayMode = "outline"
                     [options]="currencyOptions"
                     [tooltip]="'Currency selection affects country and tax rate'"
                     [searchable]="false"
@@ -84,9 +84,9 @@
                   ></lds-modal>
                 </div>
                } -->
-            
 
-           
+
+
 
               <!-- Amount in Words Subsection -->
               <div class=" component-section">
@@ -117,7 +117,7 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'currency'"
                     [label]="'Currency'"
-            
+
                     [isVertical]="true"
                     [options]="currencyOptions"
                     [tooltip]="'Currency selection affects country and tax rate'"
@@ -206,7 +206,7 @@
             </div>
             </section>
 
-            
+
 
             <!-- Standard Fields Section -->
             <section style="margin-top: 10px;" class="bg-gray-50 rounded-lg ">
@@ -321,7 +321,7 @@
                 (selectedFilesChanged)="onPdfSelected($event)"
                 (onFileChanged)="onFileInputChanged('Transaction Document')"
               />
-             
+
             </div>
 
             <div class="component-section">
@@ -337,8 +337,8 @@
               [maxCols]="80"
               [placeholder]="'Enter transaction description and notes...'"
               [showRowCount]="true"
-              
-              
+
+
               (onChanged)="onTextAreaChanged($event)"
             ></lds-txt-area>
             </div>
@@ -346,9 +346,9 @@
 
             </section>
 
-      
 
-      
+
+
 
             <!-- Action Buttons Section -->
             <!-- <section class="action-buttons-section rounded-lg p-4 mb-6 mt-6">
@@ -393,7 +393,7 @@
               [isOpenSignal]="businessHeaderPanel"
               [panelTitle]="'Transaction Grid'"
             />
-              
+
               <div class="p-4">
                 <!-- summaryGridPosition : above/below -->
                 <lds-data-grid
@@ -427,7 +427,7 @@
                   (onChecked)="onTransactionRowSelect($event)"
                   (onSelectAllChange)="onTransactionSelectAll($event)"
                   (dataSourceChanged)="onTransactionDataChanged($event)"
-                  
+
                   ></lds-data-grid>
               </div>
             </section>

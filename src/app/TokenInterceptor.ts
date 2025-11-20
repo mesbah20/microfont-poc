@@ -15,8 +15,8 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
     req.url.startsWith(environment.bffUrl);
 
   if (shouldAttachToken && token) {
-    console.log('🔐 Attaching token to:', req.url);
-    console.log('🔐 token:', token);
+    // console.log('🔐 Attaching token to:', req.url);
+    // console.log('🔐 token:', token);
 
     const authReq = req.clone({
       setHeaders: {

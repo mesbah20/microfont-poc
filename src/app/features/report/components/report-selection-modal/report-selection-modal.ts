@@ -28,6 +28,7 @@ export interface ReportSelectionConfig {
   noDataMessage?: string;
   allowMultiSelect?: boolean;
   showCreateNew?: boolean;
+  manage?:boolean;
 }
 
 @Component({
@@ -69,7 +70,7 @@ export class ReportSelectionModalComponent implements OnInit {
   gridColumns = [
     'id',
     'reportName',
-    'functionId', 
+    'functionId',
     'parameters',
   ];
 
@@ -85,10 +86,10 @@ export class ReportSelectionModalComponent implements OnInit {
 
   ngOnInit() {
     console.log("Modal initialized");
-    
+
     // Load reports from API when component initializes
     this.loadReports();
-    
+
     // Process initial data if provided
     if (this.initialData?.searchTerm) {
       this.searchForm.patchValue({ searchTerm: this.initialData.searchTerm });
@@ -103,51 +104,78 @@ export class ReportSelectionModalComponent implements OnInit {
   /**
    * Load reports from the API
    */
-  loadReports() {
-    this.isLoading.set(true);
-    
-    let resourceList = JSON.parse(localStorage.getItem('resourceList') || '[]');
-    if(!resourceList || resourceList.length === 0) {
-      console.warn('No resourceList found in localStorage');
-      this.isLoading.set(false);
-      return;
-    }
-    
-    // Filter resources where functionType is 'R' and extract functionIds
-    const reportFunctionIds: string[] = resourceList
-      .filter((item: any) => item?.attributes?.functionType === 'R')
-      .map((m: any) => m.attributes.functionId)
-      .filter((id: string) => id); // Remove any undefined/null values
-    
-    console.log('Report Function IDs to send:', reportFunctionIds);
-    
-    if (reportFunctionIds.length === 0) {
-      console.warn('No report functions found with type "R"');
-      this.toastr.warning('No report functions available for this user', 'Access Info');
-      this.isLoading.set(false);
-      return;
-    }
+  private loadReportsAll() {
 
-    this.reportService.getByUserFunctions(reportFunctionIds).subscribe({
-      next: (reports: any[]) => {
-        console.log('Loaded reports from API:', reports);
-        // Transform the data to match the grid format
-        const transformedReports = reports.map((report: any) => ({
-          id: report.id,
-          reportName: report.reportName,
-          functionId: report.functionId,
-          parameters: report?.parameters?.length??0
-        }));
-        this.dataSource.set(transformedReports);
-        this.filteredReports.set(transformedReports);
+  }
+  loadReports() {
+
+    this.isLoading.set(true);
+    if(this.config.manage){
+      this.reportService.getAll().subscribe({
+        next: (reports) => {
+          console.log('Loaded reports from API:', reports);
+          // Transform the data to match the grid format
+          const transformedReports = reports.map((report: any) => ({
+            id: report.id,
+            reportName: report.reportName,
+            functionId: report.functionId,
+            parameters: report?.parameters?.length ?? 0
+          }));
+          this.dataSource.set(transformedReports);
+          this.filteredReports.set(transformedReports);
+          this.isLoading.set(false);
+        },
+        error: (error: any) => {
+          console.error('Error loading reports:', error);
+          this.toastr.error('Failed to load reports', 'Error');
+          this.isLoading.set(false);
+        }
+      });
+    }else {
+
+      let resourceList = JSON.parse(localStorage.getItem('resourceList') || '[]');
+      if (!resourceList || resourceList.length === 0) {
+        console.warn('No resourceList found in localStorage');
         this.isLoading.set(false);
-      },
-      error: (error: any) => {
-        console.error('Error loading reports:', error);
-        this.toastr.error('Failed to load reports', 'Error');
-        this.isLoading.set(false);
+        return;
       }
-    });
+
+      // Filter resources where functionType is 'R' and extract functionIds
+      const reportFunctionIds: string[] = resourceList
+        .filter((item: any) => item?.attributes?.functionType === 'R')
+        .map((m: any) => m.attributes.functionId)
+        .filter((id: string) => id); // Remove any undefined/null values
+
+      console.log('Report Function IDs to send:', reportFunctionIds);
+
+      if (reportFunctionIds.length === 0) {
+        console.warn('No report functions found with type "R"');
+        this.toastr.warning('No report functions available for this user', 'Access Info');
+        this.isLoading.set(false);
+        return;
+      }
+
+      this.reportService.getByUserFunctions(reportFunctionIds).subscribe({
+        next: (reports: any[]) => {
+          console.log('Loaded reports from API:', reports);
+          // Transform the data to match the grid format
+          const transformedReports = reports.map((report: any) => ({
+            id: report.id,
+            reportName: report.reportName,
+            functionId: report.functionId,
+            parameters: report?.parameters?.length ?? 0
+          }));
+          this.dataSource.set(transformedReports);
+          this.filteredReports.set(transformedReports);
+          this.isLoading.set(false);
+        },
+        error: (error: any) => {
+          console.error('Error loading reports:', error);
+          this.toastr.error('Failed to load reports', 'Error');
+          this.isLoading.set(false);
+        }
+      });
+    }
   }
 
   onSearchTermChanged(value: string) {
@@ -168,12 +196,12 @@ export class ReportSelectionModalComponent implements OnInit {
    */
   performApiSearch(searchTerm: string) {
     this.isLoading.set(true);
-    
+
     // You can implement the search API call here
     // For now, just filter existing data and emit the search term
     this.onFind.emit(searchTerm);
     this.performSearch();
-    
+
     setTimeout(() => {
       this.isLoading.set(false);
     }, 500);
@@ -181,7 +209,7 @@ export class ReportSelectionModalComponent implements OnInit {
 
   performSearch() {
     const searchTerm = this.searchForm.get('searchTerm')?.value?.toLowerCase() || '';
-    
+
     if (!searchTerm.trim()) {
       this.filteredReports.set(this.dataSource() || []);
       return;
@@ -189,9 +217,9 @@ export class ReportSelectionModalComponent implements OnInit {
 
     const filtered = (this.dataSource() || []).filter((report: any) =>
       report.reportName.toLowerCase().includes(searchTerm) ||
-      report.functionId.toLowerCase().includes(searchTerm) 
+      report.functionId.toLowerCase().includes(searchTerm)
     );
-    
+
     this.filteredReports.set(filtered);
   }
 

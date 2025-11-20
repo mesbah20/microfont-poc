@@ -86,52 +86,52 @@ export class WorkflowDesignerService {
     );
   }*/
   getFunctionLevelsById(workflowId: number): Observable<ApprovalFunctionLevelModel> {
-    const url = `${environment.centrinoBaseUrl}/approval/function-levels/get/${workflowId}`;
+    const url = `${environment.centrinoBaseUrl}/api/approval/function-levels/get/${workflowId}`;
     return this.http.get<ApprovalFunctionLevelModel>(url);
   }
   getAllFunctionLevels(): Observable<ApprovalFunctionLevelModel[]> {
-    const url = `${environment.centrinoBaseUrl}/approval/function-levels/get-all`;
+    const url = `${environment.centrinoBaseUrl}/api/approval/function-levels/get-all`;
     return this.http.get<any>(url);
   }
 
 
   createFunctionLevel(payload: ApprovalFunctionLevelModel): Observable<ApprovalFunctionLevelModel> {
-    const url = `${environment.centrinoBaseUrl}/approval/function-levels/create`;
+    const url = `${environment.centrinoBaseUrl}/api/approval/function-levels/create`;
     return this.http.post<ApprovalFunctionLevelModel>(url, payload);
   }
 
   updateFunctionLevel(workflowId: number, payload: ApprovalFunctionLevelModel): Observable<ApprovalFunctionLevelModel> {
-    const url = `${environment.centrinoBaseUrl}/approval/function-levels/update/${workflowId}`;
+    const url = `${environment.centrinoBaseUrl}/api/approval/function-levels/update/${workflowId}`;
     return this.http.put<ApprovalFunctionLevelModel>(url, payload);
   }
 
   deleteFunctionLevel(workflowId: number): Observable<void> {
-    const url = `${environment.centrinoBaseUrl}/approval/function-levels/delete/${workflowId}`;
+    const url = `${environment.centrinoBaseUrl}/api/approval/function-levels/delete/${workflowId}`;
     return this.http.delete<void>(url);
   }
 
   getLevelDetails(workflowId: number): Observable<ApprovalFunctionLevelDetailModel[]> {
-    const url = `${environment.centrinoBaseUrl}/approval/function-level-details/get-by-level/${workflowId}`;
+    const url = `${environment.centrinoBaseUrl}/api/approval/function-level-details/get-by-level/${workflowId}`;
     return this.http.get<ApprovalFunctionLevelDetailModel[]>(url);
   }
 
   createLevelDetail(payload: ApprovalFunctionLevelDetailModel): Observable<ApprovalFunctionLevelDetailModel> {
-    const url = `${environment.centrinoBaseUrl}/approval/function-level-details/create`;
+    const url = `${environment.centrinoBaseUrl}/api/approval/function-level-details/create`;
     return this.http.post<ApprovalFunctionLevelDetailModel>(url, payload);
   }
 
   updateLevelDetail(workflowDetailId: number, payload: ApprovalFunctionLevelDetailModel): Observable<ApprovalFunctionLevelDetailModel> {
-    const url = `${environment.centrinoBaseUrl}/approval/function-level-details/update/${workflowDetailId}`;
+    const url = `${environment.centrinoBaseUrl}/api/approval/function-level-details/update/${workflowDetailId}`;
     return this.http.put<ApprovalFunctionLevelDetailModel>(url, payload);
   }
 
   deleteLevelDetail(workflowDetailId: number): Observable<void> {
-    const url = `${environment.centrinoBaseUrl}/approval/function-level-details/delete/${workflowDetailId}`;
+    const url = `${environment.centrinoBaseUrl}/api/approval/function-level-details/delete/${workflowDetailId}`;
     return this.http.delete<void>(url);
   }
 
   getRoleMappings(workflowDetailId: number): Observable<ApproveRoleMapModel[]> {
-    const url = `${environment.centrinoBaseUrl}/approval/role-maps/get-by-detail/${workflowDetailId}`;
+    const url = `${environment.centrinoBaseUrl}/api/approval/role-maps/get-by-detail/${workflowDetailId}`;
     return this.http.get<ApproveRoleMapModel[]>(url);
   }
 
@@ -140,13 +140,13 @@ export class WorkflowDesignerService {
     return this.http.post<ApproveRoleMapModel>(url, payload);
   }*/
   createRoleMapping(payload: ApproveRoleMapModel): Observable<ApproveRoleMapModel[]> {
-    const url = `${environment.centrinoBaseUrl}/approval/role-maps/create`;
+    const url = `${environment.centrinoBaseUrl}/api/approval/role-maps/create`;
     return this.http.post<ApproveRoleMapModel[]>(url, [payload]);
   }
 
 
   updateRoleMapping(workflowRoleMapId: number, payload: ApproveRoleMapModel): Observable<ApproveRoleMapModel> {
-    const url = `${environment.centrinoBaseUrl}/approval/role-maps/update/${workflowRoleMapId}`;
+    const url = `${environment.centrinoBaseUrl}/api/approval/role-maps/update/${workflowRoleMapId}`;
     return this.http.put<ApproveRoleMapModel>(url, payload);
   }
 
@@ -156,7 +156,7 @@ export class WorkflowDesignerService {
   }
 
   getApprovalPolicies(): Observable<ApprovalPolicyIndicatorModel[]> {
-    const url = `${environment.centrinoBaseUrl}/approval/policies/get-all`;
+    const url = `${environment.centrinoBaseUrl}/api/approval/policies/get-all`;
     return this.http.get<ApprovalPolicyIndicatorModel[]>(url).pipe(
       catchError(() => of([
         { approvalPolicyId: 1, description: 'Role Based Approval' },

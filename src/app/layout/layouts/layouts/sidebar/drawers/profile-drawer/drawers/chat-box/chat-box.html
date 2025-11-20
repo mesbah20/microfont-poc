@@ -41,70 +41,70 @@
     </div>
 
     @for (msg of messages; track msg.timestamp) {
-      <div class="animate-fadeInUp">
-        <!-- Received Message -->
-        @if (getSender(msg) === 'other') {
-          <div class="flex items-start gap-3 max-w-full">
-            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-sm font-semibold text-white shadow-md shrink-0">
-              {{ msg.senderUserId[0].toUpperCase() }}
-            </div>
-            <div class="chat-bubble chat-bubble--incoming max-w-[70%]">
-              <div class="chat-meta">
-                <span class="chat-meta__name">{{ msg.senderUserId || partner }}</span>
-                <span class="chat-meta__time">{{ formatTime(msg.timestamp) }}</span>
-              </div>
-              <p class="chat-text text-gray-800">
-                {{ msg.notificationBody }}
-              </p>
-            </div>
-          </div>
-        }
-
-        <!-- Sent Message -->
-        @if (getSender(msg) === 'me') {
-          <div class="flex justify-end">
-            <div class="chat-bubble chat-bubble--outgoing max-w-[70%]">
-              <div class="chat-meta">
-                <span class="chat-meta__name">You</span>
-                <span class="chat-meta__time">{{ formatTime(msg.timestamp) }}</span>
-              </div>
-              <p class="chat-text">
-                {{ msg.notificationBody }}
-              </p>
-              <div class="chat-status">
-                @if (msg.status === 'pending') {
-                  <span class="chat-status__pending">Sending...</span>
-                } @else if (msg.status === 'failed') {
-                  <span class="chat-status__failed">Failed</span>
-                } @else {
-                  <span class="chat-status__sent">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Sent</span>
-                  </span>
-                }
-              </div>
-            </div>
-          </div>
-        }
+    <div class="animate-fadeInUp">
+      <!-- Received Message -->
+      @if (getSender(msg) === 'other') {
+    <div class="flex items-start gap-3 max-w-full">
+      <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-sm font-semibold text-white shadow-md shrink-0">
+        {{ msg.senderUserId[0].toUpperCase() }}
       </div>
+      <div class="chat-bubble chat-bubble--incoming max-w-[70%]">
+        <div class="chat-meta">
+          <span class="chat-meta__name">{{ msg.senderUserId || partner }}</span>
+          <span class="chat-meta__time">{{ formatTime(msg.timestamp) }}</span>
+        </div>
+        <p class="chat-text text-gray-800">
+          {{ msg.notificationBody }}
+        </p>
+      </div>
+    </div>
+    }
+
+    <!-- Sent Message -->
+    @if (getSender(msg) === 'me') {
+    <div class="flex justify-end">
+      <div class="chat-bubble chat-bubble--outgoing max-w-[70%]">
+        <div class="chat-meta">
+          <span class="chat-meta__name">You</span>
+          <span class="chat-meta__time">{{ formatTime(msg.timestamp) }}</span>
+        </div>
+        <p class="chat-text">
+          {{ msg.notificationBody }}
+        </p>
+        <div class="chat-status">
+          @if (msg.status === 'pending') {
+          <span class="chat-status__pending">Sending...</span>
+          } @else if (msg.status === 'failed') {
+          <span class="chat-status__failed">Failed</span>
+          } @else {
+          <span class="chat-status__sent">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Sent</span>
+          </span>
+          }
+        </div>
+      </div>
+    </div>
+    }
+    </div>
     }
 
     <!-- Typing indicator -->
     @if (isTyping) {
-      <div class="flex items-start">
-        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 mr-3 mt-1 flex items-center justify-center text-sm font-semibold text-white shadow-md">
-          {{ partner[0].toUpperCase() }}
-        </div>
-        <div class="bg-white p-3 rounded-2xl shadow-sm">
-          <div class="flex space-x-1">
-            <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
-            <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
-            <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
-          </div>
-        </div>
+    <div class="flex items-start">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 mr-3 mt-1 flex items-center justify-center text-sm font-semibold text-white shadow-md">
+    {{ partner[0].toUpperCase() }}
+    </div>
+    <div class="bg-white p-3 rounded-2xl shadow-sm">
+      <div class="flex space-x-1">
+        <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+        <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+        <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
       </div>
+    </div>
+  </div>
     }
   </div>
 

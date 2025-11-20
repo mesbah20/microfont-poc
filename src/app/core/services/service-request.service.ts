@@ -93,35 +93,35 @@ export class ServiceRequestService {
   employeeId!: string;
 
   private get createApiUrl(): string {
-    return `${environment.centrinoBaseUrl}/serviceRequest/create`;
+    return `${environment.centrinoBaseUrl}/api/serviceRequest/create`;
   }
 
   private get listApiUrl(): string {
-    return `${environment.centrinoBaseUrl}/serviceRequest/get-all`;
+    return `${environment.centrinoBaseUrl}/api/serviceRequest/get-all`;
   }
 
   private get getByIdApiUrl(): string {
-    return `${environment.centrinoBaseUrl}/serviceRequest/getById`;
+    return `${environment.centrinoBaseUrl}/api/serviceRequest/getById`;
   }
 
   private get getByEmployeeApiUrl(): string {
-    return `${environment.centrinoBaseUrl}/serviceRequest/getByEmployee`;
+    return `${environment.centrinoBaseUrl}/api/serviceRequest/getByEmployee`;
   }
 
   private get getByIssuerApiUrl(): string {
-    return `${environment.centrinoBaseUrl}/serviceRequest/getByIssuer`;
+    return `${environment.centrinoBaseUrl}/api/serviceRequest/getByIssuer`;
   }
 
   private get updateApiUrl(): string {
-    return `${environment.centrinoBaseUrl}/serviceRequest/update`;
+    return `${environment.centrinoBaseUrl}/api/serviceRequest/update`;
   }
 
   private get deleteApiUrl(): string {
-    return `${environment.centrinoBaseUrl}/serviceRequest/delete`;
+    return `${environment.centrinoBaseUrl}/api/serviceRequest/delete`;
   }
 
   private get departmentApiUrl(): string {
-    return `${environment.centrinoBaseUrl}/department/get-all`;
+    return `${environment.centrinoBaseUrl}/api/department/get-all`;
   }
 
   private get officeInfoApiUrl(): string {
