@@ -12,7 +12,7 @@ import { UtilService} from '../../../shared/services/util-service';
 import { firstValueFrom } from 'rxjs';
 //import { GetGLAccountChartInfoRequest } from '../../model/GlTransactionModel';
 //import { GLStatusRequest } from '../../model/GLAccount';
-import {CommonModule, formatDate, NgClass} from '@angular/common';
+import {CommonModule, formatDate, NgClass, NgIf} from '@angular/common';
 //import { CommonService } from '../../service/common-service';
 import { BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE, ONCLICK_VIEW } from '../../../shared/constant/button-signals.constant';
 import { GLSubsidiaryModel} from '../../../shared/models/GLSubsidiary';
@@ -32,6 +32,7 @@ import { buildFormGroup} from '../../../shared/models/form-utils';
     SelectOptionField,
     IdBoxComponent,
     NgClass,
+    NgIf,
     TextBaseInput,
     DateInput
   ],

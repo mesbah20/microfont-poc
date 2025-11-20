@@ -4,7 +4,6 @@ import { PersonFormComponent } from './components/person-form/person-form.compon
 import { ActivityTrackerTogglePage } from './activity-tracker-toggle/activity-tracker-toggle.page';
 import { FormPageComponent } from './components/form-page/form-page.component';
 import { NotificationCenterComponent } from './components/notification-center/notification-center.component';
-import { AccountComponent } from './components/account/account';
 import { ServiceRequestProcess } from './components/service-request-process/service-request-process';
 import {ApprovalItems} from '../poc/approval-items/approval-items';
 import {ApprovalMovement} from '../poc/approval-movement/approval-movement';

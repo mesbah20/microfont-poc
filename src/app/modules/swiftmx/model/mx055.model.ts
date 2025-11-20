@@ -1,2 +1,0 @@
-interface Mx055Model {
-}

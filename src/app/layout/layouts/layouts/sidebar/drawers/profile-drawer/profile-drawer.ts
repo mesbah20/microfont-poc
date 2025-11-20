@@ -31,7 +31,6 @@ import { LdsModalComponent } from '../../../../../../shared/components/lds-modal
 import { ComponentPortal } from '@angular/cdk/portal';
 import { NotificationPopoverComponent } from '../../../../../../modules/swiftmx/components/notification/notification-popover.component';
 import { ServiceRequestDialog } from '../../../../../../modules/swiftmx/components/service-request-dialog/service-request-dialog';
-import { Button } from '../../../../../../shared/components/input-types/button/button';
 
 @Component({
   selector: 'app-profile-drawer',
@@ -45,8 +44,6 @@ import { Button } from '../../../../../../shared/components/input-types/button/b
     RouterModule,
     CommonModule,
     LdsModalComponent,
-    Button,
-    EditProfileModal,
     TextBaseInput,
   MatProgressSpinnerModule,
   FormsModule,

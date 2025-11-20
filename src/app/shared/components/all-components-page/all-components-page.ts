@@ -14,7 +14,6 @@ import { Switch } from '../input-types/switch/switch';
 import { TextArea } from '../input-types/text-area/text-area';
 import { NumberInput } from '../input-types/number-input/number-input';
 import { DropdownOption } from '../data-grid/data-grid';
-import {  Step } from '../lds-stepper/lds-stepper';
 import { MultiSelectOptionField } from '../multi-select-option-field/multi-select-option-field';
 import { BUTTON_VISIBILITY, ONCLICK_SAVE } from '../../constant/button-signals.constant';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -1985,7 +1984,7 @@ private recalculateTransactionAmounts(transaction: any): any {
   anyFiles: File[] = [];
   documentFiles: File[] = [];
   profilePicFile?: File;
-  steps: Step[] = [];
+  
 
   transactionColumnNames = signal({
     'id': 'Transaction ID',
@@ -2051,26 +2050,26 @@ private recalculateTransactionAmounts(transaction: any): any {
 
   ngAfterViewInit(): void {
     setTimeout(() => {
-      this.steps = [
-        {
-          title: 'Personal Information',
-          subtitle: 'Enter your basic details',
-          form: 'personalInfoForm',
-          formContent: this.step1Template
-        },
-        {
-          title: 'Contact Details',
-          subtitle: 'Add your contact information',
-          form: 'contactForm',
-          formContent: this.step2Template
-        },
-        {
-          title: 'Review & Submit',
-          subtitle: 'Review your information',
-          form: 'reviewForm',
-          formContent: this.step3Template
-        }
-      ];
+      // this.steps = [
+      //   {
+      //     title: 'Personal Information',
+      //     subtitle: 'Enter your basic details',
+      //     form: 'personalInfoForm',
+      //     formContent: this.step1Template
+      //   },
+      //   {
+      //     title: 'Contact Details',
+      //     subtitle: 'Add your contact information',
+      //     form: 'contactForm',
+      //     formContent: this.step2Template
+      //   },
+      //   {
+      //     title: 'Review & Submit',
+      //     subtitle: 'Review your information',
+      //     form: 'reviewForm',
+      //     formContent: this.step3Template
+      //   }
+      // ];
     });
   }
 

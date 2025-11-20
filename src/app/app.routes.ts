@@ -28,21 +28,6 @@ export const routes: Routes = [
       { path: 'hrm', loadChildren: () => import('./modules/poc/poc.routing').then(m => m.PocRouting) },
     ]
   },
-   {
-  path: '', component: Layout,
-    data: {
-       layout: 'empty'
-     },
-    children: [
-        {
-      path: 'vehicle',
-       loadChildren: () =>
-         import('./modules/vehicle-management/vehicle-management.routing')
-          .then(m => m.VehicleManagementRouting),
-     },
-     ]
-   },
-
   {path: '', redirectTo: 'usernote', pathMatch: 'full'},
   {
     path: 'poc', component: Layout,
