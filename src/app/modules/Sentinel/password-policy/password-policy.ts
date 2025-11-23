@@ -16,8 +16,8 @@ import {PasswordPolicyService} from '../../service/password-policy-service';
 
 @Component({
   selector: 'app-password-policy',
-  imports: [CommonModule, TextBaseInput, ExpansionPanelHeader, Button, NumberInput, MatMenuModule,
-    MatIconModule, ReactiveFormsModule, SubPanelHeader, Switch,],
+  imports: [CommonModule,  ExpansionPanelHeader,  NumberInput, MatMenuModule,
+    MatIconModule, ReactiveFormsModule,  Switch,],
   templateUrl: './password-policy.html',
   styleUrl: './password-policy.scss'
 })

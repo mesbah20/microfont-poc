@@ -1,27 +1,19 @@
 import {Component, effect, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {UserProfileModel} from '../../model/UserProfile.model';
-import {BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE} from '../../../shared/constant/button-signals.constant';
 import {CommonModule} from '@angular/common';
-import {TextBaseInput} from '../../../shared/components/input-types/text-base-input/text-base-input';
-import {ExpansionPanelHeader} from '../../../shared/components/expansion-panel-header/expansion-panel-header';
 import {SelectOptionField} from '../../../shared/components/input-types/select-option-field/select-option-field';
-import {TextArea} from '../../../shared/components/input-types/text-area/text-area';
 import {Button} from '../../../shared/components/input-types/button/button';
 import {DataGridComponent} from '../../../shared/components/data-grid/data-grid';
-import {NumberInput} from '../../../shared/components/input-types/number-input/number-input';
 import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
-import {SubPanelHeader} from '../../../shared/components/sub-panel-header/sub-panel-header';
 import {MatButtonModule} from '@angular/material/button';
-import {IdBoxComponent} from '../../../shared/components/input-types/id-box/id-box';
-import {ExpansionSubPanelHeader} from '../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
 import {UserProfileService} from '../../service/user-profile-service';
 
 @Component({
   selector: 'app-user-list-modal',
-  imports: [CommonModule, TextBaseInput, SelectOptionField, Button, DataGridComponent,
+  imports: [CommonModule,  SelectOptionField, Button, DataGridComponent,
     LdsModalComponent, MatMenuModule, MatIconModule, ReactiveFormsModule, MatButtonModule],
   templateUrl: './user-list-modal.html',
   styleUrl: './user-list-modal.scss'

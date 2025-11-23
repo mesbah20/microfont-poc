@@ -3,11 +3,7 @@ import {CommonModule} from '@angular/common';
 import {TextBaseInput} from '../../../shared/components/input-types/text-base-input/text-base-input';
 import {ExpansionPanelHeader} from '../../../shared/components/expansion-panel-header/expansion-panel-header';
 import {SelectOptionField} from '../../../shared/components/input-types/select-option-field/select-option-field';
-import {TextArea} from '../../../shared/components/input-types/text-area/text-area';
-import {Button} from '../../../shared/components/input-types/button/button';
 import {DataGridComponent} from '../../../shared/components/data-grid/data-grid';
-import {NumberInput} from '../../../shared/components/input-types/number-input/number-input';
-import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -16,7 +12,6 @@ import {MatButtonModule} from '@angular/material/button';
 import {IdBoxComponent} from '../../../shared/components/input-types/id-box/id-box';
 import {BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE} from '../../../shared/constant/button-signals.constant';
 import {ToastrService} from 'ngx-toastr';
-import {ExpansionSubPanelHeader} from '../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
 import {UserGrantPackageModel, UserProfileModel} from '../../model/UserProfile.model';
 import {UserListModal} from '../user-list-modal/user-list-modal';
 import {UserGrantRole, UserRolesModel} from '../../model/UserRoles.model';
@@ -25,9 +20,9 @@ import {AssignRolesToUserService} from '../../service/assign-roles-to-user-servi
 
 @Component({
   selector: 'app-assign-roles-to-user',
-  imports: [CommonModule, TextBaseInput, UserListModal, ExpansionPanelHeader, SelectOptionField, TextArea, Button, DataGridComponent,
-    NumberInput, LdsModalComponent, MatMenuModule, MatIconModule, ReactiveFormsModule, SubPanelHeader,
-    MatButtonModule, IdBoxComponent, ExpansionSubPanelHeader],
+  imports: [CommonModule, TextBaseInput, UserListModal, ExpansionPanelHeader, SelectOptionField,   DataGridComponent,
+      MatMenuModule, MatIconModule, ReactiveFormsModule, SubPanelHeader,
+    MatButtonModule, IdBoxComponent],
   templateUrl: './assign-roles-to-user.html',
   styleUrl: './assign-roles-to-user.scss'
 })

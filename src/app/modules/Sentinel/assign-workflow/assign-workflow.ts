@@ -49,7 +49,6 @@ export interface Condition {
     CommonModule,
     DataGridComponent,
     ExpansionPanelHeader,
-    DataSelectionModal,
     AmountInput,
     TextBaseInput
   ],

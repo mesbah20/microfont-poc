@@ -41,7 +41,6 @@ import {
 } from '../../../shared/constant/button-signals.constant';
 import {OfficeType} from '../../model/OfficeType';
 import {CommonService} from '../../service/common-service';
-import {ViewWorkflowModal} from './view-workflow-modal/view-workflow-modal';
 import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
 import {IdBoxComponent} from '../../../shared/components/input-types/id-box/id-box';
 
@@ -72,7 +71,6 @@ interface ApproverPreviewRow {
     TextBaseInput,
     Button,
     DataGridComponent,
-    ViewWorkflowModal,
     LdsModalComponent,
     IdBoxComponent,
   ],

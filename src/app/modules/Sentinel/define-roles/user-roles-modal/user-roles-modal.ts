@@ -15,7 +15,7 @@ import {MatButtonModule} from '@angular/material/button';
 
 @Component({
   selector: 'app-user-roles-modal',
-  imports: [Button, DataGridComponent,LdsModalComponent, MatMenuModule,
+  imports: [DataGridComponent,LdsModalComponent, MatMenuModule,
     MatIconModule, ReactiveFormsModule, MatButtonModule, CommonModule],
   templateUrl: './user-roles-modal.html',
   styleUrl: './user-roles-modal.scss'

@@ -35,7 +35,6 @@ export interface FunctionSelectionConfig {
     FormsModule,
     ReactiveFormsModule,
     DataGridComponent,
-    PanelHeader,
     Button,
     ExpansionPanelHeader
 ],

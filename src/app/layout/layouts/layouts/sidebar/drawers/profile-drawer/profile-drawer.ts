@@ -16,7 +16,6 @@ import {
   NovuService,
   ChatMessage,
 } from '../../../../../../shared/services/novu.service';
-import { RouterLink } from '@angular/router';
 import {  Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { Router, RouterModule } from '@angular/router';
@@ -41,7 +40,6 @@ import { NotificationPopoverComponent } from '../../../../../../features/compone
     MatIcon,
     ThemePickerComponent,
     AsyncPipe,
-    RouterLink,
     NotificationDetailModalComponent,
     RouterModule,
     CommonModule,

@@ -21,7 +21,6 @@ import {ToastrService} from 'ngx-toastr';
 import {FileComponent} from '../../../shared/components/input-types/file-input/file-input';
 import {IdBoxComponent} from '../../../shared/components/input-types/id-box/id-box';
 import {Switch} from '../../../shared/components/input-types/switch/switch';
-import {ExpansionSubPanelHeader} from '../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
 import {UserListModal} from '../user-list-modal/user-list-modal';
 import {UserProfileService} from '../../service/user-profile-service';
 
@@ -34,7 +33,7 @@ interface IpGridItem {
   standalone: true,
   imports: [CommonModule, TextBaseInput, ExpansionPanelHeader, SelectOptionField, TextArea, Button, DataGridComponent,
     NumberInput, LdsModalComponent, MatMenuModule, MatIconModule, ReactiveFormsModule, SubPanelHeader,
-    MatButtonModule, FileComponent, IdBoxComponent, Switch, ExpansionSubPanelHeader, UserListModal ],
+    MatButtonModule, FileComponent, IdBoxComponent, Switch,  UserListModal ],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.scss'
 })

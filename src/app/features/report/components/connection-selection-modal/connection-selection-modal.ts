@@ -2,8 +2,6 @@ import { Component, OnInit, Input, Output, EventEmitter, inject, signal, Writabl
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { DataGridComponent } from '../../../../shared/components/data-grid/data-grid';
-import { PanelHeader } from '../../../../shared/components/panel-header/panel-header';
-import { TextBaseInput } from '../../../../shared/components/input-types/text-base-input/text-base-input';
 import { Button } from '../../../../shared/components/input-types/button/button';
 import { DatabaseConnectionService } from '../../services/database-connection.service';
 import { ToastrService } from 'ngx-toastr';
@@ -44,8 +42,6 @@ export interface ConnectionSelectionConfig {
     FormsModule,
     ReactiveFormsModule,
     DataGridComponent,
-    PanelHeader,
-    TextBaseInput,
     Button,
     ExpansionPanelHeader
 ],

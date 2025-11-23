@@ -40,9 +40,9 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-define-roles',
-  imports: [CommonModule, TextBaseInput, UserListModal, ExpansionPanelHeader, SelectOptionField, TextArea, Button, DataGridComponent,
-    NumberInput, LdsModalComponent, MatMenuModule, MatIconModule, ReactiveFormsModule, SubPanelHeader,
-    MatButtonModule, IdBoxComponent, ExpansionSubPanelHeader, UserRolesModal],
+  imports: [CommonModule,   ExpansionPanelHeader, SelectOptionField, TextArea, Button, DataGridComponent,
+      MatMenuModule, MatIconModule, ReactiveFormsModule, SubPanelHeader,
+    MatButtonModule, IdBoxComponent,  UserRolesModal],
   templateUrl: './define-roles.html',
   styleUrl: './define-roles.scss'
 })
