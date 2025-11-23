@@ -65,7 +65,6 @@ interface ApproverPreviewRow {
     CommonModule,
     ReactiveFormsModule,
     ExpansionPanelHeader,
-    SubPanelHeader,
     SelectOptionField,
     NumberInput,
     TextBaseInput,
