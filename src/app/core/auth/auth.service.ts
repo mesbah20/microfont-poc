@@ -42,7 +42,7 @@ export class AuthService {
     this._authenticated = await this.keycloak.init({
       onLoad: 'check-sso',
       // onLoad: 'login-required',
-      redirectUri: 'http://localhost:4901/landing/home',
+      redirectUri: 'http://localhost:4001/landing/home',
       //silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
       pkceMethod: 'S256',
       checkLoginIframe: true,
@@ -71,7 +71,7 @@ export class AuthService {
 
   login(): void {
     this.keycloak.login({
-      redirectUri: 'http://localhost:4901' + '/landing/home'
+      redirectUri: 'http://localhost:4001' + '/landing/home'
     });
   }
 

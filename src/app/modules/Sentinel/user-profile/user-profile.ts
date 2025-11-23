@@ -31,8 +31,8 @@ interface IpGridItem {
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, TextBaseInput, ExpansionPanelHeader, SelectOptionField, TextArea, Button, DataGridComponent,
-    NumberInput, LdsModalComponent, MatMenuModule, MatIconModule, ReactiveFormsModule, SubPanelHeader,
+  imports: [CommonModule, TextBaseInput, ExpansionPanelHeader, SelectOptionField, Button, DataGridComponent,
+    MatMenuModule, MatIconModule, ReactiveFormsModule, SubPanelHeader,
     MatButtonModule, FileComponent, IdBoxComponent, Switch,  UserListModal ],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.scss'
