@@ -13,11 +13,11 @@ export class PasswordPolicyService {
   constructor(private http: HttpClient) { }
 
   getPasswordPolicy(): Observable<UserCredentialsPolicyModel[]> {
-    return this.http.get<UserCredentialsPolicyModel[]>(`${environment.sentinelUrl}/credential-policy/getUserCredPolicy`);
+    return this.http.get<UserCredentialsPolicyModel[]>(`${environment.apiBaseUrl}/sentinel/api/credential-policy/getUserCredPolicy`);
   }
   updatePasswordPolicy(request: UserCredentialsPolicyModel): Observable<any> {
     return this.http.put<any>(
-      `${environment.sentinelUrl}/credential-policy/updateUserCredPolicy`,
+      `${environment.apiBaseUrl}/sentinel/api/credential-policy/updateUserCredPolicy`,
       request,
       {
         headers: {

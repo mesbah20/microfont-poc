@@ -42,7 +42,7 @@ export class Sidebar {
   errorMessage: string = '';
   logoutError: boolean = false;
   isLoading: boolean = false;
-  coreBaseUrl = environment.logoutUrl;
+  coreBaseUrl = environment.apiBaseUrl;
   activeTheme: string = localStorage.getItem('selectedTheme') || '';
   public notifications$: Observable<number>;
   public messages$: Observable<number>;

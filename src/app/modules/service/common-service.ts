@@ -18,8 +18,8 @@ export class CommonService {
   getEntityInfo(pOfficeId: any): Observable<any> {
     console.log(pOfficeId);
     const body = { pOfficeId };
-    const url = `${environment.centrinoXchangeUrl}/get-office-entity`;
-    return this.http.post(`${environment.centrinoXchangeUrl}/get-office-entity`,
+    const url = `${environment.apiBaseUrl}/centrino/xchange_out/get-office-entity`;
+    return this.http.post(`${environment.apiBaseUrl}/centrino/xchange_out/get-office-entity`,
       { pOfficeId },
       {
         headers: {
@@ -36,7 +36,7 @@ export class CommonService {
       pEntityTypeId: entityType
     };
 
-    const url = `${environment.centrinoXchangeUrl}/fx-rate-amt-category-ga`;
+    const url = `${environment.apiBaseUrl}/centrino/xchange_out/fx-rate-amt-category-ga`;
     return this.http.post<any>(url, body, {
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ export class CommonService {
   }
   getOwnOfficeList(pCompanyId: string): Observable<any> {
     const body = { pCompanyId };
-    const url = `${environment.centrinoXchangeUrl}/get-comp-office-list-exc`;
+    const url = `${environment.apiBaseUrl}/centrino/xchange_out/get-comp-office-list-exc`;
     return this.http.post<any>(url, body);
   }
 
@@ -56,7 +56,7 @@ export class CommonService {
       pProcessId: 0
     };
 
-    const url = `${environment.centrinoXchangeUrl}/get-all-office-type`;
+    const url = `${environment.apiBaseUrl}/centrino/xchange_out/get-all-office-type`;
     return this.http.post<any>(url, body, {
       headers: {
         'Content-Type': 'application/json',
