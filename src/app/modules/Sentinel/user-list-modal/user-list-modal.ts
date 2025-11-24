@@ -2,19 +2,19 @@ import {Component, effect, EventEmitter, Input, OnInit, Output} from '@angular/c
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {UserProfileModel} from '../../model/UserProfile.model';
 import {CommonModule} from '@angular/common';
-import {SelectOptionField} from '../../../shared/components/input-types/select-option-field/select-option-field';
-import {Button} from '../../../shared/components/input-types/button/button';
-import {DataGridComponent} from '../../../shared/components/data-grid/data-grid';
-import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {UserProfileService} from '../../service/user-profile-service';
+import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
+import { GenericButton } from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
+import { GenericModal } from '../../../shared/common-components/generic-component-type/generic-modal/generic-modal';
+import { GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid';
 
 @Component({
   selector: 'app-user-list-modal',
-  imports: [CommonModule,  SelectOptionField, Button, DataGridComponent,
-    LdsModalComponent, MatMenuModule, MatIconModule, ReactiveFormsModule, MatButtonModule],
+  imports: [CommonModule,  InputSelectOptionField, GenericButton, GenericModal,
+    GenericDataGrid, MatMenuModule, MatIconModule, ReactiveFormsModule, MatButtonModule],
   templateUrl: './user-list-modal.html',
   styleUrl: './user-list-modal.scss'
 })
