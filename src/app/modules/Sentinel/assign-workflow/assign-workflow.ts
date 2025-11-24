@@ -1,26 +1,36 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, effect, inject, OnInit, signal, TemplateRef, ViewChild, WritableSignal } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  ChangeDetectorRef,
+  Component,
+  effect,
+  inject,
+  Input,
+  OnInit,
+  signal,
+  TemplateRef,
+  ViewChild,
+  WritableSignal
+} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-
+import { GenericButton } from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
+import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
+import { GenericDataGrid, TableRowDesigner } from '../../../shared/common-components/generic-component-type/generic-data-grid';
+import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
 import { BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE } from '../../../shared/constant/button-signals.constant';
 import { catchError, debounceTime, distinctUntilChanged, forkJoin, of } from 'rxjs';
 import { WorkflowDesignerService } from '../workflow-designer/services/workflow-designer.service';
-import {AssignWorkflowService} from '../../service/assign-workflow.service';
-import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
-import { GenericButton } from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
-import { GenericDataGrid, TableRowDesigner } from '../../../shared/common-components/generic-component-type/generic-data-grid';
-import { DropdownOption } from '../../../shared/common-components/generic-component-type/generic-data-grid/generic-data-grid';
 import { InputAmount } from '../../../shared/common-components/input-types/input-amount/input-amount';
-import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
 import { InputTextBox } from '../../../shared/common-components/input-types/input-text-box/input-text-box';
+import {AssignWorkflowService} from '../../service/assign-workflow.service';
+import { DropdownOption } from '../../../shared/common-components/generic-component-type/generic-data-grid/generic-data-grid';
 
 
 interface QueryRow {
   id: number;
   action: string;
   andOr: string;
-  field: string;
+  fieldName: string;
   operator: string;
   value: string;
   fieldType?: 'N' | 'S' | 'D' | 'B';
@@ -75,10 +85,11 @@ export class AssignWorkflow implements OnInit {
   getListByFunctionId: any[] = [];
   operatorMap: any = {};
   showConditionSection = signal(false);
+  isEditModeLoading : boolean= false;
 
   // Query Rows Signal
   queryRows: WritableSignal<QueryRow[]> = signal([
-    { id: 1, action: '', andOr: '', field: '', operator: '', value: '' }
+    { id: 1, action: '', andOr: '', fieldName: '', operator: '', value: '' }
   ]);
 
   // Conditions List Signal
@@ -211,7 +222,9 @@ export class AssignWorkflow implements OnInit {
       andOr: [''],
       fieldName: [''],
       operator: [''],
-      value: ['']
+      value: [''],
+      fieldType: [''],            // "N", "S", "D", "B"
+      fieldValueOptions: [[]],
     });
   }
 
@@ -220,7 +233,7 @@ export class AssignWorkflow implements OnInit {
     return rowsArray.at(index) as FormGroup;
   }
 
-  private syncFormArrayWithSignal(): void {
+  /*private syncFormArrayWithSignal(): void {
     const rowsArray = this.conditionFrmGroup.get('rows') as FormArray;
     const updatedRows: QueryRow[] = [];
 
@@ -243,6 +256,30 @@ export class AssignWorkflow implements OnInit {
     }
 
     this.queryRows.set(updatedRows);
+  }*/
+  private syncFormArrayWithSignal(): void {
+    const rowsArray = this.conditionFrmGroup.get('rows') as FormArray;
+
+    const rows = rowsArray.controls.map((fg, i) => {
+      const row = fg.value;
+
+      // Look up field metadata
+      const fieldMeta = this.fieldValueList.find(f => f.fieldName === row.fieldName);
+
+      return {
+        id: i + 1,
+        action: row.action || '',
+        andOr: row.andOr || (i === 0 ? '' : 'and'),
+        fieldName: row.fieldName || '',
+        operator: row.operator || '',
+        value: row.value || '',
+        fieldType: fieldMeta?.fieldType || '',                   // field type from metadata
+        fieldValueOptions: fieldMeta?.fieldValue || null
+      };
+    });
+
+    this.queryRows.set(rows);
+    this.cdr.detectChanges();
   }
 
   private addRowToFormArray(): void {
@@ -497,6 +534,7 @@ export class AssignWorkflow implements OnInit {
             value: item.fieldLabel
           }));
         });
+      //this.testPopulateQueryRows();
     }
   }
 
@@ -566,15 +604,96 @@ export class AssignWorkflow implements OnInit {
     this.resetQueryBuilder();
   }
 
+  private getIdFromLabel(options: any[], label: string | null): number | null {
+    const found = options.find(opt => opt.label === label);
+    return found ? found.value : null;
+  }
+  populateFormFromCondition(selected: Condition): void {
+
+    // 1. Populate Master Form
+    this.masterFrmGroup.patchValue({
+      appId: this.getIdFromLabel(this.applicationOptions, selected.applicationName),
+      moduleId: this.getIdFromLabel(this.moduleOptions, selected.moduleName),
+      functionId: this.getIdFromLabel(this.functionOptions, selected.functionName)
+    });
+
+    // 2. Populate Condition Form
+    this.conditionFrmGroup.patchValue({
+      conditionalWorkflowId: selected.conditionalWorkflowId
+    });
+
+    // 3. Repopulate Query Builder Rows
+    this.rebuildQueryFromConditionString(selected.condition);
+  }
+  rebuildQueryFromConditionString(condition: string): void {
+    const parsedRows = this.parseConditionString(condition);
+    const formArray = this.queryFormArray();
+    formArray.clear();
+
+    const rows: QueryRow[] = parsedRows.map((r, index) => {
+      // Look up the field metadata
+      const fieldMeta = this.fieldValueList.find(f => f.fieldName === r.fieldName);
+
+      const rowForm = this.formBuilder.group({
+        andOr: [r.andOr || (index === 0 ? '' : 'and')],
+        fieldName: [r.fieldName],
+        operator: [r.operator],
+        value: [r.value]
+      });
+
+      formArray.push(rowForm);
+
+      // Return row object to update queryRows signal
+      return {
+        id: index + 1,
+        action: '',
+        andOr: r.andOr || (index === 0 ? '' : 'and'),
+        fieldName: r.fieldName,
+        operator: r.operator,
+        value: r.value,
+        fieldType: fieldMeta?.fieldType || '',                 // important for template
+        fieldValueOptions: fieldMeta?.fieldValue || null      // important for dropdowns
+      };
+    });
+
+    this.queryRows.set(rows);
+    this.cdr.detectChanges();
+  }
 
 
-/*  private getOptionLabel(options: any[], key: string): string {
-    if (!key) {
-      return 'N/A';
-    }
-    const option = options.find(opt => opt.key === key);
-    return option?.value || 'N/A';
-  }*/
+
+
+  onRowSelected(row: Condition) {
+    this.populateFormFromCondition(row);
+  }
+
+  queryFormArray(): FormArray {
+    return this.conditionFrmGroup.get('rows') as FormArray;
+  }
+
+  testPopulateQueryRows(): void {
+    const fakeCondition: Condition = {
+      id: 1,
+      applicationName: 'Centrino',
+      moduleName: 'metadata',
+      functionName: 'Function',
+      priority: 1,
+      condition: "authNo > 2 AND isDocAtt == true",
+      conditionalWorkflow: 'Test Workflow',
+      conditionalWorkflowId: 2
+    };
+
+    this.populateFormFromCondition(fakeCondition);
+  }
+
+
+  /*  private getOptionLabel(options: any[], key: string): string {
+      if (!key) {
+        return 'N/A';
+      }
+      const option = options.find(opt => opt.key === key);
+      return option?.value || 'N/A';
+    }*/
   private getOptionLabel(options: any[], key: any): string {
     if (!key) return 'N/A';
 
@@ -682,7 +801,7 @@ export class AssignWorkflow implements OnInit {
     const rows = [...this.queryRows()];
     rows[rowIndex] = {
       ...rows[rowIndex],
-      field: selectedField,
+      fieldName: selectedField,
       operator: '',
       value: '',
       fieldType: fieldType,
@@ -692,6 +811,35 @@ export class AssignWorkflow implements OnInit {
 
     this.cdr.detectChanges();
   }
+
+  // onFieldChange(event: any, rowId: number) {
+  //   if (this.isEditModeLoading) return;   // <<< IMPORTANT FIX
+  //
+  //   const selectedField = event.selectedKey;
+  //   console.log('Field Changed:', selectedField);
+  //
+  //   const field = this.fieldValueList.find(x => x.fieldName === selectedField);
+  //   if (!field) return;
+  //
+  //   const fieldType = field.fieldType;
+  //   this.operatorMap[rowId] =
+  //     fieldType === 'N' ? this.operatorOptions : this.operatorOptionsLimited;
+  //
+  //   const rowsArray = this.conditionFrmGroup.get('rows') as FormArray;
+  //   const rowIndex = rowsArray.controls.findIndex(r => r.value.id === rowId);
+  //   if (rowIndex === -1) return;
+  //
+  //   const rowForm = rowsArray.at(rowIndex) as FormGroup;
+  //   rowForm.patchValue({
+  //     fieldName: selectedField,
+  //     operator: '',
+  //     value: '',
+  //     fieldType,
+  //     fieldValueOptions: field.fieldValue || []
+  //   });
+  //
+  //   this.refreshQueryRowsFromForm();
+  // }
 
   onAndOrChange(event: any, rowId: number): void {
     const rowIndex = this.queryRows().findIndex(r => r.id === rowId);
@@ -800,7 +948,7 @@ export class AssignWorkflow implements OnInit {
 
     // Signal reset
     this.queryRows.set([
-      { id: 1, action: '', andOr: '', field: '', operator: '', value: '', fieldType: undefined, fieldValueOptions: null }
+      { id: 1, action: '', andOr: '', fieldName: '', operator: '', value: '', fieldType: undefined, fieldValueOptions: null }
     ]);
 
     // ৫. Conditional workflow reset
@@ -899,13 +1047,13 @@ export class AssignWorkflow implements OnInit {
     firstRow.reset();
 
     this.queryRows.set([
-      { id: 1, action: '', andOr: 'and', field: '', operator: '', value: '' }
+      { id: 1, action: '', andOr: 'and', fieldName: '', operator: '', value: '' }
     ]);
     this.conditionsList.set([]);
     this.sampleTransactions.set([]);
   }
 
-  onEditCondition(serializedData: string): void {
+/*  onEditCondition(serializedData: string): void {
     try {
       const condition: Condition = JSON.parse(serializedData);
       console.log('🔄 Editing Condition:', condition);
@@ -917,7 +1065,7 @@ export class AssignWorkflow implements OnInit {
       // ===== Patch Master & Condition Form =====
       const masterValues = this.masterFrmGroup.value;
       const workflowId = condition.conditionalWorkflowId || this.findKeyByValue(this.workflowOptions, condition.conditionalWorkflow);
-
+      console.log("workflowId",workflowId);
       this.conditionFrmGroup.patchValue({
         conditionalWorkflowId: workflowId
       });
@@ -928,7 +1076,7 @@ export class AssignWorkflow implements OnInit {
 
       // ===== Parse condition string =====
       const conditions = condition.condition ? this.parseConditionString(condition.condition) : [];
-
+      console.log("conditions",conditions);
       // ===== Patch rows =====
       conditions.forEach((cond, idx) => {
         const row = this.buildRow();
@@ -956,14 +1104,158 @@ export class AssignWorkflow implements OnInit {
       });
 
       this.toastr.info(`Editing condition: ${condition.condition}`, 'Edit Mode');
-
+      //this.testPopulateQueryRows();
     } catch (err) {
       console.error('Failed to edit condition:', err);
     }
+  }*/
+  onEditCondition(serializedData: string): void {
+    try {
+      const condition: Condition = typeof serializedData === 'string'
+        ? JSON.parse(serializedData)
+        : serializedData;
+      console.log("Raw condition from grid:", condition.condition);
+      this.isEditMode = true;
+      this.editingConditionId = condition.id;
+
+      // ===== Patch MASTER FORM =====
+      this.masterFrmGroup.patchValue({
+        appId: this.findKeyByValue(this.applicationOptions, condition.applicationName),
+        moduleId: this.findKeyByValue(this.moduleOptions, condition.moduleName),
+        functionId: this.findKeyByValue(this.functionOptions, condition.functionName)
+      });
+
+      // ===== Patch WORKFLOW DROPDOWN =====
+      const workflowId = condition.conditionalWorkflowId ||
+        this.findKeyByValue(this.workflowOptions, condition.conditionalWorkflow);
+
+      this.conditionFrmGroup.patchValue({
+        conditionalWorkflowId: workflowId?.toString() || ''
+      });
+
+      // ===== Clear existing rows =====
+      const rowsArray = this.conditionFrmGroup.get('rows') as FormArray;
+      while (rowsArray.length) rowsArray.removeAt(0);
+      this.isEditModeLoading = true;
+      // ===== Build rows from parsed condition string =====
+      let parsedRows = condition.condition
+        ? this.parseConditionString(condition.condition)
+        : [];
+      console.log("parsedRows", parsedRows);
+      // --- Attach field metadata ---
+      parsedRows = parsedRows.map(row => {
+        const meta = this.fieldValueList.find(f => f.fieldName === row.fieldName);
+        return {
+          ...row,
+          fieldType: meta?.fieldType || '',
+          fieldValueOptions: meta?.fieldValue || []
+        };
+      });
+
+     /* parsedRows.forEach((rowData: any, index: number) => {
+        const row = this.buildRow();
+        const fieldConfig = this.fieldValueList.find(f => f.fieldName === rowData.fieldName);
+
+        row.patchValue({
+          id: index + 1,
+          action: '',
+          andOr: rowData.andOr || (index === 0 ? '' : 'and'),
+          fieldName: rowData.fieldName,
+          operator: rowData.operator,
+          value: rowData.value,
+          fieldType: fieldConfig?.fieldType || '',
+          fieldValueOptions: fieldConfig?.fieldValue || []
+        });
+
+        rowsArray.push(row);
+
+        // Emit events so the UI reacts
+        row.get('fieldName')?.updateValueAndValidity({ onlySelf: true, emitEvent: true });
+        row.get('operator')?.updateValueAndValidity({ onlySelf: true, emitEvent: true });
+        row.get('value')?.updateValueAndValidity({ onlySelf: true, emitEvent: true });
+
+        this.operatorMap[index + 1] = fieldConfig?.fieldType === 'N'
+          ? this.operatorOptions
+          : this.operatorOptionsLimited;
+
+        this.onFieldChange({ selectedKey: rowData.fieldName }, rowData.id || index + 1);
+        this.onOperatorChange({ selectedKey: rowData.operator }, rowData.id || index + 1);
+      });*/
+
+      parsedRows.forEach((rowData: any, index: number) => {
+        const row = this.buildRow();
+        const fieldConfig = this.fieldValueList.find(f => f.fieldName === rowData.fieldName);
+
+        const fieldType = fieldConfig?.fieldType || '';
+        const fieldValueOptions = fieldConfig?.fieldValue || [];
+
+        // Patch all values at once
+        row.patchValue({
+          id: index + 1,
+          action: '',
+          andOr: rowData.andOr || (index === 0 ? '' : 'and'),
+          fieldName: rowData.fieldName,
+          operator: rowData.operator,
+          value: rowData.value,
+          fieldType,
+          fieldValueOptions
+        });
+
+        // Push to form array
+        rowsArray.push(row);
+        this.onFieldChange(
+          { key: rowData.fieldName },   // same shape as onSelect
+          rowData.id || index + 1               // row id
+        );
+        row.get('fieldName')?.updateValueAndValidity({ emitEvent: true });
+        row.get('operator')?.updateValueAndValidity({ emitEvent: true });
+        row.get('value')?.updateValueAndValidity({ emitEvent: true });
+        // Update operator map BEFORE operator dropdown renders
+        this.operatorMap[index + 1] = fieldType === 'N'
+          ? this.operatorOptions
+          : this.operatorOptionsLimited;
+        //this.onFieldChange({ key: rowData.value.fieldName }, rowData.id || index + 1);
+        //this.onFieldChange({ selectedKey: row.value.fieldName }, rowId);
+        // this.onOperatorChange({ selectedKey: row.value.operator }, rowId);
+
+        this.refreshQueryRowsFromForm();
+        this.cdr.detectChanges();
+      });
+      // After all rows are patched
+
+
+      this.isEditModeLoading = false;
+      this.syncFormArrayWithSignal?.();
+      this.cdr?.detectChanges();
+
+      console.log('✅ Form patched from grid:', this.conditionFrmGroup.value);
+    } catch (err) {
+      console.error('❌ Failed to reverse patch condition:', err);
+    }
   }
 
+  private refreshQueryRowsFromForm() {
+    const rowsArray = this.conditionFrmGroup.get('rows') as FormArray;
+    const rows = rowsArray.controls.map((c, i) => {
+      const val = c.value;
+      const operatorOpts = this.operatorMap[val.id] || (val.fieldType === 'N' ? this.operatorOptions : this.operatorOptionsLimited);
+      return {
+        ...val,
+        fieldValueOptions: val.fieldValueOptions || [],
+        operatorOptions: operatorOpts
+      };
+    });
+    this.queryRows.set(rows);
+  }
+
+
+/*  private refreshQueryRowsFromForm() {
+    const rowsArray = this.conditionFrmGroup.get('rows') as FormArray;
+    const rows = rowsArray.controls.map(c => c.value);
+    this.queryRows.set(rows);
+  }*/
   // ===== Helper: Parse condition string =====
-  private parseConditionString(conditionString: string): any[] {
+/*  private parseConditionString(conditionString: string): any[] {
     const parts = conditionString.split(/(AND|OR)/i);
     const parsed: any[] = [];
 
@@ -987,6 +1279,36 @@ export class AssignWorkflow implements OnInit {
         });
       }
     }
+    return parsed;
+  }*/
+
+  private parseConditionString(conditionString: string): any[] {
+    const parts = conditionString.split(/\s+(AND|OR)\s+/i);
+    const parsed: any[] = [];
+
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i].trim();
+      if (part.toUpperCase() === 'AND' || part.toUpperCase() === 'OR') continue;
+
+      // Match operators including '==', '!=', '>=', '<=', '>', '<', 'LIKE'
+      const match = part.match(/^(\w+)\s*(==|!=|>=|<=|>|<|LIKE)\s*(.+)$/i);
+      if (!match) continue;
+
+      // Determine andOr based on the previous item
+      let andOr = '';
+      if (i > 0) {
+        const prev = parts[i - 1].trim().toUpperCase();
+        if (prev === 'AND' || prev === 'OR') andOr = prev.toLowerCase();
+      }
+
+      parsed.push({
+        fieldName: match[1].trim(),
+        operator: match[2].trim(),
+        value: match[3].trim().replace(/^"|"$/g, ''), // remove surrounding quotes
+        andOr
+      });
+    }
+
     return parsed;
   }
 
@@ -1048,7 +1370,7 @@ export class AssignWorkflow implements OnInit {
         updatedRows[index] = {
           ...updatedRows[index],
           andOr: condition.andOr || '',
-          field: condition.fieldName,
+          fieldName: condition.fieldName,
           operator: condition.operator,
           value: condition.value,
           fieldType: fieldType,
@@ -1079,7 +1401,7 @@ export class AssignWorkflow implements OnInit {
 
     // Signal reset
     this.queryRows.set([
-      { id: 1, action: '', andOr: '', field: '', operator: '', value: '' }
+      { id: 1, action: '', andOr: '', fieldName: '', operator: '', value: '' }
     ]);
 
     // Operator map clear

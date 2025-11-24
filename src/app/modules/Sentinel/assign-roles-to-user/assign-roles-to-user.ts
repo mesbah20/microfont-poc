@@ -1,9 +1,15 @@
 import {Component, effect, EventEmitter, inject, Input, OnInit, Output, signal, WritableSignal} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {InputTextBox} from '../../../shared/common-components/input-types/input-text-box/input-text-box';
+import {ExpansionPanelHeader} from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
+import {InputSelectOptionField} from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
+import {GenericDataGrid} from '../../../shared/common-components/generic-component-type/generic-data-grid'
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {SubPanelHeader} from '../../../shared/common-components/sub-panel-header/sub-panel-header';
 import {MatButtonModule} from '@angular/material/button';
+import {InputIdBox} from '../../../shared/common-components/input-types/input-id-box/input-id-box';
 import {BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE} from '../../../shared/constant/button-signals.constant';
 import {ToastrService} from 'ngx-toastr';
 import {UserGrantPackageModel, UserProfileModel} from '../../model/UserProfile.model';
@@ -11,12 +17,6 @@ import {UserListModal} from '../user-list-modal/user-list-modal';
 import {UserGrantRole, UserRolesModel} from '../../model/UserRoles.model';
 import {UserProfileService} from '../../service/user-profile-service';
 import {AssignRolesToUserService} from '../../service/assign-roles-to-user-service';
-import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
-import { GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid';
-import { InputIdBox } from '../../../shared/common-components/input-types/input-id-box/input-id-box';
-import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
-import { InputTextBox } from '../../../shared/common-components/input-types/input-text-box/input-text-box';
-import { SubPanelHeader } from '../../../shared/common-components/sub-panel-header/sub-panel-header';
 
 @Component({
   selector: 'app-assign-roles-to-user',

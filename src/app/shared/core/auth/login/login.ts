@@ -118,7 +118,7 @@ export class Login implements OnInit {
   private readonly notifyBaseUrl = environment.novu_service;
   frmGroup: FormGroup;
   loginError: boolean = false;
-  coreBaseUrl: string = environment.loginUrl;
+  coreBaseUrl: string = environment.apiBaseUrl;
   terminalIp: string = '';
   errorMessage: string = '';
   isLoading: boolean = false;

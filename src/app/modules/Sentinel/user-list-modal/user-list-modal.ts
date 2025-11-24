@@ -8,8 +8,8 @@ import {MatButtonModule} from '@angular/material/button';
 import {UserProfileService} from '../../service/user-profile-service';
 import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
 import { GenericButton } from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
-import { GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid';
 import { GenericModal } from '../../../shared/common-components/generic-component-type/generic-modal/generic-modal';
+import { GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid';
 
 @Component({
   selector: 'app-user-list-modal',

@@ -35,14 +35,14 @@ import {
 import {OfficeType} from '../../model/OfficeType';
 import {CommonService} from '../../service/common-service';
 import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
-import { GenericButton } from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
-import { DropdownOption, GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid/generic-data-grid';
-import { InputIdBox } from '../../../shared/common-components/input-types/input-id-box/input-id-box';
-import { InputNumber } from '../../../shared/common-components/input-types/input-number/input-number';
 import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
+import { InputNumber } from '../../../shared/common-components/input-types/input-number/input-number';
 import { InputTextBox } from '../../../shared/common-components/input-types/input-text-box/input-text-box';
-import { SubPanelHeader } from '../../../shared/common-components/sub-panel-header/sub-panel-header';
+import { GenericButton } from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
+import { GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid';
 import { GenericModal } from '../../../shared/common-components/generic-component-type/generic-modal/generic-modal';
+import { InputIdBox } from '../../../shared/common-components/input-types/input-id-box/input-id-box';
+import { DropdownOption } from '../../../shared/common-components/generic-component-type/generic-data-grid/generic-data-grid';
 
 interface GridSelectionEvent {
   data: string;
@@ -65,7 +65,6 @@ interface ApproverPreviewRow {
     CommonModule,
     ReactiveFormsModule,
     ExpansionPanelHeader,
-    SubPanelHeader,
     InputSelectOptionField,
     InputNumber,
     InputTextBox,

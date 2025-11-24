@@ -16,7 +16,7 @@
                 [controlName]="'userId'"
                 [label]="'User ID'"
                 [isReadonly]="false"
-                
+                [isVertical]="true"
                 [tooltip]="'ID'"
                 [tooltipDelay]="200"
                 [allowSpecialChars] = "true"
@@ -34,7 +34,7 @@
                 [tooltip]="'User Name'"
                 [tooltipDelay]="200"
                 [isReadonly]="false"
-                >
+                [isVertical]="true">
               </input-text-box>
             </div>
           </div>
@@ -42,12 +42,12 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4" *ngIf="showEmployeeDetails">
             <div class="component-section">
               <input-text-box [frmGroup]="userForm" [controlName]="'employeeId'"
-                                   [label]="'Employee Id'" >
+                                   [label]="'Employee Id'" [isVertical]="true">
               </input-text-box>
             </div>
             <div class="component-section">
               <input-text-box [frmGroup]="userForm" [controlName]="'employeeCode'"
-                                   [label]="'Employee Code'" >
+                                   [label]="'Employee Code'" [isVertical]="true">
               </input-text-box>
             </div>
           </div>
@@ -55,12 +55,12 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="component-section">
               <input-text-box [frmGroup]="userForm" [controlName]="'userEmailId'"
-                                   [label]="'Email Id'" >
+                                   [label]="'Email Id'" [isVertical]="true">
               </input-text-box>
             </div>
             <div class="component-section">
               <input-text-box [frmGroup]="userForm" [controlName]="'mobileNumber'"
-                                   [label]="'Mobile No'" >
+                                   [label]="'Mobile No'" [isVertical]="true">
               </input-text-box>
             </div>
           </div>
@@ -69,13 +69,13 @@
         <div class="component-section">
           <input-select-option-field [frmGroup]="userForm"
                                    [controlName]="'homeOfficeId'" [label]="'Office ID'"
-                                    [options]="officeOptions">
+                                   [options]="officeOptions">
           </input-select-option-field>
         </div>
         <div class="component-section">
           <input-text-box [frmGroup]="userForm"
                                [controlName]="'userDescription'" [label]="'User Description'"
-                               >
+                               [isVertical]="true">
           </input-text-box>
         </div>
       </div>
@@ -104,7 +104,7 @@
               [id]="'user-photo-upload'"
               [multipleFile]="false"
               [fileExtension]="'.jpg,.jpeg'"
-              
+              [isVertical]="true"
               [label]="'Upload Image'"
               [customFileName]="'user-photo'"
               (selectedFilesChanged)="convertImageToBase64($event)">
@@ -131,19 +131,19 @@
         <div class="component-section">
           <input-text-box [frmGroup]="userForm"
                                [controlName]="'logInAppTerminalIp'" [label]="'App Terminal IP'"
-                               [placeholder]="'xxx.xxx.xxx.xxx'" >
+                               [placeholder]="'xxx.xxx.xxx.xxx'" [isVertical]="true">
           </input-text-box>
         </div>
         <div class="component-section">
           <input-text-box [frmGroup]="userForm"
                                [controlName]="'macAddress'" [label]="'User MAC Address'"
-                               [placeholder]="'xx-xx-xx-xx'" >
+                               [placeholder]="'xx-xx-xx-xx'" [isVertical]="true">
           </input-text-box>
         </div>
         <div class="component-section flex items-end gap-2">
           <input-text-box [frmGroup]="userForm"
                                [controlName]="'logInUserTerminalIp'" [label]="'User Terminal IP'"
-                               [placeholder]="'xxx.xxx.xxx.xxx'" >
+                               [placeholder]="'xxx.xxx.xxx.xxx'" [isVertical]="true">
           </input-text-box>
           <generic-button labelText="ADD" class="!h-[36px] !px-4" (onClick)="addAddresses()"></generic-button>
         </div>
@@ -166,19 +166,19 @@
         <div class="component-section">
           <input-text-box [frmGroup]="userForm"
                                [controlName]="'appLogInTime'" [label]="'User Business Hour From'"
-                               >
+                               [isVertical]="true">
           </input-text-box>
         </div>
         <div class="component-section">
           <input-text-box [frmGroup]="userForm"
                                [controlName]="'appLogOutTime'" [label]="'User Business Hour To'"
-                               >
+                               [isVertical]="true">
           </input-text-box>
         </div>
         <div class="component-section">
           <input-text-box [frmGroup]="userForm"
                                [controlName]="'sessionExpTime'" [label]="'Session Expired Time'"
-                               >
+                               [isVertical]="true">
           </input-text-box>
         </div>
       </div>
@@ -187,7 +187,7 @@
         <div class="component-section">
           <input-text-box [frmGroup]="userForm"
                                [controlName]="'passwordString'" [label]="'Password for this user'"
-                               >
+                               [isVertical]="true">
           </input-text-box>
         </div>
       </div>

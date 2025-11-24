@@ -12,16 +12,16 @@ export class DefineRolesService {
 
   constructor(private http: HttpClient) { }
   getRoleInfoByRoleName(roleName: string): Observable<any> {
-    const url = `${environment.sentinelUrl}/api/roles/roleByRoleName/${roleName}`;
+    const url = `${environment.apiBaseUrl}/sentinel/api/roles/roleByRoleName/${roleName}`;
     return this.http.get<any>(url);
   }
   getAllRoles(): Observable<any> {
-    const url = `${environment.sentinelUrl}/api/roles/get-all`;
+    const url = `${environment.apiBaseUrl}/sentinel/api/roles/get-all`;
     return this.http.get<any>(url);
   }
 
   getFilteredFunction(request:AppFunctionsRequest): Observable<any> {
-    const url = `${environment.sentinelUrl}/api/app-functions/getFilteredFunctions`;
+    const url = `${environment.apiBaseUrl}/sentinel/api/app-functions/getFilteredFunctions`;
     return this.http.post<any>(url, request, {
       headers: {
         'Content-Type': 'application/json',
@@ -31,7 +31,7 @@ export class DefineRolesService {
   }
   saveUserRoles(request: any): Observable<any> {
     return this.http.post<any>(
-      `${environment.sentinelUrl}/api/roles/create`,
+      `${environment.apiBaseUrl}/sentinel/api/roles/create`,
       request,
       {
         headers: {
@@ -44,7 +44,7 @@ export class DefineRolesService {
 
   removeRoleFunctions(request: UserRoleFunctionModel[]): Observable<UserRoleFunctionModel[]> {
     return this.http.post<UserRoleFunctionModel[]>(
-      `${environment.sentinelUrl}/api/user-role-functions/remove`,
+      `${environment.apiBaseUrl}/sentinel/api/user-role-functions/remove`,
       request,
       {
         headers: {
@@ -56,7 +56,7 @@ export class DefineRolesService {
   }
 
   getDept(): Observable<any> {
-    const url = `${environment.centrino}`;
+    const url = `${environment.apiBaseUrl}`;
     return this.http.get<any>(url);
   }
 

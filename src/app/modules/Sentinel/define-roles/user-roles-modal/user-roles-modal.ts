@@ -7,8 +7,8 @@ import {CommonModule} from '@angular/common';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
-import { GenericDataGrid } from '../../../../shared/common-components/generic-component-type/generic-data-grid';
 import { GenericModal } from '../../../../shared/common-components/generic-component-type/generic-modal/generic-modal';
+import { GenericDataGrid } from '../../../../shared/common-components/generic-component-type/generic-data-grid/generic-data-grid';
 
 @Component({
   selector: 'app-user-roles-modal',

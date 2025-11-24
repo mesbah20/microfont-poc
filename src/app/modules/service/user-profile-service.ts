@@ -14,24 +14,24 @@ export class UserProfileService {
   constructor(private http: HttpClient) { }
 
   getUserProfileById(userId: string): Observable<any> {
-    return this.http.get<any>(`${environment.sentinelUrl}/user-profile/getUserByUserId/${userId}`);
+    return this.http.get<any>(`${environment.apiBaseUrl}/sentinel/user-profile/getUserByUserId/${userId}`);
   }
 
   getAllOffice(request: any): Observable<any> {
-    const url = `${environment.centrinoXchangeUrl}/get-all-office-info-exc`;
+    const url = `${environment.apiBaseUrl}/centrino/xchange_out/get-all-office-info-exc`;
     return this.http.post<any>(url, request);
   }
   getAllUser(officeId: number): Observable<any> {
-    const url = `${environment.sentinelUrl}/api/user-profile/get-all-user-profile/${officeId}`;
+    const url = `${environment.apiBaseUrl}/sentinel/user-profile/get-all-user-profile/${officeId}`;
     return this.http.get<any>(url);
   }
   getAllPackage(): Observable<any> {
-    const url = `${environment.sentinelUrl}/api/package/get-all`;
+    const url = `${environment.apiBaseUrl}/sentinel/api/package/get-all`;
     return this.http.get<any>(url);
   }
   saveUserProfile(request: UserProfileModel): Observable<UserProfileModel> {
     return this.http.post<UserProfileModel>(
-      `${environment.sentinelUrl}/api/user-profile/create`,
+      `${environment.apiBaseUrl}/sentinel/api/user-profile/create`,
       request,
       {
         headers: {
@@ -42,7 +42,7 @@ export class UserProfileService {
     );
   }
   getFunctionsByRoleName(roleName:any): Observable<any> {
-    const url = `${environment.sentinelUrl}/api/roles/functionsByRoleName?roleName=${roleName}`;
+    const url = `${environment.apiBaseUrl}/sentinel/api/roles/functionsByRoleName?roleName=${roleName}`;
     return this.http.get<any>(url);
   }
 }

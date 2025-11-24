@@ -13,7 +13,7 @@
 <!--            [controlName]="'appId'"-->
 <!--            [label]="'Application'"-->
 <!--            [options]="applicationOptions()"-->
-<!--            -->
+<!--            [isVertical]="true"-->
 <!--            [placeholder]="'Select Application'">-->
 <!--          </input-select-option-field>-->
 
@@ -22,7 +22,7 @@
 <!--            [controlName]="'moduleId'"-->
 <!--            [label]="'Module'"-->
 <!--            [options]="moduleOptions()"-->
-<!--            -->
+<!--            [isVertical]="true"-->
 <!--            [placeholder]="'Select Module'"-->
 <!--            [isReadonly]="!selectorForm.get('appId')?.value">-->
 <!--          </input-select-option-field>-->
@@ -32,7 +32,7 @@
 <!--            [controlName]="'functionId'"-->
 <!--            [label]="'Function'"-->
 <!--            [options]="functionOptions()"-->
-<!--            -->
+<!--            [isVertical]="true"-->
 <!--            [placeholder]="'Select Function'"-->
 <!--            [isReadonly]="!selectorForm.get('moduleId')?.value">-->
 <!--          </input-select-option-field>-->
@@ -43,7 +43,7 @@
             [controlName]="'workflowId'"
             [label]="'Workflow Id'"
             [isReadonly]="false"
-            
+            [isVertical]="true"
             [tooltip]="'Enter ID'"
             [allowSpecialChars]="true"
             [isDotsVisible]="true"
@@ -58,7 +58,7 @@
             [tooltip]="'Workflow Name'"
             [tooltipDelay]="200"
             [isReadonly]="false"
-            >
+            [isVertical]="true">
           </input-text-box>
 
           <div class="flex justify-end items-end h-full">
@@ -73,7 +73,10 @@
 <!--<div class="page-wrapper" *ngIf="levelForm.get('workflowName')?.value">-->
   <div class="panel" *ngIf="levelForm.get('workflowName')?.value">
     <div class="container space-y-6 p-4 my-4">
-      <app-sub-panel-header [subPanelTitle]="'Approval Level Configuration'"></app-sub-panel-header>
+      <app-expansion-panel-header
+        [isOpenSignal]="levelPanelOpen"
+        [panelTitle]="'Approval Level Configuration'">
+      </app-expansion-panel-header>
 
       <div class="flex flex-wrap items-center gap-4 justify-between">
 
@@ -81,7 +84,7 @@
           [frmGroup]="levelForm"
           [controlName]="'numberOfApprovalLevel'"
           [label]="'Number Of Levels'"
-          
+          [isVertical]="true"
           [minValue]="1"
           [isReadonly]="!levelForm.get('workflowName')?.value"
           class="flex-shrink-0">
@@ -91,7 +94,6 @@
                     [controlName]="'appId'"
                     [label]="'Application'"
                     [options]="applicationOptions()"
-                    
                     [placeholder]="'Select Application'">
                   </input-select-option-field>
         <div class="flex gap-3">
@@ -124,15 +126,17 @@
 <!--<div class="page-wrapper" *ngIf="levelForm.get('workflowName')?.value">-->
   <div class="panel"  *ngIf="levelForm.get('workflowName')?.value">
     <div class="container space-y-6 p-4 my-4">
-      <app-sub-panel-header [subPanelTitle]="'Approval Level Details & Role Mapping'"></app-sub-panel-header>
-
+      <app-expansion-panel-header
+        [isOpenSignal]="detailPanelOpen"
+        [panelTitle]="'Approval Level Details & Role Mapping'">
+      </app-expansion-panel-header>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
         <input-number
           [frmGroup]="detailForm"
           [controlName]="'approvalLevel'"
           [label]="'Approval Level'"
-          
+          [isVertical]="true"
           [minValue]="1">
         </input-number>
 
@@ -141,14 +145,13 @@
           [controlName]="'approvalPolicy'"
           [label]="'Approval Policy'"
           [options]="approvalPolicyOptions()"
-          
           [placeholder]="'Select Policy'">
         </input-select-option-field>
         <input-number
           [frmGroup]="detailForm"
           [controlName]="'approverNo'"
           [label]="'No of Approver'"
-          
+          [isVertical]="true"
           [minValue]="1">
         </input-number>
         </div>
@@ -159,7 +162,7 @@
 <!--          [frmGroup]="detailForm"-->
 <!--          [controlName]="'organizationLevel'"-->
 <!--          [label]="'Organisation Level'"-->
-<!--          -->
+<!--          [isVertical]="true"-->
 <!--          [minValue]="0">-->
 <!--        </input-number>-->
           <input-select-option-field
@@ -167,7 +170,6 @@
             [controlName]="'organizationLevel'"
             [label]="'Organisation Level'"
             [options]="organizationLevelOptions()"
-            
             [placeholder]="'Select Organization Type'">
           </input-select-option-field>
         </div>
@@ -178,7 +180,6 @@
           [controlName]="'roleName'"
           [label]="'Add Role'"
           [options]="roleOptions()"
-          
           [placeholder]="'Select Role'"
           (onSelect)="addRoleToSelection()">
         </input-select-option-field>
@@ -187,7 +188,7 @@
           [frmGroup]="detailForm"
           [controlName]="'workflowDetailId'"
           [label]="'Workflow Detail ID'"
-          
+          [isVertical]="true"
           [minValue]="1"
           [isReadonly]="true">
         </input-number>
@@ -274,15 +275,16 @@
 <!--<div class="page-wrapper" *ngIf="levelForm.get('workflowName')?.value">-->
   <div class="panel" *ngIf="levelForm.get('workflowName')?.value">
     <div class="container space-y-6 p-4 my-4">
-      <app-sub-panel-header [subPanelTitle]="'Eligible Approver Preview'"></app-sub-panel-header>
-
+      <app-expansion-panel-header
+        [isOpenSignal]="previewPanelOpen"
+        [panelTitle]="'Eligible Approver Preview'">
+      </app-expansion-panel-header>
       <div class="flex flex-col md:flex-row items-end gap-4">
                   <input-select-option-field
                     [frmGroup]="selectorForm"
                     [controlName]="'moduleId'"
                     [label]="'Module'"
                     [options]="moduleOptions()"
-                    
                     [placeholder]="'Select Module'"
                     [isReadonly]="!levelForm.get('appId')?.value">
                   </input-select-option-field>
@@ -292,7 +294,6 @@
                     [controlName]="'functionId'"
                     [label]="'Function'"
                     [options]="functionOptions()"
-                    
                     [placeholder]="'Select Function'"
                     [isReadonly]="!selectorForm.get('moduleId')?.value">
                   </input-select-option-field>
@@ -300,7 +301,7 @@
                     [frmGroup]="previewForm"
                     [controlName]="'makerId'"
                     [label]="'Maker User ID'"
-                    >
+                    [isVertical]="true">
                   </input-text-box>
 
         <div class="md:self-end">

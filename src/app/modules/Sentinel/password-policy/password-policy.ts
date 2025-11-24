@@ -8,8 +8,8 @@ import {ToastrService} from 'ngx-toastr';
 import {UserCredentialsPolicyModel} from '../../model/UserCredentialsPolicy.model';
 import {PasswordPolicyService} from '../../service/password-policy-service';
 import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
-import { GenericSwitch } from '../../../shared/common-components/generic-component-type/generic-switch/generic-switch';
 import { InputNumber } from '../../../shared/common-components/input-types/input-number/input-number';
+import { GenericSwitch } from '../../../shared/common-components/generic-component-type/generic-switch/generic-switch';
 
 @Component({
   selector: 'app-password-policy',

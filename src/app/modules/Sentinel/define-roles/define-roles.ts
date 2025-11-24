@@ -2,12 +2,18 @@ import {Component, computed, DestroyRef, effect, EventEmitter, inject, signal, W
 import {BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE} from '../../../shared/constant/button-signals.constant';
 import {ToastrService} from 'ngx-toastr';
 import {CommonModule} from '@angular/common';
-
+import {ExpansionPanelHeader} from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
+import {InputSelectOptionField} from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
+import {InputTextArea} from '../../../shared/common-components/input-types/input-text-area/input-text-area';
+import {GenericButton} from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
 
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {SubPanelHeader} from '../../../shared/common-components/sub-panel-header/sub-panel-header';
 import {MatButtonModule} from '@angular/material/button';
+import {ExpansionSubPanelHeader} from '../../../shared/common-components/expansion-sub-panel-header/expansion-sub-panel-header';
+import {UserProfileModel} from '../../model/UserProfile.model';
 import {
   AppFunctionsRequest, AppFunctionsResponse,
   DefineUserRole, UserGrantRole,
@@ -22,14 +28,8 @@ import {WorkflowDesignerService} from '../workflow-designer/services/workflow-de
 import {catchError} from 'rxjs/operators';
 import {of} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
-import { GenericButton } from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
-import { GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid';
-import { CheckboxChangeEvent, ColumnSelectAllEvent } from '../../../shared/common-components/generic-component-type/generic-data-grid/generic-data-grid';
+import { CheckboxChangeEvent, ColumnSelectAllEvent, GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid/generic-data-grid';
 import { InputIdBox } from '../../../shared/common-components/input-types/input-id-box/input-id-box';
-import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
-import { InputTextArea } from '../../../shared/common-components/input-types/input-text-area/input-text-area';
-import { SubPanelHeader } from '../../../shared/common-components/sub-panel-header/sub-panel-header';
 
 @Component({
   selector: 'app-define-roles',

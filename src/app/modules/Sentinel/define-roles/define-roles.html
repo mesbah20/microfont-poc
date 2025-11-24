@@ -12,7 +12,7 @@
             [controlName]="'roleName'"
             [label]="'Role Name'"
             [isReadonly]="false"
-            
+            [isVertical]="true"
             [tooltip]="'Enter Role Name'"
             [allowSpecialChars] = "true"
             [isDotsVisible]="true"
@@ -27,7 +27,7 @@
             [frmGroup]="rolesForm"
             [controlName]="'roleDescrip'"
             [label]="'Description'"
-            
+            [isVertical]="true"
             [tooltip]="'Enter Description'">
           </input-text-area>
         </div>
@@ -128,7 +128,6 @@
           [controlName]="'appId'"
           [label]="'Application'"
           [options]="applicationOptions()"
-          
           [placeholder]="'Select Application'">
         </input-select-option-field>
 
@@ -137,7 +136,6 @@
           [controlName]="'moduleId'"
           [label]="'Module'"
           [options]="moduleOptions()"
-          
           [placeholder]="'Select Module'"
           [isReadonly]="!selectorForm.get('appId')?.value">
         </input-select-option-field>
@@ -147,7 +145,6 @@
           [controlName]="'itemType'"
           [label]="'Item'"
           [options]="itemTypeOptions"
-          
           [placeholder]="'Select Item'">
         </input-select-option-field>
 

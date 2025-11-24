@@ -8,18 +8,17 @@ import {UserPackageModel} from '../../model/UserPackage.model';
 import {MatButtonModule} from '@angular/material/button';
 import {BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE} from '../../../shared/constant/button-signals.constant';
 import {ToastrService} from 'ngx-toastr';
-
 import {UserListModal} from '../user-list-modal/user-list-modal';
 import {UserProfileService} from '../../service/user-profile-service';
-import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
-import { GenericButton } from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
-import { GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid';
-import { GenericSwitch } from '../../../shared/common-components/generic-component-type/generic-switch/generic-switch';
-import { InputFile } from '../../../shared/common-components/input-types/input-file/input-file';
-import { InputIdBox } from '../../../shared/common-components/input-types/input-id-box/input-id-box';
-import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
 import { InputTextBox } from '../../../shared/common-components/input-types/input-text-box/input-text-box';
+import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
+import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
+import { GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid/generic-data-grid';
+import { GenericButton } from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
 import { SubPanelHeader } from '../../../shared/common-components/sub-panel-header/sub-panel-header';
+import { GenericSwitch } from '../../../shared/common-components/generic-component-type/generic-switch/generic-switch';
+import { InputIdBox } from '../../../shared/common-components/input-types/input-id-box/input-id-box';
+import { InputFile } from '../../../shared/common-components/input-types/input-file/input-file';
 
 interface IpGridItem {
   logInUserTerminalIp: any;
@@ -29,7 +28,7 @@ interface IpGridItem {
   selector: 'app-user-profile',
   standalone: true,
   imports: [CommonModule, InputTextBox, ExpansionPanelHeader, InputSelectOptionField, GenericButton, GenericDataGrid,
-      MatMenuModule, MatIconModule, ReactiveFormsModule, SubPanelHeader,
+    MatMenuModule, MatIconModule, ReactiveFormsModule, SubPanelHeader,
     MatButtonModule, InputFile, InputIdBox, GenericSwitch,  UserListModal ],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.scss'
