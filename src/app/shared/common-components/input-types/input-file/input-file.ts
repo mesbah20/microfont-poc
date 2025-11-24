@@ -32,6 +32,7 @@ export class InputFile {
 	readonly enable = input<boolean>(true);
 	readonly tooltip = input<string>('');
 	readonly isVertical = input<boolean>(false);
+	readonly customErrorMessages = input<{ [key: string]: string }>({});
 	// Outputs
 	readonly selectedFilesChanged = output<File[]>();
 	readonly onFileChanged = output<any>();
@@ -98,6 +99,41 @@ removeFile(index: number): void {
 		if (!control?.validator) return false;
 		const validation = control.validator({} as any);
 		return !!validation?.['required'];
+	}
+
+	getCustomErrorMessage(errorKey: string): string {
+		const group = this.frmGroup();
+		const name = this.controlName();
+		if (!group || !name) return `Validation error: ${errorKey}`;
+
+		const control = group.get(name);
+		let message = `${this.label()} has validation error: ${errorKey}`;
+
+		if (typeof this.customErrorMessages()[errorKey] === 'string') {
+			message = this.customErrorMessages()[errorKey];
+		} else if (control?.errors?.[errorKey]) {
+			const errorValue = control.errors[errorKey];
+			if (typeof errorValue === 'string') {
+				message = errorValue;
+			}
+		}
+		return message;
+	}
+
+	getCustomErrorKeys(): string[] {
+		const group = this.frmGroup();
+		const name = this.controlName();
+		if (!group || !name) return [];
+
+		const control = group.get(name);
+		if (!control?.errors) return [];
+
+		const defaultErrorKeys = ['required'];
+		return Object.keys(control.errors).filter(key => !defaultErrorKeys.includes(key));
+	}
+
+	hasCustomErrors(): boolean {
+		return this.getCustomErrorKeys().length > 0;
 	}
 
 	disabled = computed(() => !this.enable());

@@ -75,13 +75,41 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
   readonly tooltip = input<string>('');
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipClass = input<string>('custom-tooltip');
-  readonly tooltipDelay = input<number>(500)
+  readonly tooltipDelay = input<number>(500);
+  readonly customErrorMessages = input<{ [key: string]: string }>({});
   // Internal state
   isInvalidState = signal(false);
   errorMessage = signal('');
   currentRows = signal(0);
   longestLine = signal(0);
   manualRows = signal(0); // New: tracks manually set rows
+
+  getCustomErrorMessage(errorKey: string): string {
+    const control = this.frmGroup().get(this.controlName());
+    let message = `${this.label()} has validation error: ${errorKey}`;
+
+    if (typeof this.customErrorMessages()[errorKey] === 'string') {
+      message = this.customErrorMessages()[errorKey];
+    } else if (control?.errors?.[errorKey]) {
+      const errorValue = control.errors[errorKey];
+      if (typeof errorValue === 'string') {
+        message = errorValue;
+      }
+    }
+    return message;
+  }
+
+  getCustomErrorKeys(): string[] {
+    const control = this.frmGroup().get(this.controlName());
+    if (!control?.errors) return [];
+
+    const defaultErrorKeys = ['required', 'minlength', 'maxlength'];
+    return Object.keys(control.errors).filter(key => !defaultErrorKeys.includes(key));
+  }
+
+  hasCustomErrors(): boolean {
+    return this.getCustomErrorKeys().length > 0;
+  }
 
   // Auto-resize related properties
   private resizeTimeout: any;

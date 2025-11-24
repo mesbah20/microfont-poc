@@ -34,6 +34,7 @@ export class InputSelectOptionField implements OnInit {
   readonly tooltipClass = input<string>('custom-tooltip');
   readonly placeholder = input<any>();
   readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
+  readonly customErrorMessages = input<{ [key: string]: string }>({});
   readonly onSelect = output<{
     selectedOption: Option;
     selectedKey: any;
@@ -117,6 +118,33 @@ export class InputSelectOptionField implements OnInit {
     if (!control?.validator) return false;
     const validation = control.validator({} as any);
     return !!validation?.['required'];
+  }
+
+  getCustomErrorMessage(errorKey: string): string {
+    const control = this.frmGroup().get(this.controlName());
+    let message = `${this.label()} has validation error: ${errorKey}`;
+
+    if (typeof this.customErrorMessages()[errorKey] === 'string') {
+      message = this.customErrorMessages()[errorKey];
+    } else if (control?.errors?.[errorKey]) {
+      const errorValue = control.errors[errorKey];
+      if (typeof errorValue === 'string') {
+        message = errorValue;
+      }
+    }
+    return message;
+  }
+
+  getCustomErrorKeys(): string[] {
+    const control = this.frmGroup().get(this.controlName());
+    if (!control?.errors) return [];
+
+    const defaultErrorKeys = ['required'];
+    return Object.keys(control.errors).filter(key => !defaultErrorKeys.includes(key));
+  }
+
+  hasCustomErrors(): boolean {
+    return this.getCustomErrorKeys().length > 0;
   }
 
   onSearchInput(event: Event): void {

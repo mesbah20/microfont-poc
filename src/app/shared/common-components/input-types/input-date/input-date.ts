@@ -51,7 +51,36 @@ export class InputDate {
   readonly enableYearRangeValidation = input<boolean>(true);
   readonly onBlurred = output<any>();
   readonly includeTime = input<number>(1);
- readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
+  readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
+  readonly customErrorMessages = input<{ [key: string]: string }>({});
+
+  getCustomErrorMessage(errorKey: string): string {
+    const control = this.frmGroup().get(this.controlName());
+    let message = `${this.label()} has validation error: ${errorKey}`;
+
+    if (typeof this.customErrorMessages()[errorKey] === 'string') {
+      message = this.customErrorMessages()[errorKey];
+    } else if (control?.errors?.[errorKey]) {
+      const errorValue = control.errors[errorKey];
+      if (typeof errorValue === 'string') {
+        message = errorValue;
+      }
+    }
+    return message;
+  }
+
+  getCustomErrorKeys(): string[] {
+    const control = this.frmGroup().get(this.controlName());
+    if (!control?.errors) return [];
+
+    const defaultErrorKeys = ['required', 'yearOutOfRange', 'invalidDateFormat'];
+    return Object.keys(control.errors).filter(key => !defaultErrorKeys.includes(key));
+  }
+
+  hasCustomErrors(): boolean {
+    return this.getCustomErrorKeys().length > 0;
+  }
+
   constructor() { 
     // Add custom validator when component initializes
     effect(() => {

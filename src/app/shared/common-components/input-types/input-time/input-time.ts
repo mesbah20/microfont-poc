@@ -25,6 +25,8 @@ export class InputTime {
   @Input() maxTime: string = '23:59';
   @Input() isReadonly: boolean = false;
   @Input() placeholder: string = '--:--';
+  @Input() displayMode: 'horizontal' | 'vertical' | 'outline' = 'vertical';
+  @Input() customErrorMessages: { [key: string]: string } = {};
 
   @Output() timeChange = new EventEmitter<string>();
 
@@ -35,6 +37,42 @@ export class InputTime {
 
   onBlur() {
     this.frmGroup.get(this.controlName)?.markAsTouched();
+  }
+
+  clearInput(): void {
+    const control = this.frmGroup.get(this.controlName);
+    if (control) {
+      control.setValue('');
+      control.markAsTouched();
+      this.timeChange.emit('');
+    }
+  }
+
+  getCustomErrorMessage(errorKey: string): string {
+    const control = this.frmGroup.get(this.controlName);
+    let message = `${this.label} has validation error: ${errorKey}`;
+
+    if (typeof this.customErrorMessages[errorKey] === 'string') {
+      message = this.customErrorMessages[errorKey];
+    } else if (control?.errors?.[errorKey]) {
+      const errorValue = control.errors[errorKey];
+      if (typeof errorValue === 'string') {
+        message = errorValue;
+      }
+    }
+    return message;
+  }
+
+  getCustomErrorKeys(): string[] {
+    const control = this.frmGroup.get(this.controlName);
+    if (!control?.errors) return [];
+
+    const defaultErrorKeys = ['required'];
+    return Object.keys(control.errors).filter(key => !defaultErrorKeys.includes(key));
+  }
+
+  hasCustomErrors(): boolean {
+    return this.getCustomErrorKeys().length > 0;
   }
 
   onTimeChange(event: any): void {
