@@ -8,18 +8,18 @@
 
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div class="component-section">
-          <input-id-box
+          <lds-id-box
             [frmGroup]="userForm"
             [controlName]="'userId'"
             [label]="'User ID'"
             [isReadonly]="false"
-            
+            [isVertical]="true"
             [tooltip]="'ID'"
             [allowSpecialChars] = "true"
             [isDotsVisible]="true"
             (dotsClicked)="openModal()"
             (onBlurred)="onUserIdChange($event)">
-          </input-id-box>
+          </lds-id-box>
           <app-user-list-modal [showUserModal]="showUserModal" [userId]="userForm.get('user.userId')?.value ?? null"
                                (userSelected)="loadUser($event)"></app-user-list-modal>
         </div>
@@ -28,36 +28,36 @@
           Invalid User ID!</span>
         </div>
         <div class="component-section" *ngIf="showUserInfoBlock === true">
-          <input-text-box
+          <app-text-base-input
             [frmGroup]="userForm"
             [controlName]="'userName'"
             [label]="'User Name'"
             [isReadonly]="true"
-            >
-          </input-text-box>
+            [isVertical]="true">
+          </app-text-base-input>
         </div>
         <div class="component-section" *ngIf="showUserInfoBlock === true">
-          <input-select-option-field [frmGroup]="userForm" [isReadonly]="true"
+          <app-select-option-field [frmGroup]="userForm" [isReadonly]="true"
                                    [controlName]="'homeOfficeId'" [label]="'Office ID'"
-                                    [options]="officeOptions">
-          </input-select-option-field>
+                                   [isVertical]="true" [options]="officeOptions">
+          </app-select-option-field>
         </div>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4" *ngIf="showUserInfoBlock === true">
         <div class="component-section">
-          <input-text-box [frmGroup]="userForm"
+          <app-text-base-input [frmGroup]="userForm"
                                [controlName]="'userDescription'" [label]="'User Description'"
-                                [isReadonly]="true">
-          </input-text-box>
+                               [isVertical]="true" [isReadonly]="true">
+          </app-text-base-input>
         </div>
         <div class="component-section">
-          <input-text-box
+          <app-text-base-input
             [frmGroup]="frmGroup"
             [controlName]="'userStatus'"
             [label]="'Active Status'"
             [isReadonly]="true"
-            >
-          </input-text-box>
+            [isVertical]="true">
+          </app-text-base-input>
         </div>
       </div>
     </div>

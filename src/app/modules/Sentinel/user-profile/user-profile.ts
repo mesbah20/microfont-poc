@@ -1,25 +1,28 @@
 import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CommonModule} from '@angular/common';
+import {TextBaseInput} from '../../../shared/components/input-types/text-base-input/text-base-input';
+import {ExpansionPanelHeader} from '../../../shared/components/expansion-panel-header/expansion-panel-header';
+
 import {UserGrantPackageModel, UserProfileModel} from '../../model/UserProfile.model';
+import {SelectOptionField} from '../../../shared/components/input-types/select-option-field/select-option-field';
+import {TextArea} from '../../../shared/components/input-types/text-area/text-area';
+import {Button} from '../../../shared/components/input-types/button/button';
+import {DataGridComponent} from '../../../shared/components/data-grid/data-grid';
+import {NumberInput} from '../../../shared/components/input-types/number-input/number-input';
+import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {UserPackageModel} from '../../model/UserPackage.model';
+import {SubPanelHeader} from '../../../shared/components/sub-panel-header/sub-panel-header';
 import {MatButtonModule} from '@angular/material/button';
 import {BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE} from '../../../shared/constant/button-signals.constant';
 import {ToastrService} from 'ngx-toastr';
-
+import {FileComponent} from '../../../shared/components/input-types/file-input/file-input';
+import {IdBoxComponent} from '../../../shared/components/input-types/id-box/id-box';
+import {Switch} from '../../../shared/components/input-types/switch/switch';
 import {UserListModal} from '../user-list-modal/user-list-modal';
 import {UserProfileService} from '../../service/user-profile-service';
-import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
-import { GenericButton } from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
-import { GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid';
-import { GenericSwitch } from '../../../shared/common-components/generic-component-type/generic-switch/generic-switch';
-import { InputFile } from '../../../shared/common-components/input-types/input-file/input-file';
-import { InputIdBox } from '../../../shared/common-components/input-types/input-id-box/input-id-box';
-import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
-import { InputTextBox } from '../../../shared/common-components/input-types/input-text-box/input-text-box';
-import { SubPanelHeader } from '../../../shared/common-components/sub-panel-header/sub-panel-header';
 
 interface IpGridItem {
   logInUserTerminalIp: any;
@@ -28,9 +31,9 @@ interface IpGridItem {
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, InputTextBox, ExpansionPanelHeader, InputSelectOptionField, GenericButton, GenericDataGrid,
-      MatMenuModule, MatIconModule, ReactiveFormsModule, SubPanelHeader,
-    MatButtonModule, InputFile, InputIdBox, GenericSwitch,  UserListModal ],
+  imports: [CommonModule, TextBaseInput, ExpansionPanelHeader, SelectOptionField, Button, DataGridComponent,
+    MatMenuModule, MatIconModule, ReactiveFormsModule, SubPanelHeader,
+    MatButtonModule, FileComponent, IdBoxComponent, Switch,  UserListModal ],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.scss'
 })

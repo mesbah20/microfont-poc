@@ -2,12 +2,27 @@ import {Component, computed, DestroyRef, effect, EventEmitter, inject, signal, W
 import {BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE} from '../../../shared/constant/button-signals.constant';
 import {ToastrService} from 'ngx-toastr';
 import {CommonModule} from '@angular/common';
-
-
+import {TextBaseInput} from '../../../shared/components/input-types/text-base-input/text-base-input';
+import {UserListModal} from '../user-list-modal/user-list-modal';
+import {ExpansionPanelHeader} from '../../../shared/components/expansion-panel-header/expansion-panel-header';
+import {SelectOptionField} from '../../../shared/components/input-types/select-option-field/select-option-field';
+import {TextArea} from '../../../shared/components/input-types/text-area/text-area';
+import {Button} from '../../../shared/components/input-types/button/button';
+import {
+  CheckboxChangeEvent,
+  ColumnSelectAllEvent,
+  DataGridComponent
+} from '../../../shared/components/data-grid/data-grid';
+import {NumberInput} from '../../../shared/components/input-types/number-input/number-input';
+import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {SubPanelHeader} from '../../../shared/components/sub-panel-header/sub-panel-header';
 import {MatButtonModule} from '@angular/material/button';
+import {IdBoxComponent} from '../../../shared/components/input-types/id-box/id-box';
+import {ExpansionSubPanelHeader} from '../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
+import {UserProfileModel} from '../../model/UserProfile.model';
 import {
   AppFunctionsRequest, AppFunctionsResponse,
   DefineUserRole, UserGrantRole,
@@ -22,20 +37,12 @@ import {WorkflowDesignerService} from '../workflow-designer/services/workflow-de
 import {catchError} from 'rxjs/operators';
 import {of} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
-import { GenericButton } from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
-import { GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid';
-import { CheckboxChangeEvent, ColumnSelectAllEvent } from '../../../shared/common-components/generic-component-type/generic-data-grid/generic-data-grid';
-import { InputIdBox } from '../../../shared/common-components/input-types/input-id-box/input-id-box';
-import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
-import { InputTextArea } from '../../../shared/common-components/input-types/input-text-area/input-text-area';
-import { SubPanelHeader } from '../../../shared/common-components/sub-panel-header/sub-panel-header';
 
 @Component({
   selector: 'app-define-roles',
-  imports: [CommonModule,   ExpansionPanelHeader, InputSelectOptionField, InputTextArea, GenericButton, GenericDataGrid,
+  imports: [CommonModule,   ExpansionPanelHeader, SelectOptionField, TextArea, Button, DataGridComponent,
       MatMenuModule, MatIconModule, ReactiveFormsModule, SubPanelHeader,
-    MatButtonModule, InputIdBox,  UserRolesModal],
+    MatButtonModule, IdBoxComponent,  UserRolesModal],
   templateUrl: './define-roles.html',
   styleUrl: './define-roles.scss'
 })

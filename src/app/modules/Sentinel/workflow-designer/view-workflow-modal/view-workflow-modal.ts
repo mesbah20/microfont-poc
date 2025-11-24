@@ -1,18 +1,19 @@
 import {Component, EventEmitter, inject, Input, Output, signal} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
+import {DataGridComponent} from '../../../../shared/components/data-grid/data-grid';
+import {LdsModalComponent} from '../../../../shared/components/lds-modal/lds-modal';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {CommonModule} from '@angular/common';
 import {WorkflowDesignerService} from '../services/workflow-designer.service';
 import {ApprovalFunctionLevelModel} from '../../../model/approval-workflow.model';
-import { GenericDataGrid } from '../../../../shared/common-components/generic-component-type/generic-data-grid';
 
 @Component({
   selector: 'app-view-workflow-modal',
   standalone: true,
-  imports: [ GenericDataGrid, MatMenuModule,
+  imports: [ DataGridComponent, MatMenuModule,
     MatIconModule, ReactiveFormsModule, MatButtonModule, CommonModule],
   templateUrl: './view-workflow-modal.html',
   styleUrl: './view-workflow-modal.scss'

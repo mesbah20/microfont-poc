@@ -1,20 +1,23 @@
 import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {TextBaseInput} from '../../../shared/components/input-types/text-base-input/text-base-input';
+import {ExpansionPanelHeader} from '../../../shared/components/expansion-panel-header/expansion-panel-header';
+import {Button} from '../../../shared/components/input-types/button/button';
+import {NumberInput} from '../../../shared/components/input-types/number-input/number-input';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {SubPanelHeader} from '../../../shared/components/sub-panel-header/sub-panel-header';
+import {Switch} from '../../../shared/components/input-types/switch/switch';
 import {BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE} from '../../../shared/constant/button-signals.constant';
 import {ToastrService} from 'ngx-toastr';
 import {UserCredentialsPolicyModel} from '../../model/UserCredentialsPolicy.model';
 import {PasswordPolicyService} from '../../service/password-policy-service';
-import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
-import { GenericSwitch } from '../../../shared/common-components/generic-component-type/generic-switch/generic-switch';
-import { InputNumber } from '../../../shared/common-components/input-types/input-number/input-number';
 
 @Component({
   selector: 'app-password-policy',
-  imports: [CommonModule,  ExpansionPanelHeader,  InputNumber, MatMenuModule,
-    MatIconModule, ReactiveFormsModule,  GenericSwitch,],
+  imports: [CommonModule,  ExpansionPanelHeader,  NumberInput, MatMenuModule,
+    MatIconModule, ReactiveFormsModule,  Switch,],
   templateUrl: './password-policy.html',
   styleUrl: './password-policy.scss'
 })
