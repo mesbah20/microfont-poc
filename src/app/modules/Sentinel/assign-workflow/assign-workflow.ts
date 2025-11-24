@@ -13,18 +13,17 @@ import {
 } from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { Button } from '../../../shared/components/input-types/button/button';
-import { SelectOptionField } from '../../../shared/components/input-types/select-option-field/select-option-field';
-import { DataGridComponent, TableRowDesigner } from '../../../shared/components/data-grid/index';
-import { ExpansionPanelHeader } from '../../../shared/components/expansion-panel-header/expansion-panel-header';
-import { DataSelectionModal } from '../../../shared/components/data-selection-modal/data-selection-modal';
+import { GenericButton } from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
+import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
+import { GenericDataGrid, TableRowDesigner } from '../../../shared/common-components/generic-component-type/generic-data-grid';
+import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
 import { BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE } from '../../../shared/constant/button-signals.constant';
 import { catchError, debounceTime, distinctUntilChanged, forkJoin, of } from 'rxjs';
-import { DropdownOption } from '../../../shared/components/data-grid/data-grid';
 import { WorkflowDesignerService } from '../workflow-designer/services/workflow-designer.service';
-import { AmountInput } from '../../../shared/components/input-types/amount-input/amount-input';
-import { TextBaseInput } from '../../../shared/components/input-types/text-base-input/text-base-input';
+import { InputAmount } from '../../../shared/common-components/input-types/input-amount/input-amount';
+import { InputTextBox } from '../../../shared/common-components/input-types/input-text-box/input-text-box';
 import {AssignWorkflowService} from '../../service/assign-workflow.service';
+import { DropdownOption } from '../../../shared/common-components/generic-component-type/generic-data-grid/generic-data-grid';
 
 
 interface QueryRow {
@@ -55,13 +54,13 @@ export interface Condition {
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    Button,
-    SelectOptionField,
+    GenericButton,
+    InputSelectOptionField,
     CommonModule,
-    DataGridComponent,
+    GenericDataGrid,
     ExpansionPanelHeader,
-    AmountInput,
-    TextBaseInput
+    InputAmount,
+    InputTextBox
   ],
   templateUrl: './assign-workflow.html',
   styleUrl: './assign-workflow.scss'
