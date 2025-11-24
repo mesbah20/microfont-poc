@@ -1,0 +1,108 @@
+<div class="page-wrapper">
+  @if(frmGroup) {
+  <form [formGroup]="frmGroup" class="transaction-form">
+    <div class="panel">
+      <div class="transaction-grid-container mb-10">
+        <!-- Office Selection Section -->
+        <section
+          class="office-selection-section bg-white rounded-lg shadow-sm mb-4"
+        >
+          <app-expansion-panel-header
+            [isOpenSignal]="subPanel1"
+            [panelTitle]="'Filters'"
+          />
+
+          <div class="p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <!-- Office Filter -->
+              <input-select-option-field
+                [frmGroup]="frmGroup"
+                [controlName]="'office'"
+                [label]="'Select Office'"
+                [options]="officeOptions()"
+                [searchable]="true"
+                [tooltip]="'Select an office to filter service requests'"
+                (onSelect)="onOfficeChange($event)"
+              />
+
+              <!-- From Date Filter -->
+              <input-date
+                [frmGroup]="frmGroup"
+                [controlName]="'fromDate'"
+                [label]="'From Date'"
+                [dateFormat]="'DD MMM, YYYY'"
+                [tooltip]="'Select start date for filtering'"
+              />
+
+              <!-- To Date Filter -->
+              <input-date
+                [frmGroup]="frmGroup"
+                [controlName]="'toDate'"
+                [label]="'To Date'"
+                [dateFormat]="'DD MMM, YYYY'"
+                [tooltip]="'Select end date for filtering'"
+              />
+
+              <!-- Filter Button -->
+              <div class="flex items-end">
+                <generic-button
+                  [label]="'Apply Filters'"
+                  (onClick)="onApplyFilters()"
+                />
+              </div>
+            </div>
+
+            <!-- Clear Filters Button - Separate Row -->
+            <div class="mt-2 flex justify-end">
+              <generic-button
+                [label]="'Clear Filters'"
+                [cssClass]="'bg-gray-500 hover:bg-gray-600'"
+                (onClick)="onClearFilters()"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- Transaction Grid Section -->
+        <section class="transaction-grid-section bg-white rounded-lg shadow-sm">
+          <app-expansion-panel-header
+            [isOpenSignal]="businessHeaderPanel"
+            [panelTitle]="'Service Request List'"
+          />
+
+          <div class="p-4">
+            <lds-data-grid
+              [id]="'service-requests-grid'"
+              [dataSource]="serviceRequests()"
+              [initPageSize]="10"
+              [enableSelection]="false"
+              [showEditButton]="false"
+              [showDeleteButton]="false"
+              [showViewButton]="true"
+              [showPrintButton]="false"
+              [selectedColumns]="selectedColumns"
+              [customColumnNames]="customColumnNames"
+              [tblClass]="'service-request-table'"
+              [searchEnabled]="true"
+              (onFHViewClick)="onTransactionView($event)"
+            >
+            </lds-data-grid>
+          </div>
+        </section>
+      </div>
+    </div>
+  </form>
+
+  <!-- Data Selection Modal -->
+  <generic-modal
+    [isVisible]="showModal"
+    [modalTitle]="'Service Request Details'"
+    [cssClass]="'modal-lg'"
+    [okButtonText]="modalOkButtonText()"
+    [modalComponent]="modalComponent"
+    [modalComponentData]="modalComponentData"
+    (modalClosed)="onModalClose(false)"
+    (modalResult)="onModalResult($event)"
+  ></generic-modal>
+  }
+</div>

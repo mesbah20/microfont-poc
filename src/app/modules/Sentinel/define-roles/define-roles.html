@@ -7,29 +7,29 @@
       </app-expansion-panel-header>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div class="component-section">
-          <lds-id-box
+          <input-id-box
             [frmGroup]="rolesForm"
             [controlName]="'roleName'"
             [label]="'Role Name'"
             [isReadonly]="false"
-            [isVertical]="true"
+            
             [tooltip]="'Enter Role Name'"
             [allowSpecialChars] = "true"
             [isDotsVisible]="true"
             (dotsClicked)="openModal()"
             (onBlurred)="onRoleNameChange($event)">
-          </lds-id-box>
+          </input-id-box>
           <app-user-roles-modal [showUserRolesModal]="showUserRolesModal" [roleName]="rolesForm.get('roles.roleName')?.value ?? null"
                                (roleSelected)="loadRole($event)"></app-user-roles-modal>
         </div>
         <div class="component-section">
-          <lds-txt-area
+          <input-text-area
             [frmGroup]="rolesForm"
             [controlName]="'roleDescrip'"
-            [labelText]="'Description'"
-            [isVertical]="true"
+            [label]="'Description'"
+            
             [tooltip]="'Enter Description'">
-          </lds-txt-area>
+          </input-text-area>
         </div>
       </div>
     </div>
@@ -123,44 +123,44 @@
       <app-sub-panel-header [subPanelTitle]="'Category'">
       </app-sub-panel-header>
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <app-select-option-field
+        <input-select-option-field
           [frmGroup]="selectorForm"
           [controlName]="'appId'"
           [label]="'Application'"
           [options]="applicationOptions()"
-          [isVertical]="true"
+          
           [placeholder]="'Select Application'">
-        </app-select-option-field>
+        </input-select-option-field>
 
-        <app-select-option-field
+        <input-select-option-field
           [frmGroup]="selectorForm"
           [controlName]="'moduleId'"
           [label]="'Module'"
           [options]="moduleOptions()"
-          [isVertical]="true"
+          
           [placeholder]="'Select Module'"
           [isReadonly]="!selectorForm.get('appId')?.value">
-        </app-select-option-field>
+        </input-select-option-field>
 
-        <app-select-option-field
+        <input-select-option-field
           [frmGroup]="selectorForm"
           [controlName]="'itemType'"
           [label]="'Item'"
           [options]="itemTypeOptions"
-          [isVertical]="true"
+          
           [placeholder]="'Select Item'">
-        </app-select-option-field>
+        </input-select-option-field>
 
         <div class="flex flex-wrap gap-3 justify-end items-end">
-          <lds-btn
-            [labelText]="'Search'"
+          <generic-button
+            [label]="'Search'"
             (onClick)="searchFunction()">
-          </lds-btn>
-          <lds-btn
-            [labelText]="'Reset'"
+          </generic-button>
+          <generic-button
+            [label]="'Reset'"
             [cssClass]="'bg-slate-500 text-white px-4'"
             (onClick)="resetAll()">
-          </lds-btn>
+          </generic-button>
         </div>
       </div>
     </div>

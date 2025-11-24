@@ -1,0 +1,534 @@
+<div class="page-wrapper">
+  @if(frmGroup) {
+    <form [formGroup]="frmGroup" class="transaction-form">
+      <div class="panel">
+        <div class="transaction-grid-container mb-10">
+          <!-- Header Section -->
+          <section class="header-section">
+            <app-expansion-panel-header
+              [isOpenSignal]="businessHeaderPanel"
+              [panelTitle]="'Transaction Management'"
+            />
+          </section>
+
+          <div class="form-grid-col-1 ">
+            
+            <!-- SECTION 1: OUTLINE MODE COMPONENTS -->
+            <section class="rounded-lg  grid-section">
+             
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                <!-- Transaction Reference -->
+                <div class="">
+                  <input-text-box
+                    [frmGroup]="frmGroup"
+                    [controlName]="'textBox'"
+                    [label]="'Transaction Reference'"
+                    displayMode="outline"
+                    [tooltip]="'Auto-generated based on currency and category'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onTextBoxChanged($event)"
+                    [customErrorMessages]="{
+                      required: 'Transaction reference is required',
+                      minlength: 'Minimum 3 characters required',
+                      maxlength: 'Maximum 20 characters allowed',
+                      pattern: 'Only alphanumeric characters and underscores are allowed'
+                    }" 
+                  ></input-text-box>
+                </div>
+
+                <!-- Currency Selection -->
+                <div class="">
+                  <input-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'currency'"
+                    [label]="'Currency'"
+                    displayMode="outline"  
+                    [options]="currencyOptions"
+                    [tooltip]="'Currency selection affects country and tax rate'"
+                    [searchable]="false"
+                    (onSelect)="handleCategorySelection($event)"
+                  ></input-select-option-field>
+                </div>
+
+                <div class="">
+                  <input-amount
+                  [frmGroup]="frmGroup"
+                  [controlName]="'amount'"
+                  [label]="'Transaction Amount'"
+                  displayMode ="outline"
+                  [decimalPlaces]="2"
+                  [maxLen]="12"
+                  [tooltip]="'Amount affects tax calculation and approval requirements'"
+                  (onBlurred)="onBlur($event)"
+                  (onChanged)="onAmountChanged($event)"
+                ></input-amount>
+                </div>
+
+                <!-- Amount in Words -->
+                <div class="">
+                  <input-amount-in-word
+                    [frmGroup]="frmGroup"
+                    [controlName]="'amountToWord'"
+                    [label]="'Amount in Words'"
+                    displayMode="outline"
+                    [currency]="selectedCurrency()"
+                    [decimalPlaces]="2"
+                    [maxLen]="12"
+                    [tooltip]="'Automatically synced with amount field'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onAmountToWordChanged($event)"
+                  ></input-amount-in-word>
+                </div>
+
+                <!-- Priority Level -->
+                <div class="">
+                  <input-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'dropdown'"
+                    [label]="'Priority Level'"
+                    displayMode="outline"
+                    [options]="dropdownOptions"
+                    [tooltip]="'Select transaction priority'"
+                    (onSelect)="handleCategorySelection($event)"
+                  ></input-select-option-field>
+                </div>
+
+                <!-- Additional Services -->
+                <div class="">
+                  <generic-multi-select-option
+                    [frmGroup]="frmGroup"
+                    [controlName]="'multiSelect'"
+                    [label]="'Additional Services'"
+                    displayMode="outline"
+                    [options]="dropdownOptions"
+                  ></generic-multi-select-option>
+                </div>
+
+                <!-- Reference Number -->
+                <div class="">
+                  <input-number
+                    [frmGroup]="frmGroup"
+                    [controlName]="'number'"
+                    [label]="'Reference Number'"
+                    displayMode="outline"
+                    [minValue]="1"
+                    [maxValue]="9999"
+                    [maxLen]="4"
+                    [placeholder]="'Auto-generated number'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onNumberChanged($event)"
+                  ></input-number>
+                </div>
+
+                <!-- Office Code -->
+                <div class="">
+                  <input-office-box
+                    [frmGroup]="frmGroup"
+                    [controlName]="'officeCode'"
+                    [label]="'Office Code'"
+                    displayMode="outline"
+                    [enable]="true"
+                    [visible]="true"
+                    [maxLen]="4"
+                    [placeholder]="'Auto-suggested based on currency'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onOfficeBoxChanged($event)"
+                  ></input-office-box>
+                </div>
+              </div>
+            </section>
+
+            <!-- SECTION 2: VERTICAL MODE COMPONENTS -->
+            <section class=" rounded-lg ">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="subPanel1"
+                [subPanelTitle]="'Configuration Fields'"
+              />
+                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 grid-section">
+         
+                <!-- Account ID -->
+                <div class="component-section">
+                  <input-id-box
+                    [frmGroup]="frmGroup"
+                    [controlName]="'id'"
+                    [label]="'Account ID'"
+                    [allowSpecialChars]="true"
+                    [isDotsVisible]="true"
+                    [tooltip]="'Click to select account ID'"
+                    [tooltipPosition]="'above'"
+                    [tooltipDelay]="300"
+                    displayMode="vertical"
+                    (onBlurred)="onBlur($event)"
+                    (dotsClicked)="openModal()"
+                    (onChanged)="onIdBoxChanged($event)"
+                  ></input-id-box>
+                </div>
+
+                <!-- Currency (Vertical) -->
+                <div class="component-section">
+                  <input-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'currency'"
+                    [label]="'Currency'"
+                    
+                    [options]="currencyOptions"
+                    [tooltip]="'Currency selection affects country and tax rate'"
+                    [searchable]="false"
+                    (onSelect)="handleCategorySelection($event)"
+                  ></input-select-option-field>
+                </div>
+
+                <!-- Country -->
+                <div class="component-section">
+                  <input-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'country'"
+                    [label]="'Country'"
+                    [isReadonly]="true"
+                    
+                    [options]="countryOptions"
+                    [tooltip]="'Country affects risk level and validation rules'"
+                  ></input-select-option-field>
+                </div>
+
+                <!-- Product Category -->
+                <div class="component-section">
+                  <input-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'productCategory'"
+                    [label]="'Product Category'"
+                    
+                    [options]="productCategoryOptions"
+                    [tooltip]="'Category affects subcategories and tax multiplier'"
+                  ></input-select-option-field>
+                </div>
+
+                <!-- Subcategory -->
+                <div class="component-section">
+                  <input-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'subCategory'"
+                    [label]="'Sub Category'"
+                    
+                    [options]="getFilteredSubCategories()"
+                    [tooltip]="'Subcategory sets minimum amount requirements'"
+                  ></input-select-option-field>
+                </div>
+
+                <!-- Transaction Date -->
+                <div class="component-section">
+                  <input-date
+                    [frmGroup]="frmGroup"
+                    [controlName]="'date'"
+                    [label]="'Transaction Date'"
+                    displayMode="vertical"
+                    [dateFormat]="'YYYY-MM-DD'"
+                    [maxYear]="2034"
+                    [includeTime]="2"
+                    [enableYearRangeValidation]="false"
+                    (onBlurred)="onBlur($event)"
+                  ></input-date>
+                </div>
+
+                <!-- Tax Rate (Read-only) -->
+                <div class="component-section">
+                  <input-text-box
+                    [frmGroup]="frmGroup"
+                    [controlName]="'taxRate'"
+                    [label]="'Tax Rate (%)'"
+                    [isReadonly]="true"
+                    
+                    [tooltip]="'Calculated based on currency and product category'"
+                  ></input-text-box>
+                </div>
+
+                <!-- Calculated Tax (Read-only) -->
+                <div class="component-section">
+                  <input-text-box
+                    [frmGroup]="frmGroup"
+                    [controlName]="'calculatedTax'"
+                    [label]="'Tax Amount'"
+                    [isReadonly]="true"
+                    
+                    [tooltip]="'Auto-calculated: Amount × Tax Rate'"
+                  ></input-text-box>
+                </div>
+
+                <!-- Total Amount (Read-only) -->
+                <div class="component-section">
+                  <input-text-box
+                    [frmGroup]="frmGroup"
+                    [controlName]="'totalAmount'"
+                    [label]="'Total Amount'"
+                    [isReadonly]="true"
+                    
+                    [tooltip]="'Auto-calculated: Amount + Tax'"
+                  ></input-text-box>
+                </div>
+              </div>
+            </section>
+
+
+
+
+            <!-- SECTION 4: DOCUMENT UPLOAD & NOTES (HORIZONTAL MODE) -->
+            <section class="grid-section">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="subPanel1"
+                [subPanelTitle]="'Document Upload & Notes'"
+              />
+              <div class="space-y-6 mt-4">
+                
+                <!-- Express Processing Switch -->
+                <div class="component-section">
+                  <generic-switch
+                    [frmGroup]="frmGroup"
+                    [controlName]="'switch'"
+                    [label]="'Express Processing'"
+                    [isChecked]="frmGroup.get('switch')?.value || false"
+                  ></generic-switch>
+                  <div class="text-xs text-gray-600 mt-1">
+                    Express processing reduces validation requirements
+                  </div>
+                </div>
+
+                <!-- PDF File Upload  -->
+                <div class="component-section">
+                  <input-file
+                    #pdfFileInput
+                    [id]="'pdf-upload'"
+                    [multipleFile]="false"
+                    [fileExtension]="'.pdf'"
+                    [isVertical]="false"
+                    [label]="'Upload Supporting Document'"
+                    [cssClass]="'border-green-300 bg-green-50'"
+                    [savePath]="'documents/transactions'"
+                    [customFileName]="'transaction-document'"
+                    (selectedFilesChanged)="onPdfSelected($event)"
+                    (onFileChanged)="onFileInputChanged('Transaction Document')"
+                  />
+                </div>
+
+                <!-- Text Area  -->
+                <div class="component-section">
+                  <input-text-area
+                    [frmGroup]="frmGroup"
+                    [controlName]="'textArea'"
+                    [label]="'Transaction Notes'"
+                    [isVertical]="false"
+                    [rows]="3"
+                    [minRows]="2"
+                    [width]="'100%'"
+                    [maxRows]="10"
+                    [maxCols]="80"
+                    [placeholder]="'Enter transaction description and notes...'"
+                    [showRowCount]="true"
+                    (onChanged)="onInputTextAreaChanged($event)"
+                  ></input-text-area>
+                </div>
+              </div>
+            </section>
+
+            <!-- Action Buttons Section -->
+            <section class="action-buttons-section rounded-lg p-4 mb-6">
+              <div class="flex gap-4">
+                <generic-button
+                  id="saveBtn"
+                  value="save"
+                  label="Save"
+                  (onClick)="addCurrentFormToGrid()"
+                >
+                </generic-button>
+                <generic-button
+                  id="openSelfBtn"
+                  value="open"
+                  label="Open in Modal"
+                  (onClick)="openModal()"
+                >
+                </generic-button>
+              </div>
+            </section>
+
+
+
+                    
+            <section class=" rounded-lg ">
+              <app-expansion-panel-header
+                [isOpenSignal]="businessHeaderPanel"
+                [panelTitle]="'Transaction Management'"
+              />
+              
+              <div class="space-y-6 grid-section">
+                <!-- Text Input - Horizontal -->
+                <div class="component-section">
+                  <input-text-box
+                    [frmGroup]="frmGroup"
+                    [controlName]="'textBoxHorizontal'"
+                    [label]="'Transaction Reference '"
+                    [isReadonly]="false"
+                    displayMode="horizontal"
+                    [tooltip]="'Auto-generated based on currency and category'"
+                    [tooltipPosition]="'above'"
+                    [tooltipDelay]="300"
+                    [tooltipClass]="'success-tooltip'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onTextBoxChanged($event)"
+                    [customErrorMessages]="{
+                      required: 'Transaction reference is required',
+                      minlength: 'Minimum 3 characters required',
+                      maxlength: 'Maximum 20 characters allowed',
+                      pattern: 'Only alphanumeric characters and underscores are allowed'
+                    }"
+                  ></input-text-box>
+                </div>
+
+                <!-- Currency Select - Horizontal -->
+                <div class="component-section">
+                  <input-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'currencyHorizontal'"
+                    [label]="'Currency '"
+                    displayMode="horizontal"
+                    [options]="currencyOptions"
+                    [tooltip]="'Currency selection affects country and tax rate'"
+                    [searchable]="false"
+                    (onSelect)="handleCategorySelection($event)"
+                  ></input-select-option-field>
+                </div>
+
+                <!-- Amount in Words - Horizontal -->
+                <div class="component-section">
+                  <input-amount-in-word
+                    [frmGroup]="frmGroup"
+                    [controlName]="'amountToWordHorizontal'"
+                    [label]="'Amount in Words '"
+                    displayMode="horizontal"
+                    [currency]="selectedCurrency()"
+                    [decimalPlaces]="2"
+                    [maxLen]="12"
+                    [tooltip]="'Automatically synced with amount field'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onAmountToWordChanged($event)"
+                  ></input-amount-in-word>
+                </div>
+
+                <!-- Priority Level - Horizontal -->
+                <div class="component-section">
+                  <input-select-option-field
+                    [frmGroup]="frmGroup"
+                    [controlName]="'dropdownHorizontal'"
+                    [label]="'Priority Level '"
+                    displayMode="horizontal"
+                    [options]="dropdownOptions"
+                    [tooltip]="'Select transaction priority'"
+                    (onSelect)="handleCategorySelection($event)"
+                  ></input-select-option-field>
+                </div>
+
+                <!-- Multi-Select Services - Horizontal -->
+                <div class="component-section">
+                  <generic-multi-select-option
+                    [frmGroup]="frmGroup"
+                    [controlName]="'multiSelectHorizontal'"
+                    [label]="'Additional Services '"
+                    displayMode="horizontal"
+                    [options]="dropdownOptions"
+                  ></generic-multi-select-option>
+                </div>
+
+                <!-- Reference Number - Horizontal -->
+                <div class="component-section">
+                  <input-number
+                    [frmGroup]="frmGroup"
+                    [controlName]="'numberHorizontal'"
+                    [label]="'Reference Number '"
+                    displayMode="horizontal"
+                    [minValue]="1"
+                    [maxValue]="9999"
+                    [maxLen]="4"
+                    [placeholder]="'Auto-generated number'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onNumberChanged($event)"
+                  ></input-number>
+                </div>
+
+                <!-- Office Code - Horizontal -->
+                <div class="component-section">
+                  <input-office-box
+                    [frmGroup]="frmGroup"
+                    [controlName]="'officeCodeHorizontal'"
+                    [label]="'Office Code '"
+                    displayMode="horizontal"
+                    [enable]="true"
+                    [visible]="true"
+                    [maxLen]="4"
+                    [placeholder]="'Auto-suggested based on currency'"
+                    (onBlurred)="onBlur($event)"
+                    (onChanged)="onOfficeBoxChanged($event)"
+                  ></input-office-box>
+                </div>
+              </div>
+            </section>
+
+            <!-- Transaction Grid Section -->
+            <section class="transaction-grid-section bg-white rounded-lg shadow-sm">
+              <app-expansion-panel-header
+                [isOpenSignal]="businessHeaderPanel"
+                [panelTitle]="'Transaction Grid'"
+              />
+              
+              <div class="p-4">
+                <lds-data-grid 
+                  #transactionGrid
+                  [id]="'enhanced-transactions'"
+                  [dataSource]="sampleTransactions()"
+                  [initPageSize]="8"
+                  [enableSelection]="true"
+                  [showEditButton]="true"
+                  [showDeleteButton]="true"
+                  [showViewButton]="true"
+                  [searchEnabled]="true"
+                  [showPrintButton]="true"
+                  [useInlineEdit]="true"
+                  [editableColumns]="['amount', 'status', 'priority', 'currency', 'country', 'productCategory', 'subCategory', 'assignedRole']"
+                  [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
+                  [dropdownColumns]="transactionDropdownColumns()"
+                  [dropdownOptions]="transactionDropdownOptions()"
+                  [selectedColumns]="['id', 'amount', 'currency', 'country', 'productCategory', 'subCategory', 'status', 'riskLevel', 'totalAmount', 'requiresApproval']"
+                  [rowDesignerList]="transactionRowDesigners()"
+                  [tblClass]="'enhanced-transaction-table'"
+                  [groupOptionEnabled]="true"
+                  [summaryGridEnabled]="true"
+                  [summaryColumns]="['amount','calculatedTax']"
+                  [groupByColumns]="['currency', 'country','productCategory', 'subCategory']"
+                  [summaryGridPosition]="'above'"
+                  [gridTitle]="'Transaction Grid'"
+                  (onFHEditClick)="onTransactionEdit($event)"
+                  (onFHDeleteClick)="onTransactionDelete($event)"
+                  (onFHViewClick)="onTransactionView($event)"
+                  (onPrint)="onTransactionPrint($event)"
+                  (onChecked)="onTransactionRowSelect($event)"
+                  (onSelectAllChange)="onTransactionSelectAll($event)"
+                  (dataSourceChanged)="onTransactionDataChanged($event)"
+                ></lds-data-grid>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Data Selection Modal -->
+    <generic-modal
+      [isVisible]="showModal"
+      [modalTitle]="'Account Selection'"
+      [cssClass]="'modal-sm'"
+      [okButtonText]="'Process'"
+      [modalComponent]="modalComponent"
+      [modalComponentData]="modalComponentData"
+      (modalClosed)="onModalClose(false)"
+      (modalResult)="onModalResult($event)"
+    ></generic-modal>
+  }
+</div>

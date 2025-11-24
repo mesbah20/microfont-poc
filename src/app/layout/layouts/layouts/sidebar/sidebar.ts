@@ -14,7 +14,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { environment } from '../../../../../environments/environment';
 import { ToastHelperService } from '../../../../shared/services/toast-helper.service';
-import {AuthService} from '../../../../core/auth/auth.service';
+import { AuthService } from '../../../../shared/core/auth/auth.service';
 
 @Component({
   selector: 'app-sidebar',

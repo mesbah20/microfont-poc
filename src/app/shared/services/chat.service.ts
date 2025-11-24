@@ -5,8 +5,9 @@ import { NovuService, ChatMessage } from './novu.service';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { UserService } from '../../core/user/user.service';
-import { User } from '../../core/user/user.types';
+import { UserService } from '../core/user/user.service';
+import { User } from '../core/user/user.types';
+
 
 export interface ChatPreview {
   chatId: string;

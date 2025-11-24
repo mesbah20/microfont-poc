@@ -139,7 +139,7 @@
         <div class="mt-2 space-y-2 p-4">
           <div class="mb-3 px-4">
             <form [formGroup]="searchForm" (submit)="$event.preventDefault()">
-              <app-text-base-input
+              <input-text-box
                 [frmGroup]="searchForm"
                 [controlName]="'query'"
                 [label]="'Search users'"
@@ -147,7 +147,7 @@
                 [displayMode]="'outline'"
                 [isAllowSpecialChars]="true"
                 (onChanged)="onSearchInput()">
-              </app-text-base-input>
+              </input-text-box>
             </form>
 
             <!-- Optional: show spinner while searching -->
@@ -221,10 +221,10 @@
 </app-notification-detail-modal>
 
 <!-- Dynamic Modal -->
-<lds-modal #modalComponentRef [isVisible]="showModal || showEditProfileModal"
+<generic-modal #modalComponentRef [isVisible]="showModal || showEditProfileModal"
   [modalTitle]="showEditProfileModal ? 'Edit Profile' : 'Service Request'" [modalComponent]="modalComponent"
   [modalComponentData]="showEditProfileModal ? modalData : modalComponentData"
   [okButtonText]="showEditProfileModal ? 'Update Profile' : modalOkButtonText()"
   (isVisibleChanged)="onModalVisibilityChange($event)" (modalResult)="onModalResult($event)"
   (modalClosed)="onModalClosed()" [cssClass]="'modal-lg'" [showOkButton]="true" [showDefaultFooter]="true">
-</lds-modal>
+</generic-modal>

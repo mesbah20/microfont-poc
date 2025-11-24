@@ -19,19 +19,22 @@ import {
 import {  Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { Router, RouterModule } from '@angular/router';
-import { LdsModalComponent } from '../../../../../../shared/components/lds-modal/lds-modal';
-import { ServiceRequestDialog } from '../../../../../../features/service-request/service-request-dialog/service-request-dialog';
+
 import { Observable, Subscription } from 'rxjs';
 import { ChatPreview, ChatService } from '../../../../../../shared/services/chat.service';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TextBaseInput } from '../../../../../../shared/components/input-types/text-base-input/text-base-input';
-import { UserService } from '../../../../../../core/user/user.service';
-import { User } from '../../../../../../core/user/user.types';
 import {ToastHelperService} from '../../../../../../shared/services/toast-helper.service';
-import { EditProfileModal } from '../../../../../../features/landing/feature/edit-profile-modal/edit-profile-modal';
-import { NotificationDetailModalComponent } from '../../../../../../features/components/notification/notification-detail-modal.component';
-import { NotificationPopoverComponent } from '../../../../../../features/components/notification/notification-popover.component';
+
+import { UserService } from '../../../../../../shared/core/user/user.service';
+import { User } from '../../../../../../shared/core/user/user.types';
+import { NotificationDetailModalComponent } from '../../../../../../shared/features/components/notification/notification-detail-modal.component';
+import { EditProfileModal } from '../../../../../../shared/features/landing/feature/edit-profile-modal/edit-profile-modal';
+import { NotificationPopoverComponent } from '../../../../../../shared/features/components/notification/notification-popover.component';
+import { ServiceRequestDialog } from '../../../../../../shared/features/service-request/service-request-dialog/service-request-dialog';
+import { InputTextBox } from '../../../../../../shared/common-components/input-types/input-text-box/input-text-box';
+import { GenericDataGrid } from '../../../../../../shared/common-components/generic-component-type/generic-data-grid';
+import { GenericModal } from '../../../../../../shared/common-components/generic-component-type/generic-modal/generic-modal';
 
 @Component({
   selector: 'app-profile-drawer',
@@ -43,8 +46,8 @@ import { NotificationPopoverComponent } from '../../../../../../features/compone
     NotificationDetailModalComponent,
     RouterModule,
     CommonModule,
-    LdsModalComponent,
-    TextBaseInput,
+    InputTextBox,
+    GenericModal,
   MatProgressSpinnerModule,
   FormsModule,
   ReactiveFormsModule,
@@ -76,7 +79,7 @@ searchResults$!: Observable<string[]>; // raw user list
   private overlayRef: OverlayRef | null = null;
   selectedNotification: InAppNotification | null = null;
   showDetailModal = false;
-  @ViewChild(LdsModalComponent) modalComponentRef?: LdsModalComponent;
+  @ViewChild(GenericDataGrid) modalComponentRef?: GenericDataGrid;
   showModal = false;
   modalComponent?: Type<any>;
   modalComponentData?: any = null;

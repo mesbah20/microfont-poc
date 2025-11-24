@@ -1,5 +1,5 @@
 <div>
-  <lds-modal [isVisible]="showUserRolesModal" modalTitle="Role List"
+  <generic-modal [isVisible]="showUserRolesModal" modalTitle="Role List"
              cssClass="modal-fullscreen"
              (modalClosed)="closeModal()">
     <form [formGroup]="modalForm">
@@ -26,5 +26,5 @@
     <!--    <div slot="footer">
           <Button class="modal-btn modal-btn-primary" [hidden] = "isModalButtonHidden" (click)="btnModal_click()" >{{buttonText}}</Button>
         </div>-->
-  </lds-modal>
+  </generic-modal>
 </div>

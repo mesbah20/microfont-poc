@@ -8,65 +8,65 @@
 
       <ng-container *ngIf="appPanelOpen()">
 <!--        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">-->
-<!--          <app-select-option-field-->
+<!--          <input-select-option-field-->
 <!--            [frmGroup]="selectorForm"-->
 <!--            [controlName]="'appId'"-->
 <!--            [label]="'Application'"-->
 <!--            [options]="applicationOptions()"-->
-<!--            [isVertical]="true"-->
+<!--            -->
 <!--            [placeholder]="'Select Application'">-->
-<!--          </app-select-option-field>-->
+<!--          </input-select-option-field>-->
 
-<!--          <app-select-option-field-->
+<!--          <input-select-option-field-->
 <!--            [frmGroup]="selectorForm"-->
 <!--            [controlName]="'moduleId'"-->
 <!--            [label]="'Module'"-->
 <!--            [options]="moduleOptions()"-->
-<!--            [isVertical]="true"-->
+<!--            -->
 <!--            [placeholder]="'Select Module'"-->
 <!--            [isReadonly]="!selectorForm.get('appId')?.value">-->
-<!--          </app-select-option-field>-->
+<!--          </input-select-option-field>-->
 
-<!--          <app-select-option-field-->
+<!--          <input-select-option-field-->
 <!--            [frmGroup]="selectorForm"-->
 <!--            [controlName]="'functionId'"-->
 <!--            [label]="'Function'"-->
 <!--            [options]="functionOptions()"-->
-<!--            [isVertical]="true"-->
+<!--            -->
 <!--            [placeholder]="'Select Function'"-->
 <!--            [isReadonly]="!selectorForm.get('moduleId')?.value">-->
-<!--          </app-select-option-field>-->
+<!--          </input-select-option-field>-->
 <!--        </div>-->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-1 items-end">
-          <lds-id-box
+          <input-id-box
             [frmGroup]="levelForm"
             [controlName]="'workflowId'"
             [label]="'Workflow Id'"
             [isReadonly]="false"
-            [isVertical]="true"
+            
             [tooltip]="'Enter ID'"
             [allowSpecialChars]="true"
             [isDotsVisible]="true"
             (dotsClicked)="openWorkflowModal()"
             (onBlurred)="loadFunctionLevels($event)">
-          </lds-id-box>
+          </input-id-box>
 
-          <app-text-base-input
+          <input-text-box
             [frmGroup]="levelForm"
             [controlName]="'workflowName'"
             [label]="'Workflow Name'"
             [tooltip]="'Workflow Name'"
             [tooltipDelay]="200"
             [isReadonly]="false"
-            [isVertical]="true">
-          </app-text-base-input>
+            >
+          </input-text-box>
 
           <div class="flex justify-end items-end h-full">
-            <lds-btn
-              [labelText]="'Reset'"
+            <generic-button
+              [label]="'Reset'"
               [cssClass]="'bg-slate-500 text-white px-4'"
               (onClick)="resetAll()">
-            </lds-btn>
+            </generic-button>
           </div>
         </div>
 
@@ -77,43 +77,43 @@
 
       <div class="flex flex-wrap items-center gap-4 justify-between">
 
-        <lds-number
+        <input-number
           [frmGroup]="levelForm"
           [controlName]="'numberOfApprovalLevel'"
           [label]="'Number Of Levels'"
-          [isVertical]="true"
+          
           [minValue]="1"
           [isReadonly]="!levelForm.get('workflowName')?.value"
           class="flex-shrink-0">
-        </lds-number>
-                  <app-select-option-field
+        </input-number>
+                  <input-select-option-field
                     [frmGroup]="levelForm"
                     [controlName]="'appId'"
                     [label]="'Application'"
                     [options]="applicationOptions()"
-                    [isVertical]="true"
+                    
                     [placeholder]="'Select Application'">
-                  </app-select-option-field>
+                  </input-select-option-field>
         <div class="flex gap-3">
-        <lds-btn
-          [labelText]="selectedLevel() ? 'Update Level' : 'Add Level'"
+        <generic-button
+          [label]="selectedLevel() ? 'Update Level' : 'Add Level'"
           [enable]="!isSavingLevel()"
           [icon]="isSavingLevel() ? 'hourglass_empty' : ''"
           (onClick)="saveLevel()">
-        </lds-btn>
+        </generic-button>
 
-        <lds-btn
-          [labelText]="'Delete Level'"
+        <generic-button
+          [label]="'Delete Level'"
           [cssClass]="'bg-rose-600 text-white px-4'"
           [enable]="!!selectedLevel()"
           (onClick)="deleteLevel()">
-        </lds-btn>
+        </generic-button>
 
-        <lds-btn
-          [labelText]="'Clear Level Form'"
+        <generic-button
+          [label]="'Clear Level Form'"
           [cssClass]="'bg-slate-500 text-white px-4'"
           (onClick)="resetLevelForm()">
-        </lds-btn>
+        </generic-button>
        </div>
       </div>
     </div>
@@ -128,69 +128,69 @@
 
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-        <lds-number
+        <input-number
           [frmGroup]="detailForm"
           [controlName]="'approvalLevel'"
           [label]="'Approval Level'"
-          [isVertical]="true"
+          
           [minValue]="1">
-        </lds-number>
+        </input-number>
 
-        <app-select-option-field
+        <input-select-option-field
           [frmGroup]="detailForm"
           [controlName]="'approvalPolicy'"
           [label]="'Approval Policy'"
           [options]="approvalPolicyOptions()"
-          [isVertical]="true"
+          
           [placeholder]="'Select Policy'">
-        </app-select-option-field>
-        <lds-number
+        </input-select-option-field>
+        <input-number
           [frmGroup]="detailForm"
           [controlName]="'approverNo'"
           [label]="'No of Approver'"
-          [isVertical]="true"
+          
           [minValue]="1">
-        </lds-number>
+        </input-number>
         </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
 
         <div class="component-section">
-<!--        <lds-number-->
+<!--        <input-number-->
 <!--          [frmGroup]="detailForm"-->
 <!--          [controlName]="'organizationLevel'"-->
 <!--          [label]="'Organisation Level'"-->
-<!--          [isVertical]="true"-->
+<!--          -->
 <!--          [minValue]="0">-->
-<!--        </lds-number>-->
-          <app-select-option-field
+<!--        </input-number>-->
+          <input-select-option-field
             [frmGroup]="detailForm"
             [controlName]="'organizationLevel'"
             [label]="'Organisation Level'"
             [options]="organizationLevelOptions()"
-            [isVertical]="true"
+            
             [placeholder]="'Select Organization Type'">
-          </app-select-option-field>
+          </input-select-option-field>
         </div>
 
 
-        <app-select-option-field
+        <input-select-option-field
           [frmGroup]="detailForm"
           [controlName]="'roleName'"
           [label]="'Add Role'"
           [options]="roleOptions()"
-          [isVertical]="true"
+          
           [placeholder]="'Select Role'"
           (onSelect)="addRoleToSelection()">
-        </app-select-option-field>
+        </input-select-option-field>
 
-        <lds-number
+        <input-number
           [frmGroup]="detailForm"
           [controlName]="'workflowDetailId'"
           [label]="'Workflow Detail ID'"
-          [isVertical]="true"
+          
           [minValue]="1"
           [isReadonly]="true">
-        </lds-number>
+        </input-number>
       </div>
 
 
@@ -217,24 +217,24 @@
       </div>
 
       <div class="flex flex-wrap gap-3 justify-end items-end">
-        <lds-btn
-          [labelText]="selectedDetail() ? 'Update Detail' : 'Add Detail'"
+        <generic-button
+          [label]="selectedDetail() ? 'Update Detail' : 'Add Detail'"
           [enable]="!isSavingDetail()"
           (onClick)="saveDetail()">
-        </lds-btn>
+        </generic-button>
 
-        <lds-btn
-          [labelText]="'Delete Detail'"
+        <generic-button
+          [label]="'Delete Detail'"
           [cssClass]="'bg-rose-600 text-white px-4'"
           [enable]="!!selectedDetail()"
           (onClick)="deleteDetail()">
-        </lds-btn>
+        </generic-button>
 
-        <lds-btn
-          [labelText]="'Clear Detail Form'"
+        <generic-button
+          [label]="'Clear Detail Form'"
           [cssClass]="'bg-slate-500 text-white px-4'"
           (onClick)="resetDetailForm()">
-        </lds-btn>
+        </generic-button>
       </div>
       <div *ngIf="selectedLevel()?.numberOfApprovalLevel" class="p-3 rounded border" [ngClass]="detailCountState().valid ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700'">
         <ng-container *ngIf="detailCountState().valid; else detailCountMismatch">
@@ -277,38 +277,38 @@
       <app-sub-panel-header [subPanelTitle]="'Eligible Approver Preview'"></app-sub-panel-header>
 
       <div class="flex flex-col md:flex-row items-end gap-4">
-                  <app-select-option-field
+                  <input-select-option-field
                     [frmGroup]="selectorForm"
                     [controlName]="'moduleId'"
                     [label]="'Module'"
                     [options]="moduleOptions()"
-                    [isVertical]="true"
+                    
                     [placeholder]="'Select Module'"
                     [isReadonly]="!levelForm.get('appId')?.value">
-                  </app-select-option-field>
+                  </input-select-option-field>
 
-                  <app-select-option-field
+                  <input-select-option-field
                     [frmGroup]="selectorForm"
                     [controlName]="'functionId'"
                     [label]="'Function'"
                     [options]="functionOptions()"
-                    [isVertical]="true"
+                    
                     [placeholder]="'Select Function'"
                     [isReadonly]="!selectorForm.get('moduleId')?.value">
-                  </app-select-option-field>
-                  <app-text-base-input
+                  </input-select-option-field>
+                  <input-text-box
                     [frmGroup]="previewForm"
                     [controlName]="'makerId'"
                     [label]="'Maker User ID'"
-                    [isVertical]="true">
-                  </app-text-base-input>
+                    >
+                  </input-text-box>
 
         <div class="md:self-end">
-          <lds-btn
-            [labelText]="isLoadingApprovers() ? 'Loading...' : 'Preview Approvers'"
+          <generic-button
+            [label]="isLoadingApprovers() ? 'Loading...' : 'Preview Approvers'"
             [enable]="!isLoadingApprovers()"
             (onClick)="previewApprovers()">
-          </lds-btn>
+          </generic-button>
         </div>
       </div>
 
@@ -333,7 +333,7 @@
 <!--</div>-->
 <!--<app-view-workflow-modal [showUserRolesModal]="showUserRolesModal" [roleName]="levelForm.get('workflowId')?.value ?? null"
                       (roleSelected)="loadRole($event)"></app-view-workflow-modal>-->
-        <lds-modal
+        <generic-modal
           [isVisible]="showModal()"
           [modalTitle]="'Select Workflow'"
           [cssClass]="'modal-xl'"
@@ -341,5 +341,5 @@
           [modalComponentData]="modalComponentData"
           (modalClosed)="onModalClose()"
           (modalResult)="onModalResult($event)">
-        </lds-modal>
+        </generic-modal>
 

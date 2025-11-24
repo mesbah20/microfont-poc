@@ -13,13 +13,6 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {forkJoin, of, Observable, EMPTY, tap, concat} from 'rxjs';
 import {catchError, delay, finalize, map, switchMap} from 'rxjs/operators';
-import { ExpansionPanelHeader } from '../../../shared/components/expansion-panel-header/expansion-panel-header';
-import { SelectOptionField } from '../../../shared/components/input-types/select-option-field/select-option-field';
-import { NumberInput } from '../../../shared/components/input-types/number-input/number-input';
-import { TextBaseInput } from '../../../shared/components/input-types/text-base-input/text-base-input';
-import { Button } from '../../../shared/components/input-types/button/button';
-import {DataGridComponent, DropdownOption} from '../../../shared/components/data-grid/data-grid';
-import { SubPanelHeader } from '../../../shared/components/sub-panel-header/sub-panel-header';
 import { WorkflowDesignerService } from './services/workflow-designer.service';
 import {
   ApprovalEligibleApproverModel,
@@ -41,8 +34,15 @@ import {
 } from '../../../shared/constant/button-signals.constant';
 import {OfficeType} from '../../model/OfficeType';
 import {CommonService} from '../../service/common-service';
-import {LdsModalComponent} from '../../../shared/components/lds-modal/lds-modal';
-import {IdBoxComponent} from '../../../shared/components/input-types/id-box/id-box';
+import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
+import { GenericButton } from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
+import { DropdownOption, GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid/generic-data-grid';
+import { InputIdBox } from '../../../shared/common-components/input-types/input-id-box/input-id-box';
+import { InputNumber } from '../../../shared/common-components/input-types/input-number/input-number';
+import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
+import { InputTextBox } from '../../../shared/common-components/input-types/input-text-box/input-text-box';
+import { SubPanelHeader } from '../../../shared/common-components/sub-panel-header/sub-panel-header';
+import { GenericModal } from '../../../shared/common-components/generic-component-type/generic-modal/generic-modal';
 
 interface GridSelectionEvent {
   data: string;
@@ -66,13 +66,13 @@ interface ApproverPreviewRow {
     ReactiveFormsModule,
     ExpansionPanelHeader,
     SubPanelHeader,
-    SelectOptionField,
-    NumberInput,
-    TextBaseInput,
-    Button,
-    DataGridComponent,
-    LdsModalComponent,
-    IdBoxComponent,
+    InputSelectOptionField,
+    InputNumber,
+    InputTextBox,
+    GenericButton,
+    GenericDataGrid,
+    GenericModal,
+    InputIdBox,
   ],
   templateUrl: './workflow-designer.html',
   styleUrl: './workflow-designer.scss',

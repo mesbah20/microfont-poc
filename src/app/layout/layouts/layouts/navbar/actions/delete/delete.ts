@@ -1,12 +1,10 @@
 import {Component, effect, inject, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatDialog} from '@angular/material/dialog';
-import {
-  DeleteConfirmationDialogue
-} from '../../../../../../shared/components/delete-confirmation-dialogue/delete-confirmation-dialogue';
 import { FormGroup } from '@angular/forms';
 import { FormGroupSignal } from '../../../../../../shared/constant/button-signals.constant';
 import { ActivityLogService } from '../../../../../../shared/services/activity-log.service';
+import { DeleteConfirmationDialogue } from '../../../../../../shared/common-components/delete-confirmation-dialogue/delete-confirmation-dialogue';
 
 @Component({
   selector: 'app-delete',
