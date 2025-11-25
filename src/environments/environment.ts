@@ -14,13 +14,14 @@ export const environment = {
   leaveAttendanceEndPoint: GATE_WAY_ENDPOINT + 'leave-attendance/' + VERSION_1,
 
   apiBaseUrl:'http://192.168.10.56:8090',
+  centrinoUrl:'http://192.168.10.56:8090/centrino',
   keycloakApi:'http://192.168.10.56:8090/resource-manager/api/v1/resource',
   bffUrl: 'http://192.168.10.56:8090/',
   appId: '1',
   keycloak: {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',
-    clientId: 'FinBookUI'
+    clientId: 'sentinelUI'
     //clientId: 'FinBookUI'
   },
   reportManagementApiUrl: 'http://192.168.10.56:8090/centrino/api', // Report Management Backend API
@@ -28,5 +29,7 @@ export const environment = {
   sessionUrl:'http://192.168.10.56:8090/centrino/api/office-session/getOfficeSession',
   novu_identifier: '1uXpKIJUa3Rg',
   novu_socket: 'http://192.168.10.56:3002',
-  novu_api: 'http://192.168.10.56:3000/novu/api'
+  novu_api: 'http://192.168.10.56:3000/novu/api',
+  redirectUri:'http://localhost:4001/landing/home',
+  loginUrl:'http://localhost:4000/login'
 };
