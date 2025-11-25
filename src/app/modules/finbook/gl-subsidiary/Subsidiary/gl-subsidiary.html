@@ -1,0 +1,136 @@
+<!-- Enhanced HTML Template with Relatable Fields -->
+<div class="page-wrapper">
+    @if(frmGroup) {
+    <form [formGroup]="frmGroup" (ngSubmit)="onSubmit()">
+        <div class="panel">
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-0">
+                <div>
+                    <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel"
+                        [panelTitle]="'Account Informations'" />
+                    <div class="bg-gray-50 rounded-lg p-4 mb-1">
+                       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 p-2" [ngClass]="isApprovalView ? 'xl:grid-cols-2' : 'xl:grid-cols-3'">
+                            <div class="component-section">
+                                <input-select-option-field [frmGroup]="frmGroup" [controlName]="'officeId'"
+                                    [label]="'Office'" [options]="officeOptions" [tooltip]="'Select Office'"
+                                    [isReadonly]="isOfficeIdReadOnly"
+                                    (onSelect)="onBranchChange($event)"></input-select-option-field>
+                            </div>
+                            <div class="component-section">
+                                <input-id-box [frmGroup]="frmGroup" [controlName]="'glAccSl'" [label]="'GL Key'"
+                                    [isReadonly]="false" tooltip="Enter GL SL" tooltipPosition="above"
+                                    [tooltipDelay]="200" [isVertical]="true" [customErrorMessages]="{
+                                        required: 'GL SL/Client A/C is required',
+                                        maxlength: 'Max 10 characters allowed'}" [isDotsVisible]="true"
+                                    (onBlurred)="onGLSerialChange()">
+                                </input-id-box>
+                            </div>
+                            <div class="component-section">
+                                <input-text-box [frmGroup]="frmGroup" [controlName]="'glAccNo'"
+                                    [label]="'Account No'" [isReadonly]="false" tooltip="Enter account number"
+                                    tooltipPosition="above" [tooltipDelay]="200" [isVertical]="true"
+                                    [customErrorMessages]="{
+                                        required: 'Account number is required',
+                                        minlength: 'At least 5 digits',
+                                        maxlength: 'Max 15 characters'
+                                    }" (onDoubleClick)="onAccountNumberChange()">
+                                </input-text-box>
+                            </div>
+                            <div class="component-section">
+                                <input-text-box [frmGroup]="frmGroup" [controlName]="'glAccName'"
+                                    [label]="'Account Name'" [isReadonly]="false" tooltip="" tooltipPosition="above"
+                                    [tooltipDelay]="200" [isVertical]="true" [customErrorMessages]="{
+                                        required: 'Account number is required'
+                                    }">
+                                </input-text-box>
+                            </div>
+                            <div class="component-section">
+                                <input-text-box [frmGroup]="frmGroup" [controlName]="'glAccSubSl'"
+                                    [label]="'Subsidiary Serial'" [isReadonly]="false" tooltip="" [placeholder]="['Auto']"
+                                    tooltipPosition="above" [tooltipDelay]="200" [isVertical]="true"
+                                    (onBlurred)="onGlAccSubSlChanged()" [customErrorMessages]="{
+
+                                    }">
+                                </input-text-box>
+                            </div>
+                            <div class="component-section">
+                                <input-text-box [frmGroup]="frmGroup" [controlName]="'glAccType'"
+                                    [label]="'Account Type'" [isReadonly]="true" tooltip="" tooltipPosition="above"
+                                    [tooltipDelay]="200" [isVertical]="true" [customErrorMessages]="{
+
+                                    }">
+                                </input-text-box>
+                            </div>
+                            <div class="component-section">
+                                <input-text-box [frmGroup]="frmGroup" [controlName]="'currencyCode'"
+                                    [label]="'Currency'" [isReadonly]="true" tooltip="" tooltipPosition="above"
+                                    [tooltipDelay]="200" [isVertical]="true" [customErrorMessages]="{
+
+                                    }">
+                                </input-text-box>
+                            
+                                <input-text-box
+                                    [frmGroup]="frmGroup" [controlName]="'employeeId'"
+                                    [label]="'Employee Id'" [isReadonly]="isEmployeeDisabled" tooltip=""
+                                    tooltipPosition="above" [tooltipDelay]="200" [isVertical]="true"
+                                    [customErrorMessages]="{
+
+  }">
+                                </input-text-box>
+
+                                <input-text-box
+                                 [frmGroup]="frmGroup" [controlName]="'glAccSubNm'"
+                                    [label]="'Subsidiary Account Name'" [isReadonly]="false" tooltip=""
+                                    tooltipPosition="above" [tooltipDelay]="200" [isVertical]="true"
+                                    [customErrorMessages]="{
+
+  }">
+                                </input-text-box>
+                            </div>
+                            <div class="component-section">
+                                <input-select-option-field [frmGroup]="frmGroup" [controlName]="'expRegType'"
+                                    [label]="'Register Type'" [options]="officeRegOptions" [tooltip]="'Select Office'"
+                                    [isReadonly]="isExpRegReadOnly"
+                                    (onSelect)="onOfficeRegTypeChange($event)">
+                                </input-select-option-field>
+                                <input-select-option-field [frmGroup]="frmGroup" [controlName]="'glBankOffice'"
+                                    [label]="'Register Office'" [options]="officeBankOptions"
+                                    [tooltip]="'Select Bank Office'" [isReadonly]="isOfficeDisabled" 
+                                    (onSelect)="onBankOfficeChange($event)">
+                                </input-select-option-field>
+                                <div class="component-section" *ngIf="isReferenceNoDisabled">
+                                    <input-text-box
+                                         [frmGroup]="frmGroup" [controlName]="'glSubRefNo'"
+                                        [label]="'Reference No'" [isReadonly]="false" tooltip="" tooltipPosition="above"
+                                        [tooltipDelay]="200" [isVertical]="true" [customErrorMessages]="{
+
+  }">
+                                    </input-text-box>
+                                </div>
+                            </div>
+                            <div class="component-section">
+                                <input-date [frmGroup]="frmGroup" [controlName]="'entryDt'" [label]="'Entry Date'"
+                                    [isVertical]="true" [dateFormat]="'DD-MM-YYYY'" [maxYear]="2034"
+                                    [enableYearRangeValidation]="false">
+                                </input-date>
+                                <input-select-option-field [frmGroup]="frmGroup" [controlName]="'departmentId'"
+                                    [label]="'Department'" [options]="officeDeptOptions"
+                                    [tooltip]="'Select Dept Office'" [isReadonly]="isDepartmentDisabled"
+                                    (onSelect)="onDeptChange($event)">
+                                </input-select-option-field>
+                            </div>
+                            <!-- modal -->
+                            <div>
+                                <app-gl-sub-popup [showModal]="showModal"
+                                    [initialData]="modalInitialData"
+                                    [mode]="modalMode"
+                                    [branchId]="frmGroup.get('officeId')?.value ?? null"
+                                    (isVisibleChange)="showModal = $event" (accountSelected)="onAccountSelected($event)"></app-gl-sub-popup>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    }
+</div>

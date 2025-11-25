@@ -1,0 +1,38 @@
+<div class="page-wrapper">
+  <div class="panel">
+    <div class="transaction-grid-container">
+      <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'GL Chart of Accounts'" />
+
+      <!-- Primary Fields Section -->
+
+      <div class="container">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-1">
+          <div class="component-section">
+            <input-select-option-field [frmGroup]="frmGroup" [controlName]="'ENTITY_ID'" [label]="'Entity'"
+              [options]="entityOptions" [tooltip]="'Choose entity type'"
+              (onSelect)="loadDataForTree()">
+            </input-select-option-field>
+          </div>
+          <div class=" component-section">
+            <input-text-box [frmGroup]="frmGroup" [controlName]="'GL_INPUT'" [label]="'GL SL/ GL Name'"
+              [isReadonly]="false" [isVertical]="true" [tooltip]="'Auto-generated based on currency and category'"
+              [tooltipPosition]="'above'" [tooltipDelay]="300" [tooltipClass]="'success-tooltip'" (onBlurred)="onGLInputChanged($event)"></input-text-box>
+          </div>
+        </div>
+
+
+
+        <div class="tree-container">
+          <div *ngIf="treeNodes.length === 0" class="no-results">
+            No accounts to display.
+          </div>
+
+          <div *ngFor="let node of treeNodes">
+            <app-account-node [node]="node" [level]="0" (childAdded)="onChildAdded($event, node)">
+            </app-account-node>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

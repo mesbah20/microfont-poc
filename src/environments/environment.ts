@@ -13,10 +13,10 @@ export const environment = {
   vehicleEndPoint: GATE_WAY_ENDPOINT + 'vehicle/' + VERSION_1,
   leaveAttendanceEndPoint: GATE_WAY_ENDPOINT + 'leave-attendance/' + VERSION_1,
 
-  apiBaseUrl:'http://192.168.10.56:8090',
+  apiBaseUrl:'http://192.168.20.250:9999',
   keycloakApi:'http://192.168.10.56:8090/resource-manager/api/v1/resource',
   bffUrl: 'http://192.168.10.56:8090/',
-  appId: '1',
+  appId: '901',
   keycloak: {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',
