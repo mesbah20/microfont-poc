@@ -1,16 +1,16 @@
 import { Component, OnInit, input, output, signal } from '@angular/core';
 
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { DataSelectionConfig, DataSelectionItem, DataSelectionResult } from '../../../models/data-selection.interface';
-import { DeleteConfirmationDialogue } from '../../../common-components/delete-confirmation-dialogue/delete-confirmation-dialogue';
-import { Label } from '../../../common-components/generic-component-type/generic-label/generic-label';
-import { GenericSwitch } from '../../../common-components/generic-component-type/generic-switch/generic-switch';
-import { InputAmountInWord } from '../../../common-components/input-types/input-amount-in-word/input-amount-in-word';
-import { InputTextArea } from '../../../common-components/input-types/input-text-area/input-text-area';
-import { AlertErrorComponent } from '../../../common-components/test-component-page/alert-error/alert-error';
-import { AlertInfoComponent } from '../../../common-components/test-component-page/alert-info/alert-info';
-import { AlertSuccessComponent } from '../../../common-components/test-component-page/alert-success/alert-success';
-import { AlertWarningComponent } from '../../../common-components/test-component-page/alert-warning/alert-warning';
+import { DataSelectionConfig, DataSelectionItem, DataSelectionResult } from '../../../shared/models/data-selection.interface';
+import { DeleteConfirmationDialogue } from '../../../shared/common-components/delete-confirmation-dialogue/delete-confirmation-dialogue';
+import { Label } from '../../../shared/common-components/generic-component-type/generic-label/generic-label';
+import { GenericSwitch } from '../../../shared/common-components/generic-component-type/generic-switch/generic-switch';
+import { InputAmountInWord } from '../../../shared/common-components/input-types/input-amount-in-word/input-amount-in-word';
+import { InputTextArea } from '../../../shared/common-components/input-types/input-text-area/input-text-area';
+import { AlertErrorComponent } from '../../../shared/common-components/test-component-page/alert-error/alert-error';
+import { AlertInfoComponent } from '../../../shared/common-components/test-component-page/alert-info/alert-info';
+import { AlertSuccessComponent } from '../../../shared/common-components/test-component-page/alert-success/alert-success';
+import { AlertWarningComponent } from '../../../shared/common-components/test-component-page/alert-warning/alert-warning';
 
 @Component({
   selector: 'app-alert-example-page',
