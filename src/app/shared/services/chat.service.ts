@@ -25,7 +25,7 @@ function buildChatId(a: string, b: string): string {
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   // Notification service base (same API used for chat send)
-  private readonly api = environment.novu_service;
+  private readonly api = environment.apiBaseUrl;
   public previews$ = new BehaviorSubject<ChatPreview[]>([]);
   private currentUserId = '';
 
@@ -37,7 +37,7 @@ export class ChatService {
       term.trim() === ''
         ? of([] as string[])
         : this.http
-            .get<string[]>(`${this.api}/subscribers/search?q=${encodeURIComponent(term)}`)
+            .get<string[]>(`${this.api}/notify/subscribers/search?q=${encodeURIComponent(term)}`)
             .pipe(
               catchError((err) => {
                 console.error('Subscriber search failed:', err);

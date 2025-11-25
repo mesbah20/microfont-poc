@@ -31,7 +31,7 @@ export class NovuService {
   private notifications$ = new BehaviorSubject<InAppNotification[]>([]);
   private chatMessages$ = new BehaviorSubject<ChatMessage[]>([]);
   private unreadCount$ = new BehaviorSubject<number>(0);
-  private backendUrl = environment.novu_service;
+  private backendUrl = environment.apiBaseUrl;
   private RECONCILE_WINDOW_MS = 15000; // 15s
   private currentSubscriberHash?: string;
   private subscriberId$ = new BehaviorSubject<string | null>(null);
@@ -688,7 +688,7 @@ export class NovuService {
 
     try {
       await firstValueFrom(
-        this.http.delete(`${this.backendUrl}/notification/${id}`)
+        this.http.delete(`${this.backendUrl}/notify/notification/${id}`)
       );
       const updated = this.notifications$.value.filter(
         (n) => n._id !== id

@@ -115,7 +115,7 @@ export class Login implements OnInit {
   fb = inject(FormBuilder);
   router = inject(Router);
   private novuService = inject(NovuService);
-  private readonly notifyBaseUrl = environment.novu_service;
+  private readonly notifyBaseUrl = environment.apiBaseUrl;
   frmGroup: FormGroup;
   loginError: boolean = false;
   coreBaseUrl: string = environment.apiBaseUrl;
@@ -290,7 +290,7 @@ export class Login implements OnInit {
   private async fetchSubscriberHash(subscriberId: string): Promise<string | undefined> {
     try {
       const response = await firstValueFrom(
-        this.http.get<{ subscriberHash: string }>(`${this.notifyBaseUrl}/subscribers/hash`, {
+        this.http.get<{ subscriberHash: string }>(`${this.notifyBaseUrl}/notify/subscribers/hash`, {
           params: { subscriberId }
         })
       );
