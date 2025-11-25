@@ -28,6 +28,5 @@ export const environment = {
   sessionUrl:'http://192.168.10.56:8090/centrino/api/office-session/getOfficeSession',
   novu_identifier: '1uXpKIJUa3Rg',
   novu_socket: 'http://192.168.10.56:3002',
-  novu_api: 'http://192.168.10.56:3000/novu/api',
-  novu_service: 'http://192.168.10.56:8088/notify'
+  novu_api: 'http://192.168.10.56:3000/novu/api'
 };
