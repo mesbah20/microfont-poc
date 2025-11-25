@@ -17,8 +17,8 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { ChatMessage, NovuService } from '../../../../../../../../shared/services/novu.service';
-import { UserService } from '../../../../../../../../core/user/user.service';
-import { User } from '../../../../../../../../core/user/user.types';
+import { UserService } from '../../../../../../../../shared/core/user/user.service';
+import { User } from '../../../../../../../../shared/core/user/user.types';
 
 @Component({
   selector: 'app-chat-box',

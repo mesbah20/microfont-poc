@@ -14,7 +14,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { environment } from '../../../../../environments/environment';
 import { ToastHelperService } from '../../../../shared/services/toast-helper.service';
-import {AuthService} from '../../../../core/auth/auth.service';
+import { AuthService } from '../../../../shared/core/auth/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -42,7 +42,7 @@ export class Sidebar {
   errorMessage: string = '';
   logoutError: boolean = false;
   isLoading: boolean = false;
-  coreBaseUrl = environment.logoutUrl;
+  coreBaseUrl = environment.apiBaseUrl;
   activeTheme: string = localStorage.getItem('selectedTheme') || '';
   public notifications$: Observable<number>;
   public messages$: Observable<number>;

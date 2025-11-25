@@ -1,5 +1,5 @@
 @use "tailwindcss";
-@use "./app/shared/components/lds-modal/lds-modal.scss";
+@use "./app/shared/common-components/generic-component-type/generic-modal/generic-modal.scss";
 @import 'quill/dist/quill.snow.css';
 @import 'quill/dist/quill.core.css';
 @import "../node_modules/ngx-toastr/toastr.css";

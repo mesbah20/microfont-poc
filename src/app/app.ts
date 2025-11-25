@@ -5,14 +5,14 @@ import { ThemeService } from './shared/services/theme.service';
 import { GlobalActivityTrackerService } from './shared/services/global-activity-tracker.service';
 import { NovuService } from './shared/services/novu.service';
 import { LoaderService } from './shared/services/loader.service';
-import { LoaderComponent } from './shared/components/loader/loader.component';
 import {Title} from '@angular/platform-browser';
 import pkg from '../../package.json';
-import {KeyclockService} from './core/service/keyclock.service';
-import {AuthService} from './core/auth/auth.service';
-import {UserService} from './core/user/user.service';
-import { User } from './core/user/user.types';
+
 import { environment } from '../environments/environment';
+import { AuthService } from './shared/core/auth/auth.service';
+import { UserService } from './shared/core/user/user.service';
+import { User } from './shared/core/user/user.types';
+import { LoaderComponent } from './shared/common-components/loader/loader.component';
 
 
 @Component({

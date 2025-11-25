@@ -11,7 +11,7 @@
 
           <div class="grid grid-cols-2 md:grid-cols-2 gap-4">
             <div class="component-section">
-              <lds-id-box
+              <input-id-box
                 [frmGroup]="userForm"
                 [controlName]="'userId'"
                 [label]="'User ID'"
@@ -23,11 +23,11 @@
                 [isDotsVisible]="true"
                 (dotsClicked)="openModal()"
                 (onBlurred)="onUserIdChange($event)">
-              </lds-id-box>
+              </input-id-box>
             </div>
 
             <div class="component-section">
-              <app-text-base-input
+              <input-text-box
                 [frmGroup]="userForm"
                 [controlName]="'userName'"
                 [label]="'User Name'"
@@ -35,58 +35,58 @@
                 [tooltipDelay]="200"
                 [isReadonly]="false"
                 [isVertical]="true">
-              </app-text-base-input>
+              </input-text-box>
             </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4" *ngIf="showEmployeeDetails">
             <div class="component-section">
-              <app-text-base-input [frmGroup]="userForm" [controlName]="'employeeId'"
+              <input-text-box [frmGroup]="userForm" [controlName]="'employeeId'"
                                    [label]="'Employee Id'" [isVertical]="true">
-              </app-text-base-input>
+              </input-text-box>
             </div>
             <div class="component-section">
-              <app-text-base-input [frmGroup]="userForm" [controlName]="'employeeCode'"
+              <input-text-box [frmGroup]="userForm" [controlName]="'employeeCode'"
                                    [label]="'Employee Code'" [isVertical]="true">
-              </app-text-base-input>
+              </input-text-box>
             </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="component-section">
-              <app-text-base-input [frmGroup]="userForm" [controlName]="'userEmailId'"
+              <input-text-box [frmGroup]="userForm" [controlName]="'userEmailId'"
                                    [label]="'Email Id'" [isVertical]="true">
-              </app-text-base-input>
+              </input-text-box>
             </div>
             <div class="component-section">
-              <app-text-base-input [frmGroup]="userForm" [controlName]="'mobileNumber'"
+              <input-text-box [frmGroup]="userForm" [controlName]="'mobileNumber'"
                                    [label]="'Mobile No'" [isVertical]="true">
-              </app-text-base-input>
+              </input-text-box>
             </div>
           </div>
 
      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="component-section">
-          <app-select-option-field [frmGroup]="userForm"
+          <input-select-option-field [frmGroup]="userForm"
                                    [controlName]="'homeOfficeId'" [label]="'Office ID'"
-                                   [isVertical]="true" [options]="officeOptions">
-          </app-select-option-field>
+                                   [options]="officeOptions">
+          </input-select-option-field>
         </div>
         <div class="component-section">
-          <app-text-base-input [frmGroup]="userForm"
+          <input-text-box [frmGroup]="userForm"
                                [controlName]="'userDescription'" [label]="'User Description'"
                                [isVertical]="true">
-          </app-text-base-input>
+          </input-text-box>
         </div>
       </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="component-section">
-              <lds-switch
+              <generic-switch
                 [frmGroup]="userForm"
                 [controlName]="'bankStaffFlag'"
                 [isChecked]="frmGroup.get('user.bankStaffFlag')?.value || false"
-                [labelText]="'Bank Staff'" [enable]="isEmployeeInfoEnable"
-              ></lds-switch>
+                [label]="'Bank Staff'" [enable]="isEmployeeInfoEnable"
+              ></generic-switch>
             </div>
           </div>
       </div>
@@ -98,17 +98,17 @@
           <div class="image-upload flex flex-col items-center">
             <!--class="small-upload-btn"
             small-upload-btn w-[100px] md:w-[120px] text-xs-->
-            <lds-file
+            <input-file
               #imgFileInput
               class="small-upload-btn"
               [id]="'user-photo-upload'"
               [multipleFile]="false"
               [fileExtension]="'.jpg,.jpeg'"
               [isVertical]="true"
-              [labelText]="'Upload Image'"
+              [label]="'Upload Image'"
               [customFileName]="'user-photo'"
               (selectedFilesChanged)="convertImageToBase64($event)">
-            </lds-file>
+            </input-file>
           </div>
         <!--  <div class="form-group form-inline">
             <div class="file-upload-container">
@@ -129,23 +129,23 @@
       <div class="flex-1 gap-8 mt-4 space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
         <div class="component-section">
-          <app-text-base-input [frmGroup]="userForm"
+          <input-text-box [frmGroup]="userForm"
                                [controlName]="'logInAppTerminalIp'" [label]="'App Terminal IP'"
                                [placeholder]="'xxx.xxx.xxx.xxx'" [isVertical]="true">
-          </app-text-base-input>
+          </input-text-box>
         </div>
         <div class="component-section">
-          <app-text-base-input [frmGroup]="userForm"
+          <input-text-box [frmGroup]="userForm"
                                [controlName]="'macAddress'" [label]="'User MAC Address'"
                                [placeholder]="'xx-xx-xx-xx'" [isVertical]="true">
-          </app-text-base-input>
+          </input-text-box>
         </div>
         <div class="component-section flex items-end gap-2">
-          <app-text-base-input [frmGroup]="userForm"
+          <input-text-box [frmGroup]="userForm"
                                [controlName]="'logInUserTerminalIp'" [label]="'User Terminal IP'"
                                [placeholder]="'xxx.xxx.xxx.xxx'" [isVertical]="true">
-          </app-text-base-input>
-          <lds-btn labelText="ADD" class="!h-[36px] !px-4" (onClick)="addAddresses()"></lds-btn>
+          </input-text-box>
+          <generic-button labelText="ADD" class="!h-[36px] !px-4" (onClick)="addAddresses()"></generic-button>
         </div>
       </div>
       </div>
@@ -164,31 +164,31 @@
       <div class="flex-1 gap-8 mt-4 space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
         <div class="component-section">
-          <app-text-base-input [frmGroup]="userForm"
+          <input-text-box [frmGroup]="userForm"
                                [controlName]="'appLogInTime'" [label]="'User Business Hour From'"
                                [isVertical]="true">
-          </app-text-base-input>
+          </input-text-box>
         </div>
         <div class="component-section">
-          <app-text-base-input [frmGroup]="userForm"
+          <input-text-box [frmGroup]="userForm"
                                [controlName]="'appLogOutTime'" [label]="'User Business Hour To'"
                                [isVertical]="true">
-          </app-text-base-input>
+          </input-text-box>
         </div>
         <div class="component-section">
-          <app-text-base-input [frmGroup]="userForm"
+          <input-text-box [frmGroup]="userForm"
                                [controlName]="'sessionExpTime'" [label]="'Session Expired Time'"
                                [isVertical]="true">
-          </app-text-base-input>
+          </input-text-box>
         </div>
       </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-2" *ngIf="showUnassignedPackageGrid">
         <div class="component-section">
-          <app-text-base-input [frmGroup]="userForm"
+          <input-text-box [frmGroup]="userForm"
                                [controlName]="'passwordString'" [label]="'Password for this user'"
                                [isVertical]="true">
-          </app-text-base-input>
+          </input-text-box>
         </div>
       </div>
 

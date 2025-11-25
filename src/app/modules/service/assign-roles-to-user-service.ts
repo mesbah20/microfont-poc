@@ -13,16 +13,16 @@ export class AssignRolesToUserService {
   constructor(private http: HttpClient) { }
 
   getAssignedUserRoles(userId: string): Observable<any> {
-    const url = `${environment.sentinelUrl}/user-role/get-assigned-user-roles/${userId}`;
+    const url = `${environment.apiBaseUrl}/sentinel/api/user-role/get-assigned-user-roles/${userId}`;
     return this.http.get<any>(url);
   }
   getUnassignedUserRoles(userId: string): Observable<any> {
-    const url = `${environment.sentinelUrl}/user-role/get-unassigned-user-roles/${userId}`;
+    const url = `${environment.apiBaseUrl}/sentinel/api/user-role/get-unassigned-user-roles/${userId}`;
     return this.http.get<any>(url);
   }
   assignRolesToUser(request: UserGrantRole[]): Observable<UserGrantRole[]> {
     return this.http.post<UserGrantRole[]>(
-      `${environment.sentinelUrl}/user-role/create`,
+      `${environment.apiBaseUrl}/sentinel/api/user-role/create`,
       request,
       {
         headers: {
@@ -35,7 +35,7 @@ export class AssignRolesToUserService {
 
   removeRolesFromUser(request: UserGrantRole[]): Observable<UserGrantRole[]> {
     return this.http.post<UserGrantRole[]>(
-      `${environment.sentinelUrl}/user-role/remove`,
+      `${environment.apiBaseUrl}/sentinel/api/user-role/remove`,
       request,
       {
         headers: {

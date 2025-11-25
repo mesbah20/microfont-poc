@@ -12,6 +12,6 @@ export class ActivityLogService {
       extra
     };
     console.log('Activity Log:', payload);
-    // Later তুমি এখানে backend POST call করতে পারো
+
   }
 }

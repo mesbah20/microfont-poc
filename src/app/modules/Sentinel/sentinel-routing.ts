@@ -1,6 +1,6 @@
 import {RouterModule, Routes} from '@angular/router';
 import {UserProfile} from './user-profile/user-profile';
-import {AllComponentsPage} from '../../shared/components/all-components-page/all-components-page';
+import { AllComponentsPage } from '../../shared/common-components/test-component-page/all-components-page/all-components-page';
 import {AssignRolesToUser} from './assign-roles-to-user/assign-roles-to-user';
 import {WorkflowDesigner} from './workflow-designer/workflow-designer';
 import {DefineRoles} from './define-roles/define-roles';

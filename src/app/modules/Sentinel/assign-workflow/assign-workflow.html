@@ -17,37 +17,37 @@
 
             <!-- Application Id -->
             <div class="component-section">
-              <app-select-option-field [frmGroup]="masterFrmGroup" [controlName]="'appId'" [label]="'Application Id'"
-                [isVertical]="true" [options]="applicationOptions" [tooltip]="'Select application'">
-              </app-select-option-field>
+              <input-select-option-field [frmGroup]="masterFrmGroup" [controlName]="'appId'" [label]="'Application Id'"
+               [options]="applicationOptions" [tooltip]="'Select application'">
+              </input-select-option-field>
             </div>
 
             <!-- Module Id -->
             <div class="component-section">
-              <app-select-option-field [frmGroup]="masterFrmGroup" [controlName]="'moduleId'" [label]="'Module Id'"
-                [isVertical]="true" [options]="moduleOptions" [tooltip]="'Select module'">
-              </app-select-option-field>
+              <input-select-option-field [frmGroup]="masterFrmGroup" [controlName]="'moduleId'" [label]="'Module Id'"
+                 [options]="moduleOptions" [tooltip]="'Select module'">
+              </input-select-option-field>
             </div>
 
             <!-- Function Id -->
             <div class="component-section">
-              <app-select-option-field [frmGroup]="masterFrmGroup" [controlName]="'functionId'" [label]="'Function Id'"
-                [isVertical]="true" [options]="functionOptions" [tooltip]="'Select function'">
-              </app-select-option-field>
+              <input-select-option-field [frmGroup]="masterFrmGroup" [controlName]="'functionId'" [label]="'Function Id'"
+             [options]="functionOptions" [tooltip]="'Select function'">
+              </input-select-option-field>
             </div>
 
             <!-- Default Workflow -->
             <div class="component-section">
-              <app-select-option-field [frmGroup]="masterFrmGroup" [controlName]="'workflowId'"
-                [label]="'Default Workflow'" [isVertical]="true" [options]="workflowOptions"
+              <input-select-option-field [frmGroup]="masterFrmGroup" [controlName]="'workflowId'"
+                [label]="'Default Workflow'" [options]="workflowOptions"
                 [tooltip]="'Select default workflow'">
-              </app-select-option-field>
+              </input-select-option-field>
             </div>
 
             <section class="action-buttons-section rounded-lg py-5">
-              <lds-btn id="addBtn" value="add" labelText="Show/Hide Condition" (onClick)="toggleConditionSection()"
+              <generic-button id="addBtn" value="add" labelText="Show/Hide Condition" (onClick)="toggleConditionSection()"
                 [enable]="!isAddConditionDisabled">
-              </lds-btn>
+              </generic-button >
             </section>
 
           </section>
@@ -87,59 +87,59 @@
             <!-- And/Or -->
             <div class="component-section">
               <label *ngIf="i === 0" class="block text-sm font-medium mb-2">And/Or</label>
-              <app-select-option-field *ngIf="i > 0" [frmGroup]="getRowFormGroup(i)" [controlName]="'andOr'"
-                [label]="''" [isVertical]="true" [options]="andOrOptions" (onSelect)="onAndOrChange($event, row.id)">
-              </app-select-option-field>
+              <input-select-option-field *ngIf="i > 0" [frmGroup]="getRowFormGroup(i)" [controlName]="'andOr'"
+                [label]="''" [options]="andOrOptions" (onSelect)="onAndOrChange($event, row.id)">
+              </input-select-option-field>
             </div>
 
             <!-- Field -->
             <div class="component-section">
-              <app-select-option-field [frmGroup]="getRowFormGroup(i)" [controlName]="'fieldName'"
-                [label]="i === 0 ? 'Field' : ''" [isVertical]="true" [options]="fieldOptions"
+              <input-select-option-field [frmGroup]="getRowFormGroup(i)" [controlName]="'fieldName'"
+                [label]="i === 0 ? 'Field' : ''" [options]="fieldOptions"
                 (onSelect)="onFieldChange($event, row.id)">
-              </app-select-option-field>
+              </input-select-option-field>
             </div>
 
             <!-- Operator -->
             <div class="component-section">
-              <app-select-option-field [frmGroup]="getRowFormGroup(i)" [controlName]="'operator'"
-                [label]="i === 0 ? 'Operator' : ''" [isVertical]="true"
+              <input-select-option-field [frmGroup]="getRowFormGroup(i)" [controlName]="'operator'"
+                [label]="i === 0 ? 'Operator' : ''" 
                 [options]="operatorMap[row.id] || operatorOptions" (onSelect)="onOperatorChange($event, row.id)">
-              </app-select-option-field>
+              </input-select-option-field>
             </div>
 
             <!-- Value -->
             <div class="component-section">
               <!-- Number -->
-              <lds-amount *ngIf="row.fieldType === 'N'" [frmGroup]="getRowFormGroup(i)" [controlName]="'value'"
+              <input-amount *ngIf="row.fieldType === 'N'" [frmGroup]="getRowFormGroup(i)" [controlName]="'value'"
                 [label]="i === 0 ? 'Value' : ''" [isVertical]="true" [decimalPlaces]="2" [allowLeadingZeros]="false"
                 [maxLen]="12" (onChanged)="onValueChange($event, row.id)">
-              </lds-amount>
+              </input-amount>
 
               <!-- String -->
-              <app-text-base-input *ngIf="row.fieldType === 'S'" [frmGroup]="getRowFormGroup(i)" [controlName]="'value'"
+              <input-text-box *ngIf="row.fieldType === 'S'" [frmGroup]="getRowFormGroup(i)" [controlName]="'value'"
                 [label]="i === 0 ? 'Value' : ''" [isVertical]="true" [type]="'text'" [maxLength]="200"
                 (onChanged)="onValueChange($event, row.id)">
-              </app-text-base-input>
+              </input-text-box>
 
               <!-- Dropdown -->
-              <app-select-option-field *ngIf="row.fieldType === 'D'" [isVertical]="true" [frmGroup]="getRowFormGroup(i)"
+              <input-select-option-field *ngIf="row.fieldType === 'D'"  [frmGroup]="getRowFormGroup(i)"
                 [controlName]="'value'" [label]="i === 0 ? 'Value' : ''"
                 [options]="convertToDropdownOptions(row.fieldValueOptions)" (onSelect)="onValueChange($event, row.id)">
-              </app-select-option-field>
+              </input-select-option-field >
 
               <!-- Boolean -->
-              <app-select-option-field *ngIf="row.fieldType === 'B'" [isVertical]="true" [frmGroup]="getRowFormGroup(i)"
+              <input-select-option-field *ngIf="row.fieldType === 'B'"  [frmGroup]="getRowFormGroup(i)"
                 [controlName]="'value'" [label]="i === 0 ? 'Value' : ''"
                 [options]="[{ key: 'true', value: 'True' }, { key: 'false', value: 'False' }]"
                 (onSelect)="onValueChange($event, row.id)">
-              </app-select-option-field>
+              </input-select-option-field >
 
               <!-- Default (when no field type selected) -->
-              <app-select-option-field *ngIf="!row.fieldType" [isVertical]="true" [frmGroup]="getRowFormGroup(i)"
+              <input-select-option-field  *ngIf="!row.fieldType"  [frmGroup]="getRowFormGroup(i)"
                 [controlName]="'value'" [label]="i === 0 ? 'Value' : ''" [options]="[]"
                 (onSelect)="onValueChange($event, row.id)">
-              </app-select-option-field>
+              </input-select-option-field >
             </div>
           </div>
         </div>
@@ -150,16 +150,16 @@
 
             <!-- Conditional Workflow -->
             <div class="component-section">
-              <app-select-option-field [frmGroup]="conditionFrmGroup" [controlName]="'conditionalWorkflowId'"
-                [label]="'Conditional Workflow'" [isVertical]="true" [options]="workflowOptions"
+              <input-select-option-field  [frmGroup]="conditionFrmGroup" [controlName]="'conditionalWorkflowId'"
+                [label]="'Conditional Workflow'" [options]="workflowOptions"
                 [tooltip]="'Select workflow for this condition'">
-              </app-select-option-field>
+              </input-select-option-field >
             </div>
 
             <!-- Add Button -->
             <section class="action-buttons-section rounded-lg pt-5">
-              <lds-btn id="addConditionBtn" value="add" labelText="Add" (onClick)="addCurrentFormToGrid()">
-              </lds-btn>
+              <generic-button id="addConditionBtn" value="add" labelText="Add" (onClick)="addCurrentFormToGrid()">
+              </generic-button >
             </section>
 
           </div>

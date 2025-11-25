@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
-import { AllComponentsPage } from '../../shared/components/all-components-page/all-components-page';
-import { ServiceRequestProcess } from '../../features/service-request/service-request-process/service-request-process';
-import { ApprovalItems } from '../../features/poc/approval-items/approval-items';
-import { ApprovalMovement } from '../../features/poc/approval-movement/approval-movement';
-import { ActivityTrackerTogglePage } from '../../features/activity-tracker-toggle/activity-tracker-toggle.page';
-import { PersonFormComponent } from '../../features/components/person-form/person-form.component';
-import { NotificationCenterComponent } from '../../features/components/notification-center/notification-center.component';
-import { FormPageComponent } from '../../features/components/form-page/form-page.component';
+import { ServiceRequestProcess } from '../../shared/features/service-request/service-request-process/service-request-process';
+import { PersonFormComponent } from '../../shared/features/components/person-form/person-form.component';
+import { ActivityTrackerTogglePage } from '../../shared/features/activity-tracker-toggle/activity-tracker-toggle.page';
+import { NotificationCenterComponent } from '../../shared/features/components/notification-center/notification-center.component';
+import { FormPageComponent } from '../../shared/features/components/form-page/form-page.component';
+import { ApprovalItems } from '../../shared/features/poc/approval-items/approval-items';
+import { ApprovalMovement } from '../../shared/features/poc/approval-movement/approval-movement';
+import { AllComponentsPage } from '../../shared/common-components/test-component-page/all-components-page/all-components-page';
 
 
 export const SwiftmxRouting: Routes = [
