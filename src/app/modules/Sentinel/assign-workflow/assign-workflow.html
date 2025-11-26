@@ -45,7 +45,7 @@
             </div>
 
             <section class="action-buttons-section rounded-lg py-5">
-              <generic-button id="addBtn" value="add" labelText="Show/Hide Condition" (onClick)="toggleConditionSection()"
+              <generic-button id="addBtn" value="Show/Hide Condition" (onClick)="toggleConditionSection()"
                 [enable]="!isAddConditionDisabled">
               </generic-button >
             </section>
@@ -103,7 +103,7 @@
             <!-- Operator -->
             <div class="component-section">
               <input-select-option-field [frmGroup]="getRowFormGroup(i)" [controlName]="'operator'"
-                [label]="i === 0 ? 'Operator' : ''" 
+                [label]="i === 0 ? 'Operator' : ''"
                 [options]="operatorMap[row.id] || operatorOptions" (onSelect)="onOperatorChange($event, row.id)">
               </input-select-option-field>
             </div>

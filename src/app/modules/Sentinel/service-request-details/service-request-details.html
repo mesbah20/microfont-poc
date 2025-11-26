@@ -175,7 +175,7 @@
                   [frmGroup]="responseForm"
                   [controlName]="'status'"
                   [label]="'Update Status'"
-                  
+
                   [options]="statusOptions"
                   [tooltip]="'Change the status of this service request'"
                   (onSelect)="handleStatusChange($event)"
@@ -190,7 +190,7 @@
                 [frmGroup]="responseForm"
                 [controlName]="'resolverRemarks'"
                 [label]="'Comment to Employee'"
-                
+                [isVertical]="true"
                 [rows]="4"
                 [minRows]="0"
                 [maxRows]="10"
