@@ -2,14 +2,14 @@ import {Component, OnInit} from '@angular/core';
 import Highcharts from 'highcharts';
 import 'highcharts/highcharts-3d';
 import {HighchartsChartModule} from 'highcharts-angular';
-import { BUTTON_VISIBILITY } from '../../../../constant/button-signals.constant';
-import { CommonBarChart } from '../../../../common-components/charts/common-bar-chart/common-bar-chart';
-import { CommonDonutChart } from '../../../../common-components/charts/common-donut-chart/common-donut-chart';
-import { CommonGaugeChart } from '../../../../common-components/charts/common-gauge-chart/common-gauge-chart';
-import { CommonHistogram } from '../../../../common-components/charts/common-histogram/common-histogram';
-import { CommonLineChartComponent } from '../../../../common-components/charts/common-line-chart/common-line-chart';
-import { CommonPieChart } from '../../../../common-components/charts/common-pie-chart/common-pie-chart';
-import { CommonStackedColumnChart } from '../../../../common-components/charts/common-stacked-column-chart/common-stacked-column-chart';
+import { BUTTON_VISIBILITY } from '../../../../shared/constant/button-signals.constant';
+import { CommonBarChart } from '../../../../shared/common-components/charts/common-bar-chart/common-bar-chart';
+import { CommonDonutChart } from '../../../../shared/common-components/charts/common-donut-chart/common-donut-chart';
+import { CommonGaugeChart } from '../../../../shared/common-components/charts/common-gauge-chart/common-gauge-chart';
+import { CommonHistogram } from '../../../../shared/common-components/charts/common-histogram/common-histogram';
+import { CommonLineChartComponent } from '../../../../shared/common-components/charts/common-line-chart/common-line-chart';
+import { CommonPieChart } from '../../../../shared/common-components/charts/common-pie-chart/common-pie-chart';
+import { CommonStackedColumnChart } from '../../../../shared/common-components/charts/common-stacked-column-chart/common-stacked-column-chart';
 
 @Component({
   selector: 'app-dashboard',

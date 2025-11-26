@@ -25,6 +25,8 @@ import { Tooltip } from 'highcharts';
 import { GenericButton } from '../../generic-component-type/generic-button/generic-button';
 import { GenericSwitch } from '../../generic-component-type/generic-switch/generic-switch';
 import { GenericModal } from '../../generic-component-type/generic-modal/generic-modal';
+import { CommonQuillEditorComponent } from '../../common-quill-editor/common-quill-editor';
+import { AlertExamplePage } from '../../../../features/landing/alert-example-page/alert-example-page';
 
 // Types for data selection modal
 export interface AccountData {
@@ -65,8 +67,10 @@ export interface DataSelectionConfig {
     InputNumber,
     InputAmount,  
     GenericModal,
+    CommonQuillEditorComponent,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
+    AlertExamplePage
   ],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],
@@ -1141,7 +1145,8 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       dropdownHorizontal: [''],
       multiSelectHorizontal: [[]],
       numberHorizontal: ['', [Validators.pattern('^[0-9]*$')]],
-      officeCodeHorizontal: ['', [Validators.maxLength(10), Validators.minLength(3)]]
+      officeCodeHorizontal: ['', [Validators.maxLength(10), Validators.minLength(3)]],
+      quillEditor: ['']
     });
 
     this.setupFieldRelationships();

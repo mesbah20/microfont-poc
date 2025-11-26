@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { Layout } from './layout/layout';
-import { Landing } from './shared/features/landing/landing/landing';
+import { Landing } from './features/landing/landing/landing';
 
 export const routes: Routes = [
 
@@ -13,7 +13,7 @@ export const routes: Routes = [
       layout: 'empty'
     },
     children: [
-      { path: '', loadChildren: () => import('./shared/features/landing/landing.routing').then(m => m.landingRouting) },
+      { path: '', loadChildren: () => import('./features/landing/landing.routing').then(m => m.landingRouting) },
     ]
   },
   {
@@ -23,7 +23,7 @@ export const routes: Routes = [
     },
     children: [
       { path: 'mx', loadChildren: () => import('./modules/swiftmx/swiftmx.routing').then(m => m.SwiftmxRouting) },
-      { path: 'dashboard', loadChildren: () => import('./shared/features/landing/landing.routing').then(m => m.landingRouting) },
+      { path: 'dashboard', loadChildren: () => import('./features/landing/landing.routing').then(m => m.landingRouting) },
       { path: 'WF', loadChildren: () => import('./shared/features/poc/poc.routing').then(m => m.PocRouting) },
     ]
   },

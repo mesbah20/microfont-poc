@@ -29,7 +29,7 @@ import {ToastHelperService} from '../../../../../../shared/services/toast-helper
 import { UserService } from '../../../../../../shared/core/user/user.service';
 import { User } from '../../../../../../shared/core/user/user.types';
 import { NotificationDetailModalComponent } from '../../../../../../shared/features/components/notification/notification-detail-modal.component';
-import { EditProfileModal } from '../../../../../../shared/features/landing/feature/edit-profile-modal/edit-profile-modal';
+import { EditProfileModal } from '../../../../../../features/landing/feature/edit-profile-modal/edit-profile-modal';
 import { NotificationPopoverComponent } from '../../../../../../shared/features/components/notification/notification-popover.component';
 import { ServiceRequestDialog } from '../../../../../../shared/features/service-request/service-request-dialog/service-request-dialog';
 import { InputTextBox } from '../../../../../../shared/common-components/input-types/input-text-box/input-text-box';
