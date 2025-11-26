@@ -23,11 +23,4 @@ export const PocRouting: Routes = [
   {path: 'approval-items', component: ApprovalItems},
   {path: 'approval-movement', component: ApprovalMovement},
   {path: 'approval-activities', component: ViewApprovalActivitiesComponent},
-  { path: 'AllComponent', component: AllComponentsPage },
-  { path: 'UserProfile', component: UserProfile },
-  { path: 'AssignRoleToUser', component: AssignRolesToUser },
-  { path: 'WorkflowDesigner', component: WorkflowDesigner },
-  { path: 'DefineRoles', component: DefineRoles },
-  { path: 'PasswordPolicy', component: PasswordPolicy },
-  { path: 'assign-workflow', component: AssignWorkflow },
 ];
