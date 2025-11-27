@@ -32,7 +32,7 @@
       </label>
 
       <!-- CLEAR BUTTON -->
-      <!-- <button
+      <button
         *ngIf="frmGroup.get(controlName)?.value && !isReadonly"
         type="button"
         class="clear-button"
@@ -41,7 +41,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
           <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
         </svg>
-      </button> -->
+      </button>
 
       <!-- TIME PICKER ICON -->
       <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3 pointer-events-none" *ngIf="!frmGroup.get(controlName)?.value">
@@ -80,7 +80,7 @@
         (change)="onChange($event)"
         (blur)="onBlur()" />
 
-      <!-- <button
+      <button
         *ngIf="frmGroup.get(controlName)?.value && !isReadonly"
         type="button"
         class="clear-button"
@@ -89,9 +89,8 @@
         <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
           <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
         </svg>
-      </button> -->
-
-      <!-- TIME PICKER ICON -->
+      </button>
+     
       <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3 pointer-events-none" *ngIf="!frmGroup.get(controlName)?.value">
         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
           fill="currentColor" viewBox="0 0 24 24">
