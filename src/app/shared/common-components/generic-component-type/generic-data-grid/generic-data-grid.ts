@@ -15,6 +15,7 @@ import { GenericMultiInputSelectOption } from '../generic-multi-select-option/ge
 import { ExpansionPanelHeader } from '../../expansion-panel-header/expansion-panel-header';
 import { LoaderService } from '../../../services/loader.service';
 import { GenericButton } from '../generic-button/generic-button';
+import { InputTime } from '../../input-types/input-time/input-time';
 
 export interface TableRowDesigner {
   condition: (item: any) => boolean;
@@ -46,6 +47,7 @@ export interface GridColumn {
   isCheckbox?: boolean;
   showSelectAll?: boolean; // New property for checkbox columns
   readOnly?: boolean; // New property to make checkboxes read-only
+  isTimeField?: boolean; // New property for time picker fields
 }
 
 export interface GridAction {
@@ -92,7 +94,8 @@ export interface Option {
     MatTooltipModule,
     GenericMultiInputSelectOption,
     ExpansionPanelHeader,
-    GenericButton
+    GenericButton,
+    InputTime
   ],
   templateUrl: './generic-data-grid.html',
   styleUrl: './generic-data-grid.scss'
@@ -133,6 +136,9 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   readonly checkboxSelectAllColumns = input<string[]>([]); // Columns that should show select all
   readonly readOnlyCheckboxColumns = input<string[]>([]); // Columns that should be read-only
 
+  // Time Field Inputs
+  readonly timeColumns = input<string[]>([]); // Columns that should use time picker
+
   // Summary
   readonly summaryColumns = input<string[]>([]);
   readonly groupByColumns = input<string[]>([]);
@@ -170,6 +176,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   public _selectAll = signal<boolean>(false);
   public _editingRow = signal<number | null>(null);
   public _editingData = signal<Partial<T>>({});
+  public _editingFormGroup = signal<FormGroup | null>(null);
   public _allSummary = signal<Record<string, number>>({});
   public _summaryOption = signal<{ key: string; value: string }[]>([]);
   public _groupByOption = signal<{ key: string; value: string }[]>([]);
@@ -276,7 +283,10 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
       // Enhanced checkbox properties
       isCheckbox: this.checkboxColumns().includes(prop),
       showSelectAll: this.checkboxSelectAllColumns().includes(prop),
-      readOnly: this.readOnlyCheckboxColumns().includes(prop)
+      readOnly: this.readOnlyCheckboxColumns().includes(prop),
+
+      // Time field properties
+      isTimeField: this.timeColumns().includes(prop)
     }));
   }
 
@@ -606,7 +616,19 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   // Row editing
   startEdit(index: number): void {
     this._editingRow.set(index);
-    this._editingData.set({ ...this.displayedData()[index] });
+    const rowData = { ...this.displayedData()[index] };
+    this._editingData.set(rowData);
+    
+    // Create form group for time fields
+    const formControls: any = {};
+    this.timeColumns().forEach(timeCol => {
+      const value = rowData[timeCol] || '';
+      formControls[timeCol] = [value];
+    });
+    
+    if (Object.keys(formControls).length > 0) {
+      this._editingFormGroup.set(this.formBuilder.group(formControls));
+    }
   }
 
   saveEdit(index: number): void {
@@ -620,6 +642,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
       this._dataSource.set(updatedData);
       this._editingRow.set(null);
       this._editingData.set({});
+      this._editingFormGroup.set(null);
       this.applyFilters();
       this.dataSourceChanged.emit(updatedData);
     }
@@ -628,6 +651,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   cancelEdit(): void {
     this._editingRow.set(null);
     this._editingData.set({});
+    this._editingFormGroup.set(null);
   }
 
   // Actions
@@ -786,6 +810,21 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
 
   // Math utility for template
   Math = Math;
+
+  // Time field helper methods
+  getEditingFormGroup(): FormGroup {
+    return this._editingFormGroup() || this.formBuilder.group({});
+  }
+
+  onTimeFieldChange(property: string, timeValue: string): void {
+    this.setEditingValue(property, timeValue);
+    
+    // Also update the form control if it exists
+    const formGroup = this._editingFormGroup();
+    if (formGroup && formGroup.get(property)) {
+      formGroup.get(property)?.setValue(timeValue);
+    }
+  }
 
 
   private loadSummaryOption() {
