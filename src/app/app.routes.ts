@@ -24,7 +24,8 @@ export const routes: Routes = [
     children: [
       { path: 'mx', loadChildren: () => import('./modules/swiftmx/swiftmx.routing').then(m => m.SwiftmxRouting) },
       { path: 'dashboard', loadChildren: () => import('./features/landing/landing.routing').then(m => m.landingRouting) },
-      { path: 'WF', loadChildren: () => import('./shared/features/poc/poc.routing').then(m => m.PocRouting) },
+      { path: 'poc', loadChildren: () => import('./shared/features/poc/poc.routing').then(m => m.PocRouting) },
+      { path: 'WF', loadChildren: () => import('./modules/Sentinel/sentinel-routing').then(m => m.SentinelRouting) },
     ]
   },
   {path: '', redirectTo: 'usernote', pathMatch: 'full'},
@@ -47,18 +48,6 @@ export const routes: Routes = [
     },
     children: [
       { path: '', loadChildren: () => import('./shared/features/feature.routing').then(m => m.featureRoutes) },
-    ]
-  },
-  {
-    path: 'Sentinel', component: Layout,
-    data: {
-      layout: 'empty'
-    },
-    children: [
-      {
-        path: '',
-        loadChildren: () => import('./modules/Sentinel/sentinel-routing').then(m => m.SentinelRouting)
-      },
     ]
   },
   {

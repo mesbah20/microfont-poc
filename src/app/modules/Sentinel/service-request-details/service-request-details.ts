@@ -69,6 +69,7 @@ export class ServiceRequestDetails implements OnInit {
   employeeId!: string;
   // Getter for OK button text based on current mode
   get okButtonText(): string {
+    console.log("this.tabIndex(): ",this.tabIndex())
     if (this.tabIndex() === 0) {
       return 'Close'; // View Details tab
     }

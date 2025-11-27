@@ -56,7 +56,7 @@ export class CommonService {
       pProcessId: 0
     };
 
-    const url = `${environment.apiBaseUrl}/centrino/xchange_out/get-all-office-type`;
+    const url = `${environment.apiBaseUrl}/centrino/xchange-out/get-all-office-type`;
     return this.http.post<any>(url, body, {
       headers: {
         'Content-Type': 'application/json',
