@@ -77,7 +77,7 @@
                 <button type="button" (click)="addQueryRow()" class="p-1 text-xs" title="Add Row">
                   ➕
                 </button>
-                <button type="button" (click)="removeQueryRow(row.id)" [disabled]="queryRows().length === 1"
+                <button type="button" (click)="removeQueryRow(row.id)" [disabled]="queryRows().length === 0"
                   class="p-1 text-xs" title="Remove Row">
                   ❌
                 </button>
@@ -173,7 +173,7 @@
             <lds-data-grid [id]="'workflow-conditions'" [dataSource]="sampleTransactions()" [initPageSize]="10"
               [enableSelection]="false" [showEditButton]="false" [showDeleteButton]="true" [showViewButton]="true"
               [showPrintButton]="false"
-              [selectedColumns]="['applicationName', 'moduleName', 'functionName', 'priority', 'condition', 'conditionalWorkflow']"
+              [selectedColumns]="['id','applicationName', 'moduleName', 'functionName', 'priority', 'condition', 'conditionalWorkflow']"
               [rowDesignerList]="transactionRowDesigners()" [tblClass]="'enhanced-transaction-table'"
               (onFHViewClick)="onEditCondition($event)" (onFHDeleteClick)="onTransactionDelete($event)"
               (dataSourceChanged)="onTransactionDataChanged($event)">
