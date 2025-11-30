@@ -1,0 +1,68 @@
+<div class="page-wrapper">
+  <div class="panel">
+    <div class="container space-y-6 p-4 my-4">
+      <app-expansion-panel-header
+        [isOpenSignal]="setupPanelOpen"
+        [panelTitle]="'Workflow Designer'">
+      </app-expansion-panel-header>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+      <input-id-box
+        [frmGroup]="grCldSetupForm"
+        [controlName]="'officeId'"
+        [label]="'Office ID'"
+        [isReadonly]="false"
+        [isVertical]="true"
+        [tooltip]="'Enter ID'"
+        [allowSpecialChars]="true"
+        [isDotsVisible]="false"
+        (onBlurred)="onOfficeIDChange($event)">
+      </input-id-box>
+      <input-text-box
+        [frmGroup]="grCldSetupForm"
+        [controlName]="'officeNm'"
+        [label]="'Office Name'"
+        [tooltip]="'Office Name'"
+        [tooltipDelay]="200"
+        [isReadonly]="true"
+        [isVertical]="true">
+      </input-text-box>
+      <input-select-option-field
+        [frmGroup]="grCldSetupForm"
+        [controlName]="'cldType'"
+        [label]="'Calendar Type'"
+        [options]="cldTypeOptions()"
+        [placeholder]="'Select Type'">
+      </input-select-option-field>
+    </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <input-select-option-field
+        [frmGroup]="grCldSetupForm"
+        [controlName]="'holidayCldType'"
+        [label]="'Holiday Calendar Type'"
+        [options]="cldTypeOptions()"
+        [placeholder]="'Select Type'">
+      </input-select-option-field>
+      <input-select-option-field
+        [frmGroup]="grCldSetupForm"
+        [controlName]="'holidayType'"
+        [label]="'Holiday Type'"
+        [options]="holidayTypeOptions()"
+        [placeholder]="'Select Type'">
+      </input-select-option-field>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <input-date
+        [frmGroup]="grCldSetupForm"
+        [controlName]="'dtFrom'"
+        [label]="'Holiday Date From'">
+      </input-date>
+      <input-date
+        [frmGroup]="grCldSetupForm"
+        [controlName]="'dtTo'"
+        [label]="'Holiday Date To'">
+      </input-date>
+    </div>
+    </div>
+  </div>
+
