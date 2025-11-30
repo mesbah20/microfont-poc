@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { InputTextBox } from '../../../../../shared/common-components/input-types/input-text-box/input-text-box';
 import { InputSelectOptionField } from "../../../../../shared/common-components/input-types/input-select-option-field/input-select-option-field";
 import { GenericSwitch } from "../../../../../shared/common-components/generic-component-type/generic-switch/generic-switch";
+import { ExchangeService } from '../../../exchange-service';
 
 @Component({
   selector: 'app-gl-chart-modal-component',
@@ -36,13 +37,16 @@ export class GlChartModalComponent implements OnChanges {
    
    @Input() initialData?: any;
 
-     constructor( private formBuilder: FormBuilder) {
+     constructor( private formBuilder: FormBuilder, private exchangeService : ExchangeService) {
   }
-   surviceOptions = [
-    { key: 'C', value: 'Conventional - Local' },
-    { key: 'I', value: 'Islamic' },
+  //  serviceOptions = [
+  //   { key: 'C', value: 'Conventional - Local' },
+  //   { key: 'I', value: 'Islamic' },
 
-  ];
+  // ];
+
+  serviceOptions: { key: number; value: string }[] = [];
+
    glTypeOptions = [
     { key: 'A', value: 'Asset' },
     { key: 'L', value: 'Liability' },
@@ -63,16 +67,20 @@ export class GlChartModalComponent implements OnChanges {
     { key: '3', value: 'Only Manual Transactions Allowed' },
 
   ];
-    currencyOptions = [
-    { key: '0', value: 'BDT', rate: 1, taxRate: 0.05, country: 'BD' },
-    { key: '1', value: 'USD', rate: 110, taxRate: 0.08, country: 'US' },
-    { key: '2', value: 'British Pound', rate: 0.73, taxRate: 0.07, country: 'UK' },
-    { key: '3', value: 'Japanese Yen', rate: 110, taxRate: 0.03, country: 'JP' },
-    { key: '4', value: 'Canadian Dollar', rate: 1.25, taxRate: 0.06, country: 'CA' },
-    { key: '5', value: 'Australian Dollar', rate: 1.35, taxRate: 0.04, country: 'AU' }
-  ];
+  //   currencyOptions = [
+  //   { key: '0', value: 'BDT', rate: 1, taxRate: 0.05, country: 'BD' },
+  //   { key: '1', value: 'USD', rate: 110, taxRate: 0.08, country: 'US' },
+  //   { key: '2', value: 'British Pound', rate: 0.73, taxRate: 0.07, country: 'UK' },
+  //   { key: '3', value: 'Japanese Yen', rate: 110, taxRate: 0.03, country: 'JP' },
+  //   { key: '4', value: 'Canadian Dollar', rate: 1.25, taxRate: 0.06, country: 'CA' },
+  //   { key: '5', value: 'Australian Dollar', rate: 1.35, taxRate: 0.04, country: 'AU' }
+  // ];
+
+  currencyOptions: { key: number; value: string }[] = [];
   ngOnInit() {
     const formObject = new GlChartInformation();
+    this.getEntityTypeList();
+    this.getCurrencyList();
       this.frmGroup = buildFormGroup(this.formBuilder, formObject);
 
       // Default switches to false so UI shows unchecked until data is applied
@@ -92,6 +100,34 @@ export class GlChartModalComponent implements OnChanges {
       this.applyInitialData(this.initialData);
       this.applyMode(this.mode);
 
+  }
+
+  getEntityTypeList() {
+    const payload = {};
+    this.exchangeService.getEntityTypeList(payload).subscribe({
+      next: (res: any) => {
+        console.log('res', res);
+        this.serviceOptions = res.map((item: { ENTITY_TYPE_ID: any; ENTITY_TYPE_NM: any; }) => ({
+          key: item.ENTITY_TYPE_ID,
+          value: item.ENTITY_TYPE_NM
+        }));
+      },
+      error: (err) => { console.error(err); alert('Error Fetching Entity Type'); }
+    });
+  }
+
+  getCurrencyList() {
+    const payload = {};
+    this.exchangeService.getCurrencyList(payload).subscribe({
+      next: (res: any) => {
+        console.log('res', res);
+        this.currencyOptions = res.map((item: { CURRENCY_ID: any; CURRENCY_SH_NM: any; }) => ({
+          key: item.CURRENCY_ID.toString(),
+          value: item.CURRENCY_SH_NM
+        }));
+      },
+      error: (err) => { console.error(err); alert('Error Fetching Entity Type'); }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {

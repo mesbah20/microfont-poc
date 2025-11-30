@@ -56,44 +56,7 @@ export class AccountNodeComponent {
 	  isContraConEnabled = false;
     buttonText = "Save";
     isModalButtonHidden =false;
-  currencyOptions = [
-    { key: '0', value: 'BDT', rate: 1, taxRate: 0.05, country: 'BD' },
-    { key: '1', value: 'USD', rate: 110, taxRate: 0.08, country: 'US' },
-    { key: '2', value: 'British Pound', rate: 0.73, taxRate: 0.07, country: 'UK' },
-    { key: '3', value: 'Japanese Yen', rate: 110, taxRate: 0.03, country: 'JP' },
-    { key: '4', value: 'Canadian Dollar', rate: 1.25, taxRate: 0.06, country: 'CA' },
-    { key: '5', value: 'Australian Dollar', rate: 1.35, taxRate: 0.04, country: 'AU' }
-  ];
 
-
-  surviceOptions = [
-    { key: 'C', value: 'Conventional - Local' },
-    { key: 'I', value: 'Islamic' },
-
-  ];
-
-  accTypeOptions = [
-    { key: 'D', value: 'Debit' },
-    { key: 'C', value: 'Credit' },
-
-  ];
-
-
-  glTypeOptions = [
-    { key: 'A', value: 'Asset' },
-    { key: 'L', value: 'Liability' },
-
-  ];
-
-  txnTypeOptions = [
-    { key: '0', value: 'Transaction Not Allowed' },
-    { key: '1', value: 'All Transactions Allowed' },
-
-    { key: '2', value: 'Only System Transactions Allowed' },
-
-    { key: '3', value: 'Only Manual Transactions Allowed' },
-
-  ];
   ngOnInit() {
     this.ensureFormInitialized();
   }

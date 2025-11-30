@@ -81,4 +81,10 @@ import { environment } from "../../../environments/environment";
     return this.http.post<any>(url, request);
   }
 
+
+   getCurrencyList(request: any): Observable<any> {
+        const url = `${environment.apiBaseUrl}/centrino/xchange-out/get-all-defn-currency`;
+        return this.http.post<any>(url, request);
+    }
+
 }
