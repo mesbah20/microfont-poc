@@ -801,7 +801,7 @@ export class AssignWorkflow implements OnInit {
   }
 
   onFieldChange(event: any, rowId: number) {
-    if (this.isEditMode) return;
+    //if (this.isEditMode) return;
     const selectedField = event.selectedKey;
     console.log('Field Changed:', selectedField);
 
@@ -1214,9 +1214,6 @@ export class AssignWorkflow implements OnInit {
         this.operatorMap[index + 1] = fieldType === 'N'
           ? this.operatorOptions
           : this.operatorOptionsLimited;
-        //this.onFieldChange({ key: rowData.value.fieldName }, rowData.id || index + 1);
-        //this.onFieldChange({ selectedKey: row.value.fieldName }, rowId);
-        // this.onOperatorChange({ selectedKey: row.value.operator }, rowId);
 
         this.refreshQueryRowsFromForm();
         this.cdr.detectChanges();
