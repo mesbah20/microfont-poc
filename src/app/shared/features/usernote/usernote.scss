@@ -1,3 +1,4 @@
+
 .component-section {
   margin-bottom: 1.5rem;
 }
@@ -205,16 +206,6 @@
   background-color: rgba(0, 0, 0, 0.075);
 }
 
-.note {
-  flex: auto !important;
-  background-color: rgb(255, 240, 70);
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
-  margin-bottom: 1em;
-  border-radius: 10px;
-  min-width: 220px;
-  max-width: 220px;
-}
-
 .close {
   top: 5px;
   cursor: pointer;
@@ -222,41 +213,165 @@
   position: relative;
 }
 
-.note-content {
-  outline: none;
-  height: 200px;
-  border-radius: 8px;
-  overflow-y: auto;
+/* Masonry container */
+.notes-grid {
+  column-count: 5; /* 5 columns on large screens */
+  column-gap: 16px;
+  width: 100%;
+}
+
+/* Individual note cards */
+.note-card {
+  position: relative;
+  display: inline-block; /* required for masonry */
+  width: 100%;
+  margin-bottom: 16px; /* vertical spacing */
+  padding: 8px 8px 0 8px;
+  border-radius: 3px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  background-color: #fff;
   box-sizing: border-box;
-  padding: 0 8px;
-  font-size: 12px;
-  text-align: justify;
-  max-height: 200px;
+  transition: all 0.3s ease;
+
+   /* 3D effect */
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  box-shadow: 0 6px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: visible;
 }
 
+/* hover effect */
+.note-card:hover {
+  // box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+   transform: rotateY(5deg) rotateX(2deg) translateZ(5px);
+  box-shadow: 0 12px 20px rgba(0,0,0,0.2);
+}
+
+/* Header */
 .note-header {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  // font-weight: bold;
+  padding-bottom: 8px;
+  line-height: 1.2;      /* keeps it compact */
+  text-overflow: ellipsis;  /* truncate if too long */
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Content */
+.note-content {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400; /* Normal */
+  font-size: 14px;
+  line-height: 1.5; /* Improves readability */
+  text-align: left;
+  overflow-y: hidden;         /* only hide vertical when collapsed */
+  overflow-x: auto;           /* allow horizontal scroll OR visible */
+  white-space: normal;        /* allow wrapping */
+  word-break: break-word;     /* break long words */
+  overflow-wrap: break-word;  /* ensure text stays inside */
+  transition: max-height 0.3s ease;
+  padding-right: 4px;
+  scroll-behavior: smooth;
+}
+
+/* Collapsed content */
+.note-content.collapsed {
+  max-height: 100px; /* initial collapsed height */
+  overflow-y: hidden;
+}
+
+/* See More link */
+.see-more {
+  cursor: pointer;
+  color: #007bff;
   font-size: 13px;
-  font-weight: bold;
-  padding: 8px;
+  margin-top: 4px;
+  display: inline-block;
 }
 
-.note_toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #7f6c04;
-  border-radius: 8px 8px 0px 0px;
-  height: 30px;
-  padding: 4px 8px;
-}
-
+/* Footer */
 .note-footer {
+  margin-top: 8px;
   display: flex;
-  padding: 4px 8px;
-  align-items: center;
   justify-content: space-between;
-  background-color: rgb(255, 240, 70);
+  //padding-top: 8px;
+  padding: 0 8px;
+  width: calc(100% + 16px);
+  margin-left: -8px;
+  margin-right: -8px;
+  background-color: inherit;
+  filter: brightness(0.9);
 }
+
+/* "Add New Note" card */
+// .add-new-note {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: center;
+//   background-color: #f0f4ff; /* light accent */
+//   color: #007bff;
+//   font-weight: bold;
+//   cursor: pointer;
+//   min-height: 150px;
+//   text-align: center;
+//   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+//   border-radius: 8px;
+//   transition: transform 0.2s ease, box-shadow 0.2s ease;
+// }
+
+// .add-new-note:hover {
+//   transform: translateY(-3px) rotateY(2deg) rotateX(1deg);
+//   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+// }
+
+// .add-new-note .add-icon {
+//   font-size: 32px;
+//   margin-bottom: 8px;
+// }
+
+.fab-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  height: 56px;
+  padding: 0 16px;       /* space for text */
+  border-radius: 28px;   /* pill shape for icon + text */
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 1000;
+}
+
+.fab-btn mat-icon {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+.fab-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+
+
+/* Responsive breakpoints */
+@media (max-width: 1600px) { .notes-grid { column-count: 4; } }
+@media (max-width: 1200px) { .notes-grid { column-count: 3; } }
+@media (max-width: 768px)  { .notes-grid { column-count: 2; } }
+@media (max-width: 480px)  { .notes-grid { column-count: 1; } }
+
 
 button {
   cursor: pointer;
@@ -274,11 +389,73 @@ button {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  color: white !important;
+  border: 1px solid white;
+  border-radius: 15px;
 }
 
 /* ensure glyphs don't overflow the box */
 .icon-box .material-icons {
   line-height: 1;
   display: block;
-  color: black;
 }
+
+/* Pinned state */
+.icon-box.pinned {
+    color: red !important;           /* red */
+    transform: rotate(-45deg); /* tilted */
+}
+
+/* Unpinned state */
+.icon-box.unpinned {
+    color: white !important;
+    transform: rotate(0deg);   /* upright */
+}
+
+/* Corner fold */
+.corner-fold {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0; 
+  height: 0;
+  border-top: 20px solid rgba(255,255,255,0.8); /* fold color */
+  border-left: 20px solid transparent;
+  z-index: 2;
+}
+
+/* Optional: add a shadow for folded effect */
+.corner-fold::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 20px;
+  height: 20px;
+  background: rgba(0,0,0,0.05);
+  transform: rotate(45deg);
+  transform-origin: top right;
+}
+
+::ng-deep .note-content li[data-list="checked"]::before {
+  content: "\2611"; /* checked checkbox */
+  margin-right: 6px;
+  color: #333;
+}
+
+::ng-deep .note-content li[data-list="unchecked"]::before {
+  content: "\2610"; /* empty checkbox */
+  margin-right: 6px;
+  color: #333;
+}
+
+::ng-deep .note-content ul {
+  padding-left: 20px; /* proper indentation */
+  margin: 4px 0;      /* spacing between items */
+}
+
+::ng-deep .note-content li {
+  list-style: none;    /* remove default bullets */
+  line-height: 1.5;    /* improve readability */
+}
+

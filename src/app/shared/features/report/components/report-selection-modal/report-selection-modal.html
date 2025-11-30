@@ -15,7 +15,7 @@
         </div>
       } @else {
         <!-- Data Grid -->
-        <lds-data-grid
+        <generic-data-grid
           [dataSource]="filteredReports()"
           [initPageSize]="10"
           [showEditButton]="false"
@@ -32,7 +32,7 @@
           (onFHViewClick)="onReportEdit($event)"
           (onChecked)="onReportRowSelect($event)"
           (dataSourceChanged)="onReportDataChanged($event)">
-        </lds-data-grid>
+        </generic-data-grid>
 
         <!-- No Data Message -->
         @if (filteredReports().length === 0) {

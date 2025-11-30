@@ -76,7 +76,7 @@ export interface Option {
 }
 
 @Component({
-  selector: 'lds-data-grid',
+  selector: 'generic-data-grid',
   standalone: true,
   imports: [
     ReactiveFormsModule,

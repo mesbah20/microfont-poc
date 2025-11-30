@@ -32,7 +32,7 @@
 
         @if (showmakerList) {
         <div class="component-section mt-3">
-          <lds-data-grid
+          <generic-data-grid
             [id]="'maker-list'"
             [initPageSize]="5"
             [enableSelection]="false"
@@ -61,7 +61,7 @@
         }"
               (onFHProgressClick)="handleProgressClick($event)"
             >
-            </lds-data-grid>
+            </generic-data-grid>
 
             <generic-modal
               [isVisible]="isModalVisible"

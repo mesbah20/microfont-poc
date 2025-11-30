@@ -983,3 +983,17 @@ body.modal-open app-sidebar,
 //
 //}
 
+
+/* --- FIX FOR QUILL TABLES OUTSIDE THE EDITOR --- */
+.ql-table-wrapper table {
+  max-width: 10px !important;
+  min-width: 90px !important;
+  table-layout: fixed !important;
+  border-collapse: collapse !important;
+}
+
+.ql-table-wrapper table td,
+.ql-table-wrapper table th {
+  border: 1px solid #ccc !important;
+  padding: 4px !important;
+}

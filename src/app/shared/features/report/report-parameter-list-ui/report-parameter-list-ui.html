@@ -203,7 +203,7 @@
             <div class="form-grid-col-1 mt-4">
                 <!-- Parameter Table -->
               @if (parameters().length > 0) {
-                <lds-data-grid
+                <generic-data-grid
                   [id]="'parameterGrid'"
                   [dataSource]="parameters()"
                   [initPageSize]="5"
@@ -216,7 +216,7 @@
                   [searchEnabled]="false"
                   (onFHEditClick)="onParameterEdit($event)"
                   (onFHDeleteClick)="onParameterDelete($event)"
-                ></lds-data-grid>
+                ></generic-data-grid>
               } @else {
                 <div class="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                   <svg class="mx-auto text-gray-400" style="height: 3rem; width: 3rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -13,7 +13,7 @@
           </div>
         } @else {
           <!-- Data Grid -->
-          <lds-data-grid
+          <generic-data-grid
             [dataSource]="filteredConnections()"
             [initPageSize]="10"
             [showEditButton]="true"
@@ -30,7 +30,7 @@
             (onFHEditClick)="onConnectionEdit($event)"
             (onChecked)="onConnectionRowSelect($event)"
             (dataSourceChanged)="onConnectionDataChanged($event)">
-          </lds-data-grid>
+          </generic-data-grid>
 
           <!-- No Data Message -->
           @if (filteredConnections().length === 0) {

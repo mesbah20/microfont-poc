@@ -42,7 +42,7 @@
       </app-expansion-panel-header>
 
       <div class="component-section">
-        <lds-data-grid
+        <generic-data-grid
           [id]="'assigned-roles'"
           [enableSelection]="true"
           [useInlineEdit]="false"
@@ -103,7 +103,7 @@
           (onChecked)="onRemovePackageRowSelect($event)"
           (onSelectAllChange)="onRemoveAllPackageRowSelect($event)"
         >
-        </lds-data-grid>
+        </generic-data-grid>
       </div>
 
       <div class="flex justify-center my-6 gap-4">
@@ -170,7 +170,7 @@
       </app-expansion-panel-header>
 
       <div class="component-section">
-        <lds-data-grid
+        <generic-data-grid
           [id]="'unassigned-roles'"
           [enableSelection]="true"
           [useInlineEdit]="false"
@@ -193,7 +193,7 @@
           appId: 'App ID'
         }"
         >
-        </lds-data-grid>
+        </generic-data-grid>
     <!--    -->
       </div>
     </div>

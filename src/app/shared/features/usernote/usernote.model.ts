@@ -7,4 +7,6 @@ export interface IUserNote
     isPinned?: number;
     isReminder?: number;
     reminderDate?: string | null | undefined;
+    isChecklist?: number;
+    noteColor?: string;
 }

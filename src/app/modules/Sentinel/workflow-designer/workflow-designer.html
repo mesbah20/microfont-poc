@@ -245,7 +245,7 @@
           Configure {{ detailCountState().required }} approval level detail{{ detailCountState().required === 1 ? '' : 's' }}. Currently configured: {{ detailCountState().actual }}.
         </ng-template>
       </div>
-      <lds-data-grid
+      <generic-data-grid
         [id]="'approval-detail-grid'"
         [enableSelection]="true"
         [dataSource]="levelDetails()"
@@ -262,7 +262,7 @@
         }"
         (onChecked)="onDetailSelection($event)"
         [initPageSize]="5">
-      </lds-data-grid>
+      </generic-data-grid>
 <!--
         [editableColumns]="['approvalLevel','approvalPolicy','approvalPolicy']"
         [dropdownColumns]="transactionDropdownColumns()"
@@ -314,7 +314,7 @@
       </div>
 
       <div *ngIf="previewPanelOpen()">
-        <lds-data-grid
+        <generic-data-grid
           [id]="'eligible-approvers-grid'"
           [dataSource]="approverRows()"
           [selectedColumns]="['approvalLevel','approvalPolicy','userId','userName','homeOfficeId','roleNames']"
@@ -327,7 +327,7 @@
             roleNames: 'Roles'
           }"
           [initPageSize]="5">
-        </lds-data-grid>
+        </generic-data-grid>
       </div>
     </div>
   </div>

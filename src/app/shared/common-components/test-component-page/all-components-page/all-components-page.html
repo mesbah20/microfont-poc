@@ -479,7 +479,7 @@
               />
               
               <div class="p-4">
-                <lds-data-grid 
+                <generic-data-grid 
                   #transactionGrid
                   [id]="'enhanced-transactions'"
                   [dataSource]="sampleTransactions()"
@@ -511,7 +511,7 @@
                   (onChecked)="onTransactionRowSelect($event)"
                   (onSelectAllChange)="onTransactionSelectAll($event)"
                   (dataSourceChanged)="onTransactionDataChanged($event)"
-                ></lds-data-grid>
+                ></generic-data-grid>
               </div>
             </section>
 
@@ -523,13 +523,8 @@
               />
               
               <div class="p-4">
-                <h4 class="mb-3 text-lg font-semibold">Employee Schedule Management</h4>
-                <p class="text-sm text-gray-600 mb-4">
-                  This example demonstrates inline editing with time picker fields for managing employee schedules.
-                  Click the edit button on any row to modify the time fields.
-                </p>
-                
-                <lds-data-grid 
+              
+                <generic-data-grid 
                   #timePickerGrid
                   [id]="'time-picker-schedule'"
                   [dataSource]="sampleScheduleData()"
@@ -548,7 +543,7 @@
                   [tblClass]="'schedule-table'"
              
                   (dataSourceChanged)="onScheduleDataChanged($event)">
-                </lds-data-grid>
+                </generic-data-grid>
               </div>
             </section>
           </div>

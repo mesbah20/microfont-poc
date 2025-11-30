@@ -45,7 +45,7 @@ export class UserNoteService {
         // });
     }
 
-    createUserNote(
+    manageUserNote(
         userNoteParam: IUserNote
     ): Observable<IUserNote> {
         let reqHeader = new HttpHeaders({
