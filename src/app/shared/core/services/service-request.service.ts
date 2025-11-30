@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { catchError, tap, map } from 'rxjs/operators';
+import {catchError, tap, map, switchMap} from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {UserService} from '../user/user.service';
 import {User} from '../user/user.types';
@@ -127,6 +127,17 @@ export class ServiceRequestService {
   private get officeInfoApiUrl(): string {
     return `${environment.apiBaseUrl}/centrino/xchange-out/get-all-office-info-exc`;
   }
+
+  private sendUpdateNotification(body: any): Observable<any> {
+    const url = `${environment.apiBaseUrl}/notify/send`;
+
+    return this.http.post(url, body, {
+      headers: new HttpHeaders({
+        "Content-Type": "application/json"
+      })
+    });
+  }
+
 
   constructor(private http: HttpClient) {
     this.userService.user$.subscribe((user: User) => {
@@ -526,23 +537,46 @@ console.log("Token in service-request",token);
         headers: this.getHeaders(),
       })
       .pipe(
-        tap((response) =>
+        switchMap((response) => {
+
           console.log(
             `Updated service request id=${serviceRequest.id}`,
             response
-          )
-        ),
-        map((response) => {
-          return {
-            ...serviceRequest,
-            ...response,
-            createdAt: response.createDate
-              ? new Date(response.createDate)
-              : serviceRequest.createdAt,
-            updatedAt: response.modifyDate
-              ? new Date(response.modifyDate)
-              : new Date(),
-          } as ServiceRequest;
+          );
+
+          // Build notification body
+          const notificationPayload = {
+            workFlowKey: "notify-only",
+            receiverInformations: [
+              {
+                subscriberId: serviceRequest.issuerName,
+                firstName: serviceRequest.fullName || serviceRequest.issuerName
+              }
+            ],
+            payLoad: {
+              notificationSubject: "Service Request Updated",
+              notificationBody: `Your service request #${serviceId} has been updated.`,
+              senderUserName: this.userId
+            }
+          };
+
+          return this.sendUpdateNotification(notificationPayload).pipe(
+            map((notifyRes) => {
+
+              console.log("Notification API Response:", notifyRes);
+              return {
+                ...serviceRequest,
+                ...response,
+                notificationResponse: notifyRes,
+                createdAt: response.createDate
+                  ? new Date(response.createDate)
+                  : serviceRequest.createdAt,
+                updatedAt: response.modifyDate
+                  ? new Date(response.modifyDate)
+                  : new Date()
+              } as ServiceRequest;
+            })
+          );
         }),
         catchError(this.handleError<ServiceRequest>('updateServiceRequest'))
       );

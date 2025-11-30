@@ -170,14 +170,14 @@
           <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'Conditions List'" />
 
           <div>
-            <lds-data-grid [id]="'workflow-conditions'" [dataSource]="sampleTransactions()" [initPageSize]="10"
+            <generic-data-grid [id]="'workflow-conditions'" [dataSource]="sampleTransactions()" [initPageSize]="10"
               [enableSelection]="false" [showEditButton]="false" [showDeleteButton]="true" [showViewButton]="true"
               [showPrintButton]="false"
               [selectedColumns]="['id','applicationName', 'moduleName', 'functionName', 'priority', 'condition', 'conditionalWorkflow']"
               [rowDesignerList]="transactionRowDesigners()" [tblClass]="'enhanced-transaction-table'"
               (onFHViewClick)="onEditCondition($event)" (onFHDeleteClick)="onTransactionDelete($event)"
               (dataSourceChanged)="onTransactionDataChanged($event)">
-            </lds-data-grid>
+            </generic-data-grid>
           </div>
         </section>
 

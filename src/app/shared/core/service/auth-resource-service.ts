@@ -67,4 +67,16 @@ export class AuthResourceService {
       })
     );
   }
+  
+  getReportFunctions(functionId?:number, functionName?:string): Observable<any[]> {
+    const url = `${environment.keycloakApi}/app-functions?functionType=R&functionId=${functionId?functionId:''}&functionName=${functionName?functionName:''}`;
+
+    return this.http.get<{ data: any[], meta: any }>(url).pipe(
+      map(res => res.data ?? []),
+      catchError(err => {
+        console.error("Error in getReportFunctions:", err);
+        return of([]);
+      })
+    );
+  }
 }

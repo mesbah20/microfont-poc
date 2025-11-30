@@ -7,7 +7,7 @@
 <!--        <div class="modal-search-section p-4 my-4 ">
         </div>-->
         <div class="component-section mt-3" *ngIf="showUserModalGrid">
-          <lds-data-grid [id]="'user-search'" [enableSelection]="false"
+          <generic-data-grid [id]="'user-search'" [enableSelection]="false"
                          [searchEnabled]="true"  [showEditButton]="true"
                          [useInlineEdit]="false" [dataSource]="userRolesList" (onFHEditClick)="loadUserRoles($event)"
                          [selectedColumns]="[
@@ -18,7 +18,7 @@
                             roleName: 'Role Name',
                             roleDescrip: 'Descriptions'
                         }">
-          </lds-data-grid>
+          </generic-data-grid>
         </div>
       </div>
     </form>

@@ -151,7 +151,7 @@
       </div>
 
       <div class="component-section mt-4" *ngIf="showUserIpGrid">
-        <lds-data-grid [id]="'ip-addresses'" [initPageSize]="5"
+        <generic-data-grid [id]="'ip-addresses'" [initPageSize]="5"
                        [enableSelection]="false" [showEditButton]="true"
                        [showDeleteButton]="true" (onFHDeleteClick)="removeAddresses($event)"
                        (onFHEditClick)="editAddress($event)"
@@ -159,7 +159,7 @@
                        [selectedColumns]="['logInUserTerminalIp']"
                        [editableColumns]="['logInUserTerminalIp']"
                        (dataSourceChanged)="onIpDataChanged($event)">
-        </lds-data-grid>
+        </generic-data-grid>
       </div>
       <div class="flex-1 gap-8 mt-4 space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -210,7 +210,7 @@
         <section class="transaction-grid-section bg-white rounded-lg shadow-sm p-4 h-[600px]">
           <app-sub-panel-header [subPanelTitle]="'Unassigned User Package'"/>
           <ng-container *ngIf="showUnassignedGrid">
-            <lds-data-grid
+            <generic-data-grid
               [id]="'unassigned-packages'"
               [enableSelection]="true"
               [useInlineEdit]="true"
@@ -219,7 +219,7 @@
               (onChecked)="onAddPackageRowSelect($event)"
               (onSelectAllChange)="onAddAllPackageRowSelect($event)"
               [initPageSize]="5">
-            </lds-data-grid>
+            </generic-data-grid>
           </ng-container>
         </section>
       </div>
@@ -247,7 +247,7 @@
         <section class="transaction-grid-section bg-white rounded-lg shadow-sm p-4 h-[600px]">
           <app-sub-panel-header [subPanelTitle]="'Assigned User Package'"/>
           <ng-container *ngIf="showAssignedGrid">
-            <lds-data-grid
+            <generic-data-grid
               [id]="'assigned-packages'"
               [enableSelection]="true"
               [useInlineEdit]="true"
@@ -260,7 +260,7 @@
               (onSelectAllChange)="onRemoveAllPackageRowSelect($event)"
               (onFHEditClick)="editPackage($event)"
               (dataSourceChanged)="onPackageChanged($event)">
-            </lds-data-grid>
+            </generic-data-grid>
           </ng-container>
         </section>
       </div>

@@ -4,7 +4,7 @@
       <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'Pending Approval'" />
       <div class="container">
         <div class="component-section mt-3">
-          <lds-data-grid
+          <generic-data-grid
             [id]="'enhanced-transactions'"
             [initPageSize]="8"
             [enableSelection]="false"
@@ -27,7 +27,7 @@
             }"
             (onFHViewClick)="view($event)"
             (onFHProgressClick)="handleProgressClick($event)">
-          </lds-data-grid>
+          </generic-data-grid>
 
           <generic-modal
             [isVisible]="isModalVisible"

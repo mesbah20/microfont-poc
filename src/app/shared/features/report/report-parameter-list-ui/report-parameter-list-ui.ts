@@ -238,7 +238,7 @@ export class ReportParameterListUI implements OnInit {
   private loadReportFunctionsData(): void {
 
     // Fetch Applications
-    this.authResourceService.getFunctions(Number(environment.appId),2)
+    this.authResourceService.getReportFunctions()
       .pipe(
         catchError((error) => {
           console.error('Error loading applications:', error);
@@ -805,11 +805,38 @@ export class ReportParameterListUI implements OnInit {
     }, 50);
   }
 
+  /**
+   * On Blur Load function by input string
+   */
+  
+  loadFunctionById(functionId: number) {
+    this.authResourceService.getReportFunctions(functionId)
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading applications:', error);
+          return of([]);
+        })
+      )
+      .subscribe((functions) => {
+        console.log(functions);
+        if(functions?.length>0){
+          this.reportForm.patchValue({
+            functionId: functions[0].functionId,
+          });
+        }else{
+          this.reportForm.patchValue({
+            functionId: '',
+          });
+        }
+        
+      });
+  }
+
 
   /**
    * Load report by ID from backend
    */
-  private loadReportById(reportId: number) {
+  loadReportById(reportId: number) {
     this.loading.set(true);
     this.reportService.getById(reportId).subscribe({
       next: (report) => {
@@ -875,8 +902,15 @@ export class ReportParameterListUI implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
+        this.reportForm.reset();
+        this.parameters.set([]);
         console.error('Error loading report:', err);
-        this.toastr.error('Failed to load report', 'Error');
+        if (err.status === 404 || (err.error?.detail && err.error?.detail.includes("not found"))) {
+              this.toastr.error('Report not found', 'Error');
+        }else{
+              this.toastr.error('Failed to load report', 'Error');
+        }
+
         this.loading.set(false);
       }
     });
@@ -1356,7 +1390,7 @@ export class ReportParameterListUI implements OnInit {
       exit: false,
       reset: true,
     });
-
+    this.onClickReset.set(false);
     this.toastr.info('Form has been reset.', 'Refresh');
   }
 

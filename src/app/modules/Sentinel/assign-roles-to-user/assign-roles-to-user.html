@@ -75,7 +75,7 @@
           <section class="transaction-grid-section bg-white rounded-lg shadow-sm p-4 h-[600px]">
             <app-sub-panel-header [subPanelTitle]="'Unassigned Roles'"/>
             <ng-container *ngIf="showUnassignedGrid">
-              <lds-data-grid
+              <generic-data-grid
                 [id]="'unassigned-roles'"
                 [enableSelection]="true"
                 [useInlineEdit]="false"
@@ -84,7 +84,7 @@
                 (onChecked)="onAddPackageRowSelect($event)"
                 (onSelectAllChange)="onAddAllPackageRowSelect($event)"
                 [initPageSize]="5">
-              </lds-data-grid>
+              </generic-data-grid>
             </ng-container>
           </section>
         </div>
@@ -109,7 +109,7 @@
           <section class="transaction-grid-section bg-white rounded-lg shadow-sm p-4 h-[600px]">
           <app-sub-panel-header [subPanelTitle]="'Assigned Roles'"/>
             <ng-container *ngIf="showAssignedGrid">
-              <lds-data-grid
+              <generic-data-grid
                 [id]="'assigned-roles'"
                 [enableSelection]="true"
                 [useInlineEdit]="true"
@@ -122,7 +122,7 @@
                 (onSelectAllChange)="onRemoveAllPackageRowSelect($event)"
                 (onFHEditClick)="editPackage($event)"
                 (dataSourceChanged)="onPackageChanged($event)">
-              </lds-data-grid>
+              </generic-data-grid>
             </ng-container>
           </section>
         </div>

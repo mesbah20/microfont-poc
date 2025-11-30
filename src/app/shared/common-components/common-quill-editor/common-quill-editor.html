@@ -10,7 +10,8 @@
     <quill-editor
       [modules]="modules"
       [formControlName]="controlName"
-      class="w-full col-span-2 break-words break-all whitespace-pre-wrap">
+      class="w-full col-span-2 break-words break-all whitespace-pre-wrap"
+      (onEditorCreated)="handleEditorCreated($event)">
     </quill-editor>
   </div>
 </div>

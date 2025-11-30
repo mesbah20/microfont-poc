@@ -346,18 +346,19 @@ export class ReportDbSetupUI implements OnInit {
           });
           
           console.log('Form values after patch:', this.connectionForm.value);
-          this.toastr.info('Connection loaded. Please enter password and verify details.', 'Connection Loaded');
+          // this.toastr.info('Connection loaded. Please enter password and verify details.', 'Connection Loaded');
           this.loading.set(false);
         },
         error: (err) => {
           console.error('Error loading connection:', err);
           // Don't show error toast for not found - user might be typing
-          if (err.status === 404) {
-            // Connection not found - do nothing, might be creating new
+          if (err.status === 404 || (err.error?.detail && err.error?.detail.includes("not found"))) {
+            this.toastr.error('Connection not found!', 'Error');
           } else {
             this.toastr.error('Failed to load connection', 'Error');
           }
           this.loading.set(false);
+          this.connectionForm.reset();
         }
       });
     }
@@ -437,14 +438,19 @@ export class ReportDbSetupUI implements OnInit {
             isDefaultConnection: false,
           });
           this.loading.set(false);
+          this.onClickSave.set(false);
         },
         error: (err) => {
           console.error('Error creating connection:', err);
           this.toastr.error('Failed to create connection', 'Error');
           this.loading.set(false);
+          this.onClickSave.set(false);
         }
       });
     }
+
+    this.onClickSave.set(false);
+
   }
 
   /**
@@ -458,6 +464,7 @@ export class ReportDbSetupUI implements OnInit {
       port: '1521',
       isDefaultConnection: false,
     });
+    this.onClickReset.set(false);
   }
 
   /**

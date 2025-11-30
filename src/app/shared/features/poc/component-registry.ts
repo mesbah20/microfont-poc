@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Type } from '@angular/core';
-import { GlSubsidiary } from './gl-subsidiary/gl-subsidiary';
 import { InputTextBox } from './text-base/text-base';
 
 

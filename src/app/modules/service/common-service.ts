@@ -64,6 +64,18 @@ export class CommonService {
       }
     });
   }
+  getOfficeName(pOfficeId: string): Observable<string> {
+    const body = { pOfficeId };
+
+    const url = `${environment.apiBaseUrl}/centrino/xchange-out/get-office-name`;
+    return this.http.post(url, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'text/plain'
+      },
+      responseType: 'text'
+    });
+  }
 
 
 }

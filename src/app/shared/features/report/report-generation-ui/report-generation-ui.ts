@@ -815,7 +815,7 @@ console.log(param);
     this.sortedParameters.set([]);
     this.availableFormats.set([]);
     this.selectedFormat.set('PDF');
-
+    this.onClickReset.set(false);
     this.toastr.info('Form has been reset.', 'Reset');
   }
 

@@ -155,7 +155,7 @@ export class WorkflowDesignerService {
     return this.http.delete<void>(url);
   }
 
-  getApprovalPolicies(): Observable<ApprovalPolicyIndicatorModel[]> {
+ /* getApprovalPolicies(): Observable<ApprovalPolicyIndicatorModel[]> {
     const url = `${environment.apiBaseUrl}/centrino/api/approval/policies/get-all`;
     return this.http.get<ApprovalPolicyIndicatorModel[]>(url).pipe(
       catchError(() => of([
@@ -164,7 +164,15 @@ export class WorkflowDesignerService {
         { approvalPolicyId: 3, description: 'Role, Office and Reporting Hierarchy' }
       ]))
     );
+  }*/
+  getApprovalPolicies(): Observable<ApprovalPolicyIndicatorModel[]> {
+    return of([
+      { approvalPolicyId: 1, description: 'Role Based Approval' },
+      { approvalPolicyId: 2, description: 'Role Based and Office Based Approval' },
+      { approvalPolicyId: 3, description: 'Role, Office and Reporting Hierarchy' }
+    ]);
   }
+
 
   getRoles(): Observable<UserRolesModel[]> {
     const url = `${environment.apiBaseUrl}/sentinel/api/roles/get-all`;

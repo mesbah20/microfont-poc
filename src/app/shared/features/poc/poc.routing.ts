@@ -11,6 +11,7 @@ import { DefineRoles } from '../../../modules/Sentinel/define-roles/define-roles
 import { PasswordPolicy } from '../../../modules/Sentinel/password-policy/password-policy';
 import { AssignWorkflow } from '../../../modules/Sentinel/assign-workflow/assign-workflow';
 import { AllComponentsPage } from '../../common-components/test-component-page/all-components-page/all-components-page';
+import {GraphicalCalendarSetup} from '../../../modules/Sentinel/graphical-calendar-setup/graphical-calendar-setup';
 
 
 

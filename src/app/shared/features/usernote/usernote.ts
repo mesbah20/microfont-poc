@@ -1,168 +1,88 @@
-import { Component, effect, inject, OnInit, signal, WritableSignal, HostListener } from '@angular/core';
+import { Component, inject, OnInit, signal, WritableSignal, HostListener, ViewChild, Type } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserNoteService } from './usernote.service';
-import { IUserNote } from './usernote.model';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { MatDivider } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
-import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { UserService } from '../../core/user/user.service';
-import { LoaderService } from '../../services/loader.service';
 import { User } from '../../core/user/user.types';
-import { ExpansionPanelHeader } from '../../common-components/expansion-panel-header/expansion-panel-header';
-import { InputTextBox } from '../../common-components/input-types/input-text-box/input-text-box';
-import { InputTextArea } from '../../common-components/input-types/input-text-area/input-text-area';
-import { GenericSwitch } from '../../common-components/generic-component-type/generic-switch/generic-switch';
-import { InputDate } from '../../common-components/input-types/input-date/input-date';
-import { InputTime } from '../../common-components/input-types/input-time/input-time';
+import { Observable, Subscription } from 'rxjs';
+import { Managenote } from '../usernote/managenote/managenote'
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { GenericModal } from '../../common-components/generic-component-type/generic-modal/generic-modal';
 import { GenericButton } from '../../common-components/generic-component-type/generic-button/generic-button';
+import { ExpansionPanelHeader } from '../../common-components/expansion-panel-header/expansion-panel-header';
+import { LoaderService } from '../../services/loader.service';
+import { IUserNote } from './usernote.model';
+import { UserNoteService } from './usernote.service';
 
 @Component({
   selector: 'app-usernote',
   imports: [CommonModule,
     ExpansionPanelHeader,
     ReactiveFormsModule,
-    InputTextBox,
-    InputTextArea,
-    GenericSwitch,
-    InputDate,
-    InputTime,
-    GenericButton,
-    MatDivider,
     MatIcon,
-    MatGridListModule,
-    MatTooltipModule
+    MatTooltipModule,
+    GenericModal
   ],
   templateUrl: './usernote.html',
   styleUrl: './usernote.scss'
 })
 export class Usernote implements OnInit {
-  frmUserNote: FormGroup;
-  userNoteList: IUserNote[];
+  @ViewChild(GenericModal) modalComponentRef?: GenericModal;
+
+  private userSubscription?: Subscription;
+  // frmUserNote: FormGroup;
+  userNoteList: IUserNoteUI[];
+  //IUserNote[];
   userNote: IUserNote = {};
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
   toastr = inject(ToastrService);
-  cols: number = 4; // default columns
-  userNoteId: number = 0;
-  saveButtonText: string = "Create";
-  reminderTime: string;
-  private userService = inject(UserService);
+  cols: number = 5; // default columns
 
-  officeId!: string;
-  userId!: string;
-  employeeId!: string;
+  showModal = false;
+  modalComponent?: Type<any>;
+  Managenote: Type<any> = Managenote;
+  modalComponentData?: any = null;
+  modalOkButtonText = signal('OK');
+  private modalSubscriptions: Subscription[] = [];
+  private subscriptionCheckTimer: any = null;
+
+  currentUser?: User;
 
   constructor(private formBuilder: FormBuilder,
-              public loaderService: LoaderService,
-              private userNoteService: UserNoteService
+    public loaderService: LoaderService,
+    private userNoteService: UserNoteService,
+    private userService: UserService,
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit() {
-    this.frmUserNote = this.formBuilder.group({
-      title: ['', [Validators.required]],
-      content: ['', [Validators.required, Validators.maxLength(255)]],
-      isPinned: [false],
-      isReminder: [false],
-      reminderDate: [''],
-      reminderTime: ['']
-
+    this.userSubscription = this.userService.user$.subscribe({
+      next: (user) => {
+        this.currentUser = user;
+      },
+      error: (error) => {
+        console.error('Failed to load current user profile from stream', error);
+      },
     });
-    this.userService.user$.subscribe((user: User) => {
-      this.officeId = user.officeId;
-      this.userId = user.username;
-      this.employeeId = user.employeeId;
 
-      console.log('Office ID:', this.officeId);
-      console.log('User ID:', this.userId);
-    });
     this.getUserNoteByUserId();
   }
 
   getUserNoteByUserId() {
-    const userId = this.userId;
-
-    this.userNoteService
-      .getUserNoteByUserId(userId || '')
-      .subscribe({
-        next: (response) => {
-          this.userNoteList = response as IUserNote[];
-        },
-        error: (err) => {
-          console.error(err);
-        },
-        complete: () => {
-          this.loaderService.hideLoader();
-        }
-      });
-  }
-
-
-  // Create/Update Note
-  createNote() {
+    const userId = this.currentUser?.username;
     this.loaderService.showLoader();
-
-    this.userNote.noteId = String(this.userNoteId);
-    //this.userNote.userId = localStorage.getItem('userId') ?? '';
-    this.userNote.userId = this.userId;
-    this.userNote.noteTitle = this.form['title'].value;
-    this.userNote.noteContent = this.form['content'].value;
-    this.userNote.isPinned = this.form['isPinned'].value ? 1 : 0;
-    this.userNote.isReminder = this.form['isReminder'].value ? 1 : 0;
-    if (this.userNote.isReminder == 1) {
-      this.userNote.reminderDate = this.convertToIsoDateTime(this.form['reminderDate'].value, this.reminderTime)
-    }
-    else
-      this.userNote.reminderDate = null;
-
-    console.log("createNote", this.userNote);
-
-    if (this.frmUserNote.valid) {
-      this.userNoteService
-        .createUserNote(this.userNote)
-        .subscribe((Response) => {
-          if (this.userNoteId > 0) {
-            this.toastr.success('Note Updated Successfully', 'Update Note');
-          }
-          else {
-            this.toastr.success('Note Created Successfully', 'Create Note');
-          }
-          this.onReset();
-          this.getUserNoteByUserId();
-          // if (Response.Status == 'OK') {
-          //   this.loading = false;
-
-          //   this.sharedService.SuccessOrErrorPopupService.showSuccessOrErrorPopup('Success', Response.Message, 'Close', false);
-          //   this.onReset();
-          // } else {
-          //   this.loading = false;
-          //   this.sharedService.SuccessOrErrorPopupService.showSuccessOrErrorPopup('Failure', Response.Message, 'Try again');
-          //   // this.popupError = true;
-          //   // this.header = 'Failure';
-          //   // this.message = Response.Message;
-          //   // this.btnText = 'Close';
-          //   // this.popup = true;
-          // }
-          // this.loading = false;
-        });
-    }
+    this.userNoteService
+      .getUserNoteByUserId(userId ?? '')
+      .subscribe((Response) => {
+        this.userNoteList = (Response as IUserNote[]).map(note => ({
+          ...note,
+          expanded: false
+        })) as IUserNoteUI[];
+      });
     this.loaderService.hideLoader();
-  }
-
-  updateNote(note: IUserNote) {
-    this.userNoteId = Number(note.noteId);
-    this.form['title'].setValue(note.noteTitle);
-    this.form['content'].setValue(note.noteContent);
-    this.form['isPinned'].setValue(note.isPinned);
-    this.form['isReminder'].setValue(note.isReminder);
-    if (note.isReminder == 1) {
-      const { date, time } = this.splitFromIsoDateTime(note.reminderDate ?? '');
-
-      this.form['reminderDate'].setValue(date);
-      this.form['reminderTime'].setValue(time);
-    }
-    this.saveButtonText = "Update";
   }
 
   deleteNote(noteId: string) {
@@ -170,7 +90,7 @@ export class Usernote implements OnInit {
       .deleteUserNote(noteId)
       .subscribe((Response) => {
         this.toastr.success('Note Deleted Successfully', 'Delete Note');
-        this.onReset();
+        // this.onReset();
         this.getUserNoteByUserId();
 
         // if (Response.Status == 'OK') {
@@ -191,24 +111,6 @@ export class Usernote implements OnInit {
       });
   }
 
-  onReset() {
-    this.frmUserNote.reset();
-    this.form['title'].setValue('');
-    this.form['content'].setValue('');
-    this.form['isPinned'].setValue('');
-    this.form['isReminder'].setValue('');
-    this.form['reminderDate'].setValue('');
-    this.userNoteId = 0;
-    this.saveButtonText = "Create";
-  }
-
-  onUpdateNote(note: IUserNote) {
-    const confirmed = confirm(`Are you sure you want to update this note?`);
-    if (confirmed) {
-      this.updateNote(note);
-    }
-  }
-
   onDeleteNote(noteId: string) {
     const confirmed = confirm(`Are you sure you want to delete this note?`);
     if (confirmed) {
@@ -216,34 +118,23 @@ export class Usernote implements OnInit {
     }
   }
 
-  onTimeChange(time: string) {
-    this.reminderTime = time;
-    //console.log('Time:', this.reminderTime);
-  }
+  updateNotePinStatus(note: IUserNote) {
+    note.isPinned = +!note.isPinned;
 
-  get form() {
-    return this.frmUserNote.controls;
-  }
+    this.userNoteService
+      .manageUserNote(note)
+      .subscribe((Response) => {
+        if (note.isPinned == 0) {
+          this.toastr.success('Note Unpinned Successfully', 'Unpin Note');
+        }
+        else {
+          this.toastr.success('Note Pinned Successfully', 'Pin Note');
+        }
+      });
 
-  splitFromIsoDateTime(isoDateTime: string): { date: string; time: string } {
-    if (!isoDateTime) return { date: '', time: '' };
-
-    const [datePart, timePart] = isoDateTime.split('T'); // split at 'T'
-
-    if (!datePart || !timePart) return { date: '', time: '' };
-
-    // Optional: remove seconds from time
-    const [hours, minutes] = timePart.split(':');
-    const time = `${hours}:${minutes}`;
-
-    return { date: datePart, time };
-  }
-
-  convertToIsoDateTime(dateStr: string, timeStr: string): string {
-    const [year, month, day] = dateStr.split('-');
-    const [hour, minute] = timeStr.split(':');
-
-    return `${year}-${month}-${day}T${hour}:${minute}:00`;
+    setTimeout(() => {
+      this.getUserNoteByUserId();
+    }, 500);
   }
 
   // Responsive columns
@@ -253,13 +144,78 @@ export class Usernote implements OnInit {
   }
 
   updateCols(width: number) {
-    if (width < 600) this.cols = 1;
-    else if (width < 960) this.cols = 2;
-    else if (width < 1280) this.cols = 3;
-    else this.cols = 4;
+    if (width < 600) this.cols = 2;
+    else if (width < 960) this.cols = 3;
+    else if (width < 1280) this.cols = 4;
+    else this.cols = 5;
   }
 
   onBlur(value: string): void {
     console.log('Textbox blurred, value:', value);
   }
+
+  openModal(componentToLoad?: Type<any>, data?: any) {
+    // Reset modal state
+    this.showModal = false;
+    this.modalComponent = undefined;
+    const currentFieldData = data;
+
+    setTimeout(() => {
+      this.modalComponent = componentToLoad || this.Managenote;
+
+      this.modalComponentData = {
+        initialData: currentFieldData,
+        ...(data || {})
+      };
+      this.showModal = true;
+    }, 50);
+  }
+
+  onModalClose(isVisible: boolean) {
+    this.showModal = isVisible;
+
+    if (!isVisible) {
+      this.modalSubscriptions.forEach((sub) => sub.unsubscribe());
+      this.modalSubscriptions = [];
+
+      if (this.subscriptionCheckTimer) {
+        clearInterval(this.subscriptionCheckTimer);
+        this.subscriptionCheckTimer = null;
+      }
+    }
+  }
+
+  onModalResult(result: any) {
+    // Don't close modal if result is null or just a button text update
+    if (!result) return;
+
+    this.toastr.success(result.message, result.title);
+    this.showModal = false;
+
+    this.getUserNoteByUserId();
+
+    // Close modal only for actual actions (not button text changes)
+    // if (result.action === 'updated') {
+    //   this.showModal = false;
+    // }
+  }
+
+  onUpdateNote(note: IUserNote) {
+    // this.userNote = note;
+    this.openModal(Managenote, note);
+    // const confirmed = confirm(`Are you sure you want to update this note?`);
+    // if (confirmed) {
+    //this.updateNote(note);
+    //}
+  }
+
+  getSafeHtml(html: string | undefined) {
+    return html
+      ? this.sanitizer.bypassSecurityTrustHtml(html)
+      : '';
+  }
+}
+
+interface IUserNoteUI extends IUserNote {
+  expanded: boolean;
 }

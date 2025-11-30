@@ -177,7 +177,7 @@
             />
           </section>
 
-          <lds-data-grid
+          <generic-data-grid
             [id]="'service-requests-grid'"
             [dataSource]="serviceRequests()"
             [initPageSize]="10"
@@ -193,7 +193,7 @@
             [searchEnabled]="false"
             (onFHEditClick)="onReraiseClick($event)"
           >
-          </lds-data-grid>
+          </generic-data-grid>
         </div>
       </ng-template>
     </mat-tab>

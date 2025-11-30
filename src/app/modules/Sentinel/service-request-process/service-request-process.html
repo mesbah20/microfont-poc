@@ -71,7 +71,7 @@
           />
 
           <div class="p-4">
-            <lds-data-grid
+            <generic-data-grid
               [id]="'service-requests-grid'"
               [dataSource]="serviceRequests()"
               [initPageSize]="10"
@@ -86,7 +86,7 @@
               [searchEnabled]="true"
               (onFHViewClick)="onTransactionView($event)"
             >
-            </lds-data-grid>
+            </generic-data-grid>
           </div>
         </section>
       </div>
