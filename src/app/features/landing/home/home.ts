@@ -1,8 +1,8 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import { KeyclockService } from '../../../core/service/keyclock.service';
-import { UserService } from '../../../core/user/user.service';
-import { AuthService } from '../../../core/auth/auth.service';
+import { KeyclockService } from '../../../shared/core/service/keyclock.service';
+import { UserService } from '../../../shared/core/user/user.service';
+import { AuthService } from '../../../shared/core/auth/auth.service';
 
 
 

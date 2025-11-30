@@ -31,7 +31,7 @@ export class KeyclockService {
     this._authenticated = await this.keycloak.init({
       onLoad: 'check-sso',
       // onLoad: 'login-required',
-      redirectUri: 'http://localhost:4901/landing/home',
+      redirectUri: environment.redirectUri,
       //silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
       pkceMethod: 'S256',
       checkLoginIframe: true,
@@ -52,14 +52,14 @@ export class KeyclockService {
 
   login(): void {
     this.keycloak.login({
-      redirectUri: 'http://localhost:4901' + '/landing/home'
+      redirectUri: environment.redirectUri
     });
   }
 
 
   logout(): void {
     this.keycloak.logout({
-      redirectUri: 'http://localhost:4000'
+      redirectUri: environment.loginUrl
     });
   }
 
