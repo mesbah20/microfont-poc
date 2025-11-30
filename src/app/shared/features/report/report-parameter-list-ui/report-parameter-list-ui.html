@@ -32,6 +32,7 @@
          
               (dotsClicked)="openReportModal()"
               (onChanged)="onIdBoxChanged($event)"
+              (onBlurred)="loadReportById($event)"
             ></input-id-box>
 
             <!-- Report Name -->
@@ -55,6 +56,7 @@
               [placeholder]="'e.g., 901010'"
               [tooltipDelay]="300"
               (dotsClicked)="openFunctionModal()"
+              (onBlurred)="loadFunctionById($event)"
             ></input-id-box>
 
             <!-- Function Name (Read-only) -->

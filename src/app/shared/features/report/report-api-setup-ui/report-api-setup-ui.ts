@@ -323,14 +323,17 @@ export class ReportApiSetupUI implements OnInit {
             isDefaultEndpoint: false,
           });
           this.loading.set(false);
+          this.onClickSave.set(false);
         },
         error: (err) => {
           console.error('Error creating endpoint:', err);
           this.toastr.error('Failed to create endpoint', 'Error');
           this.loading.set(false);
+          this.onClickSave.set(false);
         }
       });
     }
+    this.onClickSave.set(false);
   }
 
   /**
@@ -343,6 +346,7 @@ export class ReportApiSetupUI implements OnInit {
       timeout: 30,
       isDefaultEndpoint: false,
     });
+    this.onClickReset.set(false);
     this.toastr.info('Form has been reset.', 'Refresh');
   }
 
