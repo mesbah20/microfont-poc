@@ -126,9 +126,8 @@ export class GlSubsidiary implements OnInit {
       console.log("this.isApprovalView in on changes ", this.isApprovalView);
 
     }
-    this.route.queryParams.subscribe(params => {
-      this.functionId = Number(params["functionId"]);
-    });
+     this.functionId = Number(localStorage.getItem("currentFunctionId"));
+ 
     console.log("FunctionId = ", this.functionId);
   }
 
@@ -145,11 +144,11 @@ export class GlSubsidiary implements OnInit {
     this.exchangeService.getOwnOfficeList("1").subscribe({
       next: (res: any) => {
         this.officeOptions = res.map((item: { OFFICE_ID: any; OFFICE_NAME: any; }) => ({
-          key: item.OFFICE_ID,
+          key: Number(item.OFFICE_ID),
           value: item.OFFICE_NAME
         }));
         this.officeBankOptions = res.map((item: { OFFICE_ID: any; OFFICE_NAME: any; }) => ({
-          key: item.OFFICE_ID,
+          key: Number(item.OFFICE_ID),
           value: item.OFFICE_NAME
         }));
       },
@@ -547,6 +546,8 @@ export class GlSubsidiary implements OnInit {
 
   async patchForm(data: GLSubsidiaryModel) {
     this.loadDataForOffice();
+    
+    console.log(' office list = ',this.officeOptions);
     this.frmGroup.patchValue({ ...data });
     this.frmGroup.disable();
     this.isOfficeIdReadOnly = true;
@@ -557,5 +558,6 @@ export class GlSubsidiary implements OnInit {
  ngOnDestroy(): void {
     this.hl.setMap({});
   }
+ 
 
 }

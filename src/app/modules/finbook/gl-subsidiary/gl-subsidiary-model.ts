@@ -3,7 +3,7 @@ import { BaseModel } from "../base.model";
 
 export class GLSubsidiaryModel extends BaseModel{
   regId : string|null;
-  officeId : string|null;
+  officeId : number|null;
   glAccSl : number|null;
   glAccNo : string|null;
   glAccName : string|null;

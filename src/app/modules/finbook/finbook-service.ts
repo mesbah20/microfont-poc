@@ -14,13 +14,13 @@ export class FinbookService {
     constructor(private http: HttpClient){}
 
     validateGlAccount(request: GLStatusRequestModel): Observable<number> {
-        return this.http.post<number>(`${environment.apiBaseUrl}/GLLedgerFetch/gl-status`, request);
+        return this.http.post<number>(`${environment.apiBaseUrl}/finbook/v1/GLChart/gl-status`, request);
     }
 
     
   getGLAccountChartInfo(request: GetGLAccountChartInfoRequest): Observable<GlChartAccountInfoResponse[]> {
     return this.http.post<GlChartAccountInfoResponse[]>(
-      `${environment.apiBaseUrl}/GLLedgerFetch/GetGLAccountChartInfo`, request, {
+      `${environment.apiBaseUrl}/finbook/v1/GLLedgerFetch/GetGLAccountChartInfo`, request, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': '*/*'

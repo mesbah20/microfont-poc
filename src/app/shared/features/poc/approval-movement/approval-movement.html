@@ -1,172 +1,74 @@
 <div class="page-wrapper">
-  <div class="panel">
-    <div class="grid grid-cols-1 md:grid-cols-1 gap-0">
-      <app-expansion-panel-header
-        [isOpenSignal]="businessHeaderPanel"
-        [panelTitle]="'Change Details'">
-      </app-expansion-panel-header>
+    <div class="panel">
 
-      <div class="container">
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-0">
+            <app-expansion-panel-header [isOpenSignal]="businessHeaderPanel" [panelTitle]="'Change Details'" />
+            <div class="container">
 
-        <!-- Top bar -->
-        <div class="flex justify-between items-center">
-          <div class="flex items-center p-2 gap-3">
-            <button
-              class="flex items-center px-4 py-2 mx-1 bg-blue-400 text-white rounded hover:bg-blue-500 transition-colors"
-              type="button"
-              (click)="goBack()">
-              <mat-icon class="mr-2">arrow_back</mat-icon>
-              Back
-            </button>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center p-2 gap-3">
+                        <!-- Back Button -->
+                        <button class="flex items-center px-4 py-2 mx-1 bg-blue-400 text-white rounded" type="button"
+                            (click)="goBack()">
+                            <mat-icon class="mr-2">arrow_back</mat-icon>
+                            Back
+                        </button>
 
-            <span class="font-semibold text-lg">Approval Movement</span>
-          </div>
 
-          <div class="flex justify-center sm:justify-end mt-1.5 mr-3">
-            <div class="flex gap-3">
-              <input
-                type="text"
-                [(ngModel)]="rejectReason"
-                placeholder="Remarks"
-                class="border rounded px-2 py-1"
-                required
-              />
-              <button mat-flat-button color="warn"
-                      class="flex items-center px-4 py-2 mx-1 bg-red-400 text-white rounded hover:bg-red-500 transition-colors"
-                      type="button"
-                      (click)="onReject()">
-                <mat-icon class="mr-2">close</mat-icon>
-                Reject
-              </button>
-              <button mat-flat-button color="primary"
-                      class="flex items-center px-4 py-2 mx-1 bg-green-400 text-white rounded hover:bg-green-500 transition-colors"
-                      type="button"
-                      (click)="onApprove()">
-                <mat-icon class="mr-2">check_circle</mat-icon>
-                Approve
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="container">
-          <!-- Loading Indicator -->
-          <div *ngIf="isLoading" class="flex justify-center items-center p-10">
-            <div class="text-blue-500 text-lg">Loading approval data...</div>
-          </div>
-
-          <!-- Fatal Error Message -->
-          <div *ngIf="errorMessage" class="p-4 m-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-md">
-            <div class="flex items-center">
-              <mat-icon class="mr-2 text-red-500">error</mat-icon>
-              <strong>Fatal Error:</strong>
-            </div>
-            <p class="ml-8">{{ errorMessage }}</p>
-          </div>
-
-          <!-- Success: Components Loaded -->
-          <div *ngIf="!isLoading && !errorMessage">
-
-            <!-- Success Banner -->
-            <div class="p-4 m-4 mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 rounded shadow-md">
-              <div class="flex items-center">
-                <mat-icon class="mr-2 text-green-500">check_circle</mat-icon>
-                <strong>Success!</strong>
-              </div>
-              <p class="ml-8">Approval view loaded successfully. Components are ready for review.</p>
-            </div>
-
-            <div class="w-full h-full bg-accent-50 p-3">
-
-              <!-- Single Change Request Only (if no previousUxContent) -->
-              <ng-container *ngIf="!data?.previousUxContent; else withPrevious">
-                <mat-card class="w-full shadow-lg">
-                  <div class="font-semibold text-xl pt-1 text-center bg-accent-50 mb-3">
-                    Change Request
-                  </div>
-
-                  <div *ngIf="!errorLeft" class="p-2 m-2 bg-green-50 border border-green-300 text-green-700 rounded text-sm">
-                    <div class="flex items-center">
-                      <mat-icon class="mr-2 text-green-500" style="font-size: 18px; width: 18px; height: 18px;">check</mat-icon>
-                      <span>Component loaded successfully</span>
-                    </div>
-                  </div>
-
-                  <!-- Host for single card mode -->
-                  <ng-template #dynamicHostLeft></ng-template>
-
-                  <div *ngIf="errorLeft" class="p-4 m-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-md">
-                    <div class="flex items-center">
-                      <mat-icon class="mr-2 text-red-500">error</mat-icon>
-                      <strong>Error loading component:</strong>
-                    </div>
-                    <p class="ml-8">{{ errorLeft }}</p>
-                  </div>
-                </mat-card>
-              </ng-container>
-
-              <!-- Change Request + Previous Data -->
-              <ng-template #withPrevious>
-                <div class="grid sm:grid-cols-2 gap-x-5">
-
-                  <!-- Left Card: Change Request -->
-                  <mat-card class="shadow-lg">
-                    <div class="font-semibold text-xl pt-1 text-center bg-accent-50 mb-3">
-                      Change Request
+                        <!-- Page Title -->
+                        <span class="font-semibold text-lg">Approval Movement</span>
                     </div>
 
-                    <div *ngIf="!errorLeft" class="p-2 m-2 bg-green-50 border border-green-300 text-green-700 rounded text-sm">
-                      <div class="flex items-center">
-                        <mat-icon class="mr-2 text-green-500" style="font-size: 18px; width: 18px; height: 18px;">check</mat-icon>
-                        <span>Component loaded successfully</span>
-                      </div>
+                    <div class="flex justify-center sm:justify-end mt-1.5 mr-3">
+                        <div class="flex gap-3">
+                            <input  type="text" [(ngModel)]="rejectReason" placeholder="Remarks"
+                                class="border rounded px-2 py-1" required>
+                            <button mat-flat-button color="warn"
+                                class="flex items-center px-4 py-2 mx-1 bg-red-400 text-white rounded" type="button"
+                                (click)="onReject()">
+                                <mat-icon class="mr-2">close</mat-icon>
+                                Reject
+                            </button>
+                            <button mat-flat-button color="primary"
+                                class="flex items-center px-4 py-2 mx-1 bg-green-400 text-white rounded" type="button"
+                                (click)="onApprove()">
+                                <mat-icon class="mr-2">check_circle</mat-icon>
+                                Approve
+                            </button>
+                        </div>
                     </div>
-
-                    <!-- Host for left in dual mode -->
-                    <ng-template #dynamicHostLeft></ng-template>
-
-                    <div *ngIf="errorLeft" class="p-4 m-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-md">
-                      <div class="flex items-center">
-                        <mat-icon class="mr-2 text-red-500">error</mat-icon>
-                        <strong>Error loading component:</strong>
-                      </div>
-                      <p class="ml-8">{{ errorLeft }}</p>
-                    </div>
-                  </mat-card>
-
-                  <!-- Right Card: Previous Data -->
-                  <mat-card class="shadow-lg">
-                    <div class="font-semibold text-xl pt-1 text-center bg-accent-50 mb-3">
-                      Previous Data
-                    </div>
-
-                    <div *ngIf="!errorRight" class="p-2 m-2 bg-green-50 border border-green-300 text-green-700 rounded text-sm">
-                      <div class="flex items-center">
-                        <mat-icon class="mr-2 text-green-500" style="font-size: 18px; width: 18px; height: 18px;">check</mat-icon>
-                        <span>Component loaded successfully</span>
-                      </div>
-                    </div>
-
-                    <!-- Host for right side -->
-                    <ng-template #dynamicHostRight></ng-template>
-
-                    <div *ngIf="errorRight" class="p-4 m-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-md">
-                      <div class="flex items-center">
-                        <mat-icon class="mr-2 text-red-500">error</mat-icon>
-                        <strong>Error loading component:</strong>
-                      </div>
-                      <p class="ml-8">{{ errorRight }}</p>
-                    </div>
-                  </mat-card>
                 </div>
-              </ng-template>
+                <div class="w-full h-full bg-accent-50 p-3">
+                    <!-- Case 1: Only Change Request -->
+                    <ng-container *ngIf="!hasPreviousContent(); else withPrevious">
+                        <mat-card class="w-full">
+                            <div class="font-semibold text-xl pt-1 text-center bg-accent-50">
+                                Change Request
+                            </div>
+                            <ng-template #dynamicHostLeft></ng-template>
+                        </mat-card>
+                    </ng-container>
+
+                    <!-- Case 2: Change Request + Previous Data -->
+                    <ng-template #withPrevious>
+                        <div class="grid sm:grid-cols-2 gap-x-5">
+                            <mat-card>
+                                <div class="font-semibold text-xl pt-1 text-center bg-accent-50">
+                                    Change Request
+                                </div>
+                                <ng-template #dynamicHostLeft></ng-template>
+                            </mat-card>
+                            <mat-card>
+                                <div class="font-semibold text-xl pt-1 text-center bg-accent-50">
+                                    Previous Data
+                                </div>
+                                <ng-template #dynamicHostRight></ng-template>
+                            </mat-card>
+                        </div>
+                    </ng-template>
+                </div>
 
             </div>
-          </div>
-
         </div>
-
-      </div>
     </div>
-  </div>
 </div>
