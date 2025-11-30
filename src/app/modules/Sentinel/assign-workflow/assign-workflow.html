@@ -45,7 +45,7 @@
             </div>
 
             <section class="action-buttons-section rounded-lg py-5">
-              <generic-button id="addBtn" value="add" labelText="Show/Hide Condition" (onClick)="toggleConditionSection()"
+              <generic-button id="addBtn" value="Show/Hide Condition" (onClick)="toggleConditionSection()"
                 [enable]="!isAddConditionDisabled">
               </generic-button >
             </section>
@@ -77,7 +77,7 @@
                 <button type="button" (click)="addQueryRow()" class="p-1 text-xs" title="Add Row">
                   ➕
                 </button>
-                <button type="button" (click)="removeQueryRow(row.id)" [disabled]="queryRows().length === 1"
+                <button type="button" (click)="removeQueryRow(row.id)" [disabled]="queryRows().length === 0"
                   class="p-1 text-xs" title="Remove Row">
                   ❌
                 </button>
@@ -103,7 +103,7 @@
             <!-- Operator -->
             <div class="component-section">
               <input-select-option-field [frmGroup]="getRowFormGroup(i)" [controlName]="'operator'"
-                [label]="i === 0 ? 'Operator' : ''" 
+                [label]="i === 0 ? 'Operator' : ''"
                 [options]="operatorMap[row.id] || operatorOptions" (onSelect)="onOperatorChange($event, row.id)">
               </input-select-option-field>
             </div>
@@ -173,7 +173,7 @@
             <lds-data-grid [id]="'workflow-conditions'" [dataSource]="sampleTransactions()" [initPageSize]="10"
               [enableSelection]="false" [showEditButton]="false" [showDeleteButton]="true" [showViewButton]="true"
               [showPrintButton]="false"
-              [selectedColumns]="['applicationName', 'moduleName', 'functionName', 'priority', 'condition', 'conditionalWorkflow']"
+              [selectedColumns]="['id','applicationName', 'moduleName', 'functionName', 'priority', 'condition', 'conditionalWorkflow']"
               [rowDesignerList]="transactionRowDesigners()" [tblClass]="'enhanced-transaction-table'"
               (onFHViewClick)="onEditCondition($event)" (onFHDeleteClick)="onTransactionDelete($event)"
               (dataSourceChanged)="onTransactionDataChanged($event)">

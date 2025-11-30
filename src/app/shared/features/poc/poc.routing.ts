@@ -11,7 +11,6 @@ import { DefineRoles } from '../../../modules/Sentinel/define-roles/define-roles
 import { PasswordPolicy } from '../../../modules/Sentinel/password-policy/password-policy';
 import { AssignWorkflow } from '../../../modules/Sentinel/assign-workflow/assign-workflow';
 import { AllComponentsPage } from '../../common-components/test-component-page/all-components-page/all-components-page';
-import { GlChartOfAccounts } from '../../../modules/finbook/gl-chart/gl-chart-of-accounts/gl-chart-of-accounts';
 
 
 
@@ -24,6 +23,4 @@ export const PocRouting: Routes = [
   {path: 'approval-items', component: ApprovalItems},
   {path: 'approval-movement', component: ApprovalMovement},
   {path: 'approval-activities', component: ViewApprovalActivitiesComponent},
-  { path: 'AllComponent', component: AllComponentsPage },
-  { path: 'GlChart', component: GlChartOfAccounts },
 ];

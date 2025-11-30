@@ -151,7 +151,7 @@ export class WorkflowDesignerService {
   }
 
   deleteRoleMapping(workflowRoleMapId: number): Observable<void> {
-    const url = `${environment.apiBaseUrl}/centrino/approval/role-maps/delete/${workflowRoleMapId}`;
+    const url = `${environment.apiBaseUrl}/centrino/api/approval/role-maps/delete/${workflowRoleMapId}`;
     return this.http.delete<void>(url);
   }
 

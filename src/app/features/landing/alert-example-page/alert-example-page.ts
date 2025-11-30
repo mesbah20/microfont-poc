@@ -2,27 +2,13 @@ import { Component, OnInit, input, output, signal } from '@angular/core';
 
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DataSelectionConfig, DataSelectionItem, DataSelectionResult } from '../../../shared/models/data-selection.interface';
-import { DeleteConfirmationDialogue } from '../../../shared/common-components/delete-confirmation-dialogue/delete-confirmation-dialogue';
+import { ConfirmationDialogue } from '../../../shared/common-components/delete-confirmation-dialogue/confirmation-dialogue';
 import { Label } from '../../../shared/common-components/generic-component-type/generic-label/generic-label';
-import { GenericSwitch } from '../../../shared/common-components/generic-component-type/generic-switch/generic-switch';
-import { InputAmountInWord } from '../../../shared/common-components/input-types/input-amount-in-word/input-amount-in-word';
-import { InputTextArea } from '../../../shared/common-components/input-types/input-text-area/input-text-area';
-import { AlertErrorComponent } from '../../../shared/common-components/test-component-page/alert-error/alert-error';
-import { AlertInfoComponent } from '../../../shared/common-components/test-component-page/alert-info/alert-info';
-import { AlertSuccessComponent } from '../../../shared/common-components/test-component-page/alert-success/alert-success';
-import { AlertWarningComponent } from '../../../shared/common-components/test-component-page/alert-warning/alert-warning';
 
 @Component({
   selector: 'app-alert-example-page',
   imports: [
-    AlertSuccessComponent,
-    AlertErrorComponent,
-    AlertWarningComponent,
-    AlertInfoComponent,
-    DeleteConfirmationDialogue,
-    InputTextArea,
-    InputAmountInWord,
-    GenericSwitch,
+    ConfirmationDialogue,
     Label,
   ],
   templateUrl: './alert-example-page.html',
@@ -69,6 +55,9 @@ export class AlertExamplePage implements OnInit {
 
   // Delete Confirmation Modal
   isDeleteConfirmationModalOpen = signal<boolean>(false);
+
+  // Success Confirmation Modal (example for confirmation-dialogue with success variant)
+  isSuccessConfirmationModalOpen = signal<boolean>(false);
 
   // Data Selection Modal
   isDataSelectionModalOpen = signal<boolean>(false);
@@ -214,6 +203,20 @@ export class AlertExamplePage implements OnInit {
 
   closeDeleteConfirmationModal() {
     this.isDeleteConfirmationModalOpen.set(false);
+  }
+
+  // Success Confirmation Modal Methods
+  showSuccessConfirmationModal() {
+    this.isSuccessConfirmationModalOpen.set(true);
+  }
+
+  closeSuccessConfirmationModal() {
+    this.isSuccessConfirmationModalOpen.set(false);
+  }
+
+  onSuccessConfirmationModalButtonClick(event: { action: string; button: any }) {
+    console.log('Success confirmation modal button clicked:', event.action);
+    this.closeSuccessConfirmationModal();
   }
 
   // Custom Examples

@@ -230,7 +230,7 @@
                     <ng-template #notCheckbox>
 
                       <!-- Dropdown/Select Field -->
-                      <ng-container *ngIf="column.isDropdown; else regularInput">
+                      <ng-container *ngIf="column.isDropdown; else timeInput">
                         <mat-form-field appearance="outline" class="inline-edit-field">
                           <mat-select [value]="getEditingValue(column.property)"
                             (selectionChange)="setEditingValue(column.property, $event.value)"
@@ -243,14 +243,30 @@
                         </mat-form-field>
                       </ng-container>
 
-                      <!-- Regular Input Field -->
-                      <ng-template #regularInput>
-                        <mat-form-field appearance="outline" class="inline-edit-field">
-                          <input matInput [type]="column.isNumeric ? 'number' : 'text'"
-                            [value]="getEditingValue(column.property)"
-                            (input)="setEditingValue(column.property, $any($event.target).value)"
-                            class="inline-input" />
-                        </mat-form-field>
+                      <!-- Time Input Field -->
+                      <ng-template #timeInput>
+                        <ng-container *ngIf="column.isTimeField; else regularInput">
+                          <div class="inline-time-field" [formGroup]="getEditingFormGroup()">
+                            <input-time
+                              [frmGroup]="getEditingFormGroup()"
+                              [controlName]="column.property"
+                              [label]="column.header"
+                              [displayMode]="'outline'"
+                              [isReadonly]="false"
+                              (timeChange)="onTimeFieldChange(column.property, $event)">
+                            </input-time>
+                          </div>
+                        </ng-container>
+
+                        <!-- Regular Input Field -->
+                        <ng-template #regularInput>
+                          <mat-form-field appearance="outline" class="inline-edit-field">
+                            <input matInput [type]="column.isNumeric ? 'number' : 'text'"
+                              [value]="getEditingValue(column.property)"
+                              (input)="setEditingValue(column.property, $any($event.target).value)"
+                              class="inline-input" />
+                          </mat-form-field>
+                        </ng-template>
                       </ng-template>
                     </ng-template>
                   </ng-container>

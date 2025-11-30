@@ -27,7 +27,7 @@
                     displayMode="outline"
                     [tooltip]="'Auto-generated based on currency and category'"
                     (onBlurred)="onBlur($event)"
-                    (onChanged)="onTextBoxChanged($event)"
+                    (onChanged)="onTextBoxChanged($event)" 
                     [customErrorMessages]="{
                       required: 'Transaction reference is required',
                       minlength: 'Minimum 3 characters required',
@@ -514,6 +514,43 @@
                 ></lds-data-grid>
               </div>
             </section>
+
+            <!-- Time Picker Data Grid Section -->
+            <section class="transaction-grid-section bg-white rounded-lg shadow-sm mt-6">
+              <app-expansion-panel-header
+                [isOpenSignal]="timePickerHeaderPanel"
+                [panelTitle]="'Time Picker Data Grid Example'"
+              />
+              
+              <div class="p-4">
+                <h4 class="mb-3 text-lg font-semibold">Employee Schedule Management</h4>
+                <p class="text-sm text-gray-600 mb-4">
+                  This example demonstrates inline editing with time picker fields for managing employee schedules.
+                  Click the edit button on any row to modify the time fields.
+                </p>
+                
+                <lds-data-grid 
+                  #timePickerGrid
+                  [id]="'time-picker-schedule'"
+                  [dataSource]="sampleScheduleData()"
+                  [initPageSize]="5"
+                  [enableSelection]="true"
+                  [showEditButton]="true"
+                  [showDeleteButton]="true"
+                  [showViewButton]="true"
+                  [searchEnabled]="true"
+                  [useInlineEdit]="true"
+                  [editableColumns]="['name', 'startTime', 'endTime', 'breakTime', 'status']"
+                  [timeColumns]="['startTime', 'endTime', 'breakTime']"
+                  [dropdownColumns]="['status']"
+                  [dropdownOptions]="scheduleDropdownOptions()"
+                  [selectedColumns]="['id', 'name', 'startTime', 'endTime', 'breakTime', 'totalHours', 'status']"
+                  [tblClass]="'schedule-table'"
+             
+                  (dataSourceChanged)="onScheduleDataChanged($event)">
+                </lds-data-grid>
+              </div>
+            </section>
           </div>
         </div>
       </div>
@@ -541,4 +578,11 @@
       (modalResult)="onModalResult($event)"
     ></generic-modal>
   }
+</div>
+
+
+
+<div>
+
+  <app-alert-example-page></app-alert-example-page>
 </div>

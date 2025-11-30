@@ -38,14 +38,14 @@ interface QueryRow {
 }
 
 export interface Condition {
-  id: number;
+  id: number | null;
   applicationName: string;
   moduleName: string;
   functionName: string;
   priority: number;
   condition: string;
   conditionalWorkflow: string;
-  conditionalWorkflowId: number;
+  conditionalWorkflowId: number
   queryRowsData?: any[];
 }
 
@@ -565,7 +565,6 @@ export class AssignWorkflow implements OnInit {
 
   // Add Condition to Grid
   addCurrentFormToGrid(): void {
-
     const masterValid = this.validateMasterSection();
     if (!masterValid) {
       this.toastr.error('Please fill required fields', 'Validation Error');
@@ -579,18 +578,26 @@ export class AssignWorkflow implements OnInit {
     }
 
     const conditionString = this.buildConditionString();
-
     const masterValues = this.masterFrmGroup.value;
     const conditionValues = this.conditionFrmGroup.value;
-
     const currentList = this.conditionsList();
 
+    const existingIndex = currentList.findIndex(
+      (c) => Number(c.id) === Number(this.editingConditionId)
+    );
+
+    // Set priority based on add/update
+    const priority = existingIndex > -1
+      ? currentList[existingIndex].priority  // keep same priority
+      : currentList.length + 1;              // new row
+
+    // Build condition object
     const newCondition: Condition = {
-      id: currentList.length + 1,
+      id: existingIndex > -1 ? currentList[existingIndex].id : null,
       applicationName: this.getOptionLabel(this.applicationOptions, masterValues.appId),
       moduleName: this.getOptionLabel(this.moduleOptions, masterValues.moduleId),
       functionName: this.getOptionLabel(this.functionOptions, masterValues.functionId),
-      priority: currentList.length + 1,
+      priority: priority,
       condition: conditionString,
       conditionalWorkflow: this.getOptionLabel(
         this.workflowOptions,
@@ -599,9 +606,24 @@ export class AssignWorkflow implements OnInit {
       conditionalWorkflowId: conditionValues.conditionalWorkflowId
     };
 
-    this.conditionsList.set([...currentList, newCondition]);
-    this.sampleTransactions.set([...currentList, newCondition]);
+    let updatedList: Condition[];
+    if (existingIndex > -1) {
+      // Update existing entry
+      updatedList = [...currentList];
+      updatedList[existingIndex] = newCondition;
+    } else {
+      // Add new entry
+      updatedList = [...currentList, newCondition];
+    }
+
+    // Push updated list
+    this.conditionsList.set(updatedList);
+    this.sampleTransactions.set(updatedList);
+
     this.resetQueryBuilder();
+
+    const rowsArray = this.conditionFrmGroup.get('rows') as FormArray;
+    rowsArray.push(this.buildRow());
   }
 
   private getIdFromLabel(options: any[], label: string | null): number | null {
@@ -779,6 +801,7 @@ export class AssignWorkflow implements OnInit {
   }
 
   onFieldChange(event: any, rowId: number) {
+    if (this.isEditMode) return;
     const selectedField = event.selectedKey;
     console.log('Field Changed:', selectedField);
 
@@ -852,6 +875,7 @@ export class AssignWorkflow implements OnInit {
   }
 
   onOperatorChange(event: any, rowId: number): void {
+    if (this.isEditMode) return;
     const rowIndex = this.queryRows().findIndex(r => r.id === rowId);
     if (rowIndex !== -1) {
       const rowsArray = this.conditionFrmGroup.get('rows') as FormArray;
@@ -892,7 +916,7 @@ export class AssignWorkflow implements OnInit {
 
     if (!this.isEditMode) {
       const currentRows = this.queryRows();
-      if (currentRows.length > 1) {
+      if (currentRows.length > 0) {
         const lastRowIndex = currentRows.length - 1;
         const rowsArray = this.conditionFrmGroup.get('rows') as FormArray;
         const newRowForm = rowsArray.at(lastRowIndex) as FormGroup;
@@ -914,7 +938,7 @@ export class AssignWorkflow implements OnInit {
   // Remove Query Row
   removeQueryRow(rowId: number): void {
     const currentRows = this.queryRows();
-    if (currentRows.length > 1) {
+    if (currentRows.length > 0) {
       const rowIndex = currentRows.findIndex(r => r.id === rowId);
       if (rowIndex !== -1) {
         this.removeRowFromFormArray(rowIndex);
@@ -928,13 +952,17 @@ export class AssignWorkflow implements OnInit {
 
   // Reset Query Builder
   private resetQueryBuilder(): void {
-
     const rowsArray = this.conditionFrmGroup.get('rows') as FormArray;
-    while (rowsArray.length > 1) {
-      rowsArray.removeAt(1);
+
+    // Clear existing rows
+    while (rowsArray.length > 0) {
+      rowsArray.removeAt(0);
     }
 
-    const firstRow = rowsArray.at(0) as FormGroup;
+    // Add a new first row
+    const firstRow = this.buildRow();
+    rowsArray.push(firstRow);
+
     firstRow.patchValue({
       fieldName: '',
       operator: '',
@@ -946,17 +974,16 @@ export class AssignWorkflow implements OnInit {
     firstRow.markAsUntouched();
     firstRow.setErrors(null);
 
-    // Signal reset
+    // Signal reset for queryRows
     this.queryRows.set([
       { id: 1, action: '', andOr: '', fieldName: '', operator: '', value: '', fieldType: undefined, fieldValueOptions: null }
     ]);
 
-    // ৫. Conditional workflow reset
+    // Conditional workflow reset
     this.conditionFrmGroup.patchValue({
       conditionalWorkflowId: ''
     });
 
-    // ৬. Conditional workflow control
     const conditionalWorkflowControl = this.conditionFrmGroup.get('conditionalWorkflowId');
     if (conditionalWorkflowControl) {
       conditionalWorkflowControl.markAsPristine();
@@ -964,9 +991,8 @@ export class AssignWorkflow implements OnInit {
       conditionalWorkflowControl.setErrors(null);
     }
 
-    // ৭. Operator map reset
+    // Operator map reset
     this.operatorMap = {};
-
   }
 
   save(): void {
@@ -981,7 +1007,7 @@ export class AssignWorkflow implements OnInit {
     const existingData = (this.getListByFunctionId || []).map(d => ({
       ...d
     }));
-
+    console.log("save existingData: ",existingData);
     const payload: any[] = [];
     existingData
       .filter(d => d.priority === 0)
@@ -991,7 +1017,8 @@ export class AssignWorkflow implements OnInit {
         functionId: functionId,
         condition: null,
         priority: 0,
-        workflowId: defaultWorkflowId
+        workflowId: defaultWorkflowId,
+        //workflowFunctionMapId: workflowFunctionMapId || null
       });
     }
 
@@ -999,11 +1026,13 @@ export class AssignWorkflow implements OnInit {
       const priority = Number(c.priority || idx + 1);
       const workflowId = Number(c.conditionalWorkflowId);
       const condition = c.condition || null;
+      const workflowFunctionMapId = c.id || null;
 
       const exists = existingData.some(d =>
         d.priority === priority &&
         d.workflowId === workflowId &&
-        d.condition === condition
+        d.condition === condition &&
+        d.workflowFunctionMapId === workflowFunctionMapId
       );
 
       if (!exists) {
@@ -1011,7 +1040,8 @@ export class AssignWorkflow implements OnInit {
           functionId: functionId,
           condition: condition,
           priority: priority,
-          workflowId: workflowId
+          workflowId: workflowId,
+          workflowFunctionMapId:workflowFunctionMapId
         });
       }
     });
@@ -1019,7 +1049,7 @@ export class AssignWorkflow implements OnInit {
     if (payload.length === 0) {
       return;
     }
-
+    console.log("save payload: ",payload);
     this.assignflowService.createWorkflowFunctionMap(payload)
       .subscribe({
         next: (res) => {
@@ -1111,6 +1141,7 @@ export class AssignWorkflow implements OnInit {
   }*/
   onEditCondition(serializedData: string): void {
     try {
+      this.clearQueryRows();
       const condition: Condition = typeof serializedData === 'string'
         ? JSON.parse(serializedData)
         : serializedData;
@@ -1132,16 +1163,15 @@ export class AssignWorkflow implements OnInit {
       this.conditionFrmGroup.patchValue({
         conditionalWorkflowId: workflowId?.toString() || ''
       });
-
+      this.isEditModeLoading = true;
       // ===== Clear existing rows =====
       const rowsArray = this.conditionFrmGroup.get('rows') as FormArray;
-      while (rowsArray.length) rowsArray.removeAt(0);
-      this.isEditModeLoading = true;
+      //while (rowsArray.length) rowsArray.removeAt(0);
       // ===== Build rows from parsed condition string =====
       let parsedRows = condition.condition
         ? this.parseConditionString(condition.condition)
         : [];
-      console.log("parsedRows", parsedRows);
+
       // --- Attach field metadata ---
       parsedRows = parsedRows.map(row => {
         const meta = this.fieldValueList.find(f => f.fieldName === row.fieldName);
@@ -1151,38 +1181,8 @@ export class AssignWorkflow implements OnInit {
           fieldValueOptions: meta?.fieldValue || []
         };
       });
-
-     /* parsedRows.forEach((rowData: any, index: number) => {
-        const row = this.buildRow();
-        const fieldConfig = this.fieldValueList.find(f => f.fieldName === rowData.fieldName);
-
-        row.patchValue({
-          id: index + 1,
-          action: '',
-          andOr: rowData.andOr || (index === 0 ? '' : 'and'),
-          fieldName: rowData.fieldName,
-          operator: rowData.operator,
-          value: rowData.value,
-          fieldType: fieldConfig?.fieldType || '',
-          fieldValueOptions: fieldConfig?.fieldValue || []
-        });
-
-        rowsArray.push(row);
-
-        // Emit events so the UI reacts
-        row.get('fieldName')?.updateValueAndValidity({ onlySelf: true, emitEvent: true });
-        row.get('operator')?.updateValueAndValidity({ onlySelf: true, emitEvent: true });
-        row.get('value')?.updateValueAndValidity({ onlySelf: true, emitEvent: true });
-
-        this.operatorMap[index + 1] = fieldConfig?.fieldType === 'N'
-          ? this.operatorOptions
-          : this.operatorOptionsLimited;
-
-        this.onFieldChange({ selectedKey: rowData.fieldName }, rowData.id || index + 1);
-        this.onOperatorChange({ selectedKey: rowData.operator }, rowData.id || index + 1);
-      });*/
-
-      parsedRows.forEach((rowData: any, index: number) => {
+      console.log("parsedRows", parsedRows);
+      parsedRows.forEach((rowData: any, index: number) => {67
         const row = this.buildRow();
         const fieldConfig = this.fieldValueList.find(f => f.fieldName === rowData.fieldName);
 
@@ -1203,13 +1203,13 @@ export class AssignWorkflow implements OnInit {
 
         // Push to form array
         rowsArray.push(row);
-        this.onFieldChange(
-          { key: rowData.fieldName },   // same shape as onSelect
-          rowData.id || index + 1               // row id
-        );
-        row.get('fieldName')?.updateValueAndValidity({ emitEvent: true });
-        row.get('operator')?.updateValueAndValidity({ emitEvent: true });
-        row.get('value')?.updateValueAndValidity({ emitEvent: true });
+        // this.onFieldChange(
+        //   { key: rowData.fieldName },   // same shape as onSelect
+        //   rowData.id || index + 1               // row id
+        // );
+        // row.get('fieldName')?.updateValueAndValidity({ emitEvent: true });
+        // row.get('operator')?.updateValueAndValidity({ emitEvent: true });
+        // row.get('value')?.updateValueAndValidity({ emitEvent: true });
         // Update operator map BEFORE operator dropdown renders
         this.operatorMap[index + 1] = fieldType === 'N'
           ? this.operatorOptions
@@ -1233,6 +1233,16 @@ export class AssignWorkflow implements OnInit {
       console.error('❌ Failed to reverse patch condition:', err);
     }
   }
+
+  clearQueryRows(): void {
+    const currentRows = this.queryRows();
+
+    // Remove last → first to avoid index shifting
+    for (let i = currentRows.length - 1; i >= 0; i--) {
+      this.removeRowFromFormArray(i);
+    }
+  }
+
 
   private refreshQueryRowsFromForm() {
     const rowsArray = this.conditionFrmGroup.get('rows') as FormArray;
@@ -1400,9 +1410,9 @@ export class AssignWorkflow implements OnInit {
     rowsArray.push(this.buildRow());
 
     // Signal reset
-    this.queryRows.set([
-      { id: 1, action: '', andOr: '', fieldName: '', operator: '', value: '' }
-    ]);
+    /*this.queryRows.set([
+      { id: 0, action: '', andOr: '', fieldName: '', operator: '', value: '' }
+    ]);*/
 
     // Operator map clear
     this.operatorMap = {};
@@ -1482,8 +1492,8 @@ export class AssignWorkflow implements OnInit {
     return row.id;
   }
 
-  trackByConditionId(index: number, condition: Condition): number {
-    return condition.id;
-  }
+  // trackByConditionId(index: number, condition: Condition): number {
+  //   return condition.id;
+  // }
 
 }

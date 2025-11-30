@@ -7,7 +7,7 @@ import {
   WritableSignal,
   Type,
   ViewChild,
-  AfterViewInit,
+  AfterViewInit, DestroyRef,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import {
@@ -65,7 +65,7 @@ export class ServiceRequestProcess implements OnInit, AfterViewInit, OnDestroy {
   modalOkButtonText = signal('OK');
   private modalSubscriptions: Subscription[] = [];
   private subscriptionCheckTimer: any = null;
-
+  destroyRef = inject(DestroyRef);
   get selectedColumns(): string[] {
     return [
       'serviceId',
@@ -263,7 +263,7 @@ export class ServiceRequestProcess implements OnInit, AfterViewInit, OnDestroy {
   openModal(componentToLoad?: Type<any>, data?: any) {
     this.showModal = false;
     this.modalComponent = undefined;
-    this.modalOkButtonText.set('Close');
+    this.modalOkButtonText.set('OK');
 
     setTimeout(() => {
       this.modalComponent = componentToLoad || this.serviceRequestDetails;

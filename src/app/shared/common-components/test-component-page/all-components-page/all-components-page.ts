@@ -26,6 +26,7 @@ import { GenericButton } from '../../generic-component-type/generic-button/gener
 import { GenericSwitch } from '../../generic-component-type/generic-switch/generic-switch';
 import { GenericModal } from '../../generic-component-type/generic-modal/generic-modal';
 import { CommonQuillEditorComponent } from '../../common-quill-editor/common-quill-editor';
+import { AlertExamplePage } from '../../../../features/landing/alert-example-page/alert-example-page';
 
 // Types for data selection modal
 export interface AccountData {
@@ -69,6 +70,7 @@ export interface DataSelectionConfig {
     CommonQuillEditorComponent,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
+    AlertExamplePage
   ],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],
@@ -81,6 +83,7 @@ export class AllComponentsPage implements OnInit {
   toastr = inject(ToastHelperService);
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
   subPanel1: WritableSignal<boolean> = signal(true);
+  timePickerHeaderPanel: WritableSignal<boolean> = signal(true);
   // Reference to this component's own class
   static instance: Type<AllComponentsPage> = AllComponentsPage;
   isDataSelectionModalOpen = signal(false);
@@ -395,6 +398,65 @@ onModalResult(result: any) {
       assignedRole: 'specialist'
     }
   ]);
+
+  // Sample schedule data for time picker example
+  sampleScheduleData = signal([
+    {
+      id: 'EMP001',
+      name: 'John Doe',
+      startTime: '09:00',
+      endTime: '17:30',
+      breakTime: '12:00',
+      totalHours: 8.5,
+      status: 'active'
+    },
+    {
+      id: 'EMP002',
+      name: 'Jane Smith',
+      startTime: '08:30',
+      endTime: '16:45',
+      breakTime: '12:30',
+      totalHours: 8.25,
+      status: 'active'
+    },
+    {
+      id: 'EMP003',
+      name: 'Bob Johnson',
+      startTime: '10:00',
+      endTime: '18:00',
+      breakTime: '13:00',
+      totalHours: 8.0,
+      status: 'inactive'
+    },
+    {
+      id: 'EMP004',
+      name: 'Alice Wilson',
+      startTime: '07:00',
+      endTime: '15:30',
+      breakTime: '11:30',
+      totalHours: 8.5,
+      status: 'active'
+    },
+    {
+      id: 'EMP005',
+      name: 'Charlie Brown',
+      startTime: '11:00',
+      endTime: '19:30',
+      breakTime: '14:30',
+      totalHours: 8.5,
+      status: 'pending'
+    }
+  ]);
+
+  // Dropdown options for schedule status
+  scheduleDropdownOptions = signal<Record<string, DropdownOption[]>>({
+    status: [
+      { value: 'active', label: 'Active' },
+      { value: 'inactive', label: 'Inactive' },
+      { value: 'pending', label: 'Pending Approval' },
+      { value: 'suspended', label: 'Suspended' }
+    ]
+  });
 
   // Enhanced transaction dropdown options with relatable fields
   transactionDropdownOptions = signal<Record<string, DropdownOption[]>>({
@@ -1106,7 +1168,42 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
     console.log(`Row ${rowData.id} deselected`);
     this.toastr.info(`Transaction ${rowData.id} deselected. Total: ${this.selectedRowIds().size}`, 'Row Deselected');
   }
+
 }
+
+  onScheduleDataChanged(updatedData: any[]): void {
+    console.log('Schedule data updated:', updatedData);
+    
+    // Calculate total hours when time fields change
+    const updatedScheduleData = updatedData.map(schedule => {
+      if (schedule.startTime && schedule.endTime) {
+        const totalHours = this.calculateTotalHours(schedule.startTime, schedule.endTime);
+        return { ...schedule, totalHours };
+      }
+      return schedule;
+    });
+    
+    this.sampleScheduleData.set(updatedScheduleData);
+    this.toastr.info('Schedule data has been updated', 'Schedule Changed');
+  }
+
+  // Helper method to calculate total working hours
+  private calculateTotalHours(startTime: string, endTime: string): number {
+    if (!startTime || !endTime) return 0;
+    
+    const start = new Date(`2000-01-01T${startTime}:00`);
+    const end = new Date(`2000-01-01T${endTime}:00`);
+    
+    // Handle case where end time is next day
+    if (end < start) {
+      end.setDate(end.getDate() + 1);
+    }
+    
+    const diffMs = end.getTime() - start.getTime();
+    const diffHours = diffMs / (1000 * 60 * 60);
+    
+    return Math.round(diffHours * 100) / 100; // Round to 2 decimal places
+  }
   
 
   ngOnInit(): void {
