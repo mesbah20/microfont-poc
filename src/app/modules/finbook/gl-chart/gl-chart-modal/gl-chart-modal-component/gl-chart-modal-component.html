@@ -1,0 +1,94 @@
+<div class="other-page-wrapper p-4">
+  <h3 class="text-2xl font-bold mb-4">{{ title }}</h3>
+     <form [formGroup]="frmGroup" class="transaction-form">
+    <div class="panel">
+         <div class="transaction-grid-container mb-10">
+              <section class="header-section">
+            <app-expansion-panel-header
+              [isOpenSignal]="businessHeaderPanel"
+              [panelTitle]="'Gl Account'"
+            />
+
+          </section>
+
+
+         <section class="primary-fields-section bg-gray-50 rounded-lg  mb-6 grid grid-cols-3 gap-2">
+          <!-- Service Dropdown -->
+            <div class="component-section">
+              <input-select-option-field [frmGroup]="frmGroup" [controlName]="'ENTITY_ID'" [label]="'Service Type'"
+                [options]="serviceOptions" [tooltip]="'Service Type'" [isReadonly]="isReadOnly"></input-select-option-field>
+            </div>
+
+            <!-- GL Type Dropdown -->
+            <div class="component-section">
+              <input-select-option-field [frmGroup]="frmGroup" [controlName]="'PRODUCT_TYPE'" [label]="'Gl Type'"
+                [options]="glTypeOptions" [tooltip]="'Gl Type'" [isReadonly]="isReadOnly"></input-select-option-field>
+            </div>
+
+            <!-- Text Box -->
+            <div class="component-section">
+              <input-text-box [frmGroup]="frmGroup" [controlName]="'GL_ACC_SL'" [label]="'GL Serial'"
+                 tooltip="GL Serial" tooltipPosition="above" [tooltipDelay]="300"
+                tooltipClass="success-tooltip" [isVertical]="true" [isReadonly]="isReadOnly"></input-text-box>
+            </div>
+
+
+            <!-- Text Box -->
+            <div class="component-section">
+              <input-text-box [frmGroup]="frmGroup" [controlName]="'ACCOUNT_NO'" [label]="'Account No.'"
+                tooltip="GL Account No." tooltipPosition="above" [tooltipDelay]="300"
+                tooltipClass="success-tooltip" [isVertical]="true" [isReadonly]="isReadOnly"></input-text-box>
+            </div>
+
+            <!-- Text Box -->
+            <div class="component-section">
+              <input-text-box [frmGroup]="frmGroup" [controlName]="'ACCOUNT_TITLE'" [label]="'Account Title'"
+                tooltip="GL Account Title" tooltipPosition="above" [tooltipDelay]="300"
+                tooltipClass="success-tooltip" [isVertical]="true" [isReadonly]="isReadOnly"></input-text-box>
+            </div>
+
+            <!-- Text Box -->
+            <div class="component-section">
+              <input-text-box [frmGroup]="frmGroup" [controlName]="'TOT_GL_ACC_SL'" [label]="'Totalling Account'"
+                tooltip="Totalling Account" tooltipPosition="above" [tooltipDelay]="300"
+                tooltipClass="success-tooltip" [isVertical]="true" [isReadonly]="true"></input-text-box>
+            </div>
+
+
+            <!-- Currency Dropdown -->
+            <div class="component-section">
+              <input-select-option-field [frmGroup]="frmGroup" [controlName]="'CURRENCY_ID'" [label]="'Currency'"
+                [options]="currencyOptions" [tooltip]="'Currency'" [isReadonly]="isReadOnly"></input-select-option-field>
+            </div>
+
+
+            <div class="component-section">
+              <input-select-option-field [frmGroup]="frmGroup" [controlName]="'ACC_DR_CR'" [label]="'Account Type'"
+                [options]="accTypeOptions" [tooltip]="'Account Type'" [isReadonly]="isReadOnly"></input-select-option-field>
+            </div>
+
+
+            <div class="component-section">
+              <input-select-option-field [frmGroup]="frmGroup" [controlName]="'TXN_FLAG'" [label]="'Allow Transaction'"
+                [options]="txnTypeOptions" [tooltip]="'Allow Transaction'" [isReadonly]="isReadOnly"></input-select-option-field>
+            </div>
+            <div class="component-section">
+              <generic-switch [frmGroup]="frmGroup" [controlName]="'CONTRA_CONTIGENT_FLAG'"
+                [label]="'Contra Contingent Liability'" ></generic-switch>
+            </div>
+
+
+            <div class="component-section">
+              <generic-switch [frmGroup]="frmGroup" [controlName]="'HO_ACCESS_FLAG'" [label]="'Head Office Access'"></generic-switch>
+            </div>
+
+
+            <div class="component-section">
+              <generic-switch [frmGroup]="frmGroup" [controlName]="'OFF_BS_FLAG'" [label]="'Off Balance Sheet'"></generic-switch>
+            </div>
+</section>
+         </div>
+    </div>
+   </form>
+
+</div>
