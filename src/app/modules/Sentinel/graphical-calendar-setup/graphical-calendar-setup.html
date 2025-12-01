@@ -63,6 +63,23 @@
         [label]="'Holiday Date To'">
       </input-date>
     </div>
+    <generic-data-grid
+      [id]="'approval-detail-grid'"
+      [enableSelection]="true"
+      [dataSource]="levelDetails()"
+      [selectedColumns]="['workflowDetailId','approvalLevel','approvalPolicy','policyDescription','approverNo','organizationLevel','roleCount','roles']"
+      [customColumnNames]="{
+          workflowDetailId: 'Detail ID',
+          approvalLevel: 'Approval Level',
+          approvalPolicy: 'Policy',
+          policyDescription: 'Policy Description',
+          approverNo: 'Approver No',
+          organizationLevel: 'Org Level',
+          roleCount: 'Role Count',
+          roles: 'Assigned Roles'
+        }"
+      [initPageSize]="5">
+    </generic-data-grid>
     </div>
   </div>
 

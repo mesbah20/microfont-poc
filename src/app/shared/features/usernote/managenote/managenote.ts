@@ -18,7 +18,6 @@ import { InputTextArea } from '../../../common-components/input-types/input-text
 import { InputTime } from '../../../common-components/input-types/input-time/input-time';
 import { User } from '../../../core/user/user.types';
 import { LoaderService } from '../../../services/loader.service';
-import { InputTextBox } from '../../poc/text-base/text-base';
 import { IUserNote } from '../usernote.model';
 import { UserNoteService } from '../usernote.service';
 export interface Option {
@@ -27,7 +26,7 @@ export interface Option {
 }
 @Component({
   selector: 'app-managenote',
-  imports: [CommonModule, ReactiveFormsModule,  
+  imports: [CommonModule, ReactiveFormsModule,
     InputTextArea,
     GenericSwitch,
     InputDate,
@@ -140,11 +139,11 @@ export class Managenote implements OnInit {
     else
       this.userNote.reminderDate = null;
     this.userNote.isChecklist = 0;
-    this.userNote.noteColor = this.form['noteColor'].value;   
-    if (this.frmUserNote.valid) {     
+    this.userNote.noteColor = this.form['noteColor'].value;
+    if (this.frmUserNote.valid) {
       this.userNoteService
         .manageUserNote(this.userNote)
-        .subscribe((Response) => {          
+        .subscribe((Response) => {
           if (this.userNoteId > 0) {
             this.modalResult.emit({ title: 'Update Note', message: "Note Updated Successfully" });
             //this.toastr.success('Note Updated Successfully', 'Update Note');

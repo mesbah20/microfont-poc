@@ -32,7 +32,7 @@ type DiffMap = Record<string, boolean>;
 @Component({
     selector: 'app-approval-movement',
     standalone: true,
-    imports: [CommonModule, MatCardModule, MatIcon, FormControlHighlightDirective, ExpansionPanelHeader, GenericButton, InputTextBox, FormsModule],
+    imports: [CommonModule, MatCardModule, MatIcon, ExpansionPanelHeader, FormsModule],
     templateUrl: './approval-movement.html',
     styleUrl: './approval-movement.scss'
 })
