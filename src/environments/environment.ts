@@ -27,7 +27,9 @@ export const environment = {
     //clientId: 'FinBookUI'
   },
   reportManagementApiUrl: 'http://192.168.10.56:8090/centrino/api', // Report Management Backend API
+  //reportManagementApiUrl: 'http://192.168.20.93:8090/centrino/api', // Report Management Backend API
   reportGenerationApiUrl: 'http://192.168.10.56:8090',
+  //reportGenerationApiUrl: 'http://192.168.20.93:8090',
   sessionUrl:'http://192.168.10.56:8090/centrino/api/office-session/getOfficeSession',
   novu_identifier: '1uXpKIJUa3Rg',
   novu_socket: 'http://192.168.10.56:3002',

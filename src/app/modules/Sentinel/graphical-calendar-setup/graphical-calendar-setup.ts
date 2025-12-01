@@ -13,10 +13,15 @@ import {CommonService} from '../../service/common-service';
 import {ToastrService} from 'ngx-toastr';
 import {InputDate} from '../../../shared/common-components/input-types/input-date/input-date';
 import {GenericDataGrid} from '../../../shared/common-components/generic-component-type/generic-data-grid/generic-data-grid';
+import {GenericButton} from '../../../shared/common-components/generic-component-type/generic-button/generic-button';
+import {UserProfileModel} from '../../model/UserProfile.model';
+import {CalendarAssignOffice} from '../../model/GraphicalCalendarSetupModel';
+import {InputTextArea} from '../../../shared/common-components/input-types/input-text-area/input-text-area';
 
 @Component({
   selector: 'app-graphical-calendar-setup',
-  imports: [ExpansionPanelHeader, InputIdBox, InputTextBox, InputSelectOptionField, InputDate, GenericDataGrid],
+  imports: [ExpansionPanelHeader, InputIdBox, InputTextBox, InputSelectOptionField, InputDate,
+    GenericDataGrid, GenericButton, InputTextArea],
   templateUrl: './graphical-calendar-setup.html',
   styleUrl: './graphical-calendar-setup.scss'
 })
@@ -57,6 +62,7 @@ export class GraphicalCalendarSetup {
     holidayType: [null as number | null],
     dtFrom: [''],
     dtTo:[''],
+    reason: [null as string | null],
   });
   readonly cldTypeOptions = computed(() =>
     this.cldType().map(cldType => ({
@@ -102,34 +108,46 @@ export class GraphicalCalendarSetup {
         }
       });
   }
-  onHolidayTypeChange(officeId: any): void {
+  onHolidayTypeChange(event: {
+    selectedOption: any;
+    selectedKey: string;
+    selectedValue: string;
+  }): void {
     const holidayCldType = this.grCldSetupForm.value.holidayCldType;
     const holidayType = this.grCldSetupForm.value.holidayType;
-
+    console.log("holidayCldType :", holidayCldType);
+    console.log("holidayType :", holidayType);
     this.baseService.getHolidayList(holidayCldType,holidayType)
-      .subscribe(name => {
-        if (name) {
-          // this.grCldSetupForm.patchValue({
-          //   officeNm: name
-          // });
-          console.log("Office Name:", name);
-          this.baseService.getCalendarAssignOfficeById(officeId)
-            .subscribe(data => {
-              console.log("data: ", data);
-              if (data) {
-                this.grCldSetupForm.patchValue({
-                  cldType: data.cldTypeId
-                });
-              } else {
-                this.toastr.info("No office found with this office ID","No Data Found!");
-                this.grCldSetupForm.patchValue({ cldType: null });
-              }
-            });
+      .subscribe(data => {
+        if (data) {
+          console.log("Grid List:", data);
+          this.levelDetails.set(data);
         } else {
           this.toastr.info("No office found with this office ID","No Data Found!");
           this.grCldSetupForm.patchValue({ officeNm: '' });
         }
       });
   }
+  addCldToOffice(){
+    const formValue = this.grCldSetupForm.value;
+    if(!formValue.officeId || !formValue.officeId){
+      this.toastr.error("Invalid Data.","Error");
+      return;
+    }
+    const payload: CalendarAssignOffice = {
+      officeId: formValue.officeId!,
+      cldTypeId: String(formValue.cldType ?? '')
+    };
 
+    console.log("payload", payload);
+    this.baseService.createCldAssignOffice(payload).subscribe({
+      next: (res) => {
+        this.toastr.success('Data saved successfully!', 'Save Successful');
+      },
+      error: (err) => {
+        console.error('API Error:', err);
+        this.toastr.error(err, 'Error');
+      }
+    });
+  }
 }
