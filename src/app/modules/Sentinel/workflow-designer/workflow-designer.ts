@@ -264,8 +264,9 @@ export class WorkflowDesigner implements OnInit {
       });
 
     this.workflowService.getApprovalPolicies()
-      .pipe(catchError(() => of([])))
-      .subscribe(policies => this.policies.set(policies ?? []));
+      .subscribe(policies => {
+        this.policies.set(policies ?? []);
+      });
 
     this.commonService.getAllOfficeType()
       .pipe(catchError(() => of([])))

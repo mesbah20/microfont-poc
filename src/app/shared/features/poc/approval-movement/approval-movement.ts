@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { ComponentRegistry } from '../component-registry';
 import { CommonModule } from '@angular/common';
-import { MatCard } from '@angular/material/card';
+import { MatCard, MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
@@ -22,334 +22,301 @@ import { ApprovalService } from '../../../services/approval-service';
 import { HighlightService } from '../../../services/highlight.service';
 import { BUTTON_VISIBILITY } from '../../../constant/button-signals.constant';
 import { ExpansionPanelHeader } from '../../../common-components/expansion-panel-header/expansion-panel-header';
+import { FormControlHighlightDirective } from '../../../directives/form-control-highlight.directive';
+import { InputTextBox } from '../../../common-components/input-types/input-text-box/input-text-box';
+import { ApprovalRequest } from '../../../models/approval';
+import { GenericButton } from '../../../common-components/generic-component-type/generic-button/generic-button';
 
 type DiffMap = Record<string, boolean>;
 
 @Component({
-  selector: 'app-approval-movement',
-  imports: [
-    CommonModule,
-    MatCard,
-    MatIcon,
-    ExpansionPanelHeader,
-    FormsModule
-  ],
-  templateUrl: './approval-movement.html',
-  styleUrl: './approval-movement.scss'
+    selector: 'app-approval-movement',
+    standalone: true,
+    imports: [CommonModule, MatCardModule, MatIcon, ExpansionPanelHeader, FormsModule],
+    templateUrl: './approval-movement.html',
+    styleUrl: './approval-movement.scss'
 })
 export class ApprovalMovement implements OnInit, AfterViewInit {
 
-  @ViewChild('dynamicHostLeft', { read: ViewContainerRef })
-  hostLeft!: ViewContainerRef;
+  @ViewChild('dynamicHostLeft', { read: ViewContainerRef, static: false })
+    private hostLeft!: ViewContainerRef;
 
-  @ViewChild('dynamicHostRight', { read: ViewContainerRef })
-  hostRight!: ViewContainerRef;
+    @ViewChild('dynamicHostRight', { read: ViewContainerRef, static: false })
+    private hostRight!: ViewContainerRef;
+    toastr = inject(ToastrService);
+    data: any;
+    private diffMap: DiffMap = {};
+    private setId: number;
+    private approvalRequest: ApprovalRequest;
+    rejectReason: string = '';
+    businessHeaderPanel: WritableSignal<boolean> = signal(true);
+    constructor(
+        private registry: ComponentRegistry,
+        private env: EnvironmentInjector,
+        private approvalService: ApprovalService,
+        private router: Router,
+        private location: Location,
+        private hl: HighlightService,
+    ) {
+        const nav = this.router.getCurrentNavigation();
+        this.data = nav?.extras.state?.['data'] || null;
 
-  isLoading: boolean = false;        // ⬅ start as false so content renders immediately
-  errorMessage: string | null = null;
-  errorLeft: string | null = null;
-  errorRight: string | null = null;
+        BUTTON_VISIBILITY.set({
+            save: false,
+            update: false,
+            view: false,
+            delete: false,
+            exit: false,
+            reset: false
+        });
+    }
 
-  toastr = inject(ToastrService);
-  data: any;
-  private diffMap: DiffMap = {};
-  private setId: number = 0;
-  rejectReason = '';
+    ngOnInit(): void {
+        if (!this.data) return;
 
-  businessHeaderPanel: WritableSignal<boolean> = signal(true);
-
-  constructor(
-    private registry: ComponentRegistry,
-    private env: EnvironmentInjector,
-    private approvalService: ApprovalService,
-    private router: Router,
-    private location: Location,
-    private hl: HighlightService,
-    private cdr: ChangeDetectorRef
-  ) {
-    const nav = this.router.getCurrentNavigation();
-    this.data = nav?.extras.state?.['data'] || null;
-
-    BUTTON_VISIBILITY.set({
-      save: false,
-      update: false,
-      view: false,
-      delete: false,
-      exit: false,
-      reset: false
-    });
-  }
-
-  // ---------------------------------------
-  //           ON INIT (DUMMY DATA)
-  // ---------------------------------------
-  ngOnInit(): void {
-    // For now always use dummy data so the view renders
-    if (!this.data) {
-      console.log("ℹ️ No navigation data. Using dummy Name + Phone data.");
-
-      this.data = {
-        setId: 1,
-        selector: "text-base-input",
-        currentUxContent: {
-          selector: "text-base-input",
-          fields: [
-            { key: "name", label: "Name", value: "John Doe" },
-            { key: "phone", label: "Phone Number", value: "01812345678" }
-          ]
-        },
-        previousUxContent: {
-          selector: "text-base-input",
-          fields: [
-            { key: "name", label: "Name", value: "Jonathan Doe" },
-            { key: "phone", label: "Phone Number", value: "01798765432" }
-          ]
+        if (typeof this.data === 'string') {
+            try {
+                this.data = JSON.parse(this.data);
+                console.log(' Parsed data from string:', this.data);
+            } catch (e) {
+                console.error(' Invalid JSON in router state:', e);
+                return;
+            }
         }
-      };
+        this.setId = this.data.setId;
+        console.log('data line movement : ', this.data);
+        this.data.currentUxContent = this.data.currentContext || this.safeParse(this.data.currentUxContent);
+        this.data.previousUxContent = this.data.previousContext || this.safeParse(this.data.previousUxContent);
+        console.log('data line currentUxContent : ', this.data.currentUxContent) ;
+        console.log('data line previousUxContent : ', this.data.previousUxContent );
+        if (this.data?.currentUxContent) {
+            this.diffMap = buildDiffMap(this.data.previousUxContent, this.data.currentUxContent, []);
+        }
     }
 
-    this.setId = this.data.setId ?? 0;
-
-    this.data.currentUxContent = this.safeParse(this.data.currentUxContent);
-    this.data.previousUxContent = this.safeParse(this.data.previousUxContent);
-
-    if (this.data?.currentUxContent) {
-      this.diffMap = buildDiffMap(this.data.previousUxContent, this.data.currentUxContent, []);
+    ngAfterViewInit(): void {
+        setTimeout(() => this.renderBoth());
     }
-  }
-
-  // ---------------------------------------
-  ngAfterViewInit(): void {
-    // Make sure view children are resolved, then render
-    this.cdr.detectChanges();
-    this.loadAndRender();
-  }
-
-  safeParse(value: any): any {
-    if (!value) return {};
-    if (typeof value === 'object') return value;
-    try {
-      return JSON.parse(value);
-    } catch {
-      return {};
+    // Safe parser helper
+    safeParse(value: any): any {
+        if (!value) return {};
+        if (typeof value === 'object') return value;
+        try {
+            return JSON.parse(value);
+        } catch (e) {
+            console.warn('Failed to parse JSON:', value, e);
+            return {};
+        }
     }
-  }
+    // approval-movement.component.ts
 
-  // ---------------------------------------
-  //              LOAD + RENDER
-  // ---------------------------------------
-  private loadAndRender(): void {
-    try {
-      if (!this.data.selector || !this.data.currentUxContent) {
-        throw new Error('Invalid data: Missing content or selector.');
-      }
+    // approval-movement.component.ts
 
-      const isBothhost = !!(this.hostLeft && this.hostRight);
+    // approval-movement.component.ts
 
-      // Render Left (Change Request)
-      const successLeft = this.createInto(
-        this.data.selector,
-        this.hostLeft,
-        this.data.currentUxContent,
-        true,
-        isBothhost,
-        this.diffMap
-      );
+    private renderBoth(): void {
+        if (!this.data) return;
 
-      if (!successLeft) {
-        this.errorLeft = `Failed to render 'Change Request' component (${this.data.selector})`;
-      }
+        // Parse JSON if needed
+        if (typeof this.data.currentUxContent === 'string') {
+            this.data.currentUxContent = JSON.parse(this.data.currentUxContent);
+        }
+        if (typeof this.data.previousUxContent === 'string') {
+            this.data.previousUxContent = JSON.parse(this.data.previousUxContent);
+        }
 
-      // Render Right (Previous Data)
-      if (this.data?.previousUxContent) {
-        const sel = this.data.previousUxContent.selector || this.data.selector;
-
-        const successRight = this.createInto(
-          sel,
-          this.hostRight,
-          this.data.previousUxContent,
-          isBothhost,
-          true
+        // Compute diff map
+        const diffMap = buildDiffMap(
+            this.data.previousUxContent,
+            this.data.currentUxContent,
+            []
         );
 
-        if (!successRight) {
-          this.errorRight = `Failed to render 'Previous Data' component (${sel})`;
+        const isBothhost = !!(this.hostLeft && this.hostRight);
+
+        // Render LEFT (Change Request) with highlightMap
+        this.createInto(this.data.selector, this.hostLeft, this.data.currentUxContent, true, isBothhost, diffMap);
+
+        // Render RIGHT (Previous) WITHOUT highlightMap
+        if (this.hasPreviousContent() && this.hostRight) {
+            const sel = this.data.previousUxContent.selector || this.data.selector;
+            this.createInto(sel, this.hostRight, this.data.previousUxContent, isBothhost, true); // no map
         }
-      } else {
-        console.log('ℹ️ No previous data to render (New record creation)');
-      }
-
-      this.toastr.success('Approval view loaded successfully!', 'Success');
-
-    } catch (e: any) {
-      this.errorMessage = e.message || 'Unknown error';
-      //this.toastr.error(this.errorMessage, 'Error');
-    }
-  }
-
-  // ---------------------------------------
-  private createInto(
-    selector: string,
-    host: ViewContainerRef,
-    data: any,
-    isView: boolean,
-    isBothhost: boolean,
-    highlightMap?: Record<string, boolean>
-  ): boolean {
-
-    console.log("🟦 createInto() called with selector:", selector);
-    const compType = this.registry.resolve(selector);
-    console.log("🟧 Resolved component:", compType);
-
-    if (!compType) {
-      console.error("❌ Component not found in registry:", selector);
-      return false;
     }
 
-    if (!host) {
-      console.error("❌ Host not available");
-      return false;
+   hasPreviousContent(): boolean {
+        const prev = this.data?.previousUxContent;
+        if (!prev) return false;
+        // Treat empty objects/arrays as missing
+        if (Array.isArray(prev)) {
+            return prev.length > 0;
+        }
+        if (typeof prev === 'object') {
+            return Object.keys(prev).length > 0;
+        }
+        return !!prev;
     }
 
-    host.clear();
-    const ref = host.createComponent(compType, { environmentInjector: this.env });
+    private createInto(
+        selector: string,
+        host: ViewContainerRef,
+        data: any,
+        isView: boolean,
+        isBothhost: boolean,
+        highlightMap?: Record<string, boolean> // optional
+    ): void {
+        const compType = this.registry.resolve(selector);
+        if (!compType) return;
 
-    ref.setInput('viewObject', data);
-    ref.setInput('isViewDetails', isView);
-    ref.setInput('isApprovalView', isBothhost);
+        host.clear();
+        const ref = host.createComponent(compType, { environmentInjector: this.env });
+        console.log(' viewObject : ', data);
+        ref.setInput('viewObject', data);
+        console.log(' isView : ', isView);
+        ref.setInput('isViewDetails', isView);
+        ref.setInput('isApprovalView', isBothhost);
 
-    if (highlightMap) {
-      ref.setInput('highlightMap', highlightMap);
+        // Only pass highlightMap if provided
+        if (highlightMap) {
+            ref.setInput('highlightMap', highlightMap);
+        }
+
+        (ref.instance as any).viewData = data;
+        (ref.instance as any).isView = isView;
+        (ref.instance as any).isApprovalView = isBothhost;
+        if (highlightMap) (ref.instance as any).highlightMap = highlightMap;
+
     }
 
-    return true;
-  }
+    onApprove() {
+        this.approvalService.performApprovalOperation({
+            officeId: Number(sessionStorage.getItem('officeId')),
+            appId: 1,
+            setId: this.setId,
+            approvalLevel: 0,
+            nextApprovalLevel: 1,
+            remarks: this.rejectReason,
+            userId: sessionStorage.getItem('userId') ?? '',
+            approvalFlag: 1
+        }).subscribe({
+            next: res => {
+                console.log('Approval success:');
+                this.toastr.success('Approved successfully');
 
-  // ---------------------------
-  //      ACTION BUTTONS
-  // ---------------------------
-  onApprove() {
-    this.approvalService.performApprovalOperation({
-      officeId: Number(sessionStorage.getItem('officeId')),
-      appId: 1,
-      setId: this.setId,
-      approvalLevel: 0,
-      nextApprovalLevel: 1,
-      remarks: this.rejectReason,
-      userId: sessionStorage.getItem('userId') ?? '',
-      approvalFlag: 1
-    }).subscribe({
-      next: () => {
-        this.toastr.success('Approved successfully');
-        this.router.navigate(['/approval-items']);
-      },
-      error: (err) => {
-        this.toastr.error('Approval Failed', err);
-      }
-    });
-  }
+                this.router.navigate(['/approval-items']);
+            },
+            error: err => {
+                console.error('Approval failed:', err);
+                this.toastr.error('Approval Failed Due to : ', err);
+            }
+        });
+    }
+    onReject() {
+        if (this.rejectReason == "") {
+            this.toastr.warning('Remarks Required!');
+        }
+        else {
+            this.approvalService.performApprovalOperation({
+                officeId: Number(sessionStorage.getItem('officeId')),
+                appId: 1,
+                setId: this.setId,
+                approvalLevel: 0,
+                nextApprovalLevel: 1,
+                remarks: this.rejectReason,
+                userId: sessionStorage.getItem('userId') ?? '',
+                approvalFlag: 2
+            }).subscribe({
+                next: res => {
+                    console.log('Approval success:');
+                    this.toastr.success('Approved successfully');
+                    this.router.navigate(['/approval-items']);
+                },
+                error: err => {
+                    console.error('Approval failed:', err);
+                    this.toastr.error('Approval Failed Due to : ', err);
 
-  onReject(): void {
-    if (!this.rejectReason) {
-      this.toastr.warning('Remarks Required!');
-      return;
+                }
+            });
+        }
+
     }
 
-    this.approvalService.performApprovalOperation({
-      officeId: Number(sessionStorage.getItem('officeId')),
-      appId: 1,
-      setId: this.setId,
-      approvalLevel: 0,
-      nextApprovalLevel: 1,
-      remarks: this.rejectReason,
-      userId: sessionStorage.getItem('userId') ?? '',
-      approvalFlag: 2
-    }).subscribe({
-      next: () => {
-        this.toastr.success('Rejected successfully');
-        this.router.navigate(['/approval-items']);
-      },
-      error: (err) => {
-        this.toastr.error('Reject Failed', err);
-      }
-    });
-  }
+    onSendBack() {
+        if (this.rejectReason == "") {
+            this.toastr.warning('Remarks Required!');
+        }
+        else {
+            this.approvalService.performApprovalOperation({
+                officeId: Number(sessionStorage.getItem('officeId')),
+                appId: 1,
+                setId: this.setId,
+                approvalLevel: 0,
+                nextApprovalLevel: 1,
+                remarks: this.rejectReason,
+                userId: sessionStorage.getItem('userId') ?? '',
+                approvalFlag: 3
+            }).subscribe({
+                next: res => {
+                    console.log('Approval success:');
+                    this.toastr.success('Approved successfully');
+                    this.router.navigate(['/approval-items']);
+                },
+                error: err => {
+                    console.error('Approval failed:', err);
+                    this.toastr.error('Approval Failed Due to : ', err);
 
-  onSendBack(): void {
-    if (!this.rejectReason) {
-      this.toastr.warning('Remarks Required!');
-      return;
+                }
+            });
+        }
+
     }
 
-    this.approvalService.performApprovalOperation({
-      officeId: Number(sessionStorage.getItem('officeId')),
-      appId: 1,
-      setId: this.setId,
-      approvalLevel: 0,
-      nextApprovalLevel: 1,
-      remarks: this.rejectReason,
-      userId: sessionStorage.getItem('userId') ?? '',
-      approvalFlag: 3
-    }).subscribe({
-      next: () => {
-        this.toastr.success('Sent back successfully');
-        this.router.navigate(['/approval-items']);
-      },
-      error: (err) => {
-        this.toastr.error('Send Back Failed', err);
-      }
-    });
-  }
+    goBack() {
+        this.location.back();
+    }
 
-  goBack() {
-    this.location.back();
-  }
 
 }
 
-// ---------------------------------------
-//              DIFF HELPER
-// ---------------------------------------
+/** Deep diff helper */
 function buildDiffMap(
-  a: any,
-  b: any,
-  ignorePaths: string[] = [],
-  base: string = ''
+    a: any,
+    b: any,
+    ignorePaths: string[] = [],
+    base: string = ''
 ): Record<string, boolean> {
+    const map: Record<string, boolean> = {};
+    const ignore = new Set(ignorePaths);
 
-  const map: Record<string, boolean> = {};
-  const ignore = new Set(ignorePaths);
+    const isObj = (x: any) => x !== null && typeof x === 'object';
+    const isArr = Array.isArray;
+    const mark = (p: string) => !ignore.has(p) && (map[p] = true);
 
-  const isObj = (x: any) => x !== null && typeof x === 'object';
-  const isArr = Array.isArray;
-  const mark = (p: string) => !ignore.has(p) && (map[p] = true);
+    const walk = (x: any, y: any, path: string) => {
+        if (Object.is(x, y)) return;
+        if (!isObj(x) || !isObj(y) || (isArr(x) !== isArr(y))) {
+            mark(path);
+            return;
+        }
+        if (isArr(x) && isArr(y)) {
+            if (x.length !== y.length) {
+                mark(path);
+                return;
+            }
+            for (let i = 0; i < x.length; i++) walk(x[i], y[i], path ? `${path}[${i}]` : `[${i}]`);
+            return;
+        }
+        const keys = new Set([...Object.keys(x), ...Object.keys(y)]);
+        for (const k of keys) {
+            const child = path ? `${path}.${k}` : k;
+            if (!(k in x) || !(k in y)) {
+                mark(child);
+                continue;
+            }
+            walk(x[k], y[k], child);
+        }
+    };
 
-  const walk = (x: any, y: any, path: string) => {
-    if (Object.is(x, y)) return;
-    if (!isObj(x) || !isObj(y) || (isArr(x) !== isArr(y))) {
-      mark(path);
-      return;
-    }
-    if (isArr(x)) {
-      if (x.length !== y.length) {
-        mark(path);
-        return;
-      }
-      for (let i = 0; i < x.length; i++) walk(x[i], y[i], `${path}[${i}]`);
-      return;
-    }
-
-    const keys = new Set([...Object.keys(x), ...Object.keys(y)]);
-    for (const k of keys) {
-      const child = path ? `${path}.${k}` : k;
-      if (!(k in x) || !(k in y)) {
-        mark(child);
-        continue;
-      }
-      walk(x[k], y[k], child);
-    }
-  };
-
-  walk(a, b, base);
-  return map;
+    walk(a, b, base);
+    return map;
 }
