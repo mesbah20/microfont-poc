@@ -73,8 +73,7 @@ export class ServiceRequestDialog implements OnInit {
   @Input() modalParent?: { close(result?: any): void; closeModal(): void };
   @Input() initialData?: any;
 
-  //remove later
-  private readonly workflowService = inject(WorkflowDesignerService);
+
   //private readonly applications = signal<MetaAppListItem[]>([]);
   //private readonly applications = signal<MetaAppModuleItem[]>([]);
   private readonly applications = signal<MetaAppFunctionItem[]>([]);
@@ -230,11 +229,6 @@ export class ServiceRequestDialog implements OnInit {
 
   }
   private loadInitialData(): void {
-    this.workflowService.getFunctions(901,1)
-      .subscribe(apps => {
-        console.log("Applications array:", apps);
-        this.applications.set(apps);
-      });
   }
 
 
