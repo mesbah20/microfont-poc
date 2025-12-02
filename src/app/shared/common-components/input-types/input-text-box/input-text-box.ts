@@ -69,7 +69,7 @@ export class InputTextBox {
     return null;
   }
 
-  private updateValidators(): void {
+  public updateValidators(): void {
     const control = this.frmGroup().get(this.controlName());
     if (!control) return;
 
