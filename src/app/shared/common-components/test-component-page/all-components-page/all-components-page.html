@@ -12,12 +12,12 @@
           </section>
 
           <div class="form-grid-col-1 ">
-            
+
             <!-- SECTION 1: OUTLINE MODE COMPONENTS -->
             <section class="rounded-lg  grid-section">
-             
+
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                
+
                 <!-- Transaction Reference -->
                 <div class="">
                   <input-text-box
@@ -27,13 +27,13 @@
                     displayMode="outline"
                     [tooltip]="'Auto-generated based on currency and category'"
                     (onBlurred)="onBlur($event)"
-                    (onChanged)="onTextBoxChanged($event)" 
+                    (onChanged)="onTextBoxChanged($event)"
                     [customErrorMessages]="{
                       required: 'Transaction reference is required',
                       minlength: 'Minimum 3 characters required',
                       maxlength: 'Maximum 20 characters allowed',
                       pattern: 'Only alphanumeric characters and underscores are allowed'
-                    }" 
+                    }"
                   ></input-text-box>
                 </div>
 
@@ -43,7 +43,7 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'currency'"
                     [label]="'Currency'"
-                    displayMode="outline"  
+                    displayMode="outline"
                     [options]="currencyOptions"
                     [tooltip]="'Currency selection affects country and tax rate'"
                     [searchable]="false"
@@ -146,7 +146,7 @@
                 [subPanelTitle]="'Configuration Fields'"
               />
                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 grid-section">
-         
+
                 <!-- Account ID -->
                 <div class="component-section">
                   <input-id-box
@@ -171,7 +171,7 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'currency'"
                     [label]="'Currency'"
-                    
+
                     [options]="currencyOptions"
                     [tooltip]="'Currency selection affects country and tax rate'"
                     [searchable]="false"
@@ -186,7 +186,7 @@
                     [controlName]="'country'"
                     [label]="'Country'"
                     [isReadonly]="true"
-                    
+
                     [options]="countryOptions"
                     [tooltip]="'Country affects risk level and validation rules'"
                   ></input-select-option-field>
@@ -198,7 +198,7 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'productCategory'"
                     [label]="'Product Category'"
-                    
+
                     [options]="productCategoryOptions"
                     [tooltip]="'Category affects subcategories and tax multiplier'"
                   ></input-select-option-field>
@@ -210,7 +210,7 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'subCategory'"
                     [label]="'Sub Category'"
-                    
+
                     [options]="getFilteredSubCategories()"
                     [tooltip]="'Subcategory sets minimum amount requirements'"
                   ></input-select-option-field>
@@ -238,7 +238,7 @@
                     [controlName]="'taxRate'"
                     [label]="'Tax Rate (%)'"
                     [isReadonly]="true"
-                    
+
                     [tooltip]="'Calculated based on currency and product category'"
                   ></input-text-box>
                 </div>
@@ -250,7 +250,7 @@
                     [controlName]="'calculatedTax'"
                     [label]="'Tax Amount'"
                     [isReadonly]="true"
-                    
+
                     [tooltip]="'Auto-calculated: Amount × Tax Rate'"
                   ></input-text-box>
                 </div>
@@ -262,7 +262,7 @@
                     [controlName]="'totalAmount'"
                     [label]="'Total Amount'"
                     [isReadonly]="true"
-                    
+
                     [tooltip]="'Auto-calculated: Amount + Tax'"
                   ></input-text-box>
                 </div>
@@ -279,7 +279,7 @@
                 [subPanelTitle]="'Document Upload & Notes'"
               />
               <div class="space-y-6 mt-4">
-                
+
                 <!-- Express Processing Switch -->
                 <div class="component-section">
                   <generic-switch
@@ -352,13 +352,13 @@
 
 
 
-                    
+
             <section class=" rounded-lg ">
               <app-expansion-panel-header
                 [isOpenSignal]="businessHeaderPanel"
                 [panelTitle]="'Transaction Management'"
               />
-              
+
               <div class="space-y-6 grid-section">
                 <!-- Text Input - Horizontal -->
                 <div class="component-section">
@@ -477,9 +477,9 @@
                 [isOpenSignal]="businessHeaderPanel"
                 [panelTitle]="'Transaction Grid'"
               />
-              
+
               <div class="p-4">
-                <generic-data-grid 
+                <generic-data-grid
                   #transactionGrid
                   [id]="'enhanced-transactions'"
                   [dataSource]="sampleTransactions()"
@@ -521,10 +521,10 @@
                 [isOpenSignal]="timePickerHeaderPanel"
                 [panelTitle]="'Time Picker Data Grid Example'"
               />
-              
+
               <div class="p-4">
-              
-                <generic-data-grid 
+
+                <generic-data-grid
                   #timePickerGrid
                   [id]="'time-picker-schedule'"
                   [dataSource]="sampleScheduleData()"
@@ -541,7 +541,7 @@
                   [dropdownOptions]="scheduleDropdownOptions()"
                   [selectedColumns]="['id', 'name', 'startTime', 'endTime', 'breakTime', 'totalHours', 'status']"
                   [tblClass]="'schedule-table'"
-             
+
                   (dataSourceChanged)="onScheduleDataChanged($event)">
                 </generic-data-grid>
               </div>
@@ -558,7 +558,7 @@
           [labelName]="'Detailed Notes'">
         </common-quill-editor>
        </div>
-      
+
     </form>
 
     <!-- Data Selection Modal -->
@@ -581,3 +581,19 @@
 
   <app-alert-example-page></app-alert-example-page>
 </div>
+
+<!-- Example: Generic Data Grid with two extra action buttons -->
+<generic-data-grid
+  [dataSource]="sampleScheduleData()"
+  [showCustomAction1]="true"
+  [customActionIcon1]="'apps.svg'"
+  [customActionTooltip1]="'Flag row'"
+  (onExtraAction1Click)="handleExtra1($event)"
+
+  [showCustomAction2]="true"
+  [customActionIcon2]="'report'"
+  [customActionTooltip2]="'Download row data'"
+  (onExtraAction2Click)="handleExtra2($event)"
+  [iconPathPrefix]="'/asset/icons'">
+</generic-data-grid>
+

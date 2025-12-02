@@ -110,6 +110,13 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   readonly showViewButton = input<boolean>(false);
   readonly showProgressButton = input<boolean>(false);
   readonly showPrintButton = input<boolean>(false);
+  readonly showCustomAction1 = input<boolean>(false);
+  readonly customActionIcon1 = input<string>('');
+  readonly customActionTooltip1 = input<string>('');
+  readonly showCustomAction2 = input<boolean>(false);
+  readonly customActionIcon2 = input<string>('');
+  readonly customActionTooltip2 = input<string>('');
+  readonly iconPathPrefix = input<string>('/asset/icons');
   readonly enableSelection = input<boolean>(false);
   readonly tblClass = input<string>('');
   readonly customColumnNames = input<Record<string, string>>({});
@@ -157,6 +164,8 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   readonly onFHProgressClick = output<string>();
   readonly onChecked = output<{ data: string, checked: boolean }>();
   readonly onPrint = output<string>();
+  readonly onExtraAction1Click = output<string>();
+  readonly onExtraAction2Click = output<string>();
   readonly dataSourceChanged = output<T[]>();
   readonly onRowDoubleClick = output<string>();
 
@@ -618,14 +627,14 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
     this._editingRow.set(index);
     const rowData = { ...this.displayedData()[index] };
     this._editingData.set(rowData);
-    
+
     // Create form group for time fields
     const formControls: any = {};
     this.timeColumns().forEach(timeCol => {
       const value = rowData[timeCol] || '';
       formControls[timeCol] = [value];
     });
-    
+
     if (Object.keys(formControls).length > 0) {
       this._editingFormGroup.set(this.formBuilder.group(formControls));
     }
@@ -673,6 +682,23 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
 
   onPrintClick(item: T): void {
     this.onPrint.emit(JSON.stringify(item));
+  }
+
+  // Extra configurable action buttons
+  emitExtraAction1(item: T): void {
+    this.onExtraAction1Click.emit(JSON.stringify(item));
+  }
+
+  emitExtraAction2(item: T): void {
+    this.onExtraAction2Click.emit(JSON.stringify(item));
+  }
+
+  // Resolve icon URL from public path; will append .svg if no extension provided
+  getIconUrl(iconName: string): string {
+    if (!iconName) return '';
+    const hasExt = /\.\w+$/.test(iconName);
+    const prefix = this.iconPathPrefix ? this.iconPathPrefix() : '/asset/icons';
+    return `${prefix}/${iconName}${hasExt ? '' : '.svg'}`;
   }
 
   // Row styling
@@ -739,7 +765,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
       columns.push('selection');
     }
 
-    if (this.showEditButton() || this.showDeleteButton() || this.showViewButton() || this.showPrintButton() || this.showProgressButton()) {
+    if (this.showEditButton() || this.showDeleteButton() || this.showViewButton() || this.showPrintButton() || this.showProgressButton() || this.showCustomAction1() || this.showCustomAction2()) {
       columns.push('actions');
     }
 
@@ -818,7 +844,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
 
   onTimeFieldChange(property: string, timeValue: string): void {
     this.setEditingValue(property, timeValue);
-    
+
     // Also update the form control if it exists
     const formGroup = this._editingFormGroup();
     if (formGroup && formGroup.get(property)) {

@@ -65,7 +65,7 @@ export interface DataSelectionConfig {
     InputOfficeBox,
     GenericDataGrid,
     InputNumber,
-    InputAmount,  
+    InputAmount,
     GenericModal,
     CommonQuillEditorComponent,
     ExpansionPanelHeader,
@@ -932,6 +932,13 @@ private showFormValidationErrors(errors: any): void {
   }
 }
 
+handleExtra1($event:any){
+  console.log('Extra button 1 clicked', $event);
+}
+handleExtra2($event:any){
+  console.log('Extra button 2 clicked', $event);
+}
+
 // Get complete form data including calculated values
 private getCompleteFormData(): any {
   const formValues = this.frmGroup.value;
@@ -1024,11 +1031,11 @@ private restoreGridSelections(): void {
       console.log('ss',selectedRowIds);
       if (Array.isArray(selectedRowIds) && selectedRowIds.length > 0) {
         const transactions = this.sampleTransactions();
-        
+
         // Restore all selected rows
         selectedRowIds.forEach((rowId: string, index: number) => {
           const rowIndex = transactions.findIndex(t => t.id === rowId);
-          
+
           if (rowIndex !== -1) {
             // Add to selected IDs signal
             this.selectedRowIds.update(ids => {
@@ -1043,22 +1050,22 @@ private restoreGridSelections(): void {
             }, 500 + (index * 100));
           }
         });
-        
+
         console.log('Restored multiple selections:', selectedRowIds);
         this.toastr.info(`Restored ${selectedRowIds.length} selected rows`, 'Grid Selection');
         return;
       }
     }
-    
+
     // Fallback: try single row selection for backward compatibility
     const storedData = localStorage.getItem('rowData');
     if (storedData) {
       const rowData = JSON.parse(storedData);
-      
+
       if (rowData.id) {
         const transactions = this.sampleTransactions();
         const rowIndex = transactions.findIndex(t => t.id === rowData.id);
-        
+
         if (rowIndex !== -1) {
           this.selectedRowIds.update(ids => {
             const newIds = new Set(ids);
@@ -1069,7 +1076,7 @@ private restoreGridSelections(): void {
           setTimeout(() => {
             this.selectRowInGrid(rowIndex, rowData.id);
           }, 500);
-          
+
           console.log('Restored single selection for row:', rowData.id);
           this.toastr.info(`Restored selection: ${rowData.id}`, 'Grid Selection');
         }
@@ -1085,18 +1092,18 @@ private selectRowInGrid(index: number, rowId?: string): void {
   const transactions = this.sampleTransactions();
   if (index >= 0 && index < transactions.length) {
     const transaction = transactions[index];
-    
-    
+
+
     if (this.gridComponent) {
       try {
-        
+
         this.gridComponent.onRowSelect(index, true);
         console.log('Grid row selected via component method');
       } catch (error) {
         console.log('Grid component selection method not available, using fallback:', error);
       }
     }
-    
+
     // this.onTransactionRowSelect({
     //   data: JSON.stringify(transaction),
     //   checked: true
@@ -1122,7 +1129,7 @@ private removeSelectionFromStorage(rowId: string): void {
   try {
     const selectedIds = Array.from(this.selectedRowIds());
     localStorage.setItem('selectedRows', JSON.stringify(selectedIds));
-    
+
     // Also remove single selection if it matches
     const currentRowData = localStorage.getItem('rowData');
     if (currentRowData) {
@@ -1138,9 +1145,9 @@ private removeSelectionFromStorage(rowId: string): void {
 
 onTransactionRowSelect(event: { data: string, checked: boolean }): void {
   console.log('Row selection event:', event);
-  
+
   const rowData = JSON.parse(event.data);
-  
+
   if (event.checked) {
     // Add to selected rows
     this.selectedRowIds.update(ids => {
@@ -1148,10 +1155,10 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       newIds.add(rowData.id);
       return newIds;
     });
-    
+
     // Store all selected rows in localStorage
     this.saveMultipleSelectionsToStorage();
-    
+
     console.log(`Row ${rowData.id} selected and stored in localStorage`);
     this.toastr.info(`Transaction ${rowData.id} selected. Total: ${this.selectedRowIds().size}`, 'Row Selected');
   } else {
@@ -1161,10 +1168,10 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       newIds.delete(rowData.id);
       return newIds;
     });
-    
+
     // Update localStorage with remaining selections
     this.removeSelectionFromStorage(rowData.id);
-    
+
     console.log(`Row ${rowData.id} deselected`);
     this.toastr.info(`Transaction ${rowData.id} deselected. Total: ${this.selectedRowIds().size}`, 'Row Deselected');
   }
@@ -1173,7 +1180,7 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
 
   onScheduleDataChanged(updatedData: any[]): void {
     console.log('Schedule data updated:', updatedData);
-    
+
     // Calculate total hours when time fields change
     const updatedScheduleData = updatedData.map(schedule => {
       if (schedule.startTime && schedule.endTime) {
@@ -1182,7 +1189,7 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       }
       return schedule;
     });
-    
+
     this.sampleScheduleData.set(updatedScheduleData);
     this.toastr.info('Schedule data has been updated', 'Schedule Changed');
   }
@@ -1190,21 +1197,21 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
   // Helper method to calculate total working hours
   private calculateTotalHours(startTime: string, endTime: string): number {
     if (!startTime || !endTime) return 0;
-    
+
     const start = new Date(`2000-01-01T${startTime}:00`);
     const end = new Date(`2000-01-01T${endTime}:00`);
-    
+
     // Handle case where end time is next day
     if (end < start) {
       end.setDate(end.getDate() + 1);
     }
-    
+
     const diffMs = end.getTime() - start.getTime();
     const diffHours = diffMs / (1000 * 60 * 60);
-    
+
     return Math.round(diffHours * 100) / 100; // Round to 2 decimal places
   }
-  
+
 
   ngOnInit(): void {
     this.frmGroup = this.formBuilder.group({
@@ -1215,7 +1222,7 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       amount: ['', [Validators.required, Validators.max(1000000), Validators.min(1)]],
       amountToWord: ['', [Validators.required, Validators.max(1000000), Validators.min(1)]],
       dropdown: ['', Validators.required],
-      multiSelect: [[]],  
+      multiSelect: [[]],
       // categories: [[], Validators.required],
       date: ['', Validators.required],
       number: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
@@ -2084,7 +2091,7 @@ private recalculateTransactionAmounts(transaction: any): any {
   anyFiles: File[] = [];
   documentFiles: File[] = [];
   profilePicFile?: File;
-  
+
 
   transactionColumnNames = signal({
     'id': 'Transaction ID',
@@ -2232,22 +2239,22 @@ private recalculateTransactionAmounts(transaction: any): any {
 
 //   if (event.checked) {
 //     console.log('Row CHECKED:', rowData);
-    
+
 //     // Store in localStorage
 //     localStorage.setItem('rowData', JSON.stringify(rowData));
-    
+
 //     // Update selected IDs signal
 //     this.selectedRowIds.update(ids => {
 //       const newIds = new Set(ids);
 //       newIds.add(rowData.id);
 //       return newIds;
 //     });
-    
+
 //     this.toastr.success(`Row selected: ${rowData.id}`, 'Selection');
-    
+
 //   } else {
 //     console.log('Row UNCHECKED:', rowData);
-    
+
 //     // Remove from localStorage if it's the unchecked row
 //     const storedData = localStorage.getItem('rowData');
 //     if (storedData) {
@@ -2256,14 +2263,14 @@ private recalculateTransactionAmounts(transaction: any): any {
 //         localStorage.removeItem('rowData');
 //       }
 //     }
-    
+
 //     // Update selected IDs signal
 //     this.selectedRowIds.update(ids => {
 //       const newIds = new Set(ids);
 //       newIds.delete(rowData.id);
 //       return newIds;
 //     });
-    
+
 //     this.toastr.info(`Row deselected: ${rowData.id}`, 'Selection');
 //   }
 // }
@@ -2278,13 +2285,13 @@ getInitiallySelectedIndices(): number[] {
   const selectedIds = this.selectedRowIds();
   const transactions = this.sampleTransactions();
   const indices: number[] = [];
-  
+
   transactions.forEach((transaction, index) => {
     if (selectedIds.has(transaction.id)) {
       indices.push(index);
     }
   });
-  
+
   return indices;
 }
 
