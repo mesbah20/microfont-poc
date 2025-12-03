@@ -1,6 +1,5 @@
 import { Component, EventEmitter, inject, Input, OnInit, Output, signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserService } from '../../../core/user/user.service';
 import { Subscription } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 
@@ -16,10 +15,11 @@ import { InputDate } from '../../../common-components/input-types/input-date/inp
 import { InputSelectOptionField } from '../../../common-components/input-types/input-select-option-field/input-select-option-field';
 import { InputTextArea } from '../../../common-components/input-types/input-text-area/input-text-area';
 import { InputTime } from '../../../common-components/input-types/input-time/input-time';
-import { User } from '../../../core/user/user.types';
 import { LoaderService } from '../../../services/loader.service';
 import { IUserNote } from '../usernote.model';
 import { UserNoteService } from '../usernote.service';
+import { UserService } from '../../../../core/user/user.service';
+import { User } from '../../../../core/user/user.types';
 export interface Option {
   key: string;
   value: string;

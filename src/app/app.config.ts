@@ -12,7 +12,7 @@ import {provideToastr} from 'ngx-toastr';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {tokenInterceptor} from './TokenInterceptor';
-import { provideAuth } from './shared/core/auth/auth.provider';
+import { provideAuth } from './core/auth/auth.provider';
 
 export const appConfig: ApplicationConfig = {
   providers: [

@@ -4,9 +4,9 @@ import { PersonFormComponent } from '../../shared/features/components/person-for
 import { ActivityTrackerTogglePage } from '../../shared/features/activity-tracker-toggle/activity-tracker-toggle.page';
 import { NotificationCenterComponent } from '../../shared/features/components/notification-center/notification-center.component';
 import { FormPageComponent } from '../../shared/features/components/form-page/form-page.component';
-import { ApprovalItems } from '../../shared/features/poc/approval-items/approval-items';
-import { ApprovalMovement } from '../../shared/features/poc/approval-movement/approval-movement';
 import { AllComponentsPage } from '../../shared/common-components/test-component-page/all-components-page/all-components-page';
+import { ApprovalItems } from '../../shared/features/approval/approval-items/approval-items';
+import { ApprovalMovement } from '../../shared/features/approval/approval-movement/approval-movement';
 
 
 export const SwiftmxRouting: Routes = [

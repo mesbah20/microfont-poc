@@ -1,7 +1,6 @@
 import { Component, HostListener, inject } from '@angular/core';
 import { MenuDrawer } from './drawers/menu-drawer/menu-drawer';
 import { CommonModule, TitleCasePipe } from '@angular/common';
-import { ProfileDrawer } from './drawers/profile-drawer/profile-drawer';
 import { Router, RouterLink } from '@angular/router';
 import { Search } from '../navbar/actions/search/search';
 import { Observable, Subscription } from 'rxjs';
@@ -14,7 +13,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { environment } from '../../../../../environments/environment';
 import { ToastHelperService } from '../../../../shared/services/toast-helper.service';
-import { AuthService } from '../../../../shared/core/auth/auth.service';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { ProfileDrawer } from './drawers/profile-drawer/profile-drawer';
 
 @Component({
   selector: 'app-sidebar',

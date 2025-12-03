@@ -11,7 +11,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToastrService } from 'ngx-toastr';
 import { ApiEndpointService, ApiEndpointDTO } from '../services/api-endpoint.service';
 import { DialogUtils } from '../../../service/dialog-utils';
-import { UserService } from '../../../core/user/user.service';
 import { BUTTON_VISIBILITY, MENU_NAME, ONCLICK_RESET, ONCLICK_SAVE } from '../../../constant/button-signals.constant';
 import { InputTextBox } from '../../../common-components/input-types/input-text-box/input-text-box';
 import { InputSelectOptionField } from '../../../common-components/input-types/input-select-option-field/input-select-option-field';
@@ -19,6 +18,7 @@ import { GenericButton } from '../../../common-components/generic-component-type
 import { ExpansionPanelHeader } from '../../../common-components/expansion-panel-header/expansion-panel-header';
 import { InputNumber } from '../../../common-components/input-types/input-number/input-number';
 import { InputTextArea } from '../../../common-components/input-types/input-text-area/input-text-area';
+import { UserService } from '../../../../core/user/user.service';
 
 
 /**
@@ -216,7 +216,7 @@ export class ReportApiSetupUI implements OnInit {
    */
   onIdChanged(value: string): void {
     const id = parseInt(value);
-    
+
     // Only fetch if it's a valid number
     if (!isNaN(id) && id > 0) {
       this.loading.set(true);
@@ -360,7 +360,7 @@ export class ReportApiSetupUI implements OnInit {
     }
 
     this.loading.set(true);
-    
+
     const dto: ApiEndpointDTO = {
       id: this.endpointForm.value.id || undefined,
       endpointName: this.endpointForm.value.endpointName,

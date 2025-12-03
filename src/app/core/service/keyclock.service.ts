@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import Keycloak from 'keycloak-js';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 
 @Injectable({

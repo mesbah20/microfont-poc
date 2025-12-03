@@ -5,11 +5,11 @@ import { MatDialog } from '@angular/material/dialog';
 
 import {ViewApprovalActivitiesComponent} from '../view-approval-activities/view-approval-activities.component';
 import { ApprovalService } from '../../../services/approval-service';
-import { UserService } from '../../../core/user/user.service';
-import { User } from '../../../core/user/user.types';
 import { ExpansionPanelHeader } from '../../../common-components/expansion-panel-header/expansion-panel-header';
 import { GenericDataGrid } from '../../../common-components/generic-component-type/generic-data-grid';
 import { GenericModal } from '../../../common-components/generic-component-type/generic-modal/generic-modal';
+import { UserService } from '../../../../core/user/user.service';
+import { User } from '../../../../core/user/user.types';
 
 
 

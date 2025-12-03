@@ -132,6 +132,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   readonly gridTitle = input<string>('');
   readonly summaryGridPosition = input<string>('above');
   readonly summaryGridEnabled = input<boolean>(false);
+
   // Dropdown Inputs
   readonly dropdownColumns = input<string[]>([]);
   readonly dropdownOptions = input<Record<string, DropdownOption[]>>({});
@@ -142,10 +143,11 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   readonly checkboxColumns = input<string[]>([]);
   readonly checkboxSelectAllColumns = input<string[]>([]); // Columns that should show select all
   readonly readOnlyCheckboxColumns = input<string[]>([]); // Columns that should be read-only
-
+  readonly selectionStateField = input<string>('');
+  readonly selectionStateFunction = input<(item: any) => boolean>();
+  readonly selectionUpdateField = input<string>('');
   // Time Field Inputs
   readonly timeColumns = input<string[]>([]); // Columns that should use time picker
-
   // Summary
   readonly summaryColumns = input<string[]>([]);
   readonly groupByColumns = input<string[]>([]);
@@ -225,6 +227,10 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
       if (data && data.length > 0) {
         this._dataSource.set([...data]); // Create a copy
         this.applyFilters();
+        if (this.selectionStateField()) {
+        this.applyDatabaseSelectionState();
+        }
+
       } else {
         this._dataSource.set([]);
         this._filteredData.set([]);
@@ -471,6 +477,52 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
       .trim();
   }
 
+
+ private applyDatabaseSelectionState(): void {
+   const stateField = this.selectionStateField();
+    const stateFunction = this.selectionStateFunction();
+
+    if (!stateField && !stateFunction) return;
+
+    const newSelected = new Set<number>();
+    this._filteredData().forEach((item, index) => {
+      let isSelected = false;
+
+      if (stateFunction) {
+        // Use custom function if provided
+        isSelected = stateFunction(item);
+      } else if (stateField) {
+        // Use simple field check
+        isSelected = this.getPropertyValue(item, stateField);
+      }
+
+      if (isSelected) {
+        newSelected.add(index);
+      }
+    });
+
+    this._selectedRows.set(newSelected);
+  }
+
+  private updateRowSelectionInDatabase(index: number, checked: boolean): void {
+    const updateField = this.selectionUpdateField() || this.selectionStateField();
+    if (!updateField) return;
+
+    const actualIndex = this._currentPage() * this._pageSize() + index;
+    const sourceIndex = this._dataSource().findIndex(sourceItem => {
+      const filteredItem = this._filteredData()[actualIndex];
+      return sourceItem === filteredItem;
+    });
+
+    if (sourceIndex !== -1) {
+      const updatedData = [...this._dataSource()];
+      (updatedData[sourceIndex] as any)[updateField] = checked;
+      this._dataSource.set(updatedData);
+      this.applyFilters();
+      this.dataSourceChanged.emit(updatedData);
+    }
+  }
+
   // Enhanced data filtering and sorting
   private applyFilters(): void {
     let filtered = [...this._dataSource()];
@@ -594,6 +646,9 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
 
     this._selectedRows.set(newSelected);
 
+    if(this.selectionStateField()) {
+      this.updateRowSelectionInDatabase(index, checked);
+    }
 
     this.onChecked.emit({
       data: JSON.stringify(this._filteredData()[actualIndex]),

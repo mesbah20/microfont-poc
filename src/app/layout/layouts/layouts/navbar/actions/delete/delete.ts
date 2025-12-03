@@ -4,7 +4,7 @@ import {MatDialog} from '@angular/material/dialog';
 import { FormGroup } from '@angular/forms';
 import { FormGroupSignal } from '../../../../../../shared/constant/button-signals.constant';
 import { ActivityLogService } from '../../../../../../shared/services/activity-log.service';
-import { ConfirmationDialogue } from '../../../../../../shared/common-components/delete-confirmation-dialogue/confirmation-dialogue';
+import { ConfirmationDialogue } from '../../../../../../shared/common-components/confirmation-dialogue/confirmation-dialogue';
 
 @Component({
   selector: 'app-delete',
@@ -27,7 +27,7 @@ export class Delete {
   delete() {
     let dialogRef = this.dialog.open(ConfirmationDialogue, {
       width: '450px',
-      data: { 
+      data: {
         title: 'Confirm Delete',
         message: 'Are you sure you want to delete this item? <br>This action cannot be undone.',
         buttons: [

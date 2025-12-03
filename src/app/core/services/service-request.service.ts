@@ -4,7 +4,8 @@ import {catchError, tap, map, switchMap} from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {UserService} from '../user/user.service';
 import {User} from '../user/user.types';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../environments/environment';
+
 
 export interface ServiceRequest {
   // Client-side fields (for form)

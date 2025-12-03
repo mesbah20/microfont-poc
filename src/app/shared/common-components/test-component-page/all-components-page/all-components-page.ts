@@ -26,7 +26,8 @@ import { GenericButton } from '../../generic-component-type/generic-button/gener
 import { GenericSwitch } from '../../generic-component-type/generic-switch/generic-switch';
 import { GenericModal } from '../../generic-component-type/generic-modal/generic-modal';
 import { CommonQuillEditorComponent } from '../../common-quill-editor/common-quill-editor';
-import { AlertExamplePage } from '../../../../features/landing/alert-example-page/alert-example-page';
+import { AlertExamplePage } from '../alert-example-page/alert-example-page';
+import { HttpClient } from '@angular/common/http';
 
 // Types for data selection modal
 export interface AccountData {
@@ -45,6 +46,21 @@ export interface DataSelectionConfig {
   noDataMessage: string;
   loadingMessage: string;
 }
+
+  export interface User {
+    id: number;
+    name: string;
+    username: string;
+    email: string;
+    phone: string;
+    website: string;
+    company: {
+      name: string;
+    };
+    address: {
+      city: string;
+    };
+  }
 
 @Component({
   selector: 'app-all-components-page',
@@ -244,7 +260,7 @@ onModalResult(result: any) {
       country: 'US',
       productCategory: 'financial',
       subCategory: 'banking',
-      status: 'pending',
+      status: '',
       fromAccount: '1234567890',
       toAccount: '0987654321',
       date: '2024-01-15',
@@ -255,6 +271,7 @@ onModalResult(result: any) {
       calculatedTax: 5000.00,
       totalAmount: 55000.00,
       riskLevel: 'medium',
+      isSelected: true,
       requiresApproval: true,
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
@@ -282,6 +299,7 @@ onModalResult(result: any) {
       calculatedTax: 2400.00,
       totalAmount: 27400.00,
       riskLevel: 'low',
+      isSelected: false,
       requiresApproval: false,
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
@@ -308,6 +326,7 @@ onModalResult(result: any) {
       calculatedTax: 10500.00,
       totalAmount: 110500.00,
       riskLevel: 'low',
+      isSelected: false,
       requiresApproval: true,
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
@@ -335,6 +354,7 @@ onModalResult(result: any) {
       calculatedTax: 10500.00,
       totalAmount: 110500.00,
       riskLevel: 'low',
+      isSelected: false,
       requiresApproval: true,
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
@@ -362,6 +382,7 @@ onModalResult(result: any) {
       calculatedTax: 10500.00,
       totalAmount: 110500.00,
       riskLevel: 'low',
+      isSelected: false,
       requiresApproval: true,
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
@@ -389,6 +410,7 @@ onModalResult(result: any) {
       calculatedTax: 10500.00,
       totalAmount: 110500.00,
       riskLevel: 'low',
+      isSelected: true,
       requiresApproval: true,
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
@@ -398,7 +420,7 @@ onModalResult(result: any) {
       assignedRole: 'specialist'
     }
   ]);
-
+  sampleApiData = signal<any[]>([]);
   // Sample schedule data for time picker example
   sampleScheduleData = signal([
     {
@@ -556,6 +578,7 @@ onModalResult(result: any) {
   }
   constructor(
     private formBuilder: FormBuilder,
+    private http: HttpClient
     //private toastr: CustomToastrService
 
   ) {
@@ -576,6 +599,10 @@ onModalResult(result: any) {
   });
   }
 
+
+   isOrderProcessable = (sampletransaction: any): boolean => {
+    return sampletransaction.riskLevel === 'medium';
+  };
 
 save(): void {
   console.log('=== STARTING SAVE PROCESS ===');
@@ -615,6 +642,77 @@ save(): void {
 
   this.toastr.success('Data saved successfully! Check console for complete data.', 'Save Successful');
 }
+
+private loadUsersFromApi(): void {
+
+    this.http.get<User[]>('https://jsonplaceholder.typicode.com/users')
+      .subscribe({
+        next: (users: User[]) => {
+          // Transform API data to match your grid structure
+          const transformedData = users.map((user) => ({
+            id: `USER${user.id.toString().padStart(3, '0')}`,
+            name: user.name,
+            username: user.username,
+            email: user.email,
+            phone: user.phone,
+            website: user.website,
+            company: user.company.name,
+            city: user.address.city,
+
+            startTime: this.generateRandomTime(),
+            endTime: this.generateRandomTime(),
+            breakTime: '12:30',
+            totalHours: this.calculateRandomHours(),
+            status: this.getRandomStatus()
+          }));
+
+          this.sampleApiData.set(transformedData);
+
+          this.toastr.success(`Loaded ${users.length} users from API`, 'Data Loaded');
+        },
+        error: (error) => {
+          console.error('Error fetching users:', error);
+
+          this.toastr.error('Failed to load user data from API', 'API Error');
+
+          // Fallback to minimal static data on error
+          this.loadFallbackData();
+        }
+      });
+  }
+
+  // Helper methods for data transformation
+  private generateRandomTime(): string {
+    const times = ['09:00', '09:30', '10:00', '10:30', '11:00', '17:00', '17:30', '18:00'];
+    return times[Math.floor(Math.random() * times.length)];
+  }
+
+  private calculateRandomHours(): number {
+    return Math.round((Math.random() * 2 + 7.5) * 100) / 100; // 7.5 to 9.5 hours
+  }
+
+  private getRandomStatus(): string {
+    const statuses = ['active', 'inactive', 'pending'];
+    return statuses[Math.floor(Math.random() * statuses.length)];
+  }
+
+  // Fallback data method
+  private loadFallbackData(): void {
+    this.sampleApiData.set([
+      {
+        id: 'ERROR001',
+        name: 'API Error - Using Fallback',
+        phone: 'N/A',
+        company: 'Fallback Data',
+        city: 'Unknown',
+        startTime: '09:00',
+        endTime: '17:30',
+        breakTime: '12:00',
+        totalHours: 8.5,
+        status: 'active'
+      }
+    ]);
+  }
 
 // Improved validation method
 validateRequiredFields(): boolean {
@@ -949,7 +1047,7 @@ private getCompleteFormData(): any {
     calculatedTax: this.frmGroup.get('calculatedTax')?.value,
     totalAmount: this.frmGroup.get('totalAmount')?.value,
     riskLevel: this.frmGroup.get('riskLevel')?.value,
-    requiresApproval: this.frmGroup.get('requiresApproval')?.value
+    // requiresApproval: this.frmGroup.get('requiresApproval')?.value
   };
 
   return {
@@ -1238,7 +1336,7 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       calculatedTax: [{ value: 0, disabled: true }],
       totalAmount: [{ value: 0, disabled: true }],
       riskLevel: [{ value: '', disabled: true }],
-      requiresApproval: [{ value: false, disabled: true }],
+      requiresApproval: [{ value: false }],
 
       // Horizontal display mode controls (same as outline section)
       textBoxHorizontal: ['', [Validators.minLength(3), Validators.maxLength(20), Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
@@ -1255,6 +1353,8 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
     setTimeout(() => {
       this.restoreGridSelections();
     }, 100);
+
+    this.loadUsersFromApi();
 
   }
 
@@ -1778,6 +1878,7 @@ private recalculateTransactionAmounts(transaction: any): any {
         calculatedTax: formValue.calculatedTax,
         totalAmount: formValue.totalAmount,
         riskLevel: formValue.riskLevel,
+        isSelected:formValue.isSelected,
         requiresApproval: formValue.requiresApproval,
         availableRoles: [
           { value: 'admin', label: 'Administrator' },

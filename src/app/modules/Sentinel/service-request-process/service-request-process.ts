@@ -18,7 +18,6 @@ import {
 } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
-import { ServiceRequest, ServiceRequestService } from '../../../shared/core/services/service-request.service';
 import { BUTTON_VISIBILITY } from '../../../shared/constant/button-signals.constant';
 import { InputDate } from '../../../shared/common-components/input-types/input-date/input-date';
 import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
@@ -27,6 +26,7 @@ import { GenericButton } from '../../../shared/common-components/generic-compone
 import { ServiceRequestDetails } from '../service-request-details/service-request-details';
 import { GenericDataGrid } from '../../../shared/common-components/generic-component-type/generic-data-grid/index';
 import { GenericModal } from '../../../shared/common-components/generic-component-type/generic-modal/generic-modal';
+import { ServiceRequest, ServiceRequestService } from '../../../core/services/service-request.service';
 
 @Component({
   selector: 'app-service-request-process',

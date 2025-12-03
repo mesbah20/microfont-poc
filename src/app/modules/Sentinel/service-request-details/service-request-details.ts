@@ -19,13 +19,13 @@ import {
 import { ToastrService } from 'ngx-toastr';
 import { MatTabsModule } from '@angular/material/tabs';
 import { jwtDecode } from 'jwt-decode';
-import { ServiceRequest, ServiceRequestService } from '../../../shared/core/services/service-request.service';
-import { ServiceRequestLog, ServiceRequestLogService } from '../../../shared/core/services/service-request-log.service';
-import { UserService } from '../../../shared/core/user/user.service';
-import { User } from '../../../shared/core/user/user.types';
 import { InputTextArea } from '../../../shared/common-components/input-types/input-text-area/input-text-area';
 import { InputSelectOptionField } from '../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
 import { ExpansionPanelHeader } from '../../../shared/common-components/expansion-panel-header/expansion-panel-header';
+import { ServiceRequest, ServiceRequestService } from '../../../core/services/service-request.service';
+import { ServiceRequestLog, ServiceRequestLogService } from '../../../core/services/service-request-log.service';
+import { UserService } from '../../../core/user/user.service';
+import { User } from '../../../core/user/user.types';
 
 
 @Component({

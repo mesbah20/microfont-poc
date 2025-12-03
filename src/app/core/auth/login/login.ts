@@ -4,8 +4,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import { firstValueFrom } from 'rxjs';
-import { NovuService } from '../../../services/novu.service';
-import { environment } from '../../../../../environments/environment';
+import { environment } from '../../../../environments/environment';
+import { NovuService } from '../../../shared/services/novu.service';
+
 
 export interface UserAccessItem {
   functionId: string;

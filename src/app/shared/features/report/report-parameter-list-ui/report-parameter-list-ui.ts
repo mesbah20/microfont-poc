@@ -18,11 +18,6 @@ import { DatabaseConnectionService } from '../services/database-connection.servi
 import { ApiEndpointService } from '../services/api-endpoint.service';
 import { catchError, of } from 'rxjs';
 import { InputTextBox } from '../../../common-components/input-types/input-text-box/input-text-box';
-
-import { AuthResourceService } from '../../../core/service/auth-resource-service';
-import { AuthService } from '../../../core/auth/auth.service';
-import { UserService } from '../../../core/user/user.service';
-import { environment } from '../../../../../environments/environment';
 import { BUTTON_VISIBILITY, MENU_NAME, ONCLICK_DELETE, ONCLICK_RESET, ONCLICK_SAVE, ONCLICK_UPDATE } from '../../../constant/button-signals.constant';
 import { InputSelectOptionField } from '../../../common-components/input-types/input-select-option-field/input-select-option-field';
 import { GenericButton } from '../../../common-components/generic-component-type/generic-button/generic-button';
@@ -36,6 +31,9 @@ import { InputDate } from '../../../common-components/input-types/input-date/inp
 import { InputNumber } from '../../../common-components/input-types/input-number/input-number';
 import { GenericDataGrid } from '../../../common-components/generic-component-type/generic-data-grid';
 import { GenericModal } from '../../../common-components/generic-component-type/generic-modal/generic-modal';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { AuthResourceService } from '../../../../core/service/auth-resource-service';
+import { UserService } from '../../../../core/user/user.service';
 
 
 /**
@@ -808,7 +806,7 @@ export class ReportParameterListUI implements OnInit {
   /**
    * On Blur Load function by input string
    */
-  
+
   loadFunctionById(functionId: number) {
     this.authResourceService.getReportFunctions(functionId)
       .pipe(
@@ -828,7 +826,7 @@ export class ReportParameterListUI implements OnInit {
             functionId: '',
           });
         }
-        
+
       });
   }
 

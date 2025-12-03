@@ -1,7 +1,7 @@
 import {Routes} from '@angular/router';
-import {Dashboard} from './feature/dashboard/dashboard';
-import { AlertExamplePage } from './alert-example-page/alert-example-page';
+import { AlertExamplePage } from '../../shared/common-components/test-component-page/alert-example-page/alert-example-page';
 import {Home} from './home/home';
+import { Dashboard } from './dashboard/dashboard';
 
 export const landingRouting: Routes = [
   {path: '', redirectTo: 'dashboard', pathMatch: "full"},

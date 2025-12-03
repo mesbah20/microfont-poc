@@ -508,6 +508,9 @@
                   (onFHDeleteClick)="onTransactionDelete($event)"
                   (onFHViewClick)="onTransactionView($event)"
                   (onPrint)="onTransactionPrint($event)"
+                  [selectionStateField]="'isSelected'"
+                  [selectionStateFunction]="isOrderProcessable"
+                  [selectionUpdateField]="'isSelected'"
                   (onChecked)="onTransactionRowSelect($event)"
                   (onSelectAllChange)="onTransactionSelectAll($event)"
                   (dataSourceChanged)="onTransactionDataChanged($event)"
@@ -584,12 +587,13 @@
 
 <!-- Example: Generic Data Grid with two extra action buttons -->
 <generic-data-grid
-  [dataSource]="sampleScheduleData()"
+  [dataSource]="sampleApiData()"
   [showCustomAction1]="true"
   [customActionIcon1]="'apps.svg'"
   [customActionTooltip1]="'Flag row'"
   (onExtraAction1Click)="handleExtra1($event)"
-
+  [enableSelection]="true"
+  [selectionStateField]="'email'"
   [showCustomAction2]="true"
   [customActionIcon2]="'report'"
   [customActionTooltip2]="'Download row data'"

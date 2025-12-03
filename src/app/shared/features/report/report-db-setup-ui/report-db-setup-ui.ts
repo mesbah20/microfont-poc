@@ -10,8 +10,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToastrService } from 'ngx-toastr';
 import { DatabaseConnectionService, DatabaseConnectionDTO } from '../services/database-connection.service';
-import { AuthService } from '../../../core/auth/auth.service';
-import { UserService } from '../../../core/user/user.service';
 import { BUTTON_VISIBILITY, MENU_NAME, ONCLICK_RESET, ONCLICK_SAVE } from '../../../constant/button-signals.constant';
 import { environment } from '../../../../../environments/environment';
 import { InputTextBox } from '../../../common-components/input-types/input-text-box/input-text-box';
@@ -19,6 +17,8 @@ import { InputSelectOptionField } from '../../../common-components/input-types/i
 import { InputIdBox } from '../../../common-components/input-types/input-id-box/input-id-box';
 import { ExpansionPanelHeader } from '../../../common-components/expansion-panel-header/expansion-panel-header';
 import { GenericModal } from '../../../common-components/generic-component-type/generic-modal/generic-modal';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { UserService } from '../../../../core/user/user.service';
 
 
 /**
@@ -104,7 +104,7 @@ export class ReportDbSetupUI implements OnInit {
       this.onRefresh();
     } else if (this.onClickSave()) {
       this.onSave();
-    } 
+    }
   }
 
   /**
@@ -159,7 +159,7 @@ export class ReportDbSetupUI implements OnInit {
 
     if (dbType && host && port && service) {
       let url = '';
-      
+
       switch (dbType) {
         case 'ORACLE':
           url = `jdbc:oracle:thin:@//${host}:${port}/${service}`;
@@ -205,7 +205,7 @@ export class ReportDbSetupUI implements OnInit {
    */
   openConnectionModal() {
     console.log('Opening connection selection modal');
-    
+
     // Reset modal state
     this.showModal.set(false);
     this.modalComponent = undefined;
@@ -214,7 +214,7 @@ export class ReportDbSetupUI implements OnInit {
       // Import the connection selection modal component (we'll create this)
       import('../components/connection-selection-modal/connection-selection-modal').then(module => {
         this.modalComponent = module.ConnectionSelectionModalComponent;
-        
+
         // Prepare modal data
         this.modalComponentData = {
           config: {
@@ -300,10 +300,10 @@ export class ReportDbSetupUI implements OnInit {
    */
   private validateAppName(control: any) {
     if (!control.value) return null;
-    
+
     const appName = control.value.toString();
     const validPattern = /^[a-zA-Z0-9_-]+$/;
-    
+
     if (!validPattern.test(appName)) {
       return {
         invalidAppName: {
@@ -311,7 +311,7 @@ export class ReportDbSetupUI implements OnInit {
         }
       };
     }
-    
+
     return null;
   }
 
@@ -320,7 +320,7 @@ export class ReportDbSetupUI implements OnInit {
    */
   onIdChanged(value: string): void {
     const id = parseInt(value);
-    
+
     // Only fetch if it's a valid number
     if (!isNaN(id) && id > 0) {
       this.loading.set(true);
@@ -328,7 +328,7 @@ export class ReportDbSetupUI implements OnInit {
         next: (connection: any) => {
           console.log('Loaded connection data:', connection);
           console.log('vAppName from API:', connection.vAppName || connection.v_app_name);
-          
+
           // Populate form with fetched connection (handle both old and new formats)
           this.connectionForm.patchValue({
             id: connection.id,
@@ -344,7 +344,7 @@ export class ReportDbSetupUI implements OnInit {
             isDefaultConnection: connection.isDefaultConnection,
             password: '' // Clear password for security
           });
-          
+
           console.log('Form values after patch:', this.connectionForm.value);
           // this.toastr.info('Connection loaded. Please enter password and verify details.', 'Connection Loaded');
           this.loading.set(false);
@@ -368,7 +368,7 @@ export class ReportDbSetupUI implements OnInit {
    * Save or update connection
    */
   onSave() {
-   
+
     if (this.connectionForm.invalid) {
       this.toastr.error('Please fill all required fields correctly.', 'Validation Error');
       Object.keys(this.connectionForm.controls).forEach(key => {
@@ -383,9 +383,9 @@ export class ReportDbSetupUI implements OnInit {
     this._authService.userInfo("token");
     this.loading.set(true);
     const userId = this._userService?.user?.username??'admin';
-    
+
     const vAppNameValue = this.connectionForm.get('vAppName')?.value;
-    
+
     const dto: any = {
       id: this.connectionForm.value.id || undefined,
       vAppName: vAppNameValue || 'ultimus',
@@ -471,15 +471,15 @@ export class ReportDbSetupUI implements OnInit {
    * Test database connection
    */
   onTestConnection() {
-    if (this.connectionForm.get('dbServerAddress')?.invalid || 
-        this.connectionForm.get('userName')?.invalid || 
+    if (this.connectionForm.get('dbServerAddress')?.invalid ||
+        this.connectionForm.get('userName')?.invalid ||
         this.connectionForm.get('password')?.invalid) {
       this.toastr.error('Please provide server address, username, and password to test connection.', 'Validation Error');
       return;
     }
 
     this.loading.set(true);
-    
+
     const dto: any = {
       id: this.connectionForm.value.id || undefined,
       vAppName: this.connectionForm.value.vAppName,

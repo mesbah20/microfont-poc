@@ -1,9 +1,9 @@
 import { Component, OnInit, input, output, signal } from '@angular/core';
 
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { DataSelectionConfig, DataSelectionItem, DataSelectionResult } from '../../../shared/models/data-selection.interface';
-import { ConfirmationDialogue } from '../../../shared/common-components/delete-confirmation-dialogue/confirmation-dialogue';
-import { Label } from '../../../shared/common-components/generic-component-type/generic-label/generic-label';
+import { DataSelectionConfig, DataSelectionItem, DataSelectionResult } from '../../../models/data-selection.interface';
+import { ConfirmationDialogue } from '../../confirmation-dialogue/confirmation-dialogue';
+import { Label } from '../../generic-component-type/generic-label/generic-label';
 
 @Component({
   selector: 'app-alert-example-page',
@@ -20,7 +20,7 @@ export class AlertExamplePage implements OnInit {
   showOptionalFields = signal<boolean>(false);
 
   constructor(private formBuilder: FormBuilder) { }
-  
+
   ngOnInit(): void {
     this.initForm();
   }
@@ -71,7 +71,7 @@ export class AlertExamplePage implements OnInit {
     getCustomers: async (params: any) => {
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const customers = [
         { id: 1, name: 'John Doe', email: 'john@example.com', phone: '+1234567890', status: 'Active' },
         { id: 2, name: 'Jane Smith', email: 'jane@example.com', phone: '+1234567891', status: 'Active' },
@@ -90,7 +90,7 @@ export class AlertExamplePage implements OnInit {
   private mockAccountService = {
     getAccounts: async (params: any) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const accounts = [
         { id: 1, accountNumber: 'ACC001', accountName: 'Savings Account', balance: 5000.00, type: 'Savings' },
         { id: 2, accountNumber: 'ACC002', accountName: 'Checking Account', balance: 2500.00, type: 'Checking' },
@@ -110,7 +110,7 @@ export class AlertExamplePage implements OnInit {
   private mockProductService = {
     getProducts: async (params: any) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const products = [
         { id: 1, productCode: 'PROD001', productName: 'Laptop', price: 999.99, category: 'Electronics', stock: 50 },
         { id: 2, productCode: 'PROD002', productName: 'Smartphone', price: 699.99, category: 'Electronics', stock: 100 },
@@ -189,8 +189,8 @@ export class AlertExamplePage implements OnInit {
   onInfoModalButtonClick(event: { action: string; button: any }) {
     console.log('Info modal button clicked:', event.action);
     this.closeInfoModal();
-  }  
-  
+  }
+
   onDeleteConfirmationModalButtonClick(event: { action: string; button: any }) {
     console.log('Delete confirmation modal button clicked:', event.action);
     this.closeDeleteConfirmationModal();
@@ -326,12 +326,12 @@ export class AlertExamplePage implements OnInit {
 
   onDataSelectionResult(result: DataSelectionResult) {
     console.log('Data selection result:', result);
-    
+
     if (result.action === 'select' && result.selectedItem) {
       this.selectedData.set(result.selectedItem);
       this.selectionTimestamp.set(new Date());
       console.log('Selected item:', this.selectedData());
-      
+
       // Update form with selected data
       if (this.selectedData()) {
         // Example: Update form fields based on selected data
@@ -357,19 +357,19 @@ export class AlertExamplePage implements OnInit {
       this.selectedData.set(result.selectedItems[0]); // Keep for backward compatibility
       this.selectionTimestamp.set(new Date());
       console.log('Inserted items:', result.selectedItems);
-      
+
       // Handle multiple selected items
       if (result.selectedItems.length > 0) {
-        const selectedNames = result.selectedItems.map(item => 
+        const selectedNames = result.selectedItems.map(item =>
           item['name'] || item['accountName'] || item['productName']
         ).join(', ');
-        
+
         this.frmGroup.patchValue({
           description: `Selected: ${selectedNames}`
         });
       }
     }
-    
+
     this.closeDataSelectionModal();
   }
 
@@ -377,7 +377,7 @@ export class AlertExamplePage implements OnInit {
   getSelectedDataDisplay(): string {
     const items = this.selectedItems();
     const data = this.selectedData();
-    
+
     if (items.length > 0) {
       // Multiple items selected
       const displayData = {
@@ -396,7 +396,7 @@ export class AlertExamplePage implements OnInit {
       };
       return JSON.stringify(displayData, null, 2);
     }
-    
+
     return '';
   }
 
@@ -417,7 +417,7 @@ export class AlertExamplePage implements OnInit {
   getSelectionTimestamp(): string {
     const timestamp = this.selectionTimestamp();
     if (!timestamp) return '';
-    
+
     return timestamp.toLocaleString('en-US', {
       year: 'numeric',
       month: 'short',

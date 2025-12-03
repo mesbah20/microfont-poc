@@ -9,10 +9,10 @@ import {Title} from '@angular/platform-browser';
 import pkg from '../../package.json';
 
 import { environment } from '../environments/environment';
-import { AuthService } from './shared/core/auth/auth.service';
-import { UserService } from './shared/core/user/user.service';
-import { User } from './shared/core/user/user.types';
 import { LoaderComponent } from './shared/common-components/loader/loader.component';
+import { AuthService } from './core/auth/auth.service';
+import { UserService } from './core/user/user.service';
+import { User } from './core/user/user.types';
 
 
 @Component({

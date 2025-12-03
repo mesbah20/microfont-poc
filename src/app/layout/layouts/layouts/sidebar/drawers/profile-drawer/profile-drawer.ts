@@ -25,16 +25,15 @@ import { ChatPreview, ChatService } from '../../../../../../shared/services/chat
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {ToastHelperService} from '../../../../../../shared/services/toast-helper.service';
-
-import { UserService } from '../../../../../../shared/core/user/user.service';
-import { User } from '../../../../../../shared/core/user/user.types';
 import { NotificationDetailModalComponent } from '../../../../../../shared/features/components/notification/notification-detail-modal.component';
-import { EditProfileModal } from '../../../../../../features/landing/feature/edit-profile-modal/edit-profile-modal';
+import { EditProfileModal } from '../../../../../../shared/features/edit-profile-modal/edit-profile-modal';
 import { NotificationPopoverComponent } from '../../../../../../shared/features/components/notification/notification-popover.component';
 import { ServiceRequestDialog } from '../../../../../../shared/features/service-request/service-request-dialog/service-request-dialog';
 import { InputTextBox } from '../../../../../../shared/common-components/input-types/input-text-box/input-text-box';
 import { GenericDataGrid } from '../../../../../../shared/common-components/generic-component-type/generic-data-grid';
 import { GenericModal } from '../../../../../../shared/common-components/generic-component-type/generic-modal/generic-modal';
+import { UserService } from '../../../../../../core/user/user.service';
+import { User } from '../../../../../../core/user/user.types';
 
 @Component({
   selector: 'app-profile-drawer',

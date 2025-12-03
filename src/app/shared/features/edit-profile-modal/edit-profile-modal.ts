@@ -12,12 +12,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatIcon } from '@angular/material/icon';
-import { User } from '../../../../shared/core/user/user.types';
-import { InputTextBox } from '../../../../shared/common-components/input-types/input-text-box/input-text-box';
-import { ExpansionPanelHeader } from '../../../../shared/common-components/expansion-panel-header/expansion-panel-header';
-import { InputIdBox } from '../../../../shared/common-components/input-types/input-id-box/input-id-box';
-import { InputOfficeBox } from '../../../../shared/common-components/input-types/input-office-box/input-office-box';
-import { InputTextArea } from '../../../../shared/common-components/input-types/input-text-area/input-text-area';
+import { InputTextBox } from '../../common-components/input-types/input-text-box/input-text-box';
+import { ExpansionPanelHeader } from '../../common-components/expansion-panel-header/expansion-panel-header';
+import { InputIdBox } from '../../common-components/input-types/input-id-box/input-id-box';
+import { InputOfficeBox } from '../../common-components/input-types/input-office-box/input-office-box';
+import { InputTextArea } from '../../common-components/input-types/input-text-area/input-text-area';
+import { User } from '../../../core/user/user.types';
 
 
 type ProfileModalData = Partial<User> & {

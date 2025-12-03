@@ -5,8 +5,6 @@ import { CommonModule } from '@angular/common';
 import { MatDivider } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { UserService } from '../../core/user/user.service';
-import { User } from '../../core/user/user.types';
 import { Observable, Subscription } from 'rxjs';
 import { Managenote } from '../usernote/managenote/managenote'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -16,6 +14,8 @@ import { ExpansionPanelHeader } from '../../common-components/expansion-panel-he
 import { LoaderService } from '../../services/loader.service';
 import { IUserNote } from './usernote.model';
 import { UserNoteService } from './usernote.service';
+import { UserService } from '../../../core/user/user.service';
+import { User } from '../../../core/user/user.types';
 
 @Component({
   selector: 'app-usernote',

@@ -2,8 +2,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {environment} from '../../../environments/environment';
-import { BaseApiService } from '../core/utils/service/base-api.service';
-import { CommonResponseObject } from '../core/utils/model/common-response';
+import { CommonResponseObject } from '../../core/utils/model/common-response';
+import { BaseApiService } from '../../core/utils/service/base-api.service';
+
 
 @Injectable({
   providedIn: 'root'
