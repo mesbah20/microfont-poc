@@ -100,7 +100,7 @@ export class MenuDrawer implements OnInit {
     //------------ testing with dummy data ------------
     if(!resourceList)
       return;
-    const dummyData: UserAccessItem[] = resourceList.filter((item:any) => 
+    const dummyData: UserAccessItem[] = resourceList.filter((item:any) =>
       item?.attributes?.functionType != 'R'
     ).map((m: any) => ({
       FunctionId: m.attributes.functionId,
