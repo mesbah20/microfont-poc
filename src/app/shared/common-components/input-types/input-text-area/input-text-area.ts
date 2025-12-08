@@ -42,7 +42,7 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
   readonly id = input<string>('');
   readonly cssClass = input<string>('');
   readonly styles = input<string>('');
-  readonly rows = input<number>(3);
+  readonly rows = input<number>(1);
   readonly cols = input<number | undefined>(undefined);
   readonly placeholder = input<string>('');
   readonly required = input<boolean>(false);
@@ -55,8 +55,8 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
   readonly maxCols = input<number | undefined>(undefined);
   readonly minCols = input<number | undefined>(undefined);
   readonly autoResize = input<boolean>(false);
-  readonly showManualResize = input<boolean>(true); 
-  readonly resizeStep = input<number>(1); 
+  readonly showManualResize = input<boolean>(true);
+  readonly resizeStep = input<number>(1);
   readonly label = input<string>('');
   readonly showCharacterCount = input<boolean>(true);
   readonly showRowCount = input<boolean>(false);
@@ -66,6 +66,7 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
   readonly maxWidth = input<string>(''); // Maximum width
   readonly minWidth = input<string>(''); // Minimum width
   readonly widthClass = input<string>(''); // CSS class for width control (e.g., 'w-1/2', 'w-96')
+  readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
   // Outputs
   readonly valueChanged = output<string>();
   readonly onChanged = output<any>();
@@ -122,7 +123,7 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
     // const stateClasses = this.isDisabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : 'bg-white';
     // const errorClasses = this.isInvalidState() ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-300' : 'border-gray-300';
     // const customClasses = this.cssClass() || '';
-    
+
     // return ` ${resizeClasses} ${stateClasses} ${errorClasses} ${customClasses}`;
     return null;
   });
@@ -165,16 +166,16 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
         this.analyzeText(value || '');
         this.valueChanged.emit(value || '');
         this.validateInput();
-        
+
         // Trigger auto-resize on programmatic value changes
         if (this.autoResize() && this.initialResizeDone) {
           setTimeout(() => this.performAutoResize(), 0);
         }
       });
-      
+
       // Handle enable/disable state
       this.updateControlState();
-      
+
       // Initial analysis
       this.analyzeText(control.value || '');
     }
@@ -183,7 +184,7 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
   ngOnChanges() {
     this.validateInput();
     this.updateControlState();
-    
+
     // Re-analyze text when inputs change
     const control = this.frmGroup().get(this.controlName());
     if (control) {
@@ -204,10 +205,16 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
+  autoResizes(textarea: HTMLTextAreaElement): void {
+  textarea.style.height = "auto";          // reset first
+  textarea.style.height = textarea.scrollHeight + "px";  // match content height
+}
+
+
   private analyzeText(text: string): void {
     const lines: string[] = text.split('\n');
     this.currentRows.set(lines.length);
-    
+
     const longest = lines.reduce((max: number, line: string) => Math.max(max, line.length), 0);
     this.longestLine.set(longest);
   }
@@ -217,22 +224,22 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
       const currentRowCount = this.currentRows();
       const minRows = this.minRows() || this.rows();
       const maxRows = this.maxRows() || Math.max(currentRowCount, minRows);
-      
+
       return Math.max(minRows, Math.min(currentRowCount, maxRows));
     }
-    
+
     // Use manual rows when not auto-resizing
     return this.manualRows();
   }
 
   private getEffectiveStyles(): string {
     let styles = this.styles() || '';
-    
+
     // Add width styles
     if (this.width() !== '100%') {
       styles += `; width: ${this.width()};`;
     }
-    
+
     if (this.maxWidth()) {
       styles += `; max-width: ${this.maxWidth()};`;
     } else if (this.maxCols()) {
@@ -241,43 +248,43 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
       const maxWidth = this.maxCols()! * charWidth + 24; // +24 for padding
       styles += `; max-width: ${maxWidth}px;`;
     }
-    
+
     if (this.minWidth()) {
       styles += `; min-width: ${this.minWidth()};`;
     }
-    
+
     return styles;
   }
 
   // MANUAL RESIZE METHODS
   increaseSize(): void {
     if (!this.canIncreaseSize()) return;
-    
+
     const currentRows = this.manualRows();
     const step = this.resizeStep();
     const newRows = Math.min(
       currentRows + step,
       this.maxRows() || currentRows + step
     );
-    
+
     this.manualRows.set(newRows);
     this.onManualResize.emit({ rows: newRows, action: 'increase' });
-    
+
     // Update textarea immediately
     this.updateTextareaRows(newRows);
   }
 
   decreaseSize(): void {
     if (!this.canDecreaseSize()) return;
-    
+
     const currentRows = this.manualRows();
     const step = this.resizeStep();
     const minAllowed = this.minRows() || 1;
     const newRows = Math.max(currentRows - step, minAllowed);
-    
+
     this.manualRows.set(newRows);
     this.onManualResize.emit({ rows: newRows, action: 'decrease' });
-    
+
     // Update textarea immediately
     this.updateTextareaRows(newRows);
   }
@@ -286,13 +293,13 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
     const minAllowed = this.minRows() || 1;
     const maxAllowed = this.maxRows() || rows;
     const constrainedRows = Math.max(minAllowed, Math.min(rows, maxAllowed));
-    
+
     this.manualRows.set(constrainedRows);
-    this.onManualResize.emit({ 
-      rows: constrainedRows, 
-      action: rows > this.manualRows() ? 'increase' : 'decrease' 
+    this.onManualResize.emit({
+      rows: constrainedRows,
+      action: rows > this.manualRows() ? 'increase' : 'decrease'
     });
-    
+
     // Update textarea immediately
     this.updateTextareaRows(constrainedRows);
   }
@@ -322,7 +329,7 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
   // AUTO-RESIZE METHODS (existing)
   autoResizeTextarea(event: Event): void {
     if (!this.autoResize()) return;
-    
+
     const textarea = event.target as HTMLTextAreaElement;
     this.performAutoResizeOnElement(textarea);
   }
@@ -344,34 +351,34 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
 
     // Store scroll position
     const scrollTop = textarea.scrollTop;
-    
+
     // Reset height to auto to get correct scrollHeight
     textarea.style.height = 'auto';
-    
+
     // Get content height
     let newHeight = textarea.scrollHeight;
-    
+
     // Apply min/max constraints
     if (this.minRows() || this.maxRows()) {
       const computedStyle = getComputedStyle(textarea);
-      const lineHeight = parseInt(computedStyle.lineHeight) || 
+      const lineHeight = parseInt(computedStyle.lineHeight) ||
                         parseInt(computedStyle.fontSize) * 1.2;
-      
+
       const paddingTop = parseInt(computedStyle.paddingTop) || 0;
       const paddingBottom = parseInt(computedStyle.paddingBottom) || 0;
       const borderTop = parseInt(computedStyle.borderTopWidth) || 0;
       const borderBottom = parseInt(computedStyle.borderBottomWidth) || 0;
       const totalVerticalSpace = paddingTop + paddingBottom + borderTop + borderBottom;
-      
+
       if (this.minRows()) {
         const minHeight = (this.minRows()! * lineHeight) + totalVerticalSpace;
         newHeight = Math.max(newHeight, minHeight);
       }
-      
+
       if (this.maxRows()) {
         const maxHeight = (this.maxRows()! * lineHeight) + totalVerticalSpace;
         newHeight = Math.min(newHeight, maxHeight);
-        
+
         // Add overflow-y auto if content exceeds max height
         if (textarea.scrollHeight > maxHeight) {
           textarea.style.overflowY = 'auto';
@@ -380,13 +387,13 @@ export class InputTextArea implements OnInit, OnChanges, AfterViewInit {
         }
       }
     }
-    
+
     // Apply the new height
     textarea.style.height = newHeight + 'px';
-    
+
     // Restore scroll position
     textarea.scrollTop = scrollTop;
-    
+
     // Update current rows based on actual content
     this.updateCurrentRowsFromContent(textarea.value);
   }
@@ -482,7 +489,7 @@ onPaste(event: ClipboardEvent): void {
     if (this.resizeTimeout) {
       clearTimeout(this.resizeTimeout);
     }
-    
+
     this.resizeTimeout = setTimeout(() => {
       this.autoResizeTextarea(event);
     }, 10);
@@ -493,7 +500,7 @@ onPaste(event: ClipboardEvent): void {
       this.currentRows.set(this.minRows() || 1);
       return;
     }
-    
+
     const lines = content.split('\n').length;
     const actualRows = Math.max(lines, this.minRows() || 1);
     this.currentRows.set(actualRows);
@@ -582,7 +589,7 @@ onPaste(event: ClipboardEvent): void {
           line: violatingLine + 1,
           currentCols: lines[violatingLine].length,
           maxCols: this.maxCols()!
-          
+
         });
       }
     }
@@ -600,14 +607,17 @@ onPaste(event: ClipboardEvent): void {
     this.errorMessage.set(message);
   }
 
+
+
+
 onInputChange(event: any) {
   const textarea = event.target as HTMLTextAreaElement;
   let value = textarea.value;
   let wasModified = false;
-  
+
   // Store cursor position before modifications
   const cursorPosition = textarea.selectionStart;
-  
+
   // Enforce row limits by preventing input
   if (this.enforceRowLimits() && this.maxRows()) {
     const lines = value.split('\n');
@@ -616,7 +626,7 @@ onInputChange(event: any) {
       const limitedValue = lines.slice(0, this.maxRows()).join('\n');
       value = limitedValue;
       wasModified = true;
-      
+
       this.onRowLimitExceeded.emit({
         currentRows: lines.length,
         maxRows: this.maxRows()!
@@ -639,7 +649,7 @@ onInputChange(event: any) {
       value = limitedLines.join('\n');
     }
   }
-  
+
   // Enforce character length limits
   if (this.maxLen() < 2147483647 && value.length > this.maxLen()) {
     value = value.substring(0, this.maxLen());
@@ -649,13 +659,13 @@ onInputChange(event: any) {
   // If we modified the value, update the textarea and form control
   if (wasModified) {
     textarea.value = value;
-    
+
     // Update the form control
     const control = this.frmGroup().get(this.controlName());
     if (control) {
       control.setValue(value, { emitEvent: false }); // Prevent infinite loop
     }
-    
+
     // Restore cursor position (or as close as possible)
     const newCursorPosition = Math.min(cursorPosition, value.length);
     setTimeout(() => {
@@ -701,9 +711,9 @@ onInputChange(event: any) {
     const current = this.autoResize() ? this.currentRows() : this.manualRows();
     const max = this.maxRows();
     const min = this.minRows();
-    
+
     let display = `${current} rows`;
-    
+
     if (max && min) {
       display += ` (${min}-${max})`;
     } else if (max) {
@@ -711,18 +721,18 @@ onInputChange(event: any) {
     } else if (min) {
       display += ` (min: ${min})`;
     }
-    
+
     return display;
   }
 
   getCharacterCountDisplay(): string {
     const current = this.characterCount;
     const max = this.maxLen();
-    
+
     if (max < 2147483647) {
       return `${current} / ${max}`;
     }
-    
+
     return `${current}`;
   }
 

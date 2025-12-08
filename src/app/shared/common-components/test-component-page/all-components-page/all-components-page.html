@@ -316,10 +316,9 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'textArea'"
                     [label]="'Transaction Notes'"
-                    [isVertical]="false"
-                    [rows]="3"
                     [minRows]="2"
                     [width]="'100%'"
+                    displayMode="horizontal"
                     [maxRows]="10"
                     [maxCols]="80"
                     [placeholder]="'Enter transaction description and notes...'"
@@ -327,7 +326,21 @@
                     (onChanged)="onInputTextAreaChanged($event)"
                   ></input-text-area>
                 </div>
+                <div class="component-section">
+                   <input-tag
+                    [frmGroup]="frmGroup"
+                    controlName="categories"
+                    label="Categories"
+                    placeholder="Add category..."
+                    [maxTags]="10"
+                    [allowDuplicates]="false"
+                    (onTagAdded)="onTagAdded($event)"
+                    (onTagRemoved)="onTagRemoved($event)"
+                    (onTagsChanged)="onTagsChanged($event)">
+                  </input-tag>
+                </div>
               </div>
+
             </section>
 
             <!-- Action Buttons Section -->

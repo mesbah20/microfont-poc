@@ -17,6 +17,7 @@ import { GenericMultiInputSelectOption } from '../../generic-component-type/gene
 import { BUTTON_VISIBILITY, ONCLICK_SAVE } from '../../../constant/button-signals.constant';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { InputDate } from '../../input-types/input-date/input-date';
+import { InputTag } from '../../input-types/input-tag/input-tag';
 import { OtherComponentsPage } from '../other-components-page/other-components-page';
 import { CommonModule } from '@angular/common';
 import {ToastHelperService} from '../../../services/toast-helper.service';
@@ -86,7 +87,8 @@ export interface DataSelectionConfig {
     CommonQuillEditorComponent,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
-    AlertExamplePage
+    AlertExamplePage,
+    InputTag
   ],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],
@@ -1433,6 +1435,17 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
     console.log('OfficeBox changed:', value);
   }
 
+
+  onTagAdded($event:any) {
+    console.log($event);
+  }
+  onTagRemoved($event:any){
+    console.log($event);
+
+  }
+  onTagsChanged($event:any){
+    console.log($event);
+  }
   private handleCurrencyChange(currencyCode: string): void {
     const currency = this.currencyOptions.find(c => c.key === currencyCode);
     if (currency) {
