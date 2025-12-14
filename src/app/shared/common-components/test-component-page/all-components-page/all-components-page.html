@@ -185,7 +185,6 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'country'"
                     [label]="'Country'"
-                    [isReadonly]="true"
 
                     [options]="countryOptions"
                     [tooltip]="'Country affects risk level and validation rules'"
@@ -221,6 +220,7 @@
                   <input-date
                     [frmGroup]="frmGroup"
                     [controlName]="'date'"
+
                     [label]="'Transaction Date'"
                     displayMode="vertical"
                     [dateFormat]="'YYYY-MM-DD'"
@@ -594,7 +594,6 @@
 
 
 <div>
-
   <app-alert-example-page></app-alert-example-page>
 </div>
 
@@ -613,4 +612,12 @@
   (onExtraAction2Click)="handleExtra2($event)"
   [iconPathPrefix]="'/asset/icons'">
 </generic-data-grid>
+
+<div class="component-section">
+<generic-button
+  id="deleteBtn"
+  value="delete"
+  label="loader"
+  (onClick)="showLoader()"/>
+</div>
 

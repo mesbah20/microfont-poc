@@ -1,5 +1,6 @@
 // Enhanced TypeScript Component with Relatable Fields
 import { Component, effect, inject, OnInit, signal, TemplateRef, ViewChild, WritableSignal, Type } from '@angular/core';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextBox } from '../../input-types/input-text-box/input-text-box';
 import { InputIdBox } from '../../input-types/input-id-box/input-id-box';
@@ -29,6 +30,9 @@ import { GenericModal } from '../../generic-component-type/generic-modal/generic
 import { CommonQuillEditorComponent } from '../../common-quill-editor/common-quill-editor';
 import { AlertExamplePage } from '../alert-example-page/alert-example-page';
 import { HttpClient } from '@angular/common/http';
+import { defer } from 'rxjs';
+import { LoaderComponent } from "../../loader/loader.component";
+import { LoaderService } from '../../../services/loader.service';
 
 // Types for data selection modal
 export interface AccountData {
@@ -88,8 +92,9 @@ export interface DataSelectionConfig {
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
     AlertExamplePage,
-    InputTag
-  ],
+    InputTag,
+    LoaderComponent
+],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],
 })
@@ -107,8 +112,21 @@ export class AllComponentsPage implements OnInit {
   isDataSelectionModalOpen = signal(false);
   onClickSave = ONCLICK_SAVE;
   @ViewChild('transactionGrid') gridComponent!: GenericDataGrid;
-
+  showLoading = signal(false);
   // Methods for modal events
+   loader = inject(LoaderService);
+
+  showLoader(){
+
+
+  this.loader.show();
+
+  setTimeout(() => {
+  this.loader.hide();
+}, 10000);
+
+    this.showLoading.set(true);
+  }
   onModalClosed() {
     this.isDataSelectionModalOpen.set(false);
   }
@@ -1331,7 +1349,7 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
 
       // New relatable fields
       currency: ['USD', Validators.required],
-      country: ['', Validators.required],
+      country: ['JP', Validators.required],
       productCategory: ['', Validators.required],
       subCategory: ['', Validators.required],
       taxRate: [{ value: 0, disabled: true }],
@@ -1356,9 +1374,16 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       this.restoreGridSelections();
     }, 100);
 
-    this.loadUsersFromApi();
+
+
+
+
+      this.loadUsersFromApi();
+
+
 
   }
+
 
   private setupFieldRelationships(): void {
     // Currency changes affect country, tax rate, and amount calculations
@@ -1729,7 +1754,7 @@ showDynamicToasts() {
 
   // Enhanced event handlers with relatable field logic
   handleCategorySelection(event: { selectedOption: any; selectedKey: string; selectedValue: string }): void {
-    console.log('Selected option:', event.selectedOption);
+    console.log('Selected option:', event.selectedOption.v);
 
     // Update priority based on selection
     if (event.selectedKey === 'option1' || event.selectedKey === 'option4') {
@@ -2270,6 +2295,7 @@ private recalculateTransactionAmounts(transaction: any): any {
 
 
   ngAfterViewInit(): void {
+         currency : 'CAD';
     setTimeout(() => {
       // this.steps = [
       //   {
@@ -2484,6 +2510,7 @@ handleColumnSelectAll($event:any): void {
 
   onBlur(value: string): void {
     console.log('Textbox blurred, value:', value);
-    // You can run extra validation, API calls, or formatting here
+    this.frmGroup.get('currency')?.setValue('CAD');
+
   }
 }

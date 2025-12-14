@@ -351,15 +351,15 @@
 
       @keyframes fade{
         0%{
-          background: #ABF8FF;
+          background: var(--theme-accent);
         }
 
         50%{
-          background: #90BBBF;
+          background: var(--theme-secondary);
         }
 
         100%{
-          background: #ABF8FF;
+          background: var(--theme-accent);
         }
       }
 
@@ -382,14 +382,14 @@
 
       @-webkit-keyframes fade{
         0%{
-          background: #ABF8FF;
+          background: var(--theme-accent);
         }
 
         50%{
-          background: #389CA6;
+          background: var(--theme-accent);
         }
 
         100%{
-          background: #ABF8FF;
+          background: var(--theme-accent);
         }
       }
