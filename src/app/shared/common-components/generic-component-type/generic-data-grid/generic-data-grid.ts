@@ -13,7 +13,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { GenericMultiInputSelectOption } from '../generic-multi-select-option/generic-multi-select-option';
 import { ExpansionPanelHeader } from '../../expansion-panel-header/expansion-panel-header';
-import { LoaderService } from '../../../services/loader.service';
 import { GenericButton } from '../generic-button/generic-button';
 import { InputTime } from '../../input-types/input-time/input-time';
 
@@ -217,9 +216,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   selectedCount = computed(() => this._selectedRows().size);
   isAllSelected = computed(() => this._selectedRows().size === this.displayedData().length && this.displayedData().length > 0);
 
-  constructor(private formBuilder: FormBuilder,
-    public loaderService: LoaderService
-  ) {
+  constructor(private formBuilder: FormBuilder) {
     // Data source effect
     effect(() => {
       const data = this.dataSource();
@@ -1061,9 +1058,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   }
 
   generateSelectedGroupSummary(): void {
-    this.loaderService.showLoader();
     this.selectedGroupSummary();
-    this.loaderService.hideLoader();
   }
   // Returns all columns for mat-table including count
   getDisplayedColumnsWithCount(): string[] {

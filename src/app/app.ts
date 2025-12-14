@@ -72,8 +72,9 @@ export class App implements OnInit {
       // await this.novuService.init(userId, 'oH9Vf1VWV7s8');
       await this.novuService.init(userIdinit, environment.novu_identifier);
     } else {
-      console.warn('No userId found in localStorage. Novu not initialized.');
+      // console.warn('No userId found in localStorage. Novu not initialized.');
       // অপশনাল: লগইন পেজে রিডাইরেক্ট করুন
+       this.authService.login();
       // this.router.navigate(['/login']);
     }
   }

@@ -35,5 +35,5 @@ export const environment = {
   novu_socket: 'http://192.168.10.56:3002',
   novu_api: 'http://192.168.10.56:3000/novu/api',
   redirectUri:'http://localhost:4001/landing/home',
-  loginUrl:'http://localhost:4000/login'
+  loginUrl:'http://localhost:4001'
 };
