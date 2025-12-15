@@ -604,9 +604,9 @@ onModalResult(result: any) {
   ) {
     BUTTON_VISIBILITY.set({
       save: true,
-      saveNext: false,
+      saveNext: true,
       update: false,
-      updateNext: false,
+      updateNext: true,
       view: true,
       delete: true,
       exit: true,
