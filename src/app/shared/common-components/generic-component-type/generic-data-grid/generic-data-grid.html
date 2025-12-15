@@ -108,7 +108,7 @@
                   <div class="action-buttons" [class.even-row]="i % 2 === 0">
 
                     <!-- Edit Button -->
-                    <button *ngIf="showEditButton()" mat-icon-button color="primary" matTooltip="Edit"
+                    <button *ngIf="isActionVisible(element, 'edit', showEditButton())" mat-icon-button color="primary" matTooltip="Edit"
                       (click)="useInlineEdit() ? (isRowEditing(i) ? saveEdit(i) : startEdit(i)) : onEditClick(element)"
                       class="action-btn edit-btn">
                       <ng-container *ngIf="!isRowEditing(i); else saveIcon">
@@ -130,7 +130,7 @@
                     </button>
 
                     <!-- View Button -->
-                    <button *ngIf="showViewButton() && !isRowEditing(i)" mat-icon-button color="accent"
+                    <button *ngIf="isActionVisible(element, 'view', showViewButton()) && !isRowEditing(i)" mat-icon-button color="accent"
                       matTooltip="View" (click)="onViewClick(element)" class="action-btn view-btn">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -140,7 +140,7 @@
                     </button>
 
                     <!-- Progress Button -->
-                    <button *ngIf="showProgressButton() && !isRowEditing(i)" mat-icon-button color="primary"
+                    <button *ngIf="isActionVisible(element, 'progress', showProgressButton()) && !isRowEditing(i)" mat-icon-button color="primary"
                       matTooltip="Progress" (click)="onFHProgress(element)" class="action-btn progress-btn">
                       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
                         fill="#000000">
@@ -150,7 +150,7 @@
                     </button>
 
                     <!-- Delete Button -->
-                    <button *ngIf="showDeleteButton() && !isRowEditing(i)" mat-icon-button matTooltip="Delete"
+                    <button *ngIf="isActionVisible(element, 'delete', showDeleteButton()) && !isRowEditing(i)" mat-icon-button matTooltip="Delete"
                       (click)="onDeleteClick(element)" class="action-btn delete-btn">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -160,7 +160,7 @@
                     </button>
 
                     <!-- Print Button -->
-                    <button *ngIf="showPrintButton() && !isRowEditing(i)" mat-icon-button color="primary"
+                    <button *ngIf="isActionVisible(element, 'print', showPrintButton()) && !isRowEditing(i)" mat-icon-button color="primary"
                       matTooltip="Print" (click)="onPrintClick(element)" class="action-btn print-btn">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -170,7 +170,7 @@
                     </button>
 
                     <!-- Extra Action 1 -->
-                    <button *ngIf="showCustomAction1() && !isRowEditing(i)" mat-icon-button
+                    <button *ngIf="isActionVisible(element, 'customAction1', showCustomAction1()) && !isRowEditing(i)" mat-icon-button
                       matTooltip="{{ customActionTooltip1() || 'Action' }}" (click)="emitExtraAction1(element)"
                       class="action-btn extra-action-1">
                       <img *ngIf="customActionIcon1()" [src]="getIconUrl(customActionIcon1())" width="24" height="24" alt="action1" />
@@ -178,7 +178,7 @@
                     </button>
 
                     <!-- Extra Action 2 -->
-                    <button *ngIf="showCustomAction2() && !isRowEditing(i)" mat-icon-button
+                    <button *ngIf="isActionVisible(element, 'customAction2', showCustomAction2()) && !isRowEditing(i)" mat-icon-button
                       matTooltip="{{ customActionTooltip2() || 'Action' }}" (click)="emitExtraAction2(element)"
                       class="action-btn extra-action-2">
                       <img *ngIf="customActionIcon2()" [src]="getIconUrl(customActionIcon2())" width="24" height="24" alt="action2" />

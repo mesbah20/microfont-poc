@@ -15,7 +15,7 @@ import { InputTextArea } from '../../input-types/input-text-area/input-text-area
 import { InputNumber } from '../../input-types/input-number/input-number';
 import { DropdownOption, GenericDataGrid } from '../../generic-component-type/generic-data-grid/generic-data-grid';
 import { GenericMultiInputSelectOption } from '../../generic-component-type/generic-multi-select-option/generic-multi-select-option';
-import { BUTTON_VISIBILITY, ONCLICK_SAVE } from '../../../constant/button-signals.constant';
+import { BUTTON_VISIBILITY, ONCLICK_SAVE, ONCLICK_SAVE_NEXT } from '../../../constant/button-signals.constant';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { InputDate } from '../../input-types/input-date/input-date';
 import { InputTag } from '../../input-types/input-tag/input-tag';
@@ -176,6 +176,7 @@ onModalResult(result: any) {
   OtherComponentsPageComponent: Type<any> = OtherComponentsPage;
   modalComponentData?: any = null;
   selectedRowIds = signal<Set<string>>(new Set());
+  transactionActionVisibility = (row: any) => this.getTransactionActionVisibility(row);
 
   // Data Selection Modal Configuration
   modalConfig: DataSelectionConfig = {
@@ -603,7 +604,9 @@ onModalResult(result: any) {
   ) {
     BUTTON_VISIBILITY.set({
       save: true,
+      saveNext: false,
       update: false,
+      updateNext: false,
       view: true,
       delete: true,
       exit: true,
@@ -616,6 +619,13 @@ onModalResult(result: any) {
         ONCLICK_SAVE.set(false);
     }
   });
+    effect(() => {
+      if (ONCLICK_SAVE_NEXT()) {
+        this.save();
+        ONCLICK_SAVE_NEXT.set(false);
+        // TODO: navigate to next step/page if needed
+      }
+    });
   }
 
 
@@ -1846,6 +1856,17 @@ private recalculateTransactionAmounts(transaction: any): any {
     requiresApproval: category?.requiresApproval || amount > 50000
   };
 }
+
+  // Row-level action visibility for the transaction grid
+  private getTransactionActionVisibility(row: any) {
+    return {
+      delete: row.status !== 'completed' && row.status !== 'failed', // hide delete for completed/failed
+      edit: true,                                                   // always allow edit here
+      view: true,                                                   // always allow view
+      print: true,                                                  // allow print
+      progress: row.priority === 'high',                            // example: show progress only for high priority
+    };
+  }
   private validateTransactionRelationships(transaction: any): void {
     // Validate currency-country relationship
     const currency = this.currencyOptions.find(c => c.key === transaction.currency);

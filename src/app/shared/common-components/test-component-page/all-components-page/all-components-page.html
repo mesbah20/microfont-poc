@@ -517,6 +517,7 @@
                   [groupByColumns]="['currency', 'country','productCategory', 'subCategory']"
                   [summaryGridPosition]="'above'"
                   [gridTitle]="'Transaction Grid'"
+                  [actionVisibility]="transactionActionVisibility"
                   (onFHEditClick)="onTransactionEdit($event)"
                   (onFHDeleteClick)="onTransactionDelete($event)"
                   (onFHViewClick)="onTransactionView($event)"
@@ -524,6 +525,7 @@
                   [selectionStateField]="'isSelected'"
                   [selectionStateFunction]="isOrderProcessable"
                   [selectionUpdateField]="'isSelected'"
+
                   (onChecked)="onTransactionRowSelect($event)"
                   (onSelectAllChange)="onTransactionSelectAll($event)"
                   (dataSourceChanged)="onTransactionDataChanged($event)"

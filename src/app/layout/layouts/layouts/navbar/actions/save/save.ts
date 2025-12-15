@@ -1,4 +1,4 @@
-﻿import {Component, effect, inject, signal} from '@angular/core';
+﻿import {Component, Input, WritableSignal, effect, inject, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {FormGroupSignal, ONCLICK_RESET, ONCLICK_SAVE} from '../../../../../../shared/constant/button-signals.constant';
 import {FormGroup} from '@angular/forms';
@@ -13,6 +13,11 @@ import { LoaderService } from '../../../../../../shared/services/loader.service'
     styleUrl: './save.scss'
 })
 export class Save {
+  /** Text shown on the button (e.g., "Save", "Save & Next"). */
+  @Input() label = 'Save';
+  /** Signal to toggle when clicked (lets you reuse the button for multiple save flows). */
+  @Input() clickSignal: WritableSignal<boolean> = ONCLICK_SAVE;
+
   frmGroup = signal<FormGroup>(FormGroupSignal());
   private activityLog = inject(ActivityLogService);
   private loaderService = inject(LoaderService);
@@ -30,7 +35,7 @@ async save() {
   }
 
   this.loaderService.show();
-  ONCLICK_SAVE.set(true);
+  this.clickSignal.set(true);
 
   try {
     const functionId = localStorage.getItem('currentFunctionId') || 'UNKNOWN';

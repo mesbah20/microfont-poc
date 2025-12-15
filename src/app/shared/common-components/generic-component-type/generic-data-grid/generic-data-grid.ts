@@ -57,6 +57,17 @@ export interface GridAction {
   disabled?: boolean;
 }
 
+type ActionVisibilityKey =
+  | 'edit'
+  | 'delete'
+  | 'view'
+  | 'print'
+  | 'progress'
+  | 'customAction1'
+  | 'customAction2';
+
+type ActionVisibilityMap = Partial<Record<ActionVisibilityKey, boolean>>;
+
 export interface CheckboxChangeEvent {
   item: any;
   property: string;
@@ -150,6 +161,8 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   // Summary
   readonly summaryColumns = input<string[]>([]);
   readonly groupByColumns = input<string[]>([]);
+  // Per-row action visibility override. Return a map like { delete: false } to hide delete for that row.
+  readonly actionVisibility = input<(row: T) => ActionVisibilityMap>();
 
 
 
@@ -807,6 +820,18 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
 
   refreshData(): void {
     this.applyFilters();
+  }
+
+  // Resolve whether a given action should be visible for the provided row.
+  isActionVisible(row: T, key: ActionVisibilityKey, defaultValue: boolean): boolean {
+    const resolver = this.actionVisibility();
+    if (resolver) {
+      const overrides = resolver(row) || {};
+      if (overrides[key] !== undefined && overrides[key] !== null) {
+        return !!overrides[key];
+      }
+    }
+    return defaultValue;
   }
 
   // Get displayed columns for the table

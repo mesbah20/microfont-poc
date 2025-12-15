@@ -5,8 +5,13 @@ import {Delete} from './actions/delete/delete';
 import {Reset} from './actions/reset/reset';
 import {Exit} from './actions/exit/exit';
 import {Update} from './actions/update/update';
-import {BUTTON_VISIBILITY} from '../../../../shared/constant/button-signals.constant';
+import {
+  BUTTON_VISIBILITY,
+  ONCLICK_SAVE_NEXT,
+  ONCLICK_UPDATE_NEXT,
+} from '../../../../shared/constant/button-signals.constant';
 import { SidebarService } from '../../../service/sidebar.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -25,13 +30,20 @@ import { SidebarService } from '../../../service/sidebar.service';
 export class Navbar {
 
   buttons = BUTTON_VISIBILITY;
+  onClickSaveNext = ONCLICK_SAVE_NEXT;
+  onClickUpdateNext = ONCLICK_UPDATE_NEXT;
   toggleMenu: boolean = false;
   sidebarExpanded: boolean = false;
   moduleName=signal('');
-  constructor(private sidebarService: SidebarService) {
+  currentPageName = signal('');
+  constructor(private sidebarService: SidebarService,private router: Router) {
     this.sidebarService.selectedModuleName$.subscribe(name => {
       this.moduleName.set(name);
     });
+      this.sidebarService.currentPageName$.subscribe(pageName => {
+       this.currentPageName.set(pageName);
+        console.log('Navbar page name updated to:', pageName);
+      });
   }
 
  ngOnInit() {                                                                                                            // Set initial value from localStorage if available
@@ -39,11 +51,62 @@ export class Navbar {
     if (storedModuleName) {
       this.moduleName.set(storedModuleName);
     }
-
+    this.updatePageNameFromRoute();
     // Use a more robust approach - check for changes actively
     this.startModuleNameWatcher();
-
+    this.sidebarService.initializePageName();
   }
+    private updatePageNameFromRoute() {
+      try {
+        const currentUrl = this.router.url;
+        console.log('Current URL:', currentUrl);
+
+        const resourceListString = localStorage.getItem('resourceList');
+        if (!resourceListString) {
+          console.log('No resourceList found');
+          return;
+        }
+
+        const resourceList = JSON.parse(resourceListString);
+
+        // Find matching function based on current route
+        const matchingFunction = resourceList.find((item: any) => {
+          if (item?.attributes?.functionId && item?.attributes?.functionName) {
+            // Try to match the functionId with the current route
+            // You might need to adjust this logic based on your route structure
+            const functionId = item.attributes.functionId.toLowerCase();
+            const currentPath = currentUrl.toLowerCase();
+            console.log('page name',item.attributes.functionName);
+            // Check if the route contains the functionId or part of it
+            return currentPath.includes(functionId) ||
+                   currentPath.includes(functionId.replace(/[^a-z0-9]/g, '')) ||
+                   this.isRouteMatch(currentPath, functionId);
+          }
+          return false;
+        });
+
+        if (matchingFunction) {
+          const pageName = matchingFunction.attributes.functionName;
+          this.currentPageName.set(pageName);
+          console.log('Page name updated to:', pageName);
+        } else {
+;
+        }
+
+      } catch (error) {
+        console.error('Error updating page name from route:', error);
+        this.currentPageName.set(' ');
+      }
+    }
+
+  private isRouteMatch(currentPath: string, functionId: string): boolean {
+      // Custom matching logic - adjust based on your needs
+      const routeSegments = currentPath.split('/').filter(segment => segment);
+      const lastSegment = routeSegments[routeSegments.length - 1] || '';
+
+      return lastSegment.includes(functionId.toLowerCase()) ||
+             functionId.toLowerCase().includes(lastSegment);
+    }
 
   private startModuleNameWatcher() {
     // Check immediately
@@ -92,6 +155,11 @@ export class Navbar {
 
   }
 
+  navigateToHome() {
+      console.log('Navigating to home page');
+      this.router.navigate(['landing/home']);
+       this.sidebarService.setCurrentPageName('');
+    }
   toggleSidebar(): void {
     this.sidebarService.toggleSidebar();
     console.log('Navbar toggle clicked');

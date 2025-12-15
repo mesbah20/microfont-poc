@@ -10,6 +10,8 @@ export class SidebarService {
   selectedModuleName$ = this._selectedModuleName.asObservable();
   sidebarExpanded$ = this._sidebarExpanded.asObservable();
 
+private _currentPageName = new BehaviorSubject<string>('');
+ currentPageName$ = this._currentPageName.asObservable();
 
   setSelectedModuleName(moduleName: string): void {
     this._selectedModuleName.next(moduleName);
@@ -26,4 +28,21 @@ export class SidebarService {
   setSidebarState(isExpanded: boolean): void {
     this._sidebarExpanded.next(isExpanded);
   }
+
+ setCurrentPageName(pageName: string): void {
+      this._currentPageName.next(pageName);
+      localStorage.setItem('currentPageName', pageName);
+    }
+
+    getCurrentPageName(): string {
+      return this._currentPageName.value;
+    }
+
+    initializePageName(): void {
+      const storedPageName = localStorage.getItem('currentPageName');
+      if (storedPageName) {
+        this._currentPageName.next(storedPageName);
+      }
+    }
+
 }
