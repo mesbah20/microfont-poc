@@ -24,10 +24,13 @@ export class Search implements OnInit {
     }
 
     loadUserAccessList(): void {
-      let resourceList = JSON.parse(localStorage.getItem('resourceList') || '');
-      if(!resourceList)
+      let resourceListString = localStorage.getItem('resourceList');
+      if(!resourceListString){
+        this.userAccessList = [];
         return;
-      const menuItems: UserAccessItem[] = resourceList.filter((item:any) => 
+      }
+      let resourceList = JSON.parse(resourceListString);
+      const menuItems: UserAccessItem[] = resourceList.filter((item:any) =>
         item?.attributes?.functionType !== 'R'
       ).map((m: any) => ({
         FunctionId: m.attributes.functionId,
@@ -52,6 +55,11 @@ export class Search implements OnInit {
       }));
 
         this.userAccessList = menuItems;
+    }
+    catch (error:any) {
+      console.error('Error parsing resourceList from localStorage:', error);
+      this.userAccessList = [];
+      return;
     }
 
     handleFastPath(input: any) {

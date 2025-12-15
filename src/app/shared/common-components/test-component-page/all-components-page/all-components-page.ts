@@ -93,7 +93,6 @@ export interface DataSelectionConfig {
     ExpansionSubPanelHeader,
     AlertExamplePage,
     InputTag,
-    LoaderComponent
 ],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],

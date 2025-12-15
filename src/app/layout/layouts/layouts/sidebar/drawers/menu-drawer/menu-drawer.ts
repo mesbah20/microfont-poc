@@ -73,7 +73,7 @@ export class MenuDrawer implements OnInit {
   }
 
   loadUserAccessList(): void {
-    let resourceList = JSON.parse(localStorage.getItem('resourceList') || '');
+    let resourceListString = localStorage.getItem('resourceList');
 
     // const apiUrl = 'http://192.168.20.93:8091/api/user-login/get-user-access-list';
     // const params = {
@@ -98,9 +98,12 @@ export class MenuDrawer implements OnInit {
     //   });
 
     //------------ testing with dummy data ------------
-    if(!resourceList)
+    if(!resourceListString){
+      this.userAccessList = [];
       return;
-    const dummyData: UserAccessItem[] = resourceList.filter((item:any) => 
+    }
+    let resourceList = JSON.parse(resourceListString);
+    const dummyData: UserAccessItem[] = resourceList.filter((item:any) =>
       item?.attributes?.functionType != 'R'
     ).map((m: any) => ({
       FunctionId: m.attributes.functionId,

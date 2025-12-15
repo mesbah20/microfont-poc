@@ -1,9 +1,10 @@
-import {Component, effect, inject, signal} from '@angular/core';
+﻿import {Component, effect, inject, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatDialog} from '@angular/material/dialog';
 import { FormGroup } from '@angular/forms';
 import { FormGroupSignal } from '../../../../../../shared/constant/button-signals.constant';
 import { ActivityLogService } from '../../../../../../shared/services/activity-log.service';
+import { LoaderService } from '../../../../../../shared/services/loader.service';
 import { ConfirmationDialogue } from '../../../../../../shared/common-components/confirmation-dialogue/confirmation-dialogue';
 
 @Component({
@@ -18,6 +19,7 @@ export class Delete {
   private dialog = inject(MatDialog);
   frmGroup = signal<FormGroup>(FormGroupSignal());
   private activityLog = inject(ActivityLogService);
+  private loaderService = inject(LoaderService);
    constructor() {
     effect(() => {
       const formGroup = FormGroupSignal();
@@ -37,20 +39,29 @@ export class Delete {
       }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        // User confirmed deletion
-        console.log('Item deleted!');
-        // Add your deletion logic here
-        const functionId = localStorage.getItem('currentFunctionId') || 'UNKNOWN';
-        this.activityLog.logEvent('DELETE_CLICK', functionId);
-      } else {
-        // User cancelled
-        console.log('Deletion cancelled');
-        const functionId = localStorage.getItem('currentFunctionId') || 'UNKNOWN';
-        this.activityLog.logEvent('DELETE_CLICK_CANCEL', functionId);
-      }
-    });
+   dialogRef.afterClosed().subscribe(async (result) => {
+  if (result === true) {
+    this.loaderService.show();
+
+    try {
+      const functionId = localStorage.getItem('currentFunctionId') || 'UNKNOWN';
+      await this.activityLog.logEvent('DELETE_CLICK', functionId);
+
+
+      console.log('Item deleted!');
+
+    } catch (error) {
+      console.error('Delete operation failed:', error);
+    } finally {
+      this.loaderService.hide();
+    }
+  } else {
+
+    console.log('Deletion cancelled');
+    const functionId = localStorage.getItem('currentFunctionId') || 'UNKNOWN';
+    this.activityLog.logEvent('DELETE_CLICK_CANCEL', functionId);
+  }
+});
 
     // dialogRef.afterClosed().subscribe(result => {
     //   console.log('The dialog was closed');

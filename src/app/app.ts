@@ -13,6 +13,7 @@ import { LoaderComponent } from './shared/common-components/loader/loader.compon
 import { AuthService } from './core/auth/auth.service';
 import { UserService } from './core/user/user.service';
 import { User } from './core/user/user.types';
+import { SidebarService } from './layout/service/sidebar.service';
 
 
 @Component({
@@ -32,50 +33,98 @@ export class App implements OnInit {
               private router: Router,
               private activityTracker: GlobalActivityTrackerService,
               private rootTitle: Title,
+               private sidebarService: SidebarService,
               private novuService: NovuService) {}
 
 
 
-
-  async ngOnInit() {
-    this.authService.getResources().subscribe(res => {
-      localStorage.setItem('resourceList', JSON.stringify(res.data))
-    });
-    this.authService.getUserWiseApplications().subscribe(res => {
-      localStorage.setItem('appList', JSON.stringify(res.data))
-    });
-
-    this.userService.user$.subscribe((user: User) => {
-
-      this.userId = user.username;
-
-    });
+async ngOnInit() {
     const isAuthenticated = await this.authService.init();
-    //debugger;
     const currentPath = window.location.pathname;
 
     if (isAuthenticated) {
       this.authService.decodeToken();
-    }
-    else {
+
+      // Load resources with debugging
+      this.authService.getResources().subscribe({
+        next: (res) => {
+          localStorage.setItem('resourceList', JSON.stringify(res.data));
+
+          // Verify storage
+          const storedResources = localStorage.getItem('resourceList');
+        },
+        error: (error) => {
+          console.error('Error loading resources:', error);
+        }
+      });
+
+      // Load applications with debugging
+      this.authService.getUserWiseApplications().subscribe({
+        next: (res) => {
+
+
+          localStorage.setItem('appList', JSON.stringify(res.data));
+
+
+          // Verify storage
+          const storedAppList = localStorage.getItem('appList');
+
+          // Detect module after appList is loaded
+          this.detectAndSetModuleByPort();
+        },
+        error: (error) => {
+          console.error('Error loading applications:', error);
+        }
+      });
+
+    } else {
       if (currentPath !== '/login') {
         this.router.navigate(['/login']);
       }
     }
 
-    //console.log(this.authService.getToken())
+    this.userService.user$.subscribe((user: User) => {
+      this.userId = user.username;
+    });
+
     this.rootTitle.setTitle(pkg.name || 'Default Title');
-    // Theme service will automatically initialize the saved theme
+
     const userIdinit = this.userId;
     if (userIdinit) {
       console.log('Novu initializing for user:', userIdinit);
-      // await this.novuService.init(userId, 'oH9Vf1VWV7s8');
       await this.novuService.init(userIdinit, environment.novu_identifier);
     } else {
-      // console.warn('No userId found in localStorage. Novu not initialized.');
-      // অপশনাল: লগইন পেজে রিডাইরেক্ট করুন
-       this.authService.login();
-      // this.router.navigate(['/login']);
+      this.authService.login();
     }
   }
+
+
+  private detectAndSetModuleByPort() {
+    setTimeout(() => {
+      try {
+        const currentPort = window.location.port;
+        const appList = localStorage.getItem('appList');
+
+        if (appList) {
+          const parsedAppList = JSON.parse(appList);
+          const matchingModule = parsedAppList.find((app: any) => {
+            if (app.appUri) {
+              const urlMatch = app.appUri.match(/:(\d+)/);
+              return urlMatch && urlMatch[1] === currentPort;
+            }
+            return false;
+          });
+
+          if (matchingModule) {
+            localStorage.setItem('selectedModuleName', matchingModule.appName);
+          }
+        }
+      } catch (error) {
+        console.error('Error in app module detection:', error);
+      }
+    }, 500); // Longer delay to ensure everything is loaded
+
+  }
 }
+
+

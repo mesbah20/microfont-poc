@@ -1,8 +1,9 @@
-import { Component, effect, inject, signal } from '@angular/core';
+﻿import { Component, effect, inject, signal } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import { FormGroupSignal, ONCLICK_VIEW } from '../../../../../../shared/constant/button-signals.constant';
 import { FormGroup } from '@angular/forms';
 import { ActivityLogService } from '../../../../../../shared/services/activity-log.service';
+import { LoaderService } from '../../../../../../shared/services/loader.service';
 
 @Component({
     selector: 'app-view',
@@ -14,15 +15,28 @@ import { ActivityLogService } from '../../../../../../shared/services/activity-l
 export class View {
     frmGroup = signal<FormGroup>(FormGroupSignal());
     private activityLog = inject(ActivityLogService);
+    private loaderService = inject(LoaderService);
+
     constructor() {
       effect(() => {
         const formGroup = FormGroupSignal();
         this.frmGroup.set(formGroup);
       });
     }
-    view() {
+
+    async view() {
+      this.loaderService.show();
+      ONCLICK_VIEW.set(true);
+
+      try {
         const functionId = localStorage.getItem('currentFunctionId') || 'UNKNOWN';
-        this.activityLog.logEvent('VIEW_CLICK', functionId);
-        ONCLICK_VIEW.set(true);
+
+        await this.activityLog.logEvent('VIEW_CLICK', functionId);
+
+      } catch (error) {
+        console.error('View operation failed:', error);
+      } finally {
+        this.loaderService.hide();
       }
+    }
 }

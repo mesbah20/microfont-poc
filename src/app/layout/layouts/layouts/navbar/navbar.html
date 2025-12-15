@@ -13,7 +13,7 @@
 
   <div class="flex-col sm:flex justify-center items-center sm:flex-row sm:space-x-2">
   <img class="cursor-pointer w-8 sm:w-10" routerLink="/dashboard" src="/asset/logos/nexoLogo1.png" alt=""/>
-  <span style="font-weight: 600; font-family: Verdana, Geneva, Tahoma, sans-serif;" class="text-white text-base sm:text-xl hidden sm:inline">Nexo</span>
+  <span style="font-weight: 600; font-family: Verdana, Geneva, Tahoma, sans-serif;" class="text-white text-base sm:text-xl hidden sm:inline">{{ moduleName() || '' }}</span>
 </div>
 </div>
 
