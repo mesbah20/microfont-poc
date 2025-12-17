@@ -40,7 +40,7 @@ export class AuthService {
     this._authenticated = await this.keycloak.init({
       onLoad: 'check-sso',
       // onLoad: 'login-required',
-      redirectUri: environment.redirectUri,
+      redirectUri: window.location.origin + window.location.pathname,
       //silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
       pkceMethod: 'S256',
       checkLoginIframe: true,

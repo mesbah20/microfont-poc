@@ -15,7 +15,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 })
 export class Landing implements OnInit {
   timeForm!: FormGroup;
-
+  show=false;
   constructor(
      private fb: FormBuilder,
     private router: Router,
