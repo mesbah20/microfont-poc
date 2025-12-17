@@ -822,17 +822,42 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
     this.applyFilters();
   }
 
+  private _actionVisibilityResults = computed(() => {
+      const resolver = this.actionVisibility();
+      const dataSource = this._dataSource();
+
+      if (!resolver) return new Map<number, ActionVisibilityMap>();
+
+      const results = new Map<number, ActionVisibilityMap>();
+
+      dataSource.forEach((row, index) => {
+        try {
+          const result = resolver(row);
+          results.set(index, result || {});
+        } catch (error) {
+          console.warn('ActionVisibility error for row', index, ':', error);
+          results.set(index, {});
+        }
+      });
+
+      return results;
+    });
+
   // Resolve whether a given action should be visible for the provided row.
-  isActionVisible(row: T, key: ActionVisibilityKey, defaultValue: boolean): boolean {
-    const resolver = this.actionVisibility();
-    if (resolver) {
-      const overrides = resolver(row) || {};
-      if (overrides[key] !== undefined && overrides[key] !== null) {
-        return !!overrides[key];
+ isActionVisible(row: T, key: ActionVisibilityKey, defaultValue: boolean): boolean {
+      const results = this._actionVisibilityResults();
+      const rowIndex = this._dataSource().findIndex(r => r === row);
+
+      if (rowIndex >= 0) {
+        const rowResult = results.get(rowIndex);
+        if (rowResult && rowResult[key] !== undefined && rowResult[key] !== null) {
+          return !!rowResult[key];
+        }
       }
+
+      return defaultValue;
     }
-    return defaultValue;
-  }
+  
 
   // Get displayed columns for the table
   getDisplayedColumns(): string[] {
