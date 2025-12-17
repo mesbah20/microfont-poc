@@ -180,7 +180,7 @@ export class WorkflowDesignerService {
   }
 
   getEligibleApprovers(appId: number, functionId: number, makerId: string, conditionPayload: string): Observable<ApprovalEligibleApproverModel[]> {
-    const url = `${environment.apiBaseUrl}/sentinel/api/approval/workflow/eligible-approvers`;
+    const url = `${environment.apiBaseUrl}/centrino/api/approval/workflow/eligible-approvers`;
     return this.http.post<ApprovalEligibleApproverModel[]>(url, {
       appId,
       functionId,
