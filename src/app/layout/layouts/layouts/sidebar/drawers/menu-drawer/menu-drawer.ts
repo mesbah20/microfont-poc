@@ -307,7 +307,7 @@ onMenuItemClick(item: UserAccessItem): void {
     })
     .catch(err => {
       console.error('Navigation failed:', err);
-      // this.router.navigate(['/home']);
+      this.router.navigate(['/home']);
       // this.sidebarService.setCurrentPageName('Home');
     });
 }

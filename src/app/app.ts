@@ -1,6 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {Router, RouterOutlet} from '@angular/router';
+import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import { ThemeService } from './shared/services/theme.service';
 import { GlobalActivityTrackerService } from './shared/services/global-activity-tracker.service';
 import { NovuService } from './shared/services/novu.service';
@@ -14,6 +14,9 @@ import { AuthService } from './core/auth/auth.service';
 import { UserService } from './core/user/user.service';
 import { User } from './core/user/user.types';
 import { SidebarService } from './layout/service/sidebar.service';
+import { ButtonUtils } from './shared/constant/button-signals.constant';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
 
 
 @Component({
@@ -34,14 +37,20 @@ export class App implements OnInit {
               private activityTracker: GlobalActivityTrackerService,
               private rootTitle: Title,
                private sidebarService: SidebarService,
-              private novuService: NovuService) {}
+              private novuService: NovuService) {
+             this.router.events.pipe(filter(event=> event instanceof NavigationEnd),
+                takeUntilDestroyed()
+              ).subscribe((event:NavigationEnd) => {
+                ButtonUtils.resetAll();
+              });
+              }
 
 
 
 async ngOnInit() {
     const isAuthenticated = await this.authService.init();
     const currentPath = window.location.pathname;
-
+    ButtonUtils.resetAll();
     if (isAuthenticated) {
       this.authService.decodeToken();
 
