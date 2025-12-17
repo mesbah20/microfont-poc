@@ -26,7 +26,7 @@ interface UserAccessItem {
   MenuName: string;
   ModuleId: string;
   ModuleName: string;
-  AppRoute: string;
+  AppRoute: string | string[];
   ItemType: string;
   QuickRouteNo: string;
   IsFinancial: string;
@@ -74,6 +74,15 @@ export class MenuDrawer implements OnInit {
       this.activeTheme = themeId;
     });
   }
+
+  getRoute(item: UserAccessItem): string {
+  const route = Array.isArray(item.AppRoute)
+    ? item.AppRoute[0]
+    : item.AppRoute;
+
+  return route?.startsWith('/') ? route : '/' + route;
+}
+
 
   loadUserAccessList(): void {
     let resourceListString = localStorage.getItem('resourceList');
@@ -281,31 +290,28 @@ export class MenuDrawer implements OnInit {
   }
 
 onMenuItemClick(item: UserAccessItem): void {
-    console.log('Menu item clicked:', item);
+  console.log('Menu item clicked:', item);
 
-    // Set the page name first
-    const functionName = item.FunctionName;
-    this.sidebarService.setCurrentPageName(functionName);
-    localStorage.setItem('currentFunctionId', item.FunctionId);
+  // Store function id
+  localStorage.setItem('currentFunctionId', item.FunctionId);
 
-    // Ensure navigation happens
-    if (item.AppRoute && item.AppRoute.trim() !== '') {
-      // Clean the route (remove leading slashes if any)
-      const route = item.AppRoute.startsWith('/') ? item.AppRoute : '/' + item.AppRoute;
-      console.log('Navigating to:', route);
+  // Navigate using normalized route
+  const route = this.getRoute(item);
+  console.log('Navigating to:', route);
 
-      // Navigate programmatically
-      this.router.navigate([route]).catch(err => {
-        console.error('Navigation failed:', err);
-        // Fallback navigation
-        this.router.navigate(['/dashboard']);
-      });
-    } else {
-      console.warn('No valid route found for:', item.FunctionName);
-      // Navigate to dashboard as fallback
-      this.router.navigate(['/dashboard']);
-    }
-  }
+  this.router.navigate([route])
+    .then(success => {
+      if (success) {
+        this.sidebarService.setCurrentPageName(item.FunctionName);
+      }
+    })
+    .catch(err => {
+      console.error('Navigation failed:', err);
+      // this.router.navigate(['/home']);
+      // this.sidebarService.setCurrentPageName('Home');
+    });
+}
+
 
  getItemsByMenu(menuName: string) {
     const items = this.groupedMenu[menuName] || [];
