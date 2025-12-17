@@ -138,12 +138,12 @@ export class AuthService {
     const params = new HttpParams({
       fromObject: { appId: environment.appId }
     });
-    let url = environment.bffUrl + 'resource-manager/api/v1/resource/accessible-resource/app'
+    let url = environment.bffUrl + '/accessible-resource/app'
     return this.http.get<any>(url, {params});
   }
 
   getUserWiseApplications(){
-    let url = environment.bffUrl + 'resource-manager/api/v1/resource/applications'
+    let url = environment.bffUrl + '/applications'
     return this.http.get<any>(url);
   }
 
@@ -151,7 +151,7 @@ export class AuthService {
     const params = new HttpParams({
       fromObject: { appId: environment.appId }
     });
-    let url = environment.bffUrl + 'resource-manager/api/v1/resource/applications-generic'
+    let url = environment.bffUrl + '/applications-generic'
     return this.http.get<any>(url, {params});
   }
 

@@ -17,7 +17,7 @@ export class AuthResourceService {
   }*/
 
   getApplications(): Observable<any[]> {
-    const url = `${environment.keycloakApi}/applications-generic`;
+    const url = `${environment.bffUrl}/applications-generic`;
 
     return this.http.get<{ data: any[], meta: any }>(url).pipe(
       map(res => res.data ?? []),
@@ -35,7 +35,7 @@ export class AuthResourceService {
     return this.http.get<MetaAppModuleItem[]>(url, { params });
   }*/
   getModules(appId: number): Observable<any[]> {
-    const url = `${environment.keycloakApi}/applications/${appId}/modules`;
+    const url = `${environment.bffUrl}/applications/${appId}/modules`;
 
     return this.http.get<{ data: any[], meta: any }>(url).pipe(
       map(res => res.data ?? []),
@@ -57,7 +57,7 @@ export class AuthResourceService {
     return this.http.get<MetaAppFunctionItem[]>(url, { params });
   }*/
   getFunctions(appId: number, moduleId?: string | number): Observable<any[]> {
-    const url = `${environment.keycloakApi}/applications/${appId}/modules/${moduleId}/functions`;
+    const url = `${environment.bffUrl}/applications/${appId}/modules/${moduleId}/functions`;
 
     return this.http.get<{ data: any[], meta: any }>(url).pipe(
       map(res => res.data ?? []),
@@ -69,7 +69,7 @@ export class AuthResourceService {
   }
 
   getReportFunctions(functionId?:number, functionName?:string): Observable<any[]> {
-    const url = `${environment.keycloakApi}/app-functions?functionType=R&functionId=${functionId?functionId:''}&functionName=${functionName?functionName:''}`;
+    const url = `${environment.bffUrl}/app-functions?functionType=R&functionId=${functionId?functionId:''}&functionName=${functionName?functionName:''}`;
 
     return this.http.get<{ data: any[], meta: any }>(url).pipe(
       map(res => res.data ?? []),

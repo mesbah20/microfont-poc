@@ -11,22 +11,22 @@ export class ApprovalService {
 
   getUnApprovedList(userId : string): Observable<any> {
     console.log('in service : ', userId);
-    var url = `${environment.apiBaseUrl}/finbook/v1/approval-register/all-pending/${userId}`;
+    var url = `${environment.apiBaseUrl}/approval-register/all-pending/${userId}`;
     return this.http.get<any>(url);
   }
 
   getAllApprovedList(userId : string): Observable<any> {
-    var url = `${environment.apiBaseUrl}/finbook/v1/approval-register/all-registered/${userId}`;
+    var url = `${environment.apiBaseUrl}/approval-register/all-registered/${userId}`;
     return this.http.get<any>(url);
   }
 
   getApprovalQueue(setId: number): Observable<any> {
-    var url = `${environment.apiBaseUrl}/finbook/v1/approval-register/approvalQue/${setId}`;
+    var url = `${environment.apiBaseUrl}/approval-register/approvalQue/${setId}`;
     return this.http.get<any>(url);
   }
 
   performApprovalOperation(req: ApprovalRequest): Observable<any> {
-    const url = `${environment.apiBaseUrl}/finbook/v1/approval-register/operation/${req.officeId}/${req.appId }/${req.setId}/${req.approvalLevel}/${req.nextApprovalLevel}/Test/${req.userId}/${req.approvalFlag}`;
+    const url = `${environment.apiBaseUrl}/approval-register/operation/${req.officeId}/${req.appId }/${req.setId}/${req.approvalLevel}/${req.nextApprovalLevel}/Test/${req.userId}/${req.approvalFlag}`;
     return this.http.get(url, { responseType: 'text' });
   }
 }

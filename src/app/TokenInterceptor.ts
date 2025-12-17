@@ -8,7 +8,6 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
 
   // APIs where token must be added
   const shouldAttachToken =
-    req.url.startsWith(environment.keycloakApi) ||
     req.url.startsWith(environment.apiBaseUrl) ||
     req.url.startsWith(environment.bffUrl);
 
