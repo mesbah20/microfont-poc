@@ -2,16 +2,13 @@ import { Component, inject, OnInit, signal, WritableSignal, HostListener, ViewCh
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
-import { MatDivider } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Observable, Subscription } from 'rxjs';
+import {  Subscription } from 'rxjs';
 import { Managenote } from '../usernote/managenote/managenote'
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { GenericModal } from '../../common-components/generic-component-type/generic-modal/generic-modal';
-import { GenericButton } from '../../common-components/generic-component-type/generic-button/generic-button';
 import { ExpansionPanelHeader } from '../../common-components/expansion-panel-header/expansion-panel-header';
-import { LoaderService } from '../../services/loader.service';
 import { IUserNote } from './usernote.model';
 import { UserNoteService } from './usernote.service';
 import { UserService } from '../../../core/user/user.service';
@@ -52,7 +49,6 @@ export class Usernote implements OnInit {
   currentUser?: User;
 
   constructor(private formBuilder: FormBuilder,
-    public loaderService: LoaderService,
     private userNoteService: UserNoteService,
     private userService: UserService,
     private sanitizer: DomSanitizer
@@ -73,7 +69,6 @@ export class Usernote implements OnInit {
 
   getUserNoteByUserId() {
     const userId = this.currentUser?.username;
-    this.loaderService.showLoader();
     this.userNoteService
       .getUserNoteByUserId(userId ?? '')
       .subscribe((Response) => {
@@ -82,7 +77,6 @@ export class Usernote implements OnInit {
           expanded: false
         })) as IUserNoteUI[];
       });
-    this.loaderService.hideLoader();
   }
 
   deleteNote(noteId: string) {

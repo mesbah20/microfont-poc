@@ -1,5 +1,10 @@
-<button class="a_demo_four icon-save" (click)="update()" [disabled]="frmGroup().invalid" >
+<button
+  class="a_demo_four icon-save"
+  (click)="update()"
+  [disabled]="frmGroup().invalid"
+  [attr.aria-label]="label"
+>
   <img src="/asset/icons/save.svg" alt="" class="icon" />
-  <p class="text">Update</p>
+  <p class="text">{{ label }}</p>
 </button>
 

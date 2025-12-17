@@ -891,8 +891,9 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   color: #fff;
   text-decoration: none;
 
-  width: 80px;
+  width: fit-content;
   height: 30px;
+  padding-right: 2px;
 
   position: relative;
   border: none;

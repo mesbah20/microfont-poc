@@ -15,7 +15,6 @@ import { InputDate } from '../../../common-components/input-types/input-date/inp
 import { InputSelectOptionField } from '../../../common-components/input-types/input-select-option-field/input-select-option-field';
 import { InputTextArea } from '../../../common-components/input-types/input-text-area/input-text-area';
 import { InputTime } from '../../../common-components/input-types/input-time/input-time';
-import { LoaderService } from '../../../services/loader.service';
 import { IUserNote } from '../usernote.model';
 import { UserNoteService } from '../usernote.service';
 import { UserService } from '../../../../core/user/user.service';
@@ -84,7 +83,6 @@ export class Managenote implements OnInit {
     { name: 'Vibrant Orange', code: '#FF9900' }
   ];
   constructor(private formBuilder: FormBuilder,
-    public loaderService: LoaderService,
     private userNoteService: UserNoteService,
     private userService: UserService
   ) { }
@@ -126,7 +124,6 @@ export class Managenote implements OnInit {
   }
   // Create/Update Note
   createNote() {
-    this.loaderService.showLoader();
     this.userNote.noteId = String(this.userNoteId);
     this.userNote.userId = this.currentUser?.username;
     this.userNote.noteTitle = this.form['title'].value;
@@ -174,7 +171,6 @@ export class Managenote implements OnInit {
           // this.loading = false;
         });
     }
-    this.loaderService.hideLoader();
   }
   getNoteDetails(note: IUserNote) {
     this.userNoteId = Number(note.noteId);

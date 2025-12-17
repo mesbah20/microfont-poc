@@ -27,7 +27,7 @@ export class ThemeService {
       name: 'Ocean Blue',
       icon: 'waves',
       primary: '#086AD8',
-      secondary: '#0456b8',
+      secondary: '#008cff',
       accent: '#60a5fa',
       background: '#eff6ff',
       btn: '#096EFA',
@@ -44,7 +44,7 @@ export class ThemeService {
       name: 'Midnight Blue',
       icon: 'waves',
       primary: '#010035',
-      secondary: '#1e40af',
+      secondary: '#172b6b',
       accent: '#60a5fa',
       background: '#eff6ff',
       cssVariables: {
@@ -76,7 +76,7 @@ export class ThemeService {
       name: 'Royal Purple',
       icon: 'auto_awesome',
       primary: '#301934',
-      secondary: '#6d28d9',
+      secondary: '#6e157e',
       accent: '#a78bfa',
       background: '#f5f3ff',
       cssVariables: {
@@ -108,7 +108,7 @@ export class ThemeService {
       name: 'Lavendar',
       icon: 'favorite',
       primary: '#78608dff',
-      secondary: '#7a5d94ff',
+      secondary: '#8c4ec2',
       accent: '#b19cc2ff',
       background: '#e6dceeff',
       cssVariables: {

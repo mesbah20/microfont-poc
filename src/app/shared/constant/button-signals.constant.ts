@@ -4,7 +4,9 @@ import {FormGroup} from '@angular/forms';
 
 export const BUTTON_VISIBILITY = signal<ButtonActionsModel>({
   save: false,
+  saveNext: false,
   update: false,
+  updateNext: false,
   view: false,
   delete: false,
   exit: false,
@@ -15,9 +17,11 @@ export const BUTTON_VISIBILITY = signal<ButtonActionsModel>({
 export const FormGroupSignal = signal<FormGroup>(new FormGroup({}));
 
 export const ONCLICK_SAVE = signal(false);
+export const ONCLICK_SAVE_NEXT = signal(false);
 export const ONCLICK_VIEW = signal(false);
 export const ONCLICK_RESET = signal(false);
 export const ONCLICK_EXIT = signal(false);
 export const ONCLICK_DELETE = signal(false);
 export const ONCLICK_UPDATE = signal(false);
+export const ONCLICK_UPDATE_NEXT = signal(false);
 export const MENU_NAME = signal('');

@@ -286,6 +286,43 @@ export class Login implements OnInit {
     console.log("User Access List : ", this.userAccessList);
     localStorage.setItem('userAccessList', JSON.stringify(this.tokenObject.userAccessList));
 
+     if (this.tokenObject.appAccessList) {
+      localStorage.setItem('appList', JSON.stringify(this.tokenObject.appAccessList));
+
+      this.setModuleBasedOnPort();
+    }
+
+  }
+
+  setModuleBasedOnPort() {
+    try {
+      const currentPort = window.location.port;
+      const appList = JSON.parse(localStorage.getItem('appList') || '[]');
+
+      // Find module that matches current port
+      const matchingModule = appList.find((app: any) => {
+        if (app.appuri) {
+          // Extract port from appuri (e.g., "http://localhost:4001" -> "4001")
+          const urlMatch = app.appuri.match(/:(\d+)/);
+          return urlMatch && urlMatch[1] === currentPort;
+        }
+        return false;
+      });
+
+      if (matchingModule) {
+        localStorage.setItem('selectedModuleName', matchingModule.appName);
+        console.log(`Auto-selected module: ${matchingModule.appName} for port ${currentPort}`);
+      } else {
+        // Fallback to first module if no port match
+        const firstModule = appList[0];
+        if (firstModule) {
+          localStorage.setItem('selectedModuleName', firstModule.appName);
+          console.log(`Fallback to first module: ${firstModule.appName}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error setting module based on port:', error);
+    }  
   }
 
   private async fetchSubscriberHash(subscriberId: string): Promise<string | undefined> {

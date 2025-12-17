@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from '../../../../../../shared/services/theme.service';
 import { Subscription } from 'rxjs';
+import { SidebarService } from '../../../../../service/sidebar.service';
 
 interface UserAccessItem {
   FunctionId: string;
@@ -62,7 +63,9 @@ export class MenuDrawer implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+     private sidebarService: SidebarService,
+     private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -73,7 +76,7 @@ export class MenuDrawer implements OnInit {
   }
 
   loadUserAccessList(): void {
-    let resourceList = JSON.parse(localStorage.getItem('resourceList') || '');
+    let resourceListString = localStorage.getItem('resourceList');
 
     // const apiUrl = 'http://192.168.20.93:8091/api/user-login/get-user-access-list';
     // const params = {
@@ -98,8 +101,11 @@ export class MenuDrawer implements OnInit {
     //   });
 
     //------------ testing with dummy data ------------
-    if(!resourceList)
+    if(!resourceListString){
+      this.userAccessList = [];
       return;
+    }
+    let resourceList = JSON.parse(resourceListString);
     const dummyData: UserAccessItem[] = resourceList.filter((item:any) =>
       item?.attributes?.functionType != 'R'
     ).map((m: any) => ({
@@ -234,8 +240,8 @@ export class MenuDrawer implements OnInit {
           .map(item => item.ModuleName)
       )
     ];
-
-    this.menuSections = uniqueMenuNames.map(name => ({
+  const sortedMenuNames = uniqueMenuNames.sort((a, b) => a.localeCompare(b));
+    this.menuSections = sortedMenuNames.map(name => ({
       key: name.toLowerCase().replace(/\s+/g, ''),
       label: name,
       icon: this.getIcon(name)
@@ -274,16 +280,38 @@ export class MenuDrawer implements OnInit {
     return this.openSections[section];
   }
 
-  onMenuItemClick(item: UserAccessItem): void {
-    // Step 1: Save FunctionId to localStorage
-    console.log(item)
+onMenuItemClick(item: UserAccessItem): void {
+    console.log('Menu item clicked:', item);
+
+    // Set the page name first
+    const functionName = item.FunctionName;
+    this.sidebarService.setCurrentPageName(functionName);
     localStorage.setItem('currentFunctionId', item.FunctionId);
 
-    // Optional: Log for debug
+    // Ensure navigation happens
+    if (item.AppRoute && item.AppRoute.trim() !== '') {
+      // Clean the route (remove leading slashes if any)
+      const route = item.AppRoute.startsWith('/') ? item.AppRoute : '/' + item.AppRoute;
+      console.log('Navigating to:', route);
+
+      // Navigate programmatically
+      this.router.navigate([route]).catch(err => {
+        console.error('Navigation failed:', err);
+        // Fallback navigation
+        this.router.navigate(['/dashboard']);
+      });
+    } else {
+      console.warn('No valid route found for:', item.FunctionName);
+      // Navigate to dashboard as fallback
+      this.router.navigate(['/dashboard']);
+    }
   }
 
-  getItemsByMenu(menuName: string) {
-    return this.groupedMenu[menuName] || [];
+ getItemsByMenu(menuName: string) {
+    const items = this.groupedMenu[menuName] || [];
+    return items.sort((a: UserAccessItem, b: UserAccessItem) =>
+      a.FunctionName.localeCompare(b.FunctionName)
+    );
   }
 
 

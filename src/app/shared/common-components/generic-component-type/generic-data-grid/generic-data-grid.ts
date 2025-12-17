@@ -13,7 +13,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { GenericMultiInputSelectOption } from '../generic-multi-select-option/generic-multi-select-option';
 import { ExpansionPanelHeader } from '../../expansion-panel-header/expansion-panel-header';
-import { LoaderService } from '../../../services/loader.service';
 import { GenericButton } from '../generic-button/generic-button';
 import { InputTime } from '../../input-types/input-time/input-time';
 
@@ -57,6 +56,17 @@ export interface GridAction {
   visible: boolean;
   disabled?: boolean;
 }
+
+type ActionVisibilityKey =
+  | 'edit'
+  | 'delete'
+  | 'view'
+  | 'print'
+  | 'progress'
+  | 'customAction1'
+  | 'customAction2';
+
+type ActionVisibilityMap = Partial<Record<ActionVisibilityKey, boolean>>;
 
 export interface CheckboxChangeEvent {
   item: any;
@@ -151,6 +161,8 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   // Summary
   readonly summaryColumns = input<string[]>([]);
   readonly groupByColumns = input<string[]>([]);
+  // Per-row action visibility override. Return a map like { delete: false } to hide delete for that row.
+  readonly actionVisibility = input<(row: T) => ActionVisibilityMap>();
 
 
 
@@ -217,9 +229,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   selectedCount = computed(() => this._selectedRows().size);
   isAllSelected = computed(() => this._selectedRows().size === this.displayedData().length && this.displayedData().length > 0);
 
-  constructor(private formBuilder: FormBuilder,
-    public loaderService: LoaderService
-  ) {
+  constructor(private formBuilder: FormBuilder) {
     // Data source effect
     effect(() => {
       const data = this.dataSource();
@@ -812,6 +822,43 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
     this.applyFilters();
   }
 
+  private _actionVisibilityResults = computed(() => {
+      const resolver = this.actionVisibility();
+      const dataSource = this._dataSource();
+
+      if (!resolver) return new Map<number, ActionVisibilityMap>();
+
+      const results = new Map<number, ActionVisibilityMap>();
+
+      dataSource.forEach((row, index) => {
+        try {
+          const result = resolver(row);
+          results.set(index, result || {});
+        } catch (error) {
+          console.warn('ActionVisibility error for row', index, ':', error);
+          results.set(index, {});
+        }
+      });
+
+      return results;
+    });
+
+  // Resolve whether a given action should be visible for the provided row.
+ isActionVisible(row: T, key: ActionVisibilityKey, defaultValue: boolean): boolean {
+      const results = this._actionVisibilityResults();
+      const rowIndex = this._dataSource().findIndex(r => r === row);
+
+      if (rowIndex >= 0) {
+        const rowResult = results.get(rowIndex);
+        if (rowResult && rowResult[key] !== undefined && rowResult[key] !== null) {
+          return !!rowResult[key];
+        }
+      }
+
+      return defaultValue;
+    }
+  
+
   // Get displayed columns for the table
   getDisplayedColumns(): string[] {
     const columns: string[] = [];
@@ -1061,9 +1108,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   }
 
   generateSelectedGroupSummary(): void {
-    this.loaderService.showLoader();
     this.selectedGroupSummary();
-    this.loaderService.hideLoader();
   }
   // Returns all columns for mat-table including count
   getDisplayedColumnsWithCount(): string[] {

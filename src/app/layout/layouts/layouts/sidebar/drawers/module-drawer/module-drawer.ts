@@ -5,6 +5,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { ThemeService } from '../../../../../../shared/services/theme.service';
 import { Subscription } from 'rxjs';
+import { SidebarService } from '../../../../../service/sidebar.service';
 
 interface ModuleItem {
   id: string;
@@ -43,7 +44,8 @@ export class ModuleDrawer implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private sidebarService: SidebarService
   ) { }
 
   ngOnInit(): void {
@@ -51,10 +53,71 @@ export class ModuleDrawer implements OnInit {
     this.themeSub = this.themeService.currentTheme$.subscribe(themeId => {
       this.activeTheme = themeId;
     });
+   setTimeout(() => {
+      this.setSelectedModuleByPort();
+    }, 100);
+  }
+
+  setSelectedModuleByPort(): void {
+    try {
+      const currentPort = window.location.port;
+
+      // Find module that matches current port
+      const matchingModule = this.modulesList.find(module => {
+        if (module.route) {
+          const urlMatch = module.route.match(/:(\d+)/);
+          return urlMatch && urlMatch[1] === currentPort;
+        }
+        return false;
+      });
+
+      if (matchingModule) {
+        this.selectedModuleId = matchingModule.id;
+        this.sidebarService.setSelectedModuleName(matchingModule.name);
+        console.log(`Module drawer auto-selected: ${matchingModule.name} for port ${currentPort}`);
+      } else {
+        // Check if there's a stored selected module name to match
+        const storedModuleName = localStorage.getItem('selectedModuleName');
+        if (storedModuleName) {
+          const storedModule = this.modulesList.find(m => m.name === storedModuleName);
+          if (storedModule) {
+            this.selectedModuleId = storedModule.id;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error setting selected module by port:', error);
+    }
+  }
+
+  initializeSelectedModule(): void {
+    // If no module is selected, select the first available module
+    if (!this.selectedModuleId && this.modulesList.length > 0) {
+      const firstActiveModule = this.modulesList.find(m => m.isActive);
+      if (firstActiveModule) {
+        this.selectedModuleId = firstActiveModule.id;
+        this.sidebarService.setSelectedModuleName(firstActiveModule.name);
+      }
+    }
+
+    // If a module name is stored but selectedModuleId is not set, find the matching module
+    const storedModuleName = localStorage.getItem('selectedModuleName');
+    if (storedModuleName && !this.selectedModuleId) {
+      const matchingModule = this.modulesList.find(m => m.name === storedModuleName);
+      if (matchingModule) {
+        this.selectedModuleId = matchingModule.id;
+      }
+    }
   }
 
   loadModulesList(): void {
-    let appList = JSON.parse(localStorage.getItem('appList') || '');
+    let appListString = localStorage.getItem('appList');
+    if (!appListString) {
+      this.modulesList = [];
+      this.isLoading = false;
+      return;
+    }
+    let appList = JSON.parse(appListString);
     const apps: ModuleItem[] = appList.map((m: any, index: number) => ({
         id: m.appId,
         name: m.appName,
@@ -68,6 +131,11 @@ export class ModuleDrawer implements OnInit {
     // Use dummy data instead of API call
     this.modulesList = apps;
     this.isLoading = false;
+  } catch(error:any) {
+    console.error('Error loading modules list:', error);
+    this.modulesList = [];
+    this.error = 'Failed to load modules list.';
+    this.isLoading = false;
   }
 
   selectModule(moduleId: string): void {
@@ -79,6 +147,7 @@ export class ModuleDrawer implements OnInit {
     if (this.selectedModuleId !== moduleId) {
       this.selectedModuleId = moduleId;
       // this.router.navigate([selectedModule.route]);
+      this.sidebarService.setSelectedModuleName(selectedModule.name);
     }
 
   }

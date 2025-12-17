@@ -185,7 +185,6 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'country'"
                     [label]="'Country'"
-                    [isReadonly]="true"
 
                     [options]="countryOptions"
                     [tooltip]="'Country affects risk level and validation rules'"
@@ -221,6 +220,7 @@
                   <input-date
                     [frmGroup]="frmGroup"
                     [controlName]="'date'"
+
                     [label]="'Transaction Date'"
                     displayMode="vertical"
                     [dateFormat]="'YYYY-MM-DD'"
@@ -316,10 +316,9 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'textArea'"
                     [label]="'Transaction Notes'"
-                    [isVertical]="false"
-                    [rows]="3"
                     [minRows]="2"
                     [width]="'100%'"
+                    displayMode="horizontal"
                     [maxRows]="10"
                     [maxCols]="80"
                     [placeholder]="'Enter transaction description and notes...'"
@@ -327,7 +326,21 @@
                     (onChanged)="onInputTextAreaChanged($event)"
                   ></input-text-area>
                 </div>
+                <div class="component-section">
+                   <input-tag
+                    [frmGroup]="frmGroup"
+                    controlName="categories"
+                    label="Categories"
+                    placeholder="Add category..."
+                    [maxTags]="10"
+                    [allowDuplicates]="false"
+                    (onTagAdded)="onTagAdded($event)"
+                    (onTagRemoved)="onTagRemoved($event)"
+                    (onTagsChanged)="onTagsChanged($event)">
+                  </input-tag>
+                </div>
               </div>
+
             </section>
 
             <!-- Action Buttons Section -->
@@ -504,6 +517,7 @@
                   [groupByColumns]="['currency', 'country','productCategory', 'subCategory']"
                   [summaryGridPosition]="'above'"
                   [gridTitle]="'Transaction Grid'"
+                  [actionVisibility]="transactionActionVisibility"
                   (onFHEditClick)="onTransactionEdit($event)"
                   (onFHDeleteClick)="onTransactionDelete($event)"
                   (onFHViewClick)="onTransactionView($event)"
@@ -511,6 +525,7 @@
                   [selectionStateField]="'isSelected'"
                   [selectionStateFunction]="isOrderProcessable"
                   [selectionUpdateField]="'isSelected'"
+
                   (onChecked)="onTransactionRowSelect($event)"
                   (onSelectAllChange)="onTransactionSelectAll($event)"
                   (dataSourceChanged)="onTransactionDataChanged($event)"
@@ -581,7 +596,6 @@
 
 
 <div>
-
   <app-alert-example-page></app-alert-example-page>
 </div>
 
@@ -600,4 +614,12 @@
   (onExtraAction2Click)="handleExtra2($event)"
   [iconPathPrefix]="'/asset/icons'">
 </generic-data-grid>
+
+<div class="component-section">
+<generic-button
+  id="deleteBtn"
+  value="delete"
+  label="loader"
+  (onClick)="showLoader()"/>
+</div>
 

@@ -1,5 +1,6 @@
 // Enhanced TypeScript Component with Relatable Fields
 import { Component, effect, inject, OnInit, signal, TemplateRef, ViewChild, WritableSignal, Type } from '@angular/core';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextBox } from '../../input-types/input-text-box/input-text-box';
 import { InputIdBox } from '../../input-types/input-id-box/input-id-box';
@@ -14,9 +15,10 @@ import { InputTextArea } from '../../input-types/input-text-area/input-text-area
 import { InputNumber } from '../../input-types/input-number/input-number';
 import { DropdownOption, GenericDataGrid } from '../../generic-component-type/generic-data-grid/generic-data-grid';
 import { GenericMultiInputSelectOption } from '../../generic-component-type/generic-multi-select-option/generic-multi-select-option';
-import { BUTTON_VISIBILITY, ONCLICK_SAVE } from '../../../constant/button-signals.constant';
+import { BUTTON_VISIBILITY, ONCLICK_SAVE, ONCLICK_SAVE_NEXT } from '../../../constant/button-signals.constant';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { InputDate } from '../../input-types/input-date/input-date';
+import { InputTag } from '../../input-types/input-tag/input-tag';
 import { OtherComponentsPage } from '../other-components-page/other-components-page';
 import { CommonModule } from '@angular/common';
 import {ToastHelperService} from '../../../services/toast-helper.service';
@@ -28,6 +30,9 @@ import { GenericModal } from '../../generic-component-type/generic-modal/generic
 import { CommonQuillEditorComponent } from '../../common-quill-editor/common-quill-editor';
 import { AlertExamplePage } from '../alert-example-page/alert-example-page';
 import { HttpClient } from '@angular/common/http';
+import { defer } from 'rxjs';
+import { LoaderComponent } from "../../loader/loader.component";
+import { LoaderService } from '../../../services/loader.service';
 
 // Types for data selection modal
 export interface AccountData {
@@ -86,8 +91,9 @@ export interface DataSelectionConfig {
     CommonQuillEditorComponent,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
-    AlertExamplePage
-  ],
+    AlertExamplePage,
+    InputTag,
+],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],
 })
@@ -105,8 +111,21 @@ export class AllComponentsPage implements OnInit {
   isDataSelectionModalOpen = signal(false);
   onClickSave = ONCLICK_SAVE;
   @ViewChild('transactionGrid') gridComponent!: GenericDataGrid;
-
+  showLoading = signal(false);
   // Methods for modal events
+   loader = inject(LoaderService);
+
+  showLoader(){
+
+
+  this.loader.show();
+
+  setTimeout(() => {
+  this.loader.hide();
+}, 10000);
+
+    this.showLoading.set(true);
+  }
   onModalClosed() {
     this.isDataSelectionModalOpen.set(false);
   }
@@ -157,6 +176,7 @@ onModalResult(result: any) {
   OtherComponentsPageComponent: Type<any> = OtherComponentsPage;
   modalComponentData?: any = null;
   selectedRowIds = signal<Set<string>>(new Set());
+  transactionActionVisibility = (row: any) => this.getTransactionActionVisibility(row);
 
   // Data Selection Modal Configuration
   modalConfig: DataSelectionConfig = {
@@ -584,7 +604,9 @@ onModalResult(result: any) {
   ) {
     BUTTON_VISIBILITY.set({
       save: true,
+      saveNext: true,
       update: false,
+      updateNext: true,
       view: true,
       delete: true,
       exit: true,
@@ -597,6 +619,13 @@ onModalResult(result: any) {
         ONCLICK_SAVE.set(false);
     }
   });
+    effect(() => {
+      if (ONCLICK_SAVE_NEXT()) {
+        this.save();
+        ONCLICK_SAVE_NEXT.set(false);
+        // TODO: navigate to next step/page if needed
+      }
+    });
   }
 
 
@@ -1329,7 +1358,7 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
 
       // New relatable fields
       currency: ['USD', Validators.required],
-      country: ['', Validators.required],
+      country: ['JP', Validators.required],
       productCategory: ['', Validators.required],
       subCategory: ['', Validators.required],
       taxRate: [{ value: 0, disabled: true }],
@@ -1354,9 +1383,16 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       this.restoreGridSelections();
     }, 100);
 
-    this.loadUsersFromApi();
+
+
+
+
+      this.loadUsersFromApi();
+
+
 
   }
+
 
   private setupFieldRelationships(): void {
     // Currency changes affect country, tax rate, and amount calculations
@@ -1433,6 +1469,17 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
     console.log('OfficeBox changed:', value);
   }
 
+
+  onTagAdded($event:any) {
+    console.log($event);
+  }
+  onTagRemoved($event:any){
+    console.log($event);
+
+  }
+  onTagsChanged($event:any){
+    console.log($event);
+  }
   private handleCurrencyChange(currencyCode: string): void {
     const currency = this.currencyOptions.find(c => c.key === currencyCode);
     if (currency) {
@@ -1716,7 +1763,7 @@ showDynamicToasts() {
 
   // Enhanced event handlers with relatable field logic
   handleCategorySelection(event: { selectedOption: any; selectedKey: string; selectedValue: string }): void {
-    console.log('Selected option:', event.selectedOption);
+    console.log('Selected option:', event.selectedOption.v);
 
     // Update priority based on selection
     if (event.selectedKey === 'option1' || event.selectedKey === 'option4') {
@@ -1809,6 +1856,17 @@ private recalculateTransactionAmounts(transaction: any): any {
     requiresApproval: category?.requiresApproval || amount > 50000
   };
 }
+
+  // Row-level action visibility for the transaction grid
+  private getTransactionActionVisibility(row: any) {
+    return {
+      delete: row.status !== 'completed' && row.status !== 'failed', // hide delete for completed/failed
+      edit: true,                                                   // always allow edit here
+      view: true,                                                   // always allow view
+      print: true,                                                  // allow print
+      progress: row.priority === 'high',                            // example: show progress only for high priority
+    };
+  }
   private validateTransactionRelationships(transaction: any): void {
     // Validate currency-country relationship
     const currency = this.currencyOptions.find(c => c.key === transaction.currency);
@@ -2257,6 +2315,7 @@ private recalculateTransactionAmounts(transaction: any): any {
 
 
   ngAfterViewInit(): void {
+         currency : 'CAD';
     setTimeout(() => {
       // this.steps = [
       //   {
@@ -2471,6 +2530,7 @@ handleColumnSelectAll($event:any): void {
 
   onBlur(value: string): void {
     console.log('Textbox blurred, value:', value);
-    // You can run extra validation, API calls, or formatting here
+    this.frmGroup.get('currency')?.setValue('CAD');
+
   }
 }

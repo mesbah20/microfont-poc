@@ -1,22 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { LoaderService } from '../../services/loader.service';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-loader',
+  imports:[
+    AsyncPipe
+  ],
   templateUrl: './loader.component.html',
   styleUrls: ['./loader.component.scss'],
-  standalone:true,
-  imports:[CommonModule]
 })
-export class LoaderComponent implements OnInit {
+export class LoaderComponent  {
 
-  isLoading: boolean = false;
-
-  constructor(public loaderService: LoaderService) {}
-
-  ngOnInit() {
-   
-  }
+ readonly svc = inject(LoaderService);
 
 }
