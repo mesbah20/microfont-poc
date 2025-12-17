@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { ServiceRequestProcess } from '../Sentinel/service-request-process/service-request-process';
+import { ServiceRequestProcess } from '../Sentinel/feature/service-request-process/service-request-process';
 import { PersonFormComponent } from '../../shared/features/components/person-form/person-form.component';
 import { ActivityTrackerTogglePage } from '../../shared/features/activity-tracker-toggle/activity-tracker-toggle.page';
 import { NotificationCenterComponent } from '../../shared/features/components/notification-center/notification-center.component';
