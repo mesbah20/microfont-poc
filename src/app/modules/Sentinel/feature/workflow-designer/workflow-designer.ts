@@ -249,7 +249,9 @@ export class WorkflowDesigner implements OnInit {
           userId: user.userId,
           userName: user.userName ?? '',
           homeOfficeId: user.homeOfficeId ?? null,
-          roleNames: user.roleNames.join(', ')
+          roleNames: Array.isArray(user.roleNames)
+            ? user.roleNames.join(', ')
+            : ''
         });
       });
     });
