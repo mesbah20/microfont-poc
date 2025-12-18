@@ -52,7 +52,6 @@ export class Navbar {
       this.moduleName.set(storedModuleName);
     }
     this.updatePageNameFromRoute();
-    // Use a more robust approach - check for changes actively
     this.startModuleNameWatcher();
     this.sidebarService.initializePageName();
   }

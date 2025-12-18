@@ -16,7 +16,7 @@ import { InputNumber } from '../../input-types/input-number/input-number';
 import { DropdownOption, GenericDataGrid } from '../../generic-component-type/generic-data-grid/generic-data-grid';
 import { GenericMultiInputSelectOption } from '../../generic-component-type/generic-multi-select-option/generic-multi-select-option';
 import { BUTTON_VISIBILITY, ONCLICK_SAVE, ONCLICK_SAVE_NEXT } from '../../../constant/button-signals.constant';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, retry, timeout } from 'rxjs/operators';
 import { InputDate } from '../../input-types/input-date/input-date';
 import { InputTag } from '../../input-types/input-tag/input-tag';
 import { OtherComponentsPage } from '../other-components-page/other-components-page';
@@ -30,7 +30,7 @@ import { GenericModal } from '../../generic-component-type/generic-modal/generic
 import { CommonQuillEditorComponent } from '../../common-quill-editor/common-quill-editor';
 import { AlertExamplePage } from '../alert-example-page/alert-example-page';
 import { HttpClient } from '@angular/common/http';
-import { defer } from 'rxjs';
+import { defer, of } from 'rxjs';
 import { LoaderComponent } from "../../loader/loader.component";
 import { LoaderService } from '../../../services/loader.service';
 
@@ -604,9 +604,9 @@ onModalResult(result: any) {
   ) {
     BUTTON_VISIBILITY.set({
       save: true,
-      saveNext: true,
+      saveNext: false,
       update: false,
-      updateNext: true,
+      updateNext: false,
       view: true,
       delete: true,
       exit: true,
@@ -674,41 +674,52 @@ save(): void {
 
 private loadUsersFromApi(): void {
 
-    this.http.get<User[]>('https://jsonplaceholder.typicode.com/users')
-      .subscribe({
-        next: (users: User[]) => {
-          // Transform API data to match your grid structure
-          const transformedData = users.map((user) => ({
-            id: `USER${user.id.toString().padStart(3, '0')}`,
-            name: user.name,
-            username: user.username,
-            email: user.email,
-            phone: user.phone,
-            website: user.website,
-            company: user.company.name,
-            city: user.address.city,
+  this.http.get<User[]>('https://jsonplaceholder.typicode.com/users')
+    .pipe(
+      timeout(5000),
+      retry(2),
+      catchError(error => {
+        console.error('API failed after retries:', error);
 
-            startTime: this.generateRandomTime(),
-            endTime: this.generateRandomTime(),
-            breakTime: '12:30',
-            totalHours: this.calculateRandomHours(),
-            status: this.getRandomStatus()
-          }));
+        this.toastr.warning(
+          'API not available. Loading fallback data.',
+          'Warning'
+        );
 
-          this.sampleApiData.set(transformedData);
+        this.loadFallbackData();
 
-          this.toastr.success(`Loaded ${users.length} users from API`, 'Data Loaded');
-        },
-        error: (error) => {
-          console.error('Error fetching users:', error);
+        // Stop stream safely
+        return of([]);
+      })
+    )
+    .subscribe((users: User[]) => {
 
-          this.toastr.error('Failed to load user data from API', 'API Error');
+      if (!users.length) return;
 
-          // Fallback to minimal static data on error
-          this.loadFallbackData();
-        }
-      });
-  }
+      const transformedData = users.map(user => ({
+        id: `USER${user.id.toString().padStart(3, '0')}`,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        phone: user.phone,
+        website: user.website,
+        company: user.company.name,
+        city: user.address.city,
+        startTime: this.generateRandomTime(),
+        endTime: this.generateRandomTime(),
+        breakTime: '12:30',
+        totalHours: this.calculateRandomHours(),
+        status: this.getRandomStatus()
+      }));
+
+      this.sampleApiData.set(transformedData);
+
+      this.toastr.success(
+        `Loaded ${users.length} users from API`,
+        'Data Loaded'
+      );
+    });
+}
 
   // Helper methods for data transformation
   private generateRandomTime(): string {
