@@ -104,7 +104,7 @@ export class AuthService {
   }
 
   getSessionData(officeId:string){
-    this.http.get(`${environment.sessionUrl}/${officeId}`).subscribe({
+    this.http.get(`${environment.centrinoUrl}/office-session/getOfficeSession/${officeId}`).subscribe({
       next: (officeData: any) => {
         console.log("officeData...", officeData);
         // Store office data in sessionStorage

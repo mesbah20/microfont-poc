@@ -94,39 +94,39 @@ export class ServiceRequestService {
   employeeId!: string;
 
   private get createApiUrl(): string {
-    return `${environment.apiBaseUrl}/centrino/api/serviceRequest/create`;
+    return `${environment.centrinoUrl}/serviceRequest/create`;
   }
 
   private get listApiUrl(): string {
-    return `${environment.apiBaseUrl}/centrino/api/serviceRequest/get-all`;
+    return `${environment.centrinoUrl}/serviceRequest/get-all`;
   }
 
   private get getByIdApiUrl(): string {
-    return `${environment.apiBaseUrl}/centrino/api/serviceRequest/getById`;
+    return `${environment.centrinoUrl}/serviceRequest/getById`;
   }
 
   private get getByEmployeeApiUrl(): string {
-    return `${environment.apiBaseUrl}/centrino/api/serviceRequest/getByEmployee`;
+    return `${environment.centrinoUrl}/serviceRequest/getByEmployee`;
   }
 
   private get getByIssuerApiUrl(): string {
-    return `${environment.apiBaseUrl}/centrino/api/serviceRequest/getByIssuer`;
+    return `${environment.centrinoUrl}/serviceRequest/getByIssuer`;
   }
 
   private get updateApiUrl(): string {
-    return `${environment.apiBaseUrl}/centrino/api/serviceRequest/update`;
+    return `${environment.centrinoUrl}/serviceRequest/update`;
   }
 
   private get deleteApiUrl(): string {
-    return `${environment.apiBaseUrl}/centrino/api/serviceRequest/delete`;
+    return `${environment.centrinoUrl}/serviceRequest/delete`;
   }
 
   private get departmentApiUrl(): string {
-    return `${environment.apiBaseUrl}/centrino/api/department/get-all`;
+    return `${environment.centrinoUrl}/department/get-all`;
   }
 
   private get officeInfoApiUrl(): string {
-    return `${environment.apiBaseUrl}/centrino/xchange-out/get-all-office-info-exc`;
+    return `${environment.centrinoUrl}/xchange-out/get-all-office-info-exc`;
   }
 
   private sendUpdateNotification(body: any): Observable<any> {

@@ -24,7 +24,7 @@ export class UserNoteService {
             .set('noteId', noteId);
 
         return this.http.get<IUserNote>(
-            `${environment.centrinoUrl}/getUserNoteByNoteId`,
+            `${environment.centrinoUrl}/note/getUserNoteByNoteId`,
             { headers: reqHeader, params: httpParams }
         );
     }
@@ -39,7 +39,7 @@ export class UserNoteService {
         let httpParams = new HttpParams().set('userId', userId);
         // return this.cacheService.cacheRequest("UserAccountListBY" + accountType, () => {
         return this.http.get<IUserNote[]>(
-            `${environment.centrinoUrl}/api/note/getUserNoteByUserId`,
+            `${environment.centrinoUrl}/note/getUserNoteByUserId`,
             { headers: reqHeader, params: httpParams }
         );
         // });
@@ -53,7 +53,7 @@ export class UserNoteService {
         });
 
         return this.http.post<IUserNote>(
-            `${environment.centrinoUrl}/api/note/createUserNote`,
+            `${environment.centrinoUrl}/note/createUserNote`,
             userNoteParam,
             { headers: reqHeader }
         );
@@ -67,7 +67,7 @@ export class UserNoteService {
         let httpParams = new HttpParams().set('noteId', noteId);
 
         return this.http.post<IUserNote>(
-            `${environment.centrinoUrl}/api/note/deleteUserNote`, {},
+            `${environment.centrinoUrl}/note/deleteUserNote`, {},
             { headers: reqHeader, params: httpParams }
         );
     }

@@ -2,28 +2,31 @@
 export const environment = {
   production: false,
 
+  // change your appId, clientId only.
   appId: '1',
   keycloak: {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',
     clientId: 'sentinelUI'
   },
+  bffUrl:'http://192.168.10.56:8090/resource-manager/api/v1/resource',
 
-  // Login/Redirect URLs
+  
+  // Login/Redirect URLs - (add your appId - 4***).
   loginUrl:'http://localhost:4001',
   redirectUri:'http://localhost:4001/landing/home',
 
   // Base/Keycloak/Session data URLs
-  apiBaseUrl:'http://192.168.20.250:9999/sentinel/api',
-  bffUrl:'http://192.168.10.56:8090/resource-manager/api/v1/resource',
-  centrinoUrl:'http://192.168.10.56:8090/centrino',
-  sessionUrl:'http://192.168.10.56:8090/centrino/api/office-session/getOfficeSession',
+  apiBaseUrl:'http://192.168.20.250:9999',
+  myBaseUrl:'http://192.168.20.250:9999/sentinel/api',  //*change with your api servlet*
+  
+  centrinoUrl:'http://192.168.20.250:8090/centrino/api',
 
-  // Report Management Backend API
-  reportManagementApiUrl: 'http://192.168.10.56:8090/centrino/api', 
+  // Report Management Backend API (DO NOT CHANGE).
+  reportManagementApiUrl: 'http://192.168.10.56:8090/centrino/api',
   reportGenerationApiUrl: 'http://192.168.10.56:8090',
 
-  // Notification Management Backend API
+  // Notification Management Backend API (DO NOT CHANGE).
   novu_identifier: '1uXpKIJUa3Rg',
   novu_socket: 'http://192.168.10.56:3002',
   novu_api: 'http://192.168.10.56:3000/novu/api'
