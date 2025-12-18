@@ -50,7 +50,7 @@ export class App implements OnInit {
 async ngOnInit() {
     const isAuthenticated = await this.authService.init();
     const currentPath = window.location.pathname;
-    ButtonUtils.resetAll();
+
     if (isAuthenticated) {
       this.authService.decodeToken();
 
