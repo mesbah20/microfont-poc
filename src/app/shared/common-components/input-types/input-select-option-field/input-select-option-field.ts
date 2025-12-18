@@ -4,6 +4,7 @@ import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgClass} from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {startWith} from 'rxjs';
+import { FormControlHighlightDirective } from '../../../directives/form-control-highlight.directive';
 
 type Option = { key: any; value: string };
 
@@ -12,6 +13,7 @@ type Option = { key: any; value: string };
   imports: [
     FormsModule,
     ReactiveFormsModule,
+    FormControlHighlightDirective,
     MatTooltipModule,
     NgClass
   ],

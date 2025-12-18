@@ -6,6 +6,7 @@ import {NgClass} from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { FormControlHighlightDirective } from '../../../directives/form-control-highlight.directive';
 
 @Component({
   selector: 'input-text-box',
@@ -13,8 +14,9 @@ import { MatButtonModule } from '@angular/material/button';
     FormsModule,
     MatInput,
     ReactiveFormsModule,
+    FormControlHighlightDirective,
     NgClass,
-    MatTooltipModule,
+    MatTooltipModule, 
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,

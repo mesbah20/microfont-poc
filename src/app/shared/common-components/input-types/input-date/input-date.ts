@@ -8,6 +8,7 @@ import { CustomDateAdapter } from './adapter/custom-date.adapter';
 import { AppDateFormatsConstant } from '../../../constant/app-date-formats.constant';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { debounceTime } from 'rxjs';
+import { FormControlHighlightDirective } from '../../../directives/form-control-highlight.directive';
 
 export type DateFormat = 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'YYYY/MM/DD' | 'DD-MM-YYYY' | 'MM-DD-YYYY' | 'YYYY-MM-DD' | 'DD MMM, YYYY';
 
@@ -18,6 +19,7 @@ export type DateFormat = 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'YYYY/MM/DD' | 'DD-MM-YYY
     MatDatepicker,
     MatDatepickerInput,
     MatDatepickerToggle,
+    FormControlHighlightDirective,
     MatInput,
     ReactiveFormsModule,
     MatSuffix,

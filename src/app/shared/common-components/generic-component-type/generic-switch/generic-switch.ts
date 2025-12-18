@@ -1,11 +1,13 @@
 import { Component, input, output, signal, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
+import { FormControlHighlightDirective } from '../../../directives/form-control-highlight.directive';
 
 @Component({
   selector: 'generic-switch',
   imports: [
     ReactiveFormsModule,
+    FormControlHighlightDirective,
     NgClass
 ],
   templateUrl: './generic-switch.html',

@@ -4,6 +4,7 @@ import {FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationE
 import {NgClass} from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
+import { FormControlHighlightDirective } from '../../../directives/form-control-highlight.directive';
 
 export interface CurrencyConfig {
   code: string;
@@ -17,6 +18,7 @@ export interface CurrencyConfig {
   imports: [
     MatInput,
     ReactiveFormsModule,
+    FormControlHighlightDirective,
     MatTooltipModule,
     NgClass,
     MatIconModule,

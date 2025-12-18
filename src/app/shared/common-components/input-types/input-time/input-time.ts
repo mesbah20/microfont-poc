@@ -3,12 +3,14 @@ import { FormGroup, FormsModule, ReactiveFormsModule, FormBuilder } from '@angul
 import { MatInput } from '@angular/material/input';
 import { CommonModule, NgClass } from '@angular/common';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { FormControlHighlightDirective } from '../../../directives/form-control-highlight.directive';
 
 @Component({
   selector: 'input-time',
   imports: [
     FormsModule,
     ReactiveFormsModule,
+    FormControlHighlightDirective,
     CommonModule
   ],
   templateUrl: './input-time.html',

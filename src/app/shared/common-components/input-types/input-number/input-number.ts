@@ -4,12 +4,14 @@ import {FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgClass} from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
+import { FormControlHighlightDirective } from '../../../directives/form-control-highlight.directive';
 
 @Component({
   selector: 'input-number',
   imports: [
     MatInput,
     ReactiveFormsModule,
+    FormControlHighlightDirective,
     MatTooltipModule,
     MatIconModule,
     NgClass
