@@ -74,9 +74,9 @@ export class AuthService {
   }
 
   logout(): void {
-    this.keycloak.logout({redirectUri: environment.loginUrl});
     localStorage.clear();
     sessionStorage.clear();
+    this.keycloak.logout({redirectUri: environment.loginUrl});
   }
 
   decodeToken(): void {
