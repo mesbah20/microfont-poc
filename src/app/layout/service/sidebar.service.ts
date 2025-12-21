@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -9,7 +10,8 @@ export class SidebarService {
   private _selectedModuleName = new BehaviorSubject<string>('');
   selectedModuleName$ = this._selectedModuleName.asObservable();
   sidebarExpanded$ = this._sidebarExpanded.asObservable();
-
+  private router = inject(Router);
+  
 private _currentPageName = new BehaviorSubject<string>('');
  currentPageName$ = this._currentPageName.asObservable();
 
@@ -38,11 +40,20 @@ private _currentPageName = new BehaviorSubject<string>('');
       return this._currentPageName.value;
     }
 
-    initializePageName(): void {
-      const storedPageName = localStorage.getItem('currentPageName');
-      if (storedPageName) {
-        this._currentPageName.next(storedPageName);
-      }
+  initializePageName(): void {
+    // Check if we're on the home page
+    const currentUrl = this.router.url;
+    if (currentUrl.includes('/landing/home')) {
+      this._currentPageName.next('');
+      localStorage.removeItem('currentPageName'); // Clean up localStorage
+      return;
     }
+
+    // Otherwise, restore from localStorage
+    const storedPageName = localStorage.getItem('currentPageName');
+    if (storedPageName) {
+      this._currentPageName.next(storedPageName);
+    }
+  }
 
 }

@@ -4,8 +4,8 @@ import { Landing } from './features/landing/landing/landing';
 
 export const routes: Routes = [
 
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: Landing },
+  { path: '', redirectTo: 'landing/home', pathMatch: 'full' },
+  // { path: 'login', component: Landing },
 
   {
     path: 'landing', component: Layout,

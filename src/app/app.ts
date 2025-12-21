@@ -41,7 +41,12 @@ export class App implements OnInit {
              this.router.events.pipe(filter(event=> event instanceof NavigationEnd),
                 takeUntilDestroyed()
               ).subscribe((event:NavigationEnd) => {
+                const url = event.urlAfterRedirects;
+                 const resetRoutes = ['/', '/landing/home', '/dashboard'];
+
+              if (resetRoutes.includes(url)) {
                 ButtonUtils.resetAll();
+              }
               });
               }
 
@@ -87,9 +92,7 @@ async ngOnInit() {
       });
 
     } else {
-      if (currentPath !== '/login') {
-        this.router.navigate(['/login']);
-      }
+      this.authService.login();
     }
 
     this.userService.user$.subscribe((user: User) => {

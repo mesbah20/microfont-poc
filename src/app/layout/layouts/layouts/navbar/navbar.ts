@@ -11,7 +11,8 @@ import {
   ONCLICK_UPDATE_NEXT,
 } from '../../../../shared/constant/button-signals.constant';
 import { SidebarService } from '../../../service/sidebar.service';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -46,15 +47,28 @@ export class Navbar {
       });
   }
 
- ngOnInit() {                                                                                                            // Set initial value from localStorage if available
-    const storedModuleName = localStorage.getItem('selectedModuleName');
+ngOnInit() {
+  const storedModuleName = localStorage.getItem('selectedModuleName');
     if (storedModuleName) {
       this.moduleName.set(storedModuleName);
     }
-    this.updatePageNameFromRoute();
     this.startModuleNameWatcher();
-    this.sidebarService.initializePageName();
-  }
+  // restore page name ONCE
+  this.sidebarService.initializePageName();
+
+  this.router.events
+    .pipe(filter(event => event instanceof NavigationEnd))
+    .subscribe(() => {
+      const url = this.router.url;
+
+      if (url.includes('/landing/home')) {
+        this.sidebarService.setCurrentPageName('');
+        return;
+      }
+
+      this.updatePageNameFromRoute();
+    });
+}
     private updatePageNameFromRoute() {
       try {
         const currentUrl = this.router.url;
@@ -84,13 +98,12 @@ export class Navbar {
           return false;
         });
 
-        if (matchingFunction) {
-          const pageName = matchingFunction.attributes.functionName;
-          this.currentPageName.set(pageName);
-          console.log('Page name updated to:', pageName);
-        } else {
-;
-        }
+       if (matchingFunction) {
+        this.sidebarService.setCurrentPageName(
+          matchingFunction.attributes.functionName
+        );
+      }
+
 
       } catch (error) {
         console.error('Error updating page name from route:', error);
