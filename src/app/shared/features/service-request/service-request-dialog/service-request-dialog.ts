@@ -20,7 +20,6 @@ import {
 import { ToastrService } from 'ngx-toastr';
 import { MatTabsModule } from '@angular/material/tabs';
 import { jwtDecode } from 'jwt-decode';
-import { MetaAppFunctionItem } from '../../../../modules/model/approval-workflow.model';
 import { InputTextBox } from '../../../common-components/input-types/input-text-box/input-text-box';
 import { InputTextArea } from '../../../common-components/input-types/input-text-area/input-text-area';
 import { InputSelectOptionField } from '../../../common-components/input-types/input-select-option-field/input-select-option-field';
@@ -75,13 +74,7 @@ export class ServiceRequestDialog implements OnInit {
 
   //private readonly applications = signal<MetaAppListItem[]>([]);
   //private readonly applications = signal<MetaAppModuleItem[]>([]);
-  private readonly applications = signal<MetaAppFunctionItem[]>([]);
-  readonly applicationOptions = computed(() =>
-    this.applications().map(item => ({
-      key: item.functionId,
-      value: `${item.functionId} - ${item.functionName}`
-    }))
-  );
+
   private userService = inject(UserService);
 
   officeId!: string;

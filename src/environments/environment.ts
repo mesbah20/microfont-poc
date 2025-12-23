@@ -1,17 +1,6 @@
-export const domain = "http://192.168.10.36";
-export const GATE_WAY_ENDPOINT =  "http://192.168.10.36:8081/";
-export const AUTH_SERVICE_REDIRECT_URI  =  "http://192.168.10.36:4200/";
-const VERSION_1 = "api/v1/";
-export const CLIENT_ID = 'sb-client';
-export const CLIENT_SECRET = 'secret';
+
 export const environment = {
   production: false,
-  rbacEndPoint : GATE_WAY_ENDPOINT + VERSION_1,
-  configurationEndPoint : GATE_WAY_ENDPOINT + 'config/' + VERSION_1,
-  hrmEndPoint : GATE_WAY_ENDPOINT + 'hrm/' + VERSION_1,
-  portalEndPoint : GATE_WAY_ENDPOINT + 'portal/' + VERSION_1,
-  vehicleEndPoint: GATE_WAY_ENDPOINT + 'vehicle/' + VERSION_1,
-  leaveAttendanceEndPoint: GATE_WAY_ENDPOINT + 'leave-attendance/' + VERSION_1,
 
   apiBaseUrl:'http://192.168.10.56:8090',
   //apiBaseUrl:'http://192.168.20.93:8090',
@@ -19,7 +8,7 @@ export const environment = {
   //centrinoUrl:'http://192.168.20.93:8090/centrino',
   keycloakApi:'http://192.168.10.56:8090/resource-manager/api/v1/resource',
   bffUrl: 'http://192.168.10.56:8090/',
-  appId: '1',
+  appId: '1', // your application ID
   keycloak: {
     url: 'http://192.168.10.56:9080',
     realm: 'MicroCube_dev',

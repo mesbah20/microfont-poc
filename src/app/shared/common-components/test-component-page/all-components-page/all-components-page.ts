@@ -713,7 +713,7 @@ private loadUsersFromApi(): void {
       }));
 
       this.sampleApiData.set(transformedData);
-
+      console.log('✅ Loaded and transformed users from API:', transformedData);
       this.toastr.success(
         `Loaded ${users.length} users from API`,
         'Data Loaded'
@@ -868,9 +868,8 @@ private getDetailedFormErrors(): any {
 openModal(componentToLoad?: Type<any>, data?: any) {
   console.log('=== OPENING MODAL ===');
   console.log('Component to load:', componentToLoad);
-  console.log('Component name:', componentToLoad?.name);
-
-  // Reset modal state
+ console.log('api data',this.loadUsersFromApi());
+// Reset modal state
   this.showModal = false;
   this.modalComponent = undefined;
 
