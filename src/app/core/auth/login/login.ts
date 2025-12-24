@@ -322,7 +322,7 @@ export class Login implements OnInit {
       }
     } catch (error) {
       console.error('Error setting module based on port:', error);
-    }  
+    }
   }
 
   private async fetchSubscriberHash(subscriberId: string): Promise<string | undefined> {
