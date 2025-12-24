@@ -1,12 +1,15 @@
 import { Routes } from '@angular/router';
 import { Layout } from './layout/layout';
 import { Landing } from './features/landing/landing/landing';
+import { AllComponentsPage } from './shared/common-components/test-component-page/all-components-page/all-components-page';
 
 export const routes: Routes = [
 
   { path: '', redirectTo: 'landing/home', pathMatch: 'full' },
   // { path: 'login', component: Landing },
-
+  {path:'', component: Layout,
+    children:[{path:'mx/components', component: AllComponentsPage}]
+   },
   {
     path: 'landing', component: Layout,
     data: {
@@ -58,6 +61,7 @@ export const routes: Routes = [
       { path: '', loadChildren: () => import('./shared/features/report/report.routing').then(m => m.reportRoutes) },
     ]
   },
+
 ];
 
 
