@@ -31,7 +31,7 @@ export class App implements OnInit {
   authService = inject(AuthService);
   userId: string;
   private userService = inject(UserService);
-  constructor(private themeService: ThemeService,
+constructor(private themeService: ThemeService,
               public loaderService: LoaderService,
               private router: Router,
               private activityTracker: GlobalActivityTrackerService,

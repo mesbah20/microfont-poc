@@ -74,9 +74,9 @@ export class AuthService {
   }
 
   logout(): void {
-    this.keycloak.logout({redirectUri: environment.loginUrl});
     localStorage.clear();
     sessionStorage.clear();
+    this.keycloak.logout({redirectUri: environment.loginUrl});
   }
 
   decodeToken(): void {
@@ -104,7 +104,7 @@ export class AuthService {
   }
 
   getSessionData(officeId:string){
-    this.http.get(`${environment.sessionUrl}/${officeId}`).subscribe({
+    this.http.get(`${environment.centrinoUrl}/office-session/getOfficeSession/${officeId}`).subscribe({
       next: (officeData: any) => {
         console.log("officeData...", officeData);
         // Store office data in sessionStorage
@@ -138,12 +138,12 @@ export class AuthService {
     const params = new HttpParams({
       fromObject: { appId: environment.appId }
     });
-    let url = environment.bffUrl + 'resource-manager/api/v1/resource/accessible-resource/app'
+    let url = environment.bffUrl + '/accessible-resource/app'
     return this.http.get<any>(url, {params});
   }
 
   getUserWiseApplications(){
-    let url = environment.bffUrl + 'resource-manager/api/v1/resource/applications'
+    let url = environment.bffUrl + '/applications'
     return this.http.get<any>(url);
   }
 
@@ -151,7 +151,7 @@ export class AuthService {
     const params = new HttpParams({
       fromObject: { appId: environment.appId }
     });
-    let url = environment.bffUrl + 'resource-manager/api/v1/resource/applications-generic'
+    let url = environment.bffUrl + '/applications-generic'
     return this.http.get<any>(url, {params});
   }
 

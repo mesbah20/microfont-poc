@@ -27,15 +27,15 @@ export interface ServiceRequestLog {
 })
 export class ServiceRequestLogService {
   private get logsApiUrl(): string {
-    return `${environment.apiBaseUrl}/centrino/api/serviceRequestLogs`;
+    return `${environment.centrinoUrl}/serviceRequestLogs`;
   }
 
   private get logsByRequestIdUrl(): string {
-    return `${environment.apiBaseUrl}/centrino/api/serviceRequestLogs`;
+    return `${environment.centrinoUrl}/serviceRequestLogs`;
   }
 
   private get allLogsUrl(): string {
-    return `${environment.apiBaseUrl}/centrino/api/serviceRequestLogs`;
+    return `${environment.centrinoUrl}/serviceRequestLogs`;
   }
 
   constructor(private http: HttpClient) {}
