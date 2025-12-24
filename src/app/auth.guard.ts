@@ -9,7 +9,7 @@ export class AccessGuard implements CanActivate {
   constructor(private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    const userAccessList = JSON.parse(localStorage.getItem('userAccessList') || '[]');
+  /*  const userAccessList = JSON.parse(localStorage.getItem('userAccessList') || '[]');
     const requestedPath = state.url.split('/')[1]; // e.g. "mx"
 
     // check if userAccessList has this AppRoute
@@ -20,7 +20,7 @@ export class AccessGuard implements CanActivate {
     if (!hasAccess) {
       this.router.navigate(['/not-authorized']);
       return false;
-    }
+    }*/
     return true;
   }
 }
