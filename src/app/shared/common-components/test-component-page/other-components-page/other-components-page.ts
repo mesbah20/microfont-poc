@@ -29,15 +29,18 @@ export class OtherComponentsPage implements OnInit {
    businessHeaderPanel: WritableSignal<boolean> = signal(true);
 
    @Output() modalResult = new EventEmitter<any>();
+   @Output() multiSelectResult = new EventEmitter<any[]>();
    @Input() modalParent?: { close(result?: any): void; closeModal(): void };
-  
+
    @Input() initialData?: any;
+
+   selectedRows = signal<any[]>([]);
   // Add t constructor for debugging
   constructor( private formBuilder: FormBuilder) {
     console.log('OtherComponentsPage constructor called');
     console.log('Title:', this.title);
   }
-  
+
   // Add ngOnInit for debugging
   ngOnInit() {
       this.frmGroup = this.formBuilder.group({
@@ -233,14 +236,48 @@ export class OtherComponentsPage implements OnInit {
     ]);
 
 
-    
 
+
+onTransactionRowSelect(event: { data: string, checked: boolean }): void {
+  try {
+    const row: any = JSON.parse(event.data);
+    console.log('Row selected:', row, 'Checked:', event.checked);
+
+    if (event.checked) {
+      // Add to selected rows
+      this.selectedRows.update(rows => {
+        if (!rows.some(r => r.id === row.id)) {
+          return [...rows, row];
+        }
+        return rows;
+      });
+      console.log('Added to selection:', row.id);
+    } else {
+      // Remove from selected rows
+      this.selectedRows.update(rows => rows.filter(r => r.id !== row.id));
+      console.log('Removed from selection:', row.id);
+    }
+
+    // Log current selection
+    console.log('Current selected rows:', this.selectedRows());
+  } catch (error) {
+    console.error('Error parsing selected row:', error);
+  }
+}
+
+// Send selected rows to parent
+sendSelectedRows(): void {
+  const selected = this.selectedRows();
+  console.log('Sending selected rows to parent:', selected);
+  this.modalResult.emit(selected);
+}
 
 
   onRowDblClick(serialized: string): void {
     try {
       const row: any = JSON.parse(serialized);
       console.log('row',row);
+
       const pickedId = row?.id ;
       if (pickedId) {
         this.modalResult.emit({ field: 'id', value: pickedId });
@@ -251,4 +288,4 @@ export class OtherComponentsPage implements OnInit {
       this.modalResult.emit(null);
     }
   }
-} 
+}

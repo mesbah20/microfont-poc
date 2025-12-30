@@ -120,7 +120,8 @@ async ngOnInit() {
         if (appList) {
           const parsedAppList = JSON.parse(appList);
           const matchingModule = parsedAppList.find((app: any) => {
-            if (app.appUri) {
+            if (app.appUri && (environment.appId===app.appId)) {
+              console.log(app.appId);
               const urlMatch = app.appUri.match(/:(\d+)/);
               return urlMatch && urlMatch[1] === currentPort;
             }

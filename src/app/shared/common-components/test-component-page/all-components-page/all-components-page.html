@@ -546,7 +546,7 @@
                   #timePickerGrid
                   [id]="'time-picker-schedule'"
                   [dataSource]="sampleScheduleData()"
-                  [initPageSize]="5"
+                  [pageSizeOptions]="[4,8,12]"
                   [enableSelection]="true"
                   [showEditButton]="true"
                   [showDeleteButton]="true"
@@ -558,7 +558,13 @@
                   [dropdownColumns]="['status']"
                   [multiSelectColumns]="['status']"
                   [dropdownOptions]="scheduleDropdownOptions()"
-                  [selectedColumns]="['id', 'name', 'startTime', 'endTime', 'breakTime', 'totalHours', 'status']"
+                  [selectedColumns]="['id', 'name', 'startTime', ]"
+                  [customColumnNames]="{
+                    id: 'User ID',
+                    name: 'Full Name',
+                    email: 'Email Address',
+                    isActive: 'Status'
+                  }"
                   [tblClass]="'schedule-table'"
 
                   (dataSourceChanged)="onScheduleDataChanged($event)">

@@ -709,8 +709,9 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
 
       if (checked) {
         const newSelected = new Set<number>();
-        this.displayedData().forEach((_, index) => {
-          newSelected.add(this._currentPage() * this._pageSize() + index);
+        // Select ALL rows from filtered data, not just displayed page
+        this._filteredData().forEach((_, index) => {
+          newSelected.add(index);
         });
         this._selectedRows.set(newSelected);
       } else {
