@@ -338,8 +338,13 @@
 
           <!-- Pagination -->
           <div class="pagination-container" *ngIf="_filteredData().length > 0">
-            <mat-paginator [length]="_filteredData().length" [pageSize]="_pageSize()" [pageIndex]="_currentPage()"
-              [pageSizeOptions]="[5, 10, 25, 50, 100]" (page)="onPageChange($event)" showFirstLastButtons
+            <mat-paginator
+              [length]="_filteredData().length"
+              [pageSize]="_pageSize()"
+              [pageIndex]="_currentPage()"
+              [pageSizeOptions]="getPageSizeOptions()"
+              (page)="onPageChange($event)"
+              showFirstLastButtons
               aria-label="Select page">
             </mat-paginator>
           </div>

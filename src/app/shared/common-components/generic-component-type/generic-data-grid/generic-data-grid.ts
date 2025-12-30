@@ -142,6 +142,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   readonly gridTitle = input<string>('');
   readonly summaryGridPosition = input<string>('above');
   readonly summaryGridEnabled = input<boolean>(false);
+  readonly pageSizeOptions = input<number[]>([]);  // Custom page size options
 
   // Dropdown Inputs
   readonly dropdownColumns = input<string[]>([]);
@@ -621,6 +622,43 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   }
 
   // Sorting
+  // Generate dynamic page size options based on dataset size
+  getPageSizeOptions(): number[] {
+    const customOptions = this.pageSizeOptions();
+
+    // If custom options are provided, use them
+    if (customOptions && customOptions.length > 0) {
+      return customOptions.sort((a, b) => a - b);
+    }
+
+    // Otherwise, generate smart options based on data size
+    const dataLength = this._filteredData().length;
+    const options: number[] = [];
+
+    if (dataLength <= 100) {
+      options.push(5, 10, 25, 50);
+    } else if (dataLength <= 500) {
+      options.push(10, 25, 50, 100);
+    } else if (dataLength <= 1000) {
+      options.push(25, 50, 100, 250);
+    } else if (dataLength <= 5000) {
+      options.push(50, 100, 250, 500);
+    } else if (dataLength <= 10000) {
+      options.push(100, 250, 500, 1000);
+    } else {
+      // For very large datasets (>10k)
+      options.push(250, 500, 1000, 2500);
+    }
+
+    // Always include the current page size if not already there
+    const currentSize = this._pageSize();
+    if (!options.includes(currentSize)) {
+      options.push(currentSize);
+    }
+
+    return options.sort((a, b) => a - b);
+  }
+
   onSort(column: string): void {
     if (this._sortColumn() === column) {
       this._sortDirection.set(this._sortDirection() === 'asc' ? 'desc' : 'asc');
@@ -857,7 +895,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
 
       return defaultValue;
     }
-  
+
 
   // Get displayed columns for the table
   getDisplayedColumns(): string[] {
