@@ -41,11 +41,11 @@ export class InputIdBox {
   readonly labelText = input<string>('');
   readonly leadingZero = input<string>('');
   readonly visible = input<boolean>(true);
-  readonly allowSpecialChars = input<boolean>(false);
+  readonly isAllowSpecialChars = input<boolean>(false);
   readonly onBlurred = output<any>();
   // New validation inputs
   readonly minLen = input<number>();
-  readonly maxLen = input<number>();  
+  readonly maxLen = input<number>();
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipDelay = input<number>(500);
   readonly tooltipClass = input<string>('custom-tooltip');
@@ -59,7 +59,7 @@ export class InputIdBox {
   readonly onChanged = output<any>();
   // readonly onInput = output<any>();
   readonly onDoubleClick = output<void>();
-  readonly dotsClicked = output<void>(); 
+  readonly dotsClicked = output<void>();
   readonly isDotsVisible = input<boolean>(true);
 
   // Internal state
@@ -71,16 +71,16 @@ export class InputIdBox {
     effect(() => {
       const minLen = this.minLen();
       const maxLen = this.maxLen();
-      const allowSpecialChars = this.allowSpecialChars();
+      const allowSpecialChars = this.isAllowSpecialChars();
       const isRequired = this.isRequired();
-      
+
       this.updateValidators();
     });
   }
 
   private specialCharacterValidator = (control: AbstractControl): ValidationErrors | null => {
     if (!control.value) return null; // Don't validate empty values here
-    
+
     const specialCharRegex = /^[a-zA-Z0-9 ]*$/; // Allow only alphanumeric and spaces
     if (!specialCharRegex.test(control.value)) {
       return { specialCharacterNotAllowed: true };
@@ -100,18 +100,18 @@ export class InputIdBox {
       validators.push(parentValidatorFn);
     }
     // console.log('Existing Validators:', parentValidatorFn);
-    
 
-    
 
-    
+
+
+
     // Add required validator if needed
     if (this.isRequired()) {
       validators.push(Validators.required);
     }
 
     // Add special character validator if not allowing special chars
-    if (!this.allowSpecialChars()) {
+    if (!this.isAllowSpecialChars()) {
       validators.push(this.specialCharacterValidator);
     }
 
@@ -147,7 +147,7 @@ export class InputIdBox {
     const baseClasses = 'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500';
     const errorClasses = this.isInvalid() ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-300' : 'border-gray-300';
     const visibilityClasses = this.visible() ? '' : 'hidden';
-    
+
     return `${baseClasses} ${errorClasses} ${visibilityClasses}`;
   });
 
@@ -172,7 +172,7 @@ export class InputIdBox {
     const customMessages = this.customErrorMessages();
     const control = this.frmGroup().get(this.controlName());
     let message = `${this.label()} has validation error: ${errorKey}`;
-   
+
     if (typeof customMessages[errorKey] === 'string') {
       message = customMessages[errorKey];
     } else if (customMessages[errorKey] && typeof customMessages[errorKey] === 'object' && 'message' in customMessages[errorKey]) {
@@ -220,8 +220,8 @@ export class InputIdBox {
   onBlur(): void {
     const control = this.frmGroup().get(this.controlName());
     const value = control ? control.value : undefined;
-    this.onChanged.emit(value); 
-    this.onBlurred.emit(value);  
+    this.onChanged.emit(value);
+    this.onBlurred.emit(value);
   }
 
   clearInput(): void {
@@ -240,11 +240,11 @@ export class InputIdBox {
   }
 
   preventSpecialChars(event: KeyboardEvent): void {
-    if (!this.allowSpecialChars()) {
-      // const specialCharRegex = /^[a-zA-Z0-9 ]$/; 
-      const specialCharRegex = /^[0-9 ]$/; 
+    if (!this.isAllowSpecialChars()) {
+      // const specialCharRegex = /^[a-zA-Z0-9 ]$/;
+      const specialCharRegex = /^[0-9 ]$/;
       const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab', 'Enter']; // Allow navigation and editing keys
-      
+
       if (!specialCharRegex.test(event.key) && !allowedKeys.includes(event.key)) {
         event.preventDefault();
       }

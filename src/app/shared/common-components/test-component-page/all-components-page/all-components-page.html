@@ -16,7 +16,7 @@
             <!-- SECTION 1: OUTLINE MODE COMPONENTS -->
             <section class="rounded-lg  grid-section">
 
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                 <!-- Transaction Reference -->
                 <div class="">
@@ -153,7 +153,7 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'id'"
                     [label]="'Account ID'"
-                    [allowSpecialChars]="true"
+                    [isAllowSpecialChars]="true"
                     [isDotsVisible]="true"
                     [tooltip]="'Click to select account ID'"
                     [tooltipPosition]="'above'"
@@ -266,6 +266,23 @@
                     [tooltip]="'Auto-calculated: Amount + Tax'"
                   ></input-text-box>
                 </div>
+
+                      <!-- PDF File Upload  -->
+                <div class="component-section">
+                  <input-file
+                    #pdfFileInput
+                    [id]="'pdf-upload'"
+                    [multipleFile]="false"
+                    [fileExtension]="'.pdf'"
+                    [isVertical]="true"
+                    [label]="'Upload Supporting Document'"
+                    [cssClass]="'border-green-300 bg-green-50'"
+                    [savePath]="'documents/transactions'"
+                    [customFileName]="'transaction-document'"
+                    (selectedFilesChanged)="onPdfSelected($event)"
+                    (onFileChanged)="onFileInputChanged('Transaction Document')"
+                  />
+                </div>
               </div>
             </section>
 
@@ -284,6 +301,7 @@
                 <div class="component-section">
                   <generic-switch
                     [frmGroup]="frmGroup"
+
                     [controlName]="'switch'"
                     [label]="'Express Processing'"
                     [isChecked]="frmGroup.get('switch')?.value || false"
@@ -293,22 +311,7 @@
                   </div>
                 </div>
 
-                <!-- PDF File Upload  -->
-                <div class="component-section">
-                  <input-file
-                    #pdfFileInput
-                    [id]="'pdf-upload'"
-                    [multipleFile]="false"
-                    [fileExtension]="'.pdf'"
-                    [isVertical]="false"
-                    [label]="'Upload Supporting Document'"
-                    [cssClass]="'border-green-300 bg-green-50'"
-                    [savePath]="'documents/transactions'"
-                    [customFileName]="'transaction-document'"
-                    (selectedFilesChanged)="onPdfSelected($event)"
-                    (onFileChanged)="onFileInputChanged('Transaction Document')"
-                  />
-                </div>
+
 
                 <!-- Text Area  -->
                 <div class="component-section">
@@ -355,6 +358,7 @@
                 </generic-button>
                 <generic-button
                   id="openSelfBtn"
+                  
                   value="open"
                   label="Open in Modal"
                   (onClick)="openModal()"
@@ -558,7 +562,7 @@
                   [dropdownColumns]="['status']"
                   [multiSelectColumns]="['status']"
                   [dropdownOptions]="scheduleDropdownOptions()"
-                  [selectedColumns]="['id', 'name', 'startTime', ]"
+                  [selectedColumns]="['id', 'name', 'startTime', 'endTime', 'breakTime', 'totalHours', 'status']"
                   [customColumnNames]="{
                     id: 'User ID',
                     name: 'Full Name',

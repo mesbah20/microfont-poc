@@ -8,7 +8,7 @@
 
   <!-- ======================== OUTLINE MODE ======================== -->
   @if (displayMode() === 'outline') {
-    <div class="input-wrapper relative">
+    <div class="input-wrapper relative" [class.has-value]="frmGroup().get(controlName())?.value">
       <!-- Input Field -->
       <input
         id="office_box_outlined"
@@ -40,13 +40,13 @@
       </label>
 
       <!-- CLEAR BUTTON -->
-      @if (frmGroup().get(controlName())?.value && !isReadonly()) {
+      @if (!isReadonly() && !frmGroup().get(controlName())?.disabled) {
                        <button
                   type="button"
                   class="clear-button"
                   (click)="clearInput()"
                   [attr.aria-label]="'Clear ' + label()">
-                  <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#000000">
                     <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
                   </svg>
                 </button>
@@ -100,13 +100,13 @@
       />
 
       <!-- CLEAR BUTTON -->
-      @if (frmGroup().get(controlName())?.value && !isReadonly()) {
+      @if (!isReadonly() && !frmGroup().get(controlName())?.disabled) {
                 <button
                   type="button"
                   class="clear-button"
                   (click)="clearInput()"
                   [attr.aria-label]="'Clear ' + label()">
-                  <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#000000">
                     <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
                   </svg>
                 </button>
@@ -122,27 +122,28 @@
   }
 
   <!-- ======================== VALIDATION ======================== -->
-  @if (frmGroup().get(controlName())?.errors &&
-      (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
-
-    <div class="text-red-500 text-sm mt-1">
-      @if (frmGroup().get(controlName())?.hasError('required')) {
-        {{ label() }} is required..!
-      }
-
-      @if (frmGroup().get(controlName())?.hasError('minlength')) {
-        {{ label() }} must be at least {{ frmGroup().get(controlName())?.errors?.['minlength']?.requiredLength }} characters.
-      }
-
-      @if (frmGroup().get(controlName())?.hasError('maxlength')) {
-        {{ label() }} cannot be more than {{ frmGroup().get(controlName())?.errors?.['maxlength']?.requiredLength }} characters.
-      }
-
-      @if (hasCustomErrors()) {
-        @for (errorKey of getCustomErrorKeys(); track errorKey) {
-          <div>{{ getCustomErrorMessage(errorKey) }}</div>
+  <div class="relative h-0">
+    @if (frmGroup().get(controlName())?.errors &&
+        (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
+      <div class="text-red-500 text-xs absolute top-0 left-0 w-full">
+        @if (frmGroup().get(controlName())?.hasError('required')) {
+          {{ label() }} is required..!
         }
-      }
-    </div>
-  }
+
+        @if (frmGroup().get(controlName())?.hasError('minlength')) {
+          {{ label() }} must be at least {{ frmGroup().get(controlName())?.errors?.['minlength']?.requiredLength }} characters.
+        }
+
+        @if (frmGroup().get(controlName())?.hasError('maxlength')) {
+          {{ label() }} cannot be more than {{ frmGroup().get(controlName())?.errors?.['maxlength']?.requiredLength }} characters.
+        }
+
+        @if (hasCustomErrors()) {
+          @for (errorKey of getCustomErrorKeys(); track errorKey) {
+            <div>{{ getCustomErrorMessage(errorKey) }}</div>
+          }
+        }
+      </div>
+    }
+  </div>
 </div>

@@ -22,6 +22,7 @@ export class GenericSwitch implements OnInit, OnChanges {
   readonly id = input<string>('');
   readonly value = input<string>('');
   readonly label = input<string>('');
+  readonly displayMode = input<string>('vertical');
   readonly isChecked = input<boolean>(false);
   readonly enable = input<boolean>(true);
   readonly visible = input<boolean>(true);
@@ -46,15 +47,15 @@ export class GenericSwitch implements OnInit, OnChanges {
         this.isCheckedChanged.emit(boolValue);
         this.validateInput();
       });
-      
+
       // Initialize with proper boolean conversion
       const currentBoolValue = this.toBooleanValue(control.value);
       const expectedBoolValue = this.toBooleanValue(this.isChecked());
-      
+
       if (currentBoolValue !== expectedBoolValue) {
         control.setValue(expectedBoolValue);
       }
-      
+
       // Handle enable/disable state
       this.updateControlState();
     }
@@ -66,12 +67,12 @@ export class GenericSwitch implements OnInit, OnChanges {
       // Update form control when isChecked input changes
       const currentBoolValue = this.toBooleanValue(control.value);
       const expectedBoolValue = this.toBooleanValue(this.isChecked());
-      
+
       if (currentBoolValue !== expectedBoolValue) {
         control.setValue(expectedBoolValue);
       }
     }
-    
+
     this.validateInput();
     this.updateControlState();
   }

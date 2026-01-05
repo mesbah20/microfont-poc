@@ -119,7 +119,7 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     width: 100%;
-    
+
     &::-webkit-scrollbar {
       height: 8px;
     }
@@ -168,7 +168,7 @@
         font-weight: 500;
         font-size: 10px;
         color: #ffffff;
-        text-transform: uppercase;
+        text-transform: capitalize;
         letter-spacing: 0.05em;
         // border: 1px solid #ff0077;
         line-height: calc(var(--header-row-height) - 4px) !important;
@@ -230,13 +230,13 @@
           ::ng-deep .mat-mdc-form-field-wrapper {
             padding-bottom: 0;
           }
-          
+
           ::ng-deep .mat-mdc-form-field-infix {
             min-height: 20px;
             padding: 1px 0;
             line-height: 16px;
           }
-          
+
           ::ng-deep .mat-mdc-form-field-subscript-wrapper {
             height: 0;
             margin-top: 0;
@@ -272,7 +272,7 @@
             ::ng-deep .mat-mdc-form-field-infix {
                 padding: 0 !important;
                 min-height: 16px !important;
-              }                                               
+              }
         }
 
         &.text-column {
@@ -309,7 +309,7 @@
           &:hover {
             background: #f3f4f6 !important;
           }
-          
+
           mat-icon, svg {
             width: 18px;
             height: 18px;
@@ -328,25 +328,25 @@
         left: 0;
         z-index: 10;
         flex: 0 0 40px !important;
-        
+
         &.mat-mdc-header-cell {
           background-color: var(--theme-primary, #1e40af) !important;
           color: #ffffff !important;
-          
+
           // Ensure checkbox is visible in header
           ::ng-deep .mat-mdc-checkbox {
             opacity: 1 !important;
             visibility: visible !important;
           }
         }
-        
+
         &.mat-mdc-cell {
           padding: 2px 4px !important;
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 2px 6px !important;
-          
+
           // Ensure checkbox is visible in cell
           ::ng-deep .mat-mdc-checkbox {
             opacity: 1 !important;
@@ -354,7 +354,7 @@
           }
         }
       }
-      
+
       // Actions column - ensure header and cell padding match
       .mat-column-actions {
         position: sticky;
@@ -363,13 +363,13 @@
         width: 120px;
         min-width: 120px;
         max-width: 120px;
-        
+
         &.mat-mdc-header-cell {
           background-color: var(--theme-primary, #1e40af) !important;
           color: #ffffff !important;
           border-left: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         &.mat-mdc-cell {
           background: #ffffff;
           border-left: 1px solid #e5e7eb;
@@ -378,10 +378,10 @@
       }
     }
   }
-  
+
   th ::ng-deep .mat-mdc-checkbox{
     padding: 0px;
-    
+
   }
   th ::ng-deep .mat-mdc-checkbox .mdc-checkbox__native-control ~ .mdc-checkbox__background {
   border-color: white !important;
@@ -389,7 +389,7 @@
   width: 14px;
   margin-top: 1px;
   margin-right: 12px;
- 
+
 }
 
 
@@ -408,7 +408,7 @@
   //   margin: 0;
   //   opacity: 1 !important;
   //   visibility: visible !important;
-    
+
   //   // Size checkboxes to be more compact
   //   .mdc-checkbox {
   //     width: 10px !important;
@@ -417,7 +417,7 @@
   //     flex-shrink: 0;
   //     opacity: 1 !important;
   //   }
-    
+
   //   // Native control size - smaller
   //   .mdc-checkbox__native-control {
   //     width: 10px !important;
@@ -426,7 +426,7 @@
   //     left: 0;
   //     opacity: 1 !important;
   //   }
-    
+
   //   // Checkbox background - more compact
   //   .mdc-checkbox__background {
   //     width: 10px !important;
@@ -434,24 +434,24 @@
   //     top: 0 !important;
   //     left: 0 !important;
   //   }
-    
+
   //   // Checkmark SVG - scaled down
   //   .mdc-checkbox__background svg {
   //     width: 12px !important;
   //     height: 12px !important;
   //   }
-    
+
   //   // Checkmark path - make the icon smaller but visible
   //   .mdc-checkbox__checkmark-path {
   //     stroke-width: 3px !important;
   //   }
-    
+
   //   // Container padding - remove any default padding
   //   .mdc-form-field {
   //     padding: 0 !important;
   //     margin: 0 !important;
   //   }
-    
+
   //   // Ripple effect - make more compact
   //   .mat-mdc-checkbox-ripple,
   //   .mdc-checkbox__ripple {
@@ -461,7 +461,7 @@
   //     top: -3px !important;
   //   }
   // }
-  
+
   // Header checkbox styling - white borders for visibility on dark background
 //   .data-grid-container th ::ng-deep .mat-mdc-checkbox {
 //     .mdc-checkbox__background {
@@ -474,7 +474,7 @@
 //     }
 
 //     ::ng-deep .mat-mdc-checkbox .mdc-checkbox__background {
-//   transform: scale(0.8); 
+//   transform: scale(0.8);
 // }
 
 // ::ng-deep .mat-mdc-checkbox {
@@ -490,34 +490,34 @@
 //     .mdc-checkbox:hover .mdc-checkbox__background {
 //       border-color: rgba(255, 255, 255, 1) !important;
 //     }
-    
+
 //     // Checked state in header
 //     .mdc-checkbox--selected .mdc-checkbox__background {
 //       background-color: rgba(255, 255, 255, 0.95) !important;
 //       border-color: rgba(255, 255, 255, 0.95) !important;
 //       opacity: 1 !important;
 //     }
-    
+
 //     // Checkmark color in header (dark checkmark on white background)
 //     .mdc-checkbox--selected .mdc-checkbox__background svg {
 //       color: var(--theme-primary, #1e40af) !important;
 //       fill: var(--theme-primary, #1e40af) !important;
 //       opacity: 1 !important;
 //     }
-    
+
 //     // Checkmark path in header
 //     .mdc-checkbox--selected .mdc-checkbox__background path {
 //       stroke: var(--theme-primary, #1e40af) !important;
 //       fill: var(--theme-primary, #1e40af) !important;
 //     }
-    
+
 //     // Indeterminate state - mixed mark
 //     .mdc-checkbox--selected .mdc-checkbox__mixedmark {
 //       border-color: var(--theme-primary, #1e40af) !important;
 //       background-color: var(--theme-primary, #1e40af) !important;
 //     }
 //   }
-  
+
   // Cell checkbox styling - dark borders for visibility on light background
   .data-grid-container td ::ng-deep .mat-mdc-checkbox {
     .mdc-checkbox__background {
@@ -528,39 +528,39 @@
       width: 10px !important;
       height: 10px !important;
     }
-    
+
     // Unchecked hover state
     .mdc-checkbox:hover .mdc-checkbox__background {
       border-color: rgba(0, 0, 0, 0.87) !important;
     }
-    
+
     // Checked state in cells
     .mdc-checkbox--selected .mdc-checkbox__background {
       background-color: var(--theme-primary, #1e40af) !important;
       border-color: var(--theme-primary, #1e40af) !important;
       opacity: 1 !important;
     }
-    
+
     // Checkmark color in cells (white checkmark on colored background)
     .mdc-checkbox--selected .mdc-checkbox__background svg {
       color: #ffffff !important;
       fill: #ffffff !important;
       opacity: 1 !important;
     }
-    
+
     // Checkmark path in cells
     .mdc-checkbox--selected .mdc-checkbox__background path {
       stroke: #ffffff !important;
       fill: #ffffff !important;
     }
-    
+
     // Disabled state
     .mdc-checkbox--disabled .mdc-checkbox__background {
       border-color: rgba(0, 0, 0, 0.26) !important;
       background-color: transparent !important;
       opacity: 0.6 !important;
     }
-    
+
     // Disabled checked state
     .mdc-checkbox--disabled.mdc-checkbox--selected .mdc-checkbox__background {
       background-color: rgba(0, 0, 0, 0.26) !important;
@@ -568,7 +568,7 @@
       opacity: 0.6 !important;
     }
   }
-  
+
   // Data column checkboxes (if any) - same styling as cell checkboxes
   // .data-checkbox ::ng-deep .mat-mdc-checkbox {
   //   .mdc-checkbox__background {
@@ -578,12 +578,12 @@
   //     width: 10px !important;
   //     height: 10px !important;
   //   }
-    
+
   //   .mdc-checkbox--selected .mdc-checkbox__background {
   //     background-color: var(--theme-primary, #1e40af) !important;
   //     border-color: var(--theme-primary, #1e40af) !important;
   //   }
-    
+
   //   .mdc-checkbox--selected .mdc-checkbox__background svg {
   //     color: #ffffff !important;
   //   }
@@ -598,7 +598,7 @@
     min-height: var(--data-row-height) !important;
     max-height: var(--data-row-height) !important;
   }
-  
+
   // ============================================================================
   // MATERIAL TABLE OVERRIDES - Clean alignment without conflicts
   // ============================================================================
@@ -610,12 +610,12 @@
       border-left: none !important;
       border-right: none !important;
     }
-    
+
     // All rows use the same height defined by CSS variables
     .mat-mdc-header-row {
       height: var(--header-row-height) !important;
       min-height: var(--header-row-height) !important;
-      
+
       .mat-mdc-header-cell {
         // height: var(--header-row-height) !important;
         // line-height: calc(var(--header-row-height) - 4px) !important;
@@ -623,11 +623,11 @@
         font-size: var(--header-font-size) !important;
       }
     }
-    
+
     .mat-mdc-row {
       height: var(--data-row-height) !important;
       min-height: var(--data-row-height) !important;
-      
+
       .mat-mdc-cell {
         height: var(--data-row-height) !important;
         line-height: calc(var(--data-row-height) - 4px) !important;
@@ -677,7 +677,7 @@
   .even-row {
     background-color: var(--theme-background);
   }
-  
+
   .odd-row {
     background-color: #ffffff;
   }
@@ -686,7 +686,7 @@
     background-color: #f3f4f6;
     font-weight: 600;
     color: #1f2937;
-    
+
     th, td {
       height: 12px;
       padding: 0 2px;
@@ -700,7 +700,7 @@
     font-weight: 600;
     color: #1f2937;
     border-top: 2px solid #d1d5db;
-    
+
     td {
       padding: 0 2px;
       height: 10px;
@@ -748,7 +748,7 @@
     .table-container {
       .data-table {
         min-width: 600px;
-        
+
         .mat-mdc-header-cell,
         .mat-mdc-cell {
           // padding: 8px 12px;
@@ -767,7 +767,7 @@
         .mat-column-selection {
           width: 40px;
           padding: 12px 8px;
-          
+
         }
       }
     }
@@ -775,20 +775,20 @@
     .pagination-container {
       padding: 8px;
       justify-content: center;
-      
+
       ::ng-deep .mat-mdc-paginator {
         .mat-mdc-paginator-container {
           flex-wrap: wrap;
           gap: 8px;
           justify-content: center;
         }
-        
+
         .mat-mdc-paginator-range-actions {
           flex-wrap: wrap;
           gap: 4px;
           justify-content: center;
         }
-        
+
         .mat-mdc-paginator-range-label {
           margin: 0;
           text-align: center;
@@ -802,7 +802,7 @@
           margin: 0;
           font-size: 12px;
         }
-        
+
         .mat-mdc-paginator-navigation-previous,
         .mat-mdc-paginator-navigation-next,
         .mat-mdc-paginator-navigation-first,
@@ -828,33 +828,33 @@
   .data-grid-container {
     .pagination-container {
       padding: 4px;
-      
+
       ::ng-deep .mat-mdc-paginator {
         font-size: 11px;
-        
+
         .mat-mdc-paginator-container {
           flex-direction: column;
           align-items: center;
         }
-        
+
         .mat-mdc-paginator-range-label {
           font-size: 11px;
           margin-bottom: 8px;
         }
-        
+
         .mat-mdc-paginator-page-size {
           margin-bottom: 8px;
-          
+
           .mat-mdc-paginator-page-size-label {
             font-size: 11px;
           }
         }
-        
+
         .mat-mdc-paginator-range-actions {
           justify-content: space-around;
           width: 100%;
           max-width: 280px;
-          
+
           .mat-mdc-paginator-navigation-previous,
           .mat-mdc-paginator-navigation-next,
           .mat-mdc-paginator-navigation-first,
@@ -862,7 +862,7 @@
             min-width: 28px;
             height: 28px;
             padding: 2px;
-            
+
             .mat-mdc-button-touch-target {
               height: 28px;
               width: 28px;
@@ -886,7 +886,7 @@
 
     .table-container {
       overflow: visible;
-      
+
       .data-table {
         .action-buttons,
         .mat-column-actions {
@@ -901,20 +901,20 @@
 .inline-time-field {
   width: 100%;
   min-width: 150px;
-  
+
   ::ng-deep input-time {
     .input-container-outline {
       margin: 0;
     }
-    
+
     .input-wrapper {
       margin: 0;
     }
-    
+
     .custom-input {
       font-size: 14px;
     }
-    
+
     .floating-input-label {
       font-size: 12px;
       top: -8px;
@@ -922,7 +922,7 @@
       background: transparent;
       padding: 0 4px;
     }
-    
+
     .clear-button {
       right: 8px;
       top: 50%;

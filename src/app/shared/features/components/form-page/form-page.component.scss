@@ -2,18 +2,18 @@
 @use "tailwindcss";
 :host {
   display: block;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: 'Roboto', 'Inter', 'Segoe UI', sans-serif;
 }
 
 /* Save Button Override */
 app-save {
   ::ng-deep .a_demo_four {
-    @apply w-full md:w-auto px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 
-           text-white font-semibold text-lg rounded-xl shadow-lg 
-           hover:from-green-700 hover:to-emerald-700 
-           focus:outline-none focus:ring-4 focus:ring-green-300 
-           disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed 
-           transform transition-all duration-200 
+    @apply w-full md:w-auto px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600
+           text-white font-semibold text-lg rounded-xl shadow-lg
+           hover:from-green-700 hover:to-emerald-700
+           focus:outline-none focus:ring-4 focus:ring-green-300
+           disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed
+           transform transition-all duration-200
            hover:scale-105 active:scale-100 flex items-center justify-center gap-2;
   }
 

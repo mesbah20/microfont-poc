@@ -9,7 +9,7 @@
 
   <!-- ======================== OUTLINE MODE ======================== -->
   @if (displayMode() === 'outline') {
-    <div class="input-wrapper relative">
+    <div class="input-wrapper relative" [class.has-value]="frmGroup().get(controlName())?.value">
       <input
         id="currency_outlined"
         [formControlName]="controlName()"
@@ -43,14 +43,14 @@
         <span class="text-xs text-gray-500 ml-2">({{ getCurrencyConfig().code }})</span>
       </label>
 
-      <!-- CLEAR BUTTON -->
-      @if (frmGroup().get(controlName())?.value && !isReadonly()) {
-                <button
+      <!-- CLEAR BUTTON (render when enabled; CSS controls visibility) -->
+      @if (!isReadonly() && !frmGroup().get(controlName())?.disabled) {
+                  <button
                   type="button"
                   class="clear-button"
                   (click)="clearInput()"
                   [attr.aria-label]="'Clear ' + label()">
-                  <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#000000">
                     <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
                   </svg>
                 </button>
@@ -82,7 +82,7 @@
     }
 
     <div class="flex flex-col">
-      <div class="input-wrapper relative">
+      <div class="input-wrapper relative" [class.has-value]="frmGroup().get(controlName())?.value">
         <input
           [formControlName]="controlName()"
           [attr.controlName]="controlName()"
@@ -106,13 +106,13 @@
           (blur)="onBlur()"
         />
 
-        @if (frmGroup().get(controlName())?.value && !isReadonly()) {
-          <button
+        @if (!isReadonly() && !frmGroup().get(controlName())?.disabled) {
+            <button
             type="button"
             class="clear-button"
             (click)="clearInput()"
             [attr.aria-label]="'Clear ' + label()">
-                              <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
+                              <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#000000">
                     <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
                   </svg>
           </button>
@@ -127,35 +127,37 @@
   }
 
   <!-- ======================== VALIDATION ======================== -->
-  @if (isInvalid()) {
-    <div class="text-red-500 text-sm mt-1 validation">
-      @if (hasError('required')) {
-        {{ label() }} is required..!
-      }
-      @if (hasError('min')) {
-        Minimum amount required is {{ getCurrencyConfig().symbol }}{{ getErrorValue('min') }}
-      }
-      @if (hasError('max')) {
-        Maximum amount allowed is {{ getCurrencyConfig().symbol }}{{ getErrorValue('max') }}
-      }
-      @if (hasError('maxLengthNumber')) {
-        Maximum {{ getErrorValue('maxLengthNumber').requiredLength }} digits allowed
-      }
-      @if (hasError('leadingZeros')) {
-        Leading zeros are not allowed (e.g., 0987 should be 987)
-      }
-      @if (hasError('invalidAmount')) {
-        Invalid amount format. Maximum {{ getErrorValue('invalidAmount').maxDecimals }} decimal places allowed
-      }
-      @if (hasError('negativeNotAllowed')) {
-        Negative amounts are not allowed
-      }
-
-      @if (hasCustomErrors()) {
-        @for (errorKey of getCustomErrorKeys(); track errorKey) {
-          <div>{{ getCustomErrorMessage(errorKey) }}</div>
+  <div class="relative h-0">
+    @if (isInvalid()) {
+      <div class="text-red-500 text-xs absolute top-0 left-0 w-full validation">
+        @if (hasError('required')) {
+          {{ label() }} is required..!
         }
-      }
-    </div>
-  }
+        @if (hasError('min')) {
+          Minimum amount required is {{ getCurrencyConfig().symbol }}{{ getErrorValue('min') }}
+        }
+        @if (hasError('max')) {
+          Maximum amount allowed is {{ getCurrencyConfig().symbol }}{{ getErrorValue('max') }}
+        }
+        @if (hasError('maxLengthNumber')) {
+          Maximum {{ getErrorValue('maxLengthNumber').requiredLength }} digits allowed
+        }
+        @if (hasError('leadingZeros')) {
+          Leading zeros are not allowed (e.g., 0987 should be 987)
+        }
+        @if (hasError('invalidAmount')) {
+          Invalid amount format. Maximum {{ getErrorValue('invalidAmount').maxDecimals }} decimal places allowed
+        }
+        @if (hasError('negativeNotAllowed')) {
+          Negative amounts are not allowed
+        }
+
+        @if (hasCustomErrors()) {
+          @for (errorKey of getCustomErrorKeys(); track errorKey) {
+            <div>{{ getCustomErrorMessage(errorKey) }}</div>
+          }
+        }
+      </div>
+    }
+  </div>
 </div>

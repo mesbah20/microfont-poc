@@ -15,7 +15,7 @@ import { InputTextArea } from '../../input-types/input-text-area/input-text-area
 import { InputNumber } from '../../input-types/input-number/input-number';
 import { DropdownOption, GenericDataGrid } from '../../generic-component-type/generic-data-grid/generic-data-grid';
 import { GenericMultiInputSelectOption } from '../../generic-component-type/generic-multi-select-option/generic-multi-select-option';
-import { BUTTON_VISIBILITY, ONCLICK_SAVE, ONCLICK_SAVE_NEXT } from '../../../constant/button-signals.constant';
+import { BUTTON_VISIBILITY, ONCLICK_SAVE, ONCLICK_SAVE_NEXT, ONCLICK_VIEW } from '../../../constant/button-signals.constant';
 import { catchError, debounceTime, distinctUntilChanged, retry, timeout } from 'rxjs/operators';
 import { InputDate } from '../../input-types/input-date/input-date';
 import { InputTag } from '../../input-types/input-tag/input-tag';
@@ -110,6 +110,7 @@ export class AllComponentsPage implements OnInit {
   static instance: Type<AllComponentsPage> = AllComponentsPage;
   isDataSelectionModalOpen = signal(false);
   onClickSave = ONCLICK_SAVE;
+  onclickView = ONCLICK_VIEW;
   @ViewChild('transactionGrid') gridComponent!: GenericDataGrid;
   showLoading = signal(false);
   // Methods for modal events

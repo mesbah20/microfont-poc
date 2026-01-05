@@ -1,4 +1,4 @@
-<div [formGroup]="frmGroup()" 
+<div [formGroup]="frmGroup()"
   [ngClass]="{
     'input-container-vertical': displayMode() === 'vertical',
     'input-container-horizontal': displayMode() === 'horizontal',
@@ -33,7 +33,7 @@
     </textarea>
 
     @if (isInvalidState() && errorMessage()) {
-      <div class="text-red-500 text-sm mt-1">
+      <div class="text-red-500 text-xs mt-1">
         {{ errorMessage() }}
       </div>
     }

@@ -8,7 +8,7 @@
 
   <!-- ======================== OUTLINE MODE ======================== -->
   @if (displayMode() === 'outline') {
-    <div class="input-wrapper relative">
+    <div class="input-wrapper relative" [class.has-value]="frmGroup().get(controlName())?.value">
       <input
         id="date_outlined"
         [formControlName]="controlName()"
@@ -28,7 +28,7 @@
         (focus)="onFocus($event)"
         (blur)="onBlur()"
         (dateChange)="onDateSelected($event)"
-       
+
       />
 
       <!-- FLOATING LABEL -->
@@ -48,7 +48,7 @@
       </mat-datepicker-toggle>
       <mat-datepicker #datePicker></mat-datepicker>
 
- 
+
     </div>
   }
 
@@ -68,7 +68,7 @@
       </label>
     }
 
-    <div class="input-wrapper relative select-date">
+    <div class="input-wrapper relative select-date" [class.has-value]="frmGroup().get(controlName())?.value">
       <input
         [formControlName]="controlName()"
         [attr.controlName]="controlName()"
@@ -87,7 +87,7 @@
         (keydown)="onKeyDown($event)"
         (dateChange)="onDateSelected($event)"
         class="custom-input"
-        
+
       />
 
       <mat-datepicker-toggle
@@ -113,9 +113,11 @@
   }
 
   <!-- ======================== VALIDATION ======================== -->
-  @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
-      <div class="text-red-500 text-xs mt-1">
-      {{ getDetailedErrorMessage() }}
-    </div>
-  }
+  <div class="relative h-0">
+    @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
+      <div class="text-red-500 text-xs absolute top-0 left-0 w-full">
+        {{ getDetailedErrorMessage() }}
+      </div>
+    }
+  </div>
 </div>

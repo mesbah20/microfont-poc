@@ -8,7 +8,7 @@
 
   <!-- ======================== OUTLINE MODE ======================== -->
   <ng-container *ngIf="displayMode === 'outline'">
-    <div class="input-wrapper relative">
+    <div class="input-wrapper relative" [class.has-value]="frmGroup.get(controlName)?.value">
       <input
         type="time"
         [id]="controlName"
@@ -33,12 +33,12 @@
 
       <!-- CLEAR BUTTON -->
       <button
-        *ngIf="frmGroup.get(controlName)?.value && !isReadonly"
+        *ngIf="!isReadonly && !frmGroup.get(controlName)?.disabled"
         type="button"
         class="clear-button"
         (click)="clearInput()"
         [attr.aria-label]="'Clear ' + label">
-        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
+        <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#000000">
           <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
         </svg>
       </button>
@@ -60,7 +60,7 @@
       <span *ngIf="frmGroup.get(controlName)?.errors?.['required']" class="text-red-500">*</span>
     </label>
 
-    <div class="input-wrapper relative">
+    <div class="input-wrapper relative" [class.has-value]="frmGroup.get(controlName)?.value">
       <label *ngIf="displayMode === 'horizontal'" class="input-label">
         {{ label }}
         <span *ngIf="frmGroup.get(controlName)?.errors?.['required']" class="text-red-500">*</span>
@@ -81,16 +81,16 @@
         (blur)="onBlur()" />
 
       <button
-        *ngIf="frmGroup.get(controlName)?.value && !isReadonly"
+        *ngIf="!isReadonly && !frmGroup.get(controlName)?.disabled"
         type="button"
         class="clear-button"
         (click)="clearInput()"
         [attr.aria-label]="'Clear ' + label">
-        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
+        <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#000000">
           <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
         </svg>
       </button>
-     
+
       <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3 pointer-events-none" *ngIf="!frmGroup.get(controlName)?.value">
         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
           fill="currentColor" viewBox="0 0 24 24">
@@ -101,10 +101,12 @@
   </ng-container>
 
   <!-- ======================== VALIDATION ======================== -->
-  <div *ngIf="frmGroup.get(controlName)?.errors && (frmGroup.get(controlName)?.touched || frmGroup.get(controlName)?.dirty)" class="text-red-500 text-sm mt-1">
-    <span *ngIf="frmGroup.get(controlName)?.hasError('required')">
-      {{ label }} is required!
-    </span>
-  </div> 
+  <div class="relative h-0">
+    <div *ngIf="frmGroup.get(controlName)?.errors && (frmGroup.get(controlName)?.touched || frmGroup.get(controlName)?.dirty)" class="text-red-500 text-sm absolute top-0 left-0 w-full">
+      <span *ngIf="frmGroup.get(controlName)?.hasError('required')">
+        {{ label }} is required!
+      </span>
+    </div>
+  </div>
 
 </div>

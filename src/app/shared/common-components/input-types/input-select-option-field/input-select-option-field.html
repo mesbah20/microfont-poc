@@ -146,7 +146,7 @@
         <input
           #searchInput
           type="text"
-          
+
           [disabled]="isReadonly() ?? false"
           [placeholder]="placeholder() ?? ' Search ' + label().toLowerCase()"
           [value]="searchTerm()"
@@ -213,7 +213,7 @@
           [formControlName]="controlName()"
           [compareWith]="compareFN"
           [disabled]="isReadonly() ?? false"
-          
+
           [ngClass]="{ 'readonly-input': isReadonly() }"
           [matTooltip]="tooltip()"
           [matTooltipPosition]="tooltipPosition()"
@@ -233,9 +233,11 @@
   }
 
   <!-- ======================== VALIDATION ======================== -->
-  @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
-    <div class="text-red-500 text-xs mt-1">
-      {{ label() }} is required..!
-    </div>
-  }
+  <div class="relative h-0">
+    @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
+      <div class="text-red-500 text-xs absolute top-0 left-0 w-full">
+        {{ label() }} is required..!
+      </div>
+    }
+  </div>
 </div>

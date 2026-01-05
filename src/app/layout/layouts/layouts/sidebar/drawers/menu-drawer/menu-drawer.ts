@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
@@ -36,6 +36,7 @@ interface UserAccessItem {
   selector: 'app-menu-drawer',
   imports: [
     RouterLink,
+    RouterModule,
     MatIcon,
     CommonModule
   ],
