@@ -39,6 +39,7 @@ export class Home implements OnInit{
     }
   ];
   username: string;
+  greeting: string;
   currentSlide = 0;
   private intervalId: any;
 
@@ -54,6 +55,10 @@ export class Home implements OnInit{
       //let groupResource = this.groupByModuleId(res.data);
       localStorage.setItem('appList', JSON.stringify(res.data))
     })
+
+    // Set greeting based on BST time
+    this.greeting = this.getGreeting();
+
     // auto-slide every 5s
     this.intervalId = setInterval(() => {
       this.nextSlide();
@@ -63,6 +68,24 @@ export class Home implements OnInit{
   ngOnDestroy(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
+    }
+  }
+
+  getGreeting(): string {
+    // Get current time in Bangladesh (UTC+6)
+    const now = new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const bstTime = new Date(utc + (6 * 3600000));
+    const hour = bstTime.getHours();
+
+    if (hour >= 5 && hour < 12) {
+      return 'Good Morning';
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good Afternoon';
+    } else if (hour >= 17 && hour < 21) {
+      return 'Good Evening';
+    } else {
+      return 'Good Night';
     }
   }
 
