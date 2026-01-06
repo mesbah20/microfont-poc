@@ -13,6 +13,7 @@
       <input
         id="floating_outlined"
         [formControlName]="controlName()"
+        [attr.controlName]="controlName()"
         [ngClass]="{'readonly-input': isReadonly()}"
         [readonly]="isReadonly()"
         matInput

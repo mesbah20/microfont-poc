@@ -56,7 +56,7 @@ async ngOnInit() {
     const isAuthenticated = await this.authService.init();
     const currentPath = window.location.pathname;
 
-    if (isAuthenticated) {
+  if (isAuthenticated) {
       this.authService.decodeToken();
 
       // Load resources with debugging

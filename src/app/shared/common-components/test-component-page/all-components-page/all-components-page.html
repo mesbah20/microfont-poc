@@ -273,7 +273,7 @@
                     #pdfFileInput
                     [id]="'pdf-upload'"
                     [multipleFile]="false"
-                    [fileExtension]="'.pdf'"
+                    
                     [isVertical]="true"
                     [label]="'Upload Supporting Document'"
                     [cssClass]="'border-green-300 bg-green-50'"
@@ -358,7 +358,7 @@
                 </generic-button>
                 <generic-button
                   id="openSelfBtn"
-                  
+                  [styles]="'background: blue;'"
                   value="open"
                   label="Open in Modal"
                   (onClick)="openModal()"

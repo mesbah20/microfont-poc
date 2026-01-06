@@ -3,7 +3,7 @@
     [id]="id()"
     [type]="'button'"
     [disabled]="isDisabled"
-    [style]="styles()"
+    [attr.style]="styles()"
     [ngClass]="buttonClasses"
     (click)="onButtonClick($event)"
     [attr.aria-label]="label() || value()"

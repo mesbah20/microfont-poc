@@ -38,23 +38,27 @@ export class GenericButton {
   get buttonClasses(): string {
     const baseClasses =
       'py-2 px-2 font-medium cursor-pointer outline-none rounded-md transition-colors duration-200 focus:ring-2 focus:ring-offset-2 min-h-[20px] ';
-    
+
     const stateClasses = this.isDisabled
       ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
       : 'text-white hover:opacity-90'; // keep hover effect without changing color
-    
+
     const customClasses = this.cssClass() || '';
-  
+
     // Apply default background color inline
     const defaultBg = 'theme-primary-bg';
-  
+    const styleProvided = Boolean(this.styles && this.styles());
+
     if (customClasses) {
       return `${baseClasses} ${customClasses}`;
+    } else if (styleProvided) {
+      // If inline styles provided, avoid forcing the default background class
+      return `${baseClasses} ${stateClasses}`;
     } else {
       return `${baseClasses} ${defaultBg} ${stateClasses}`;
     }
   }
-  
+
 
   onButtonClick(event: MouseEvent) {
     if (!this.isDisabled) {

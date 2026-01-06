@@ -1,4 +1,4 @@
-import {Component, computed, input, output, signal} from '@angular/core';
+import {Component, computed, input, output, signal, OnDestroy} from '@angular/core';
 import {NgClass} from '@angular/common';
 import { FormGroup } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -13,7 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 	standalone: true,
 	styleUrl: './input-file.scss'
 })
-export class InputFile {
+export class InputFile implements OnDestroy {
 
 	// Optional form inputs to support required indicator
 	readonly frmGroup = input<FormGroup>();
@@ -32,6 +32,8 @@ export class InputFile {
 	readonly enable = input<boolean>(true);
 	readonly tooltip = input<string>('');
 	readonly isVertical = input<boolean>(false);
+	readonly isImageMode = input<boolean>(false); // render circular image uploader UI
+	readonly imageShape = input<'circle' | 'square'>('circle'); // shape for image picker
 	readonly customErrorMessages = input<{ [key: string]: string }>({});
 	// Outputs
 	readonly selectedFilesChanged = output<File[]>();
@@ -40,6 +42,7 @@ export class InputFile {
 
 	// Internal state
 	public selectedFiles = signal<File[]>([]);
+	previewUrl = signal<string | null>(null);
 	isDragOver = signal<boolean>(false);
 	fileNamesDisplay = computed(() => {
   const files = this.selectedFiles();
@@ -80,6 +83,16 @@ removeFile(index: number): void {
   
   this.selectedFiles.set(newFiles);
   this.selectedFilesChanged.emit(newFiles);
+		if (newFiles.length === 0) {
+			this.revokePreview();
+		} else if (index === 0 && this.isImageMode()) {
+			// Update preview to next file if first item removed
+			this.revokePreview();
+			const next = newFiles[0];
+			if (next) {
+				this.previewUrl.set(URL.createObjectURL(next));
+			}
+		}
   
   // Also clear the file input if no files left
   if (newFiles.length === 0) {
@@ -191,6 +204,7 @@ removeFile(index: number): void {
 		if (!files || files.length === 0) {
 			this.selectedFiles.set([]);
 			this.selectedFilesChanged.emit([]);
+			this.revokePreview();
 			return;
 		}
 
@@ -213,6 +227,12 @@ removeFile(index: number): void {
 		// Update state and emit events
 		this.selectedFiles.set(finalFiles);
 		this.selectedFilesChanged.emit(finalFiles);
+		
+		// Set preview for image mode using first file
+		this.revokePreview();
+		if (this.isImageMode() && finalFiles.length > 0) {
+			this.previewUrl.set(URL.createObjectURL(finalFiles[0]));
+		}
 		
 		if (finalFiles.length > 0) {
 			this.onFileChanged.emit({ 
@@ -255,12 +275,17 @@ removeFile(index: number): void {
 	clearFiles(): void {
 		this.selectedFiles.set([]);
 		this.selectedFilesChanged.emit([]);
+		this.revokePreview();
 		
 		// Also clear the file input
 		const inputEl = document.getElementById(this.id()) as HTMLInputElement;
 		if (inputEl) {
 			inputEl.value = '';
 		}
+	}
+
+	ngOnDestroy(): void {
+		this.revokePreview();
 	}
 
 	/**
@@ -271,5 +296,13 @@ getDisplayExtensions(): string {
   if (!ext || ext === '*/*' || ext === '*') return '';
   return ext.toLowerCase();
 }
+
+	private revokePreview() {
+		const url = this.previewUrl();
+		if (url) {
+			URL.revokeObjectURL(url);
+		}
+		this.previewUrl.set(null);
+	}
 
 }

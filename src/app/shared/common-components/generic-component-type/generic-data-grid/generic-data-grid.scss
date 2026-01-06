@@ -20,7 +20,7 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding: 4px 2px;
+    padding: 4px 0px;
     background: #f8f9fa;
     border-bottom: 1px solid #a9ccf0;
     flex-shrink: 0;
@@ -28,6 +28,7 @@
 .search-section {
     flex: 1;
     max-width: 300px;
+    width: 100% ;
 
     .search-field {
       padding: 2px;

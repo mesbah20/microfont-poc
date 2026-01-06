@@ -208,6 +208,11 @@ export class Sidebar {
   // Existing methods
   setActiveItem(item: string): void {
     if (item == 'logout') this.doLogout();
+    const EXCLUDED_PAGES = ['modules', 'profile'] as const;
+    if(!EXCLUDED_PAGES.includes(item as any)){
+
+      localStorage.setItem('currentPageName', item);
+    }
     this.activeItem = item;
   }
 

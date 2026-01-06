@@ -81,7 +81,7 @@
       </label>
     }
 
-    <div class="flex flex-col">
+    
       <div class="input-wrapper relative" [class.has-value]="frmGroup().get(controlName())?.value">
         <input
           [formControlName]="controlName()"
@@ -123,7 +123,7 @@
       <div class="text-sm mt-1 text-gray-600 amount-in-words w-80">
         {{ amountToWord() }}
       </div>
-    </div>
+
   }
 
   <!-- ======================== VALIDATION ======================== -->
