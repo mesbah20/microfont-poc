@@ -19,14 +19,19 @@
                 [class]="getModuleClasses(module)">
 
                 <!-- Module Icon -->
-                <div class="w-12 h-12 rounded-full bg-gradient-to-tr flex items-center justify-center 
-                    text-white text-lg shadow-sm mb-1 transition-transform duration-300" [class]="getIconClasses(module)">
-                    {{ module.icon }}
-                </div>
+               <!-- Module Icon -->
+          <div class="w-12 h-12 rounded-full flex items-center justify-center
+              shadow-sm mb-1 transition-transform duration-300" [class]="getIconClasses(module)">
+              <img [src]="module.icon"
+                  [alt]="module.name"
+                  class="w-full h-full object-contain rounded-full"
+                  onerror="this.style.display='none'; this.parentElement.innerHTML='🏦';"
+                  />
+          </div>
 
                 <!-- Module Name -->
-                <h2 class="module-name mt-1 text-xs sm:text-sm font-semibold text-gray-800 px-1 
-                    truncate max-w-[80px] group-hover:whitespace-normal group-hover:break-words 
+                <h2 class="module-name mt-1 text-xs sm:text-sm font-semibold text-gray-800 px-1
+                    truncate max-w-[80px] group-hover:whitespace-normal group-hover:break-words
                     group-hover:overflow-visible transition-all duration-300 leading-tight text-center">
                     {{ module.name }}
                 </h2>

@@ -11,13 +11,13 @@ export class SidebarService {
   selectedModuleName$ = this._selectedModuleName.asObservable();
   sidebarExpanded$ = this._sidebarExpanded.asObservable();
   private router = inject(Router);
-  
+
 private _currentPageName = new BehaviorSubject<string>('');
  currentPageName$ = this._currentPageName.asObservable();
 
   setSelectedModuleName(moduleName: string): void {
     this._selectedModuleName.next(moduleName);
-    localStorage.setItem('appList', moduleName);
+    // localStorage.setItem('appList', moduleName);
   }
 
   getSelectedModuleName(): string {

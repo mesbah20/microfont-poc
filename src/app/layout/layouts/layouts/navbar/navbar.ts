@@ -166,6 +166,44 @@ ngOnInit() {
     }
 
   }
+getModuleLogo(): string {
+  const appListString = localStorage.getItem('appList');
+  const defaultLogo = '/asset/logos/default.png';
+
+  if (!appListString) {
+    return defaultLogo;
+  }
+
+  // 🟢 CASE 1: appList is just a string like "Sentinel"
+  if (!appListString.trim().startsWith('[')) {
+    console.warn('appList is not JSON, treating as module name:', appListString);
+    return `/asset/logos/${this.apporSlug(appListString)}.png`;
+  }
+
+  try {
+    const appList = JSON.parse(appListString);
+
+    const currentModule = appList.find(
+      (m: any) => m.appName === this.moduleName()
+    );
+
+    if (currentModule?.appId) {
+      return `/asset/logos/${currentModule.appId}.png`;
+    }
+
+    return defaultLogo;
+
+  } catch (err) {
+    console.error('Error parsing appList:', err);
+    return defaultLogo;
+  }
+}
+
+// optional helper
+ apporSlug(name: string) {
+  return name.toLowerCase().replace(/\s+/g, '');
+}
+
 
   navigateToHome() {
       console.log('Navigating to home page');

@@ -110,33 +110,41 @@ export class ModuleDrawer implements OnInit {
     }
   }
 
-  loadModulesList(): void {
+loadModulesList(): void {
+  try {
     let appListString = localStorage.getItem('appList');
     if (!appListString) {
       this.modulesList = [];
       this.isLoading = false;
       return;
     }
+
     let appList = JSON.parse(appListString);
-    const apps: ModuleItem[] = appList.map((m: any, index: number) => ({
+    const apps: ModuleItem[] = appList.map((m: any, index: number) => {
+      const iconPath = `/asset/logos/${m.appId?m.appId:'nexoLogo1'}.png`;
+      console.log('Icon path for', m.appName, ':', iconPath); // Debug log
+
+      return {
         id: m.appId,
         name: m.appName,
-        icon: '🏦',
+        icon: iconPath ? iconPath : 'asset/logos/nexo.PNG',
         route: m.appUri,
+        color: '',
         isActive: true,
-    })
-    );
+      };
+    });
 
-
-    // Use dummy data instead of API call
     this.modulesList = apps;
     this.isLoading = false;
-  } catch(error:any) {
+
+    console.log('Modules list loaded:', this.modulesList); // Debug log
+  } catch(error: any) {
     console.error('Error loading modules list:', error);
     this.modulesList = [];
     this.error = 'Failed to load modules list.';
     this.isLoading = false;
   }
+}
 
   selectModule(moduleId: string): void {
     const selectedModule = this.modulesList.find(m => m.id === moduleId);
