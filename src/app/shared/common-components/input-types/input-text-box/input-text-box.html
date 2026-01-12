@@ -47,7 +47,7 @@
                   class="clear-button"
                   (click)="clearInput()"
                   [attr.aria-label]="'Clear ' + label()">
-                  <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#000000">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px" fill="#000000">
                     <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
                   </svg>
                 </button>
@@ -72,7 +72,7 @@
         </label>
       }
 
-      <div class="input-wrapper" [class.has-value]="frmGroup().get(controlName())?.value">
+        <div ngClass="{'input-wrapper-horizontal:'}" class="input-wrapper" [class.has-value]="frmGroup().get(controlName())?.value">
         <input
           [formControlName]="controlName()"
           [ngClass]="{'readonly-input': isReadonly()}"
@@ -99,7 +99,7 @@
                   class="clear-button"
                   (click)="clearInput()"
                   [attr.aria-label]="'Clear ' + label()">
-                  <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#000000">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px" fill="#000000">
                     <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
                   </svg>
                 </button>
@@ -109,9 +109,11 @@
   }
 
   <!-- ======================== VALIDATION ======================== -->
-  <div class="relative h-0">
+  <div
+    class="mt-0 min-h-[1rem]">
     @if (frmGroup().get(controlName())?.errors && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
-      <p class="text-red-500 text-xs absolute top-0 left-0 w-full">
+      <p
+      class="text-xs text-red-500 leading-4 ms-1">
         @if (frmGroup().get(controlName())?.hasError('required')) {
           {{ label() }} is required..!
         }

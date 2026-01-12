@@ -1380,8 +1380,8 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
 
       // Horizontal display mode controls (same as outline section)
       textBoxHorizontal: ['', [Validators.minLength(3), Validators.maxLength(20), Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
-      currencyHorizontal: ['EUR'],
-      amountToWordHorizontal: ['', [Validators.max(1000000), Validators.min(1)]],
+      currencyHorizontal: ['EUR',Validators.required],
+      amountToWordHorizontal: ['',Validators.required, [Validators.max(1000000), Validators.min(1)]],
       dropdownHorizontal: [''],
       multiSelectHorizontal: [[]],
       numberHorizontal: ['', [Validators.pattern('^[0-9]*$')]],

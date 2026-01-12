@@ -2,7 +2,7 @@
   @if(frmGroup) {
     <form [formGroup]="frmGroup" class="transaction-form">
       <div class="panel">
-        <div class="transaction-grid-container mb-10">
+        <div class="transaction-grid-container ">
           <!-- Header Section -->
           <section class="header-section">
             <app-expansion-panel-header
@@ -11,12 +11,12 @@
             />
           </section>
 
-          <div class="form-grid-col-1 ">
+          <div class=" ">
 
             <!-- SECTION 1: OUTLINE MODE COMPONENTS -->
-            <section class="rounded-lg  grid-section">
+            <section class="rounded-lg">
 
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="grid grid-cols-1 md:grid-cols-3">
 
                 <!-- Transaction Reference -->
                 <div class="">
@@ -145,10 +145,10 @@
                 [isOpenSignal]="subPanel1"
                 [subPanelTitle]="'Configuration Fields'"
               />
-                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 grid-section">
+                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
 
                 <!-- Account ID -->
-                <div class="component-section">
+                <div class="">
                   <input-id-box
                     [frmGroup]="frmGroup"
                     [controlName]="'id'"
@@ -166,7 +166,7 @@
                 </div>
 
                 <!-- Currency (Vertical) -->
-                <div class="component-section">
+                <div class="">
                   <input-select-option-field
                     [frmGroup]="frmGroup"
                     [controlName]="'currency'"
@@ -180,7 +180,7 @@
                 </div>
 
                 <!-- Country -->
-                <div class="component-section">
+                <div class="">
                   <input-select-option-field
                     [frmGroup]="frmGroup"
                     [controlName]="'country'"
@@ -192,7 +192,7 @@
                 </div>
 
                 <!-- Product Category -->
-                <div class="component-section">
+                <div class="">
                   <input-select-option-field
                     [frmGroup]="frmGroup"
                     [controlName]="'productCategory'"
@@ -204,7 +204,7 @@
                 </div>
 
                 <!-- Subcategory -->
-                <div class="component-section">
+                <div class="">
                   <input-select-option-field
                     [frmGroup]="frmGroup"
                     [controlName]="'subCategory'"
@@ -216,7 +216,7 @@
                 </div>
 
                 <!-- Transaction Date -->
-                <div class="component-section">
+                <div class="">
                   <input-date
                     [frmGroup]="frmGroup"
                     [controlName]="'date'"
@@ -232,7 +232,7 @@
                 </div>
 
                 <!-- Tax Rate (Read-only) -->
-                <div class="component-section">
+                <div class="">
                   <input-text-box
                     [frmGroup]="frmGroup"
                     [controlName]="'taxRate'"
@@ -244,7 +244,7 @@
                 </div>
 
                 <!-- Calculated Tax (Read-only) -->
-                <div class="component-section">
+                <div class="">
                   <input-text-box
                     [frmGroup]="frmGroup"
                     [controlName]="'calculatedTax'"
@@ -256,7 +256,7 @@
                 </div>
 
                 <!-- Total Amount (Read-only) -->
-                <div class="component-section">
+                <div class="">
                   <input-text-box
                     [frmGroup]="frmGroup"
                     [controlName]="'totalAmount'"
@@ -268,12 +268,12 @@
                 </div>
 
                       <!-- PDF File Upload  -->
-                <div class="component-section">
+                <div class="">
                   <input-file
                     #pdfFileInput
                     [id]="'pdf-upload'"
                     [multipleFile]="false"
-                    
+
                     [isVertical]="true"
                     [label]="'Upload Supporting Document'"
                     [cssClass]="'border-green-300 bg-green-50'"
@@ -376,7 +376,7 @@
                 [panelTitle]="'Transaction Management'"
               />
 
-              <div class="space-y-6 grid-section">
+              <div class="">
                 <!-- Text Input - Horizontal -->
                 <div class="component-section">
                   <input-text-box

@@ -38,7 +38,7 @@
         class="clear-button"
         (click)="clearInput()"
         [attr.aria-label]="'Clear ' + label">
-        <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#000000">
+        <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px" fill="#000000">
           <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
         </svg>
       </button>
@@ -86,7 +86,7 @@
         class="clear-button"
         (click)="clearInput()"
         [attr.aria-label]="'Clear ' + label">
-        <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#000000">
+        <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px" fill="#000000">
           <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
         </svg>
       </button>
@@ -101,7 +101,8 @@
   </ng-container>
 
   <!-- ======================== VALIDATION ======================== -->
-  <div class="relative h-0">
+    <div
+    class="mt-0 min-h-[1.5rem]">
     <div *ngIf="frmGroup.get(controlName)?.errors && (frmGroup.get(controlName)?.touched || frmGroup.get(controlName)?.dirty)" class="text-red-500 text-sm absolute top-0 left-0 w-full">
       <span *ngIf="frmGroup.get(controlName)?.hasError('required')">
         {{ label }} is required!
