@@ -13,6 +13,7 @@ import {
 import { SidebarService } from '../../../service/sidebar.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { CustomAction } from './actions/custom-action/custom-action';
 
 @Component({
   selector: 'app-navbar',
@@ -22,7 +23,8 @@ import { filter } from 'rxjs';
     Delete,
     Reset,
     Exit,
-    Update
+    Update,
+    CustomAction
   ],
   templateUrl: './navbar.html',
   standalone: true,

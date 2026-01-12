@@ -17,6 +17,7 @@ const INITIAL_BUTTON_STATE: ButtonActionsModel = {
   delete: false,
   exit: false,
   reset: false,
+  customAction: false
 };
 
 const INITIAL_FORM_GROUP = new FormGroup({});
@@ -38,6 +39,7 @@ export const ONCLICK_RESET = signal(false);
 export const ONCLICK_EXIT = signal(false);
 export const ONCLICK_DELETE = signal(false);
 export const ONCLICK_UPDATE = signal(false);
+export const ONCLICK_CUSTOM_ACTION = signal(false);
 export const ONCLICK_UPDATE_NEXT = signal(false);
 
 export const MENU_NAME = signal<string>('');

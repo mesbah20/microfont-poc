@@ -51,6 +51,10 @@
       @if (buttons().delete) { <app-delete></app-delete> }
       @if (buttons().reset) { <app-reset></app-reset> }
       @if (buttons().exit) { <app-exit></app-exit> }
+
+        @if (buttons().customAction) {
+          <custom-action></custom-action>
+        }
     </div>
 
     <!-- MOBILE MENU BUTTON -->
