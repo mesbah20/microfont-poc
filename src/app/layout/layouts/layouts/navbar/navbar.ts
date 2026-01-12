@@ -24,7 +24,7 @@ import { CustomAction } from './actions/custom-action/custom-action';
     Reset,
     Exit,
     Update,
-    CustomAction
+    CustomAction 
   ],
   templateUrl: './navbar.html',
   standalone: true,
