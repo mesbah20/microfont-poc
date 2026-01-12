@@ -55,7 +55,7 @@
 
   <!-- ======================== HORIZONTAL / VERTICAL ======================== -->
   <ng-container *ngIf="displayMode !== 'outline'">
-    <label *ngIf="displayMode === 'vertical'" [for]="controlName" class="input-label block mb-1">
+    <label *ngIf="displayMode === 'vertical'" [for]="controlName" class="input-label block leading-tight">
       {{ label }}
       <span *ngIf="frmGroup.get(controlName)?.errors?.['required']" class="text-red-500">*</span>
     </label>

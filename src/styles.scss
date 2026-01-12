@@ -750,7 +750,8 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 
 .input-wrapper {
    @apply flex items-center w-full;
-   max-width: 100%;
+    max-width: 250px;
+   width: 100%;
    position: relative;
 }
 
