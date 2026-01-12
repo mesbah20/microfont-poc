@@ -1774,7 +1774,7 @@ showDynamicToasts() {
 
   // Enhanced event handlers with relatable field logic
   handleCategorySelection(event: { selectedOption: any; selectedKey: string; selectedValue: string }): void {
-    console.log('Selected option:', event.selectedOption.v);
+    console.log('Selected option:', event.selectedOption);
 
     // Update priority based on selection
     if (event.selectedKey === 'option1' || event.selectedKey === 'option4') {
