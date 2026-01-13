@@ -79,12 +79,12 @@ export class ReportDbSetupUI implements OnInit {
       this.menuName.set(localMenuName);
     });
     BUTTON_VISIBILITY.set({
-      save: true,
+      save: false,
       update: false,
       view: false,
       delete: false,
       exit: false,
-      reset: true,
+      reset: false,
     });
     this.setupSignalEffects();
   }

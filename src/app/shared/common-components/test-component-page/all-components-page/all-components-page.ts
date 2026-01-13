@@ -33,6 +33,8 @@ import { HttpClient } from '@angular/common/http';
 import { defer, of } from 'rxjs';
 import { LoaderComponent } from "../../loader/loader.component";
 import { LoaderService } from '../../../services/loader.service';
+import { DynamicTableComponent, DynamicTableConfig, TableSection, TableRow, TableCell } from '../../generic-component-type/generic-table/generic-table';
+import { AutoTableService, AutoTableOptions } from '../../../services/data-mapper.service';
 
 // Types for data selection modal
 export interface AccountData {
@@ -93,6 +95,7 @@ export interface DataSelectionConfig {
     ExpansionSubPanelHeader,
     AlertExamplePage,
     InputTag,
+    DynamicTableComponent,
 ],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],
@@ -103,9 +106,11 @@ export class AllComponentsPage implements OnInit {
   private gapY = 70;
   frmGroup: FormGroup;
   toastr = inject(ToastHelperService);
+  private autoTable = inject(AutoTableService);
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
   subPanel1: WritableSignal<boolean> = signal(true);
   timePickerHeaderPanel: WritableSignal<boolean> = signal(true);
+  genericTableHeaderPanel: WritableSignal<boolean> = signal(true);
   // Reference to this component's own class
   static instance: Type<AllComponentsPage> = AllComponentsPage;
   isDataSelectionModalOpen = signal(false);
@@ -1352,6 +1357,9 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
 
 
   ngOnInit(): void {
+    // Initialize generic table with auto-generation
+    this.loadWithFullConfig();
+
     this.frmGroup = this.formBuilder.group({
       textBox: [{ value: '', disabled: false }, [Validators.required, Validators.minLength(3), Validators.maxLength(20), Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
       id: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
@@ -2543,5 +2551,644 @@ handleColumnSelectAll($event:any): void {
     console.log('Textbox blurred, value:', value);
     this.frmGroup.get('currency')?.setValue('CAD');
 
+  }
+
+  // Generic Table Example - Current Mode
+  currentTableMode = signal<string>('Static Data');
+
+  // Generic Table Example - Static Data
+  genericTableConfig = signal<DynamicTableConfig>({
+    sections: [
+      {
+        title: 'Personal Information',
+        rows: [
+          {
+            cells: [
+              { label: 'Full Name', width: '30%' },
+              { value: 'John Doe', width: '70%' }
+            ]
+          },
+          {
+            cells: [
+              { label: 'Email Address', width: '30%' },
+              { value: 'john.doe@example.com', width: '70%' }
+            ]
+          },
+          {
+            cells: [
+              { label: 'Phone Number', width: '30%' },
+              { value: '+1 (555) 123-4567', width: '70%' }
+            ]
+          },
+          {
+            cells: [
+              { label: 'Date of Birth', width: '30%' },
+              { value: 'January 15, 1990', width: '70%' }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Address Details',
+        rows: [
+          {
+            cells: [
+              { label: 'Street Address', width: '30%' },
+              { value: '123 Main Street', width: '70%' }
+            ]
+          },
+          {
+            cells: [
+              { label: 'City', width: '30%' },
+              { value: 'New York', width: '70%' }
+            ]
+          },
+          {
+            cells: [
+              { label: 'State', width: '30%' },
+              { value: 'NY', width: '70%' }
+            ]
+          },
+          {
+            cells: [
+              { label: 'ZIP Code', width: '30%' },
+              { value: '10001', width: '70%', highlighted: true }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Account Information',
+        rows: [
+          {
+            cells: [
+              { label: 'Account Number', width: '30%' },
+              { value: 'ACC-123456789', width: '70%', highlighted: true }
+            ]
+          },
+          {
+            cells: [
+              { label: 'Account Type', width: '30%' },
+              { value: 'Savings Account', width: '70%' }
+            ]
+          },
+          {
+            cells: [
+              { label: 'Balance', width: '30%' },
+              { value: '$50,000.00', width: '70%', className: 'text-green-600 font-bold' }
+            ]
+          },
+          {
+            cells: [
+              { label: 'Status', width: '30%' },
+              { value: 'Active', width: '70%', className: 'text-green-600' }
+            ]
+          }
+        ]
+      },
+      {
+        title: 'Transaction Summary',
+        rows: [
+          {
+            cells: [
+              { label: 'Total Transactions', width: '30%' },
+              { value: '127', width: '70%' }
+            ]
+          },
+          {
+            cells: [
+              { label: 'Last Transaction Date', width: '30%' },
+              { value: 'March 15, 2024', width: '70%' }
+            ]
+          },
+          {
+            cells: [
+              { label: 'Monthly Average', width: '30%' },
+              { value: '$2,500.00', width: '70%' }
+            ]
+          },
+          {
+            cells: [
+              { label: 'Notes', colspan: 2, value: 'This account has been active for 5 years with consistent transaction history.', className: 'italic text-gray-600' }
+            ]
+          }
+        ]
+      }
+    ],
+    loading: false,
+    error: null
+  });
+
+  // Sample Account Data
+  readonly SAMPLE_ACCOUNT_DATA = {
+    "accountInfo": {
+      "accountHolderName": "ANAAMIC ACCESSORIES",
+      "contactAddress": "119 JAHANARA BHAISAN (2ND FL)",
+      "city": "Dhaka",
+      "country": "BANGLADESH",
+      "accountType": "Customer",
+      "telephone": "+880-1234567890",
+      "accountStatus": "REGULAR",
+      "currency": "BDT",
+      "customerCode": "0000000685",
+      "customerCategory": "Organization - Private Sector",
+      "specialInstruction": "Please verify all transactions before processing"
+    },
+    "balanceDetails": {
+      "availableBalance": 100000.00,
+      "currentBalance": 100000.00,
+      "principleAmount": 100000.00,
+      "amountOnLien": 0.00,
+      "maturedAmount": 100642.50,
+      "interestPayable": 0.00,
+      "blockedAmount": 0.00,
+      "totalTermNo": 3,
+      "totalTermAmount": 300000,
+      "openDate": "2022-09-06T00:00:00Z",
+      "maturityDate": "2022-09-08T00:00:00Z",
+      "interestPerMonth": 3.00,
+      "interestDueLastMonth": 0.00,
+      "interestCredit": 0.59,
+      "totalBelda": 0.59,
+      "renewedPrincipalAmount": 100000,
+      "lastRenewalDate": "2022-09-08T12:00:00Z",
+      "accountRenewalDate": "2022-09-08T00:00:00Z"
+    }
+  };
+
+  // Sample Customer Data
+  readonly SAMPLE_CUSTOMER_DATA = {
+    "personalInfo": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "dateOfBirth": "1990-05-15T00:00:00Z",
+      "gender": "Male",
+      "nationality": "Bangladeshi",
+      "maritalStatus": "Married"
+    },
+    "contactInfo": {
+      "email": "john.doe@example.com",
+      "phone": "+880-1712345678",
+      "alternatePhone": "+880-1812345678",
+      "emergencyContact": "+880-1912345678"
+    },
+    "addressInfo": {
+      "presentAddress": "House 25, Road 12, Dhanmondi, Dhaka",
+      "permanentAddress": "Village: Chandpur, District: Chittagong",
+      "city": "Dhaka",
+      "postCode": "1209",
+      "country": "Bangladesh"
+    },
+    "employmentInfo": {
+      "occupation": "Software Engineer",
+      "employer": "Tech Solutions Ltd",
+      "designation": "Senior Developer",
+      "monthlyIncome": 80000.00,
+      "experience": "8 years"
+    }
+  };
+
+  // Sample Transaction Data
+  readonly SAMPLE_TRANSACTION_DATA = {
+    "transactionInfo": {
+      "transactionId": "TXN20240115001",
+      "transactionDate": "2024-01-15T14:30:00Z",
+      "transactionType": "Debit",
+      "status": "Completed",
+      "channel": "Online Banking",
+      "reference": "REF20240115001"
+    },
+    "amountDetails": {
+      "amount": 5000.00,
+      "currency": "BDT",
+      "exchangeRate": 1.0,
+      "charges": 10.00,
+      "tax": 5.00,
+      "netAmount": 5015.00
+    },
+    "accountDetails": {
+      "fromAccount": "0000000685",
+      "toAccount": "0000000786",
+      "fromAccountName": "ANAAMIC ACCESSORIES",
+      "toAccountName": "ABC COMPANY LTD"
+    }
+  };
+
+  /**
+   * METHOD 1: Zero Configuration - Fully Automatic
+   */
+  loadWithAutoGeneration(): void {
+    console.log('🚀 Loading with AUTO-GENERATION (zero config)...');
+
+    const config = this.autoTable.autoGenerateTable(this.SAMPLE_ACCOUNT_DATA);
+
+    this.genericTableConfig.set(config);
+    this.currentTableMode.set('Auto-Generation (Zero Config)');
+
+    console.log('✅ Table generated automatically!', config);
+    this.toastr.success('Table generated automatically with zero configuration!', 'Auto-Generation');
+  }
+
+  /**
+   * METHOD 2: With Minimal Configuration
+   */
+  loadWithMinimalConfig(): void {
+    console.log('🎨 Loading with MINIMAL CONFIG...');
+
+    const config = this.autoTable.autoGenerateTable(this.SAMPLE_ACCOUNT_DATA, {
+      // Highlight important fields
+      highlightFields: [
+        'accountHolderName',
+        'availableBalance',
+        'currentBalance'
+      ],
+
+      // Auto-format currency fields
+      currencyFields: [
+        'availableBalance',
+        'currentBalance',
+        'principleAmount',
+        'amountOnLien',
+        'maturedAmount',
+        'interestPayable',
+        'blockedAmount',
+        'renewedPrincipalAmount'
+      ],
+
+      // Auto-format date fields
+      dateFields: [
+        'openDate',
+        'maturityDate',
+        'lastRenewalDate',
+        'accountRenewalDate'
+      ]
+    });
+
+    this.genericTableConfig.set(config);
+    this.currentTableMode.set('With Formatting (Minimal Config)');
+
+    console.log('✅ Table generated with formatting!', config);
+    this.toastr.success('Table generated with formatting!', 'Minimal Config');
+  }
+
+  /**
+   * METHOD 3: Full Customization
+   */
+loadWithFullConfig(): void {
+  console.log('✨ Loading with FULL CUSTOMIZATION...');
+
+  const config = this.autoTable.autoGenerateTable(this.SAMPLE_ACCOUNT_DATA, {
+    // Highlight important fields
+    highlightFields: [
+      'accountHolderName',
+      'availableBalance',
+      'currentBalance'
+    ],
+
+    // Auto-format currency fields
+    currencyFields: [
+      'availableBalance',
+      'currentBalance',
+      'principleAmount',
+      'amountOnLien',
+      'maturedAmount',
+      'interestPayable',
+      'blockedAmount',
+      'totalTermAmount',
+      'renewedPrincipalAmount'
+    ],
+
+    // Auto-format date fields
+    dateFields: [
+      'openDate',
+      'maturityDate',
+      'lastRenewalDate',
+      'accountRenewalDate'
+    ],
+
+
+    fieldCustomizations: {
+      'accountHolderName': {
+        colspan: 4,
+        highlighted: true
+      },
+      'specialInstruction': {
+        colspan: 4
+      },
+      'customerCategory': {
+        colspan: 4
+      }
+    },
+
+    // 🎯 NEW: Custom rows with colspan/rowspan
+    customRows: [
+
+      {
+        sectionKey: 'accountInfo',
+        position: 3,          // Insert as 4th row
+        cells: [
+          {
+            label: '',
+            value: '',
+            colspan: 2        // Empty left half
+          },
+          {
+            label: 'Country :',
+
+            colspan: 1
+          },
+          {
+            key: 'country',
+            colspan: 1
+          }
+        ]
+      },
+
+      // Example: Add a summary row with rowspan
+      {
+        sectionKey: 'balanceDetails',
+        position: 'end',      // Add at end
+        cells: [
+          {
+            label: 'Summary :',
+            colspan: 1,
+            rowspan: 2,       // Spans 2 rows
+            highlighted: true,
+            className: 'align-top font-bold'
+          },
+          {
+            label: 'Total Balance :',
+            colspan: 1
+          },
+          {
+            value: 'BDT 100,642.50',
+            colspan: 2,
+            highlighted: true,
+            className: 'font-bold'
+          }
+        ]
+      },
+      // Second row (first cell covered by rowspan above)
+      {
+        sectionKey: 'balanceDetails',
+        position: 'end',
+        cells: [
+          // Skip first cell - covered by rowspan
+          {
+            label: 'Account Status :',
+            colspan: 1
+          },
+          {
+            key: 'accountStatus',
+            colspan: 2
+          }
+        ]
+      }
+    ],
+
+    // Custom section titles
+    sectionTitles: {
+      'accountInfo': 'Account Information',
+      'balanceDetails': 'Balance Details'
+    },
+
+    // Custom field labels
+    fieldLabels: {
+      'accountHolderName': 'Account Holder Name',
+      'contactAddress': 'Contact Address',
+      'accountType': 'Account Type',
+      'accountStatus': 'Account Status',
+      'customerCode': 'Customer Code',
+      'customerCategory': 'Customer Category',
+      'specialInstruction': 'Special Instruction',
+      'availableBalance': 'Available Balance',
+      'currentBalance': 'Current Balance',
+      'principleAmount': 'Principle Amount',
+      'amountOnLien': 'Amount On Lien',
+      'maturedAmount': 'Matured Amount',
+      'interestPayable': 'Interest Payable',
+      'blockedAmount': 'Blocked Amount',
+      'totalTermNo': 'Total Term No.',
+      'totalTermAmount': 'Total Term Amount',
+      'openDate': 'Open Date',
+      'maturityDate': 'Maturity Date',
+      'interestPerMonth': 'Interest Per Month',
+      'interestDueLastMonth': 'Interest Due Last Month',
+      'interestCredit': 'Interest Credit',
+      'totalBelda': 'Total Belda',
+      'renewedPrincipalAmount': 'Renewed Principal Amount',
+      'lastRenewalDate': 'Last Renewal Date',
+      'accountRenewalDate': 'Account Renewal Date'
+    }
+  });
+
+  this.genericTableConfig.set(config);
+  this.currentTableMode.set('Full Customization with Rowspan/Colspan');
+
+}
+
+  /**
+   * Load Customer Data Example
+   */
+  loadCustomerData(): void {
+    const config = this.autoTable.autoGenerateTable(this.SAMPLE_CUSTOMER_DATA, {
+      highlightFields: ['firstName', 'lastName', 'email'],
+      dateFields: ['dateOfBirth'],
+      currencyFields: ['monthlyIncome'],
+      sectionTitles: {
+        'personalInfo': 'Personal Information',
+        'contactInfo': 'Contact Information',
+        'addressInfo': 'Address Information',
+        'employmentInfo': 'Employment Information'
+      }
+    });
+
+    this.genericTableConfig.set(config);
+    this.currentTableMode.set('Customer Data Example');
+    this.toastr.info('Loaded customer data example', 'Customer Data');
+  }
+
+  /**
+   * Load Transaction Data Example
+   */
+  loadTransactionData(): void {
+    const config = this.autoTable.autoGenerateTable(this.SAMPLE_TRANSACTION_DATA, {
+      highlightFields: ['transactionId', 'netAmount'],
+      dateFields: ['transactionDate'],
+      currencyFields: ['amount', 'charges', 'tax', 'netAmount'],
+      fullWidthFields: ['transactionId'],
+      sectionTitles: {
+        'transactionInfo': 'Transaction Information',
+        'amountDetails': 'Amount Details',
+        'accountDetails': 'Account Details'
+      }
+    });
+
+    this.genericTableConfig.set(config);
+    this.currentTableMode.set('Transaction Data Example');
+    this.toastr.info('Loaded transaction data example', 'Transaction Data');
+  }
+
+  /**
+   * Load Custom Table with Rowspan and Colspan Examples
+   *
+   * This demonstrates how to use colspan and rowspan for advanced table layouts:
+   *
+   * COLSPAN: Use colspan to make a cell span multiple columns
+   *   Example: { value: 'Some text', colspan: 3 } spans 3 columns
+   *
+   * ROWSPAN: Use rowspan to make a cell span multiple rows
+   *   Example: { label: 'Category', rowspan: 4 } spans 4 rows
+   *   Note: When using rowspan, you must skip cells in subsequent rows
+   *
+   * COMBINED: You can combine both for complex layouts
+   *   Example: { value: 'Header', colspan: 2, rowspan: 2 }
+   *
+   * IMPORTANT: When using rowspan:
+   *   - The first row defines the cell with rowspan
+   *   - Subsequent rows must have fewer cells (skip the spanned position)
+   *   - Use className: 'align-middle' for vertical alignment
+   */
+  loadCustomTableWithSpanning(): void {
+    const config: DynamicTableConfig = {
+      sections: [
+        {
+          title: 'Account Summary with Colspan',
+          rows: [
+            {
+              cells: [
+                { label: 'Account Holder', width: '25%' },
+                { value: 'ANAAMIC ACCESSORIES', width: '25%', highlighted: true },
+                { label: 'Account Number', width: '25%' },
+                { value: '0000000685', width: '25%', highlighted: true }
+              ]
+            },
+            {
+              cells: [
+                { label: 'Address', width: '25%' },
+                { value: '119 JAHANARA BHAISAN (2ND FL), Dhaka, BANGLADESH', colspan: 3, width: '75%' }
+              ]
+            },
+            {
+              cells: [
+                { label: 'Account Type', width: '25%' },
+                { value: 'Customer', width: '25%' },
+                { label: 'Status', width: '25%' },
+                { value: 'REGULAR', width: '25%', className: 'text-green-600 font-semibold' }
+              ]
+            }
+          ]
+        },
+        {
+          title: 'Balance Details with Rowspan',
+          rows: [
+            {
+              cells: [
+                { label: 'Balance Information', rowspan: 4, width: '20%', className: 'align-middle' },
+                { label: 'Available Balance', width: '20%' },
+                { value: '100,000.00 BDT', width: '30%', highlighted: true, className: 'text-green-600 font-bold' },
+                { label: 'Currency', width: '15%' },
+                { value: 'BDT', width: '15%' }
+              ]
+            },
+            {
+              cells: [
+                { label: 'Current Balance', width: '20%' },
+                { value: '100,000.00 BDT', width: '30%', highlighted: true },
+                { label: 'Blocked Amount', width: '20%' },
+                { value: '0.00 BDT', width: '30%' }
+              ]
+            },
+            {
+              cells: [
+                { label: 'Principle Amount', width: '20%' },
+                { value: '100,000.00 BDT', width: '30%' },
+                { label: 'Amount on Lien', width: '20%' },
+                { value: '0.00 BDT', width: '30%' }
+              ]
+            },
+            {
+              cells: [
+                { label: 'Matured Amount', width: '20%' },
+                { value: '100,642.50 BDT', width: '30%', className: 'text-blue-600' },
+                { label: 'Interest Payable', width: '20%' },
+                { value: '0.00 BDT', width: '30%' }
+              ]
+            }
+          ]
+        },
+        {
+          title: 'Term Details with Complex Spanning',
+          rows: [
+            {
+              cells: [
+                { label: 'Term Information', rowspan: 3, width: '20%', className: 'align-middle' },
+                { label: 'Total Terms', width: '20%' },
+                { value: '3', width: '15%' },
+                { label: 'Total Term Amount', width: '20%' },
+                { value: '300,000.00 BDT', width: '25%', highlighted: true }
+              ]
+            },
+            {
+              cells: [
+                { label: 'Open Date', width: '20%' },
+                { value: '06/09/2022', width: '15%' },
+                { label: 'Maturity Date', width: '20%' },
+                { value: '08/09/2022', width: '25%' }
+              ]
+            },
+            {
+              cells: [
+                { label: 'Interest Rate', width: '20%' },
+                { value: '3.00% per month', width: '15%', className: 'text-blue-600 font-semibold' },
+                { label: 'Last Renewal', width: '20%' },
+                { value: '08/09/2022', width: '25%' }
+              ]
+            },
+            {
+              cells: [
+                { label: 'Notes', colspan: 5, value: 'This account has been active since September 2022 with consistent transaction history. All terms are properly maintained.', className: 'italic text-gray-600' }
+              ]
+            }
+          ]
+        },
+        {
+          title: 'Contact Information with Mixed Spanning',
+          rows: [
+            {
+              cells: [
+                { label: 'Primary Contact', rowspan: 2, width: '20%', className: 'align-middle' },
+                { label: 'Telephone', width: '20%' },
+                { value: '+880-1234567890', colspan: 3, width: '60%' }
+              ]
+            },
+            {
+              cells: [
+                { label: 'Customer Code', width: '20%' },
+                { value: '0000000685', colspan: 3, width: '60%', highlighted: true }
+              ]
+            },
+            {
+              cells: [
+                { label: 'Category', width: '20%' },
+                { value: 'Organization - Private Sector', colspan: 4, width: '80%' }
+              ]
+            },
+            {
+              cells: [
+                { label: 'Special Instructions', width: '20%' },
+                { value: 'Please verify all transactions before processing', colspan: 4, width: '80%', className: 'bg-yellow-50 italic' }
+              ]
+            }
+          ]
+        }
+      ],
+      loading: false,
+      error: null
+    };
+
+    this.genericTableConfig.set(config);
+    this.currentTableMode.set('Custom Table with Rowspan & Colspan');
+    this.toastr.success('Loaded custom table with rowspan and colspan examples!', 'Advanced Customization');
   }
 }

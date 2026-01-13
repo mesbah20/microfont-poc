@@ -301,7 +301,7 @@
                 <div class="component-section">
                   <generic-switch
                     [frmGroup]="frmGroup"
-
+                    displayMode="horizontal"
                     [controlName]="'switch'"
                     [label]="'Express Processing'"
                     [isChecked]="frmGroup.get('switch')?.value || false"
@@ -573,6 +573,71 @@
 
                   (dataSourceChanged)="onScheduleDataChanged($event)">
                 </generic-data-grid>
+              </div>
+            </section>
+
+            <!-- Generic Table Example Section -->
+            <section class="transaction-grid-section bg-white rounded-lg shadow-sm mt-6">
+              <app-expansion-panel-header
+                [isOpenSignal]="genericTableHeaderPanel"
+                [panelTitle]="'Generic Table Component - Auto-Generation Examples'"
+              />
+
+              <div class="p-4">
+                <!-- Control Buttons -->
+                <div class="mb-6 flex flex-wrap gap-3">
+                  <button
+                    (click)="loadWithAutoGeneration()"
+                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">
+                    ⚡ Auto-Generate
+                  </button>
+
+                  <button
+                    (click)="loadWithMinimalConfig()"
+                    class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm">
+                    🎨 With Formatting
+                  </button>
+
+                  <button
+                    (click)="loadWithFullConfig()"
+                    class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition text-sm">
+                    ✨ Full Customization
+                  </button>
+
+                  <button
+                    (click)="loadCustomerData()"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition text-sm">
+                    👤 Customer Data
+                  </button>
+
+                  <button
+                    (click)="loadTransactionData()"
+                    class="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 transition text-sm">
+                    💳 Transaction Data
+                  </button>
+
+                  <button
+                    (click)="loadCustomTableWithSpanning()"
+                    class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition text-sm">
+                    🔀 Rowspan & Colspan
+                  </button>
+                </div>
+
+                <!-- Info Box -->
+                <div class="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                  <p class="text-sm text-blue-800">
+                    <strong>Current Mode:</strong> {{ currentTableMode() }}
+                  </p>
+                </div>
+
+                <!-- Dynamic Table -->
+                <app-dynamic-table
+                  [config]="genericTableConfig()"
+                  [showHeader]="true"
+                  [showFooter]="true"
+                  [customTitle]="'Account Information'"
+                  [customSubtitle]="'Sample banking account data - ' + currentTableMode()">
+                </app-dynamic-table>
               </div>
             </section>
           </div>
