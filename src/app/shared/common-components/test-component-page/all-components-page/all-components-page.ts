@@ -1358,7 +1358,7 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
 
   ngOnInit(): void {
     // Initialize generic table with auto-generation
-    this.loadWithFullConfig();
+    this.loadCustomTableWithSpanning();
 
     this.frmGroup = this.formBuilder.group({
       textBox: [{ value: '', disabled: false }, [Validators.required, Validators.minLength(3), Validators.maxLength(20), Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
@@ -2553,6 +2553,13 @@ handleColumnSelectAll($event:any): void {
 
   }
 
+  /**
+   * Get today's date for minDate
+   */
+  getTodayDate(): Date {
+    return new Date();
+  }
+
   // Generic Table Example - Current Mode
   currentTableMode = signal<string>('Static Data');
 
@@ -2779,12 +2786,12 @@ handleColumnSelectAll($event:any): void {
    */
   loadWithAutoGeneration(): void {
     console.log('🚀 Loading with AUTO-GENERATION (zero config)...');
-
+    
     const config = this.autoTable.autoGenerateTable(this.SAMPLE_ACCOUNT_DATA);
-
+    
     this.genericTableConfig.set(config);
     this.currentTableMode.set('Auto-Generation (Zero Config)');
-
+    
     console.log('✅ Table generated automatically!', config);
     this.toastr.success('Table generated automatically with zero configuration!', 'Auto-Generation');
   }
@@ -2794,7 +2801,7 @@ handleColumnSelectAll($event:any): void {
    */
   loadWithMinimalConfig(): void {
     console.log('🎨 Loading with MINIMAL CONFIG...');
-
+    
     const config = this.autoTable.autoGenerateTable(this.SAMPLE_ACCOUNT_DATA, {
       // Highlight important fields
       highlightFields: [
@@ -2802,7 +2809,7 @@ handleColumnSelectAll($event:any): void {
         'availableBalance',
         'currentBalance'
       ],
-
+      
       // Auto-format currency fields
       currencyFields: [
         'availableBalance',
@@ -2814,7 +2821,7 @@ handleColumnSelectAll($event:any): void {
         'blockedAmount',
         'renewedPrincipalAmount'
       ],
-
+      
       // Auto-format date fields
       dateFields: [
         'openDate',
@@ -2823,10 +2830,10 @@ handleColumnSelectAll($event:any): void {
         'accountRenewalDate'
       ]
     });
-
+    
     this.genericTableConfig.set(config);
     this.currentTableMode.set('With Formatting (Minimal Config)');
-
+    
     console.log('✅ Table generated with formatting!', config);
     this.toastr.success('Table generated with formatting!', 'Minimal Config');
   }
@@ -2834,158 +2841,87 @@ handleColumnSelectAll($event:any): void {
   /**
    * METHOD 3: Full Customization
    */
-loadWithFullConfig(): void {
-  console.log('✨ Loading with FULL CUSTOMIZATION...');
-
-  const config = this.autoTable.autoGenerateTable(this.SAMPLE_ACCOUNT_DATA, {
-    // Highlight important fields
-    highlightFields: [
-      'accountHolderName',
-      'availableBalance',
-      'currentBalance'
-    ],
-
-    // Auto-format currency fields
-    currencyFields: [
-      'availableBalance',
-      'currentBalance',
-      'principleAmount',
-      'amountOnLien',
-      'maturedAmount',
-      'interestPayable',
-      'blockedAmount',
-      'totalTermAmount',
-      'renewedPrincipalAmount'
-    ],
-
-    // Auto-format date fields
-    dateFields: [
-      'openDate',
-      'maturityDate',
-      'lastRenewalDate',
-      'accountRenewalDate'
-    ],
-
-
-    fieldCustomizations: {
-      'accountHolderName': {
-        colspan: 4,
-        highlighted: true
+  loadWithFullConfig(): void {
+    console.log('✨ Loading with FULL CUSTOMIZATION...');
+    
+    const config = this.autoTable.autoGenerateTable(this.SAMPLE_ACCOUNT_DATA, {
+      // Highlight important fields
+      highlightFields: [
+        'accountHolderName',
+        'availableBalance',
+        'currentBalance'
+      ],
+      
+      // Auto-format currency fields
+      currencyFields: [
+        'availableBalance',
+        'currentBalance',
+        'principleAmount',
+        'amountOnLien',
+        'maturedAmount',
+        'interestPayable',
+        'blockedAmount',
+        'totalTermAmount',
+        'renewedPrincipalAmount'
+      ],
+      
+      // Auto-format date fields
+      dateFields: [
+        'openDate',
+        'maturityDate',
+        'lastRenewalDate',
+        'accountRenewalDate'
+      ],
+      
+      // Make these fields full width
+      fullWidthFields: [
+        'accountHolderName',
+        'specialInstruction',
+        'customerCategory'
+      ],
+      
+      // Custom section titles
+      sectionTitles: {
+        'accountInfo': 'Account Information',
+        'balanceDetails': 'Balance Details'
       },
-      'specialInstruction': {
-        colspan: 4
-      },
-      'customerCategory': {
-        colspan: 4
+      
+      // Custom field labels
+      fieldLabels: {
+        'accountHolderName': 'Account Holder Name',
+        'contactAddress': 'Contact Address',
+        'accountType': 'Account Type',
+        'accountStatus': 'Account Status',
+        'customerCode': 'Customer Code',
+        'customerCategory': 'Customer Category',
+        'specialInstruction': 'Special Instruction',
+        'availableBalance': 'Available Balance',
+        'currentBalance': 'Current Balance',
+        'principleAmount': 'Principle Amount',
+        'amountOnLien': 'Amount On Lien',
+        'maturedAmount': 'Matured Amount',
+        'interestPayable': 'Interest Payable',
+        'blockedAmount': 'Blocked Amount',
+        'totalTermNo': 'Total Term No.',
+        'totalTermAmount': 'Total Term Amount',
+        'openDate': 'Open Date',
+        'maturityDate': 'Maturity Date',
+        'interestPerMonth': 'Interest Per Month',
+        'interestDueLastMonth': 'Interest Due Last Month',
+        'interestCredit': 'Interest Credit',
+        'totalBelda': 'Total Belda',
+        'renewedPrincipalAmount': 'Renewed Principal Amount',
+        'lastRenewalDate': 'Last Renewal Date',
+        'accountRenewalDate': 'Account Renewal Date'
       }
-    },
-
-    // 🎯 NEW: Custom rows with colspan/rowspan
-    customRows: [
-
-      {
-        sectionKey: 'accountInfo',
-        position: 3,          // Insert as 4th row
-        cells: [
-          {
-            label: '',
-            value: '',
-            colspan: 2        // Empty left half
-          },
-          {
-            label: 'Country :',
-
-            colspan: 1
-          },
-          {
-            key: 'country',
-            colspan: 1
-          }
-        ]
-      },
-
-      // Example: Add a summary row with rowspan
-      {
-        sectionKey: 'balanceDetails',
-        position: 'end',      // Add at end
-        cells: [
-          {
-            label: 'Summary :',
-            colspan: 1,
-            rowspan: 2,       // Spans 2 rows
-            highlighted: true,
-            className: 'align-top font-bold'
-          },
-          {
-            label: 'Total Balance :',
-            colspan: 1
-          },
-          {
-            value: 'BDT 100,642.50',
-            colspan: 2,
-            highlighted: true,
-            className: 'font-bold'
-          }
-        ]
-      },
-      // Second row (first cell covered by rowspan above)
-      {
-        sectionKey: 'balanceDetails',
-        position: 'end',
-        cells: [
-          // Skip first cell - covered by rowspan
-          {
-            label: 'Account Status :',
-            colspan: 1
-          },
-          {
-            key: 'accountStatus',
-            colspan: 2
-          }
-        ]
-      }
-    ],
-
-    // Custom section titles
-    sectionTitles: {
-      'accountInfo': 'Account Information',
-      'balanceDetails': 'Balance Details'
-    },
-
-    // Custom field labels
-    fieldLabels: {
-      'accountHolderName': 'Account Holder Name',
-      'contactAddress': 'Contact Address',
-      'accountType': 'Account Type',
-      'accountStatus': 'Account Status',
-      'customerCode': 'Customer Code',
-      'customerCategory': 'Customer Category',
-      'specialInstruction': 'Special Instruction',
-      'availableBalance': 'Available Balance',
-      'currentBalance': 'Current Balance',
-      'principleAmount': 'Principle Amount',
-      'amountOnLien': 'Amount On Lien',
-      'maturedAmount': 'Matured Amount',
-      'interestPayable': 'Interest Payable',
-      'blockedAmount': 'Blocked Amount',
-      'totalTermNo': 'Total Term No.',
-      'totalTermAmount': 'Total Term Amount',
-      'openDate': 'Open Date',
-      'maturityDate': 'Maturity Date',
-      'interestPerMonth': 'Interest Per Month',
-      'interestDueLastMonth': 'Interest Due Last Month',
-      'interestCredit': 'Interest Credit',
-      'totalBelda': 'Total Belda',
-      'renewedPrincipalAmount': 'Renewed Principal Amount',
-      'lastRenewalDate': 'Last Renewal Date',
-      'accountRenewalDate': 'Account Renewal Date'
-    }
-  });
-
-  this.genericTableConfig.set(config);
-  this.currentTableMode.set('Full Customization with Rowspan/Colspan');
-
-}
+    });
+    
+    this.genericTableConfig.set(config);
+    this.currentTableMode.set('Full Customization');
+    
+    console.log('✅ Table generated with full customization!', config);
+    this.toastr.success('Table generated with full customization!', 'Full Config');
+  }
 
   /**
    * Load Customer Data Example
@@ -3002,7 +2938,7 @@ loadWithFullConfig(): void {
         'employmentInfo': 'Employment Information'
       }
     });
-
+    
     this.genericTableConfig.set(config);
     this.currentTableMode.set('Customer Data Example');
     this.toastr.info('Loaded customer data example', 'Customer Data');
@@ -3023,7 +2959,7 @@ loadWithFullConfig(): void {
         'accountDetails': 'Account Details'
       }
     });
-
+    
     this.genericTableConfig.set(config);
     this.currentTableMode.set('Transaction Data Example');
     this.toastr.info('Loaded transaction data example', 'Transaction Data');
@@ -3031,19 +2967,19 @@ loadWithFullConfig(): void {
 
   /**
    * Load Custom Table with Rowspan and Colspan Examples
-   *
+   * 
    * This demonstrates how to use colspan and rowspan for advanced table layouts:
-   *
+   * 
    * COLSPAN: Use colspan to make a cell span multiple columns
    *   Example: { value: 'Some text', colspan: 3 } spans 3 columns
-   *
+   * 
    * ROWSPAN: Use rowspan to make a cell span multiple rows
    *   Example: { label: 'Category', rowspan: 4 } spans 4 rows
    *   Note: When using rowspan, you must skip cells in subsequent rows
-   *
+   * 
    * COMBINED: You can combine both for complex layouts
    *   Example: { value: 'Header', colspan: 2, rowspan: 2 }
-   *
+   * 
    * IMPORTANT: When using rowspan:
    *   - The first row defines the cell with rowspan
    *   - Subsequent rows must have fewer cells (skip the spanned position)

@@ -17,6 +17,8 @@
         [ngClass]="{ 'readonly-input': isReadonly() }"
         matInput
         [matDatepicker]="datePicker"
+        [min]="getMinDate()"
+        [max]="getMaxDate()"
         [placeholder]="' '"
         [matTooltip]="tooltip()"
         [matTooltipPosition]="tooltipPosition()"
@@ -42,7 +44,7 @@
       <!-- DATE PICKER TOGGLE -->
       <mat-datepicker-toggle
         [disabled]="isReadonly()"
-        matSuffix
+        matSuffix 
         [for]="datePicker"
         class="absolute top-1/2 right-2 -translate-y-1/2 text-gray-500 peer-focus:text-blue-600">
       </mat-datepicker-toggle>
@@ -76,6 +78,8 @@
         [ngClass]="{ 'readonly-input': isReadonly() }"
         matInput
         [matDatepicker]="datePicker"
+        [min]="getMinDate()"
+        [max]="getMaxDate()"
         [placeholder]="dateFormat()"
         [matTooltip]="tooltip()"
         [matTooltipPosition]="tooltipPosition()"

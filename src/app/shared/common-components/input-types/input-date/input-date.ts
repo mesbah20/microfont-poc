@@ -51,6 +51,8 @@ export class InputDate {
   readonly minYear = input<number>(1900);
   readonly maxYear = input<number>(2030);
   readonly enableYearRangeValidation = input<boolean>(true);
+  readonly minDate = input<Date | string | null>(null);
+  readonly maxDate = input<Date | string | null>(null);
   readonly onBlurred = output<any>();
   readonly includeTime = input<number>(1);
   readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
@@ -210,11 +212,49 @@ onDateSelected(event: any): void {
         this.showYearValidationMessage(selectedYear);
         return;
       }
+
+      // Validate minDate
+      const minDate = this.getMinDate();
+      if (minDate && date < minDate) {
+        control.setValue('');
+        control.setErrors({
+          ...control.errors,
+          minDate: {
+            selectedDate: date,
+            minDate: minDate
+          }
+        });
+        const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
+        if (inputElement) {
+          inputElement.value = '';
+        }
+        return;
+      }
+
+      // Validate maxDate
+      const maxDate = this.getMaxDate();
+      if (maxDate && date > maxDate) {
+        control.setValue('');
+        control.setErrors({
+          ...control.errors,
+          maxDate: {
+            selectedDate: date,
+            maxDate: maxDate
+          }
+        });
+        const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
+        if (inputElement) {
+          inputElement.value = '';
+        }
+        return;
+      }
       
-      // Clear any existing year range errors
-      if (control.errors?.['yearOutOfRange']) {
+      // Clear any existing year range, minDate, or maxDate errors
+      if (control.errors?.['yearOutOfRange'] || control.errors?.['minDate'] || control.errors?.['maxDate']) {
         const errors = { ...control.errors };
         delete errors['yearOutOfRange'];
+        delete errors['minDate'];
+        delete errors['maxDate'];
         control.setErrors(Object.keys(errors).length ? errors : null);
       }
       
@@ -591,6 +631,20 @@ getDetailedErrorMessage(): string {
     return 'Please enter a valid date';
   }
   
+  // Check for min date error
+  if (errors['minDate']) {
+    const minDateInfo = errors['minDate'];
+    const minDateStr = this.formatDateForDisplay(minDateInfo.minDate);
+    return `Date must be on or after ${minDateStr}`;
+  }
+  
+  // Check for max date error
+  if (errors['maxDate']) {
+    const maxDateInfo = errors['maxDate'];
+    const maxDateStr = this.formatDateForDisplay(maxDateInfo.maxDate);
+    return `Date must be on or before ${maxDateStr}`;
+  }
+  
   return 'Please enter a valid date';
 }
 onFocus(event: FocusEvent): void {
@@ -724,6 +778,51 @@ onBlur(): void {
     // Handle Date objects
     if (control.value instanceof Date) {
       const date = control.value as Date;
+      
+      // Validate against minDate
+      const minDate = this.getMinDate();
+      if (minDate) {
+        const selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const minDateOnly = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+        if (selectedDate < minDateOnly) {
+          control.setValue('');
+          control.setErrors({
+            ...control.errors,
+            minDate: {
+              selectedDate: date,
+              minDate: minDate
+            }
+          });
+          const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
+          if (inputElement) {
+            inputElement.value = '';
+          }
+          return;
+        }
+      }
+
+      // Validate against maxDate
+      const maxDate = this.getMaxDate();
+      if (maxDate) {
+        const selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const maxDateOnly = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate());
+        if (selectedDate > maxDateOnly) {
+          control.setValue('');
+          control.setErrors({
+            ...control.errors,
+            maxDate: {
+              selectedDate: date,
+              maxDate: maxDate
+            }
+          });
+          const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
+          if (inputElement) {
+            inputElement.value = '';
+          }
+          return;
+        }
+      }
+
       const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       stringValue = `${String(date.getDate()).padStart(2, '0')} ${monthNames[date.getMonth()]}, ${date.getFullYear()}`;
       
@@ -733,8 +832,15 @@ onBlur(): void {
         inputElement.value = stringValue;
       }
       
-      // console.log('Date object converted to display format on blur:', stringValue);
-      return; // Date objects are always valid, no need to validate further
+      // Clear any min/max date errors if date is valid
+      if (control.errors?.['minDate'] || control.errors?.['maxDate']) {
+        const errors = { ...control.errors };
+        delete errors['minDate'];
+        delete errors['maxDate'];
+        control.setErrors(Object.keys(errors).length ? errors : null);
+      }
+      
+      return;
     } else {
       stringValue = typeof control.value === 'string' ? control.value : String(control.value);
     }
@@ -746,6 +852,82 @@ onBlur(): void {
       
       if (format === 'DD MMM, YYYY') {
         isValid = this.isValidMonthAbbreviationFormat(stringValue);
+        
+        // If valid, validate against min/max dates
+        if (isValid) {
+          const match = stringValue.match(/^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/);
+          if (match) {
+            const day = parseInt(match[1]);
+            const monthAbbr = match[2].toLowerCase();
+            const year = parseInt(match[3]);
+            
+            const monthMap: { [key: string]: number } = {
+              'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+              'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12
+            };
+            
+            const month = monthMap[monthAbbr];
+            if (month) {
+              const dateObj = new Date(year, month - 1, day);
+              
+              // Validate against minDate
+              const minDate = this.getMinDate();
+              if (minDate) {
+                const selectedDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+                const minDateOnly = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+                if (selectedDate < minDateOnly) {
+                  control.setValue('');
+                  control.setErrors({
+                    ...control.errors,
+                    minDate: {
+                      selectedDate: dateObj,
+                      minDate: minDate
+                    }
+                  });
+                  const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
+                  if (inputElement) {
+                    inputElement.value = '';
+                  }
+                  return;
+                }
+              }
+
+              // Validate against maxDate
+              const maxDate = this.getMaxDate();
+              if (maxDate) {
+                const selectedDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+                const maxDateOnly = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate());
+                if (selectedDate > maxDateOnly) {
+                  control.setValue('');
+                  control.setErrors({
+                    ...control.errors,
+                    maxDate: {
+                      selectedDate: dateObj,
+                      maxDate: maxDate
+                    }
+                  });
+                  const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
+                  if (inputElement) {
+                    inputElement.value = '';
+                  }
+                  return;
+                }
+              }
+
+              // Store the Date object if valid
+              setTimeout(() => {
+                control.setValue(dateObj, { emitEvent: false });
+                // Clear any min/max date errors if date is valid
+                if (control.errors?.['minDate'] || control.errors?.['maxDate']) {
+                  const errors = { ...control.errors };
+                  delete errors['minDate'];
+                  delete errors['maxDate'];
+                  control.setErrors(Object.keys(errors).length ? errors : null);
+                }
+              }, 0);
+            }
+          }
+        }
       } else {
         isValid = this.isValidDateFormat(stringValue);
         
@@ -753,17 +935,69 @@ onBlur(): void {
         if (isValid && !this.isDisplayFormat(stringValue)) {
           const displayValue = this.convertInputFormatToDisplayFormat(stringValue);
           if (displayValue) {
-            // Update the input element value directly
-            const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
-            if (inputElement) {
-              inputElement.value = displayValue;
-            }
-            
-            // Create a Date object and store it in the control for consistency
+            // Create a Date object first to validate against min/max dates
             const dateObj = this.createDateFromInputString(stringValue);
             if (dateObj) {
+              // Validate against minDate
+              const minDate = this.getMinDate();
+              if (minDate) {
+                const selectedDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+                const minDateOnly = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+                if (selectedDate < minDateOnly) {
+                  control.setValue('');
+                  control.setErrors({
+                    ...control.errors,
+                    minDate: {
+                      selectedDate: dateObj,
+                      minDate: minDate
+                    }
+                  });
+                  const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
+                  if (inputElement) {
+                    inputElement.value = '';
+                  }
+                  return;
+                }
+              }
+
+              // Validate against maxDate
+              const maxDate = this.getMaxDate();
+              if (maxDate) {
+                const selectedDate = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+                const maxDateOnly = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate());
+                if (selectedDate > maxDateOnly) {
+                  control.setValue('');
+                  control.setErrors({
+                    ...control.errors,
+                    maxDate: {
+                      selectedDate: dateObj,
+                      maxDate: maxDate
+                    }
+                  });
+                  const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
+                  if (inputElement) {
+                    inputElement.value = '';
+                  }
+                  return;
+                }
+              }
+
+              // Update the input element value directly
+              const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
+              if (inputElement) {
+                inputElement.value = displayValue;
+              }
+              
+              // Store the Date object in the control for consistency
               setTimeout(() => {
                 control.setValue(dateObj, { emitEvent: false });
+                // Clear any min/max date errors if date is valid
+                if (control.errors?.['minDate'] || control.errors?.['maxDate']) {
+                  const errors = { ...control.errors };
+                  delete errors['minDate'];
+                  delete errors['maxDate'];
+                  control.setErrors(Object.keys(errors).length ? errors : null);
+                }
               }, 0);
             }
           }
@@ -1168,6 +1402,67 @@ private isPartialMonthAbbreviationInputValid(value: string): boolean {
   return true;
 }
 
+  /**
+   * Get minDate as Date object
+   */
+  getMinDate(): Date | null {
+    const minDateValue = this.minDate();
+    if (!minDateValue) return null;
+    
+    if (minDateValue instanceof Date) {
+      return new Date(minDateValue.getFullYear(), minDateValue.getMonth(), minDateValue.getDate());
+    }
+    
+    if (typeof minDateValue === 'string') {
+      const date = new Date(minDateValue);
+      if (!isNaN(date.getTime())) {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      }
+    }
+    
+    return null;
+  }
+
+  /**
+   * Get maxDate as Date object
+   */
+  getMaxDate(): Date | null {
+    const maxDateValue = this.maxDate();
+    if (!maxDateValue) return null;
+    
+    if (maxDateValue instanceof Date) {
+      return new Date(maxDateValue.getFullYear(), maxDateValue.getMonth(), maxDateValue.getDate());
+    }
+    
+    if (typeof maxDateValue === 'string') {
+      const date = new Date(maxDateValue);
+      if (!isNaN(date.getTime())) {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      }
+    }
+    
+    return null;
+  }
+
+  /**
+   * Format date for display in error messages
+   */
+  private formatDateForDisplay(date: Date | string): string {
+    let dateObj: Date;
+    
+    if (date instanceof Date) {
+      dateObj = date;
+    } else {
+      dateObj = new Date(date);
+      if (isNaN(dateObj.getTime())) {
+        return String(date);
+      }
+    }
+    
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${String(dateObj.getDate()).padStart(2, '0')} ${monthNames[dateObj.getMonth()]}, ${dateObj.getFullYear()}`;
+  }
+
 private dateFormatValidator(control: AbstractControl): { [key: string]: any } | null {
   if (!control.value) return null;
 
@@ -1189,6 +1484,36 @@ private dateFormatValidator(control: AbstractControl): { [key: string]: any } | 
         }
       };
     }
+
+    // Check minDate
+    const minDate = this.getMinDate();
+    if (minDate) {
+      const selectedDate = new Date(dateObject.getFullYear(), dateObject.getMonth(), dateObject.getDate());
+      const minDateOnly = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+      if (selectedDate < minDateOnly) {
+        return {
+          minDate: {
+            selectedDate: dateObject,
+            minDate: minDate
+          }
+        };
+      }
+    }
+
+    // Check maxDate
+    const maxDate = this.getMaxDate();
+    if (maxDate) {
+      const selectedDate = new Date(dateObject.getFullYear(), dateObject.getMonth(), dateObject.getDate());
+      const maxDateOnly = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate());
+      if (selectedDate > maxDateOnly) {
+        return {
+          maxDate: {
+            selectedDate: dateObject,
+            maxDate: maxDate
+          }
+        };
+      }
+    }
     
     // Date objects are valid - they're already validated
     return null;
@@ -1209,6 +1534,37 @@ private dateFormatValidator(control: AbstractControl): { [key: string]: any } | 
             }
           };
         }
+
+        // Check minDate
+        const minDate = this.getMinDate();
+        if (minDate) {
+          const selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+          const minDateOnly = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+          if (selectedDate < minDateOnly) {
+            return {
+              minDate: {
+                selectedDate: date,
+                minDate: minDate
+              }
+            };
+          }
+        }
+
+        // Check maxDate
+        const maxDate = this.getMaxDate();
+        if (maxDate) {
+          const selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+          const maxDateOnly = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate());
+          if (selectedDate > maxDateOnly) {
+            return {
+              maxDate: {
+                selectedDate: date,
+                maxDate: maxDate
+              }
+            };
+          }
+        }
+
         return null; 
       }
     }
@@ -1298,6 +1654,36 @@ private validateMonthAbbreviationFormat(value: string): { [key: string]: any } |
       }
     };
   }
+
+  // Check minDate
+  const minDate = this.getMinDate();
+  if (minDate) {
+    const selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const minDateOnly = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+    if (selectedDate < minDateOnly) {
+      return {
+        minDate: {
+          selectedDate: date,
+          minDate: minDate
+        }
+      };
+    }
+  }
+
+  // Check maxDate
+  const maxDate = this.getMaxDate();
+  if (maxDate) {
+    const selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const maxDateOnly = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate());
+    if (selectedDate > maxDateOnly) {
+      return {
+        maxDate: {
+          selectedDate: date,
+          maxDate: maxDate
+        }
+      };
+    }
+  }
   
   return null;
 }
@@ -1370,6 +1756,36 @@ private validateStandardDateFormat(value: string): { [key: string]: any } | null
         enteredDay: day
       }
     };
+  }
+
+  // Check minDate
+  const minDate = this.getMinDate();
+  if (minDate) {
+    const selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const minDateOnly = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+    if (selectedDate < minDateOnly) {
+      return {
+        minDate: {
+          selectedDate: date,
+          minDate: minDate
+        }
+      };
+    }
+  }
+
+  // Check maxDate
+  const maxDate = this.getMaxDate();
+  if (maxDate) {
+    const selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const maxDateOnly = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate());
+    if (selectedDate > maxDateOnly) {
+      return {
+        maxDate: {
+          selectedDate: date,
+          maxDate: maxDate
+        }
+      };
+    }
   }
   
   return null;
