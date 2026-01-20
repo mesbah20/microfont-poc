@@ -10,9 +10,9 @@
   // ============================================================================
   // GLOBAL ROW HEIGHT VARIABLES
   // ============================================================================
-  --data-row-height: 25px;
-  --header-row-height: 30px;
-  --cell-padding: 0 12px;
+  --data-row-height: 20px;
+  --header-row-height: 10px;
+  --cell-padding: 0 6px;
   --header-font-size: 12px;
   --data-font-size: 13px;
 
@@ -118,6 +118,7 @@
   .table-container {
     position: relative;
     overflow-x: auto;
+    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     width: 100%;
 
@@ -167,14 +168,13 @@
       .mat-mdc-header-cell {
         background-color: var(--theme-primary, #1e40af);
         font-weight: 500;
-        font-size: 10px;
         color: #ffffff;
         text-transform: capitalize;
         letter-spacing: 0.05em;
-        // border: 1px solid #ff0077;
-        line-height: calc(var(--header-row-height) - 4px) !important;
-        min-height: var(--header-row-height) !important;
-        // padding: 0px;
+        line-height: calc(var(--header-row-height) - 10px) !important;
+        min-height: 10px !important;
+        padding: 12px;
+
         &.sortable {
           cursor: pointer;
           user-select: none;
@@ -188,7 +188,6 @@
             align-items: center;
             gap: 8px;
             // border: 1px solid brown;
-            justify-content: space-between;
 
             .sort-icon {
               font-size: 16px;
@@ -296,25 +295,40 @@
 
       .action-buttons {
         display: flex;
-        gap: 3px;
         justify-content: center;
         align-items: center;
+        text-align: center;
+        width: 100%;
+        height: 100%;
 
         .action-btn {
           background: transparent !important;
-          width: 22px;
-          height: 22px;
-          padding: 0;
+          width: 28px;
+          height: 28px;
+          min-width: 28px;
+          min-height: 28px;
+          padding: 0 !important;
           border-radius: 4px;
+          cursor: pointer;
+          position: relative;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          border: none;
 
           &:hover {
             background: #f3f4f6 !important;
+          }
+
+          &:active {
+            background: #e5e7eb !important;
           }
 
           mat-icon, svg {
             width: 18px;
             height: 18px;
             font-size: 18px;
+            pointer-events: none;
           }
         }
       }
@@ -334,6 +348,7 @@
           background-color: var(--theme-primary, #1e40af) !important;
           color: #ffffff !important;
 
+
           // Ensure checkbox is visible in header
           ::ng-deep .mat-mdc-checkbox {
             opacity: 1 !important;
@@ -342,11 +357,12 @@
         }
 
         &.mat-mdc-cell {
-          padding: 2px 4px !important;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 2px 6px !important;
+          padding: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          height: 100% !important;
+          min-height: 20px !important;
 
           // Ensure checkbox is visible in cell
           ::ng-deep .mat-mdc-checkbox {
@@ -374,7 +390,7 @@
         &.mat-mdc-cell {
           background: #ffffff;
           border-left: 1px solid #e5e7eb;
-          padding: 2px 6px !important;
+          padding: 2px 0px !important;
         }
       }
     }

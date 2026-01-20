@@ -563,7 +563,12 @@ export class InputAmountInWord {
   }
 
 
-  
+
+  hasCustomMessage(errorKey: string): boolean {
+    const messages = this.customErrorMessages();
+    return !!messages && errorKey in messages;
+  }
+
   // Get custom error message for a specific error key
  getCustomErrorMessage(errorKey: string): string {
     const customMessages = this.customErrorMessages();

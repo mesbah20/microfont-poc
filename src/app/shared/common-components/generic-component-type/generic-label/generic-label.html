@@ -1,5 +1,55 @@
 @if (!isHidden) {
-  <div class="input-label relative">
-    {{ labelValue() }}
-  </div>
-} 
+  <!-- ======================== FORM FIELD MODE (with FormGroup) ======================== -->
+  @if (frmGroup()) {
+    <div
+      [formGroup]="frmGroup()!"
+      [ngClass]="{
+        'input-container-vertical': displayMode() === 'vertical',
+        'input-container-horizontal': displayMode() === 'horizontal'
+      }"
+    >
+      <!-- VERTICAL MODE -->
+      @if (displayMode() === 'vertical') {
+        <label
+          class="input-label block mb-1"
+          [matTooltip]="tooltip()"
+          [matTooltipDisabled]="!tooltip()"
+        >
+          {{ label }}
+          @if (isRequired()) { <span class="text-red-500">*</span> }
+        </label>
+        <div class="display-value">
+          <span class="input-label" style="font-weight: bold">{{ getValue() }}</span>
+        </div>
+      }
+
+      <!-- HORIZONTAL MODE -->
+      @if (displayMode() === 'horizontal') {
+        <div class="display-value">
+          <span
+            class="input-label"
+            [matTooltip]="tooltip()"
+            [matTooltipDisabled]="!tooltip()"
+          >
+            {{ label }}@if (isRequired()) {<span class="text-red-500">*</span>}:
+            <span class="font-bold">{{ getValue() }}</span>
+          </span>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ======================== SIMPLE LABEL MODE (no FormGroup) ======================== -->
+  @if (!frmGroup()) {
+    <div
+      class="input-label relative"
+      [matTooltip]="tooltip()"
+      [matTooltipDisabled]="!tooltip()"
+    >
+      {{ label }}
+      @if (isRequired()) {
+        <span class="text-red-500">*</span>
+      }
+    </div>
+  }
+}

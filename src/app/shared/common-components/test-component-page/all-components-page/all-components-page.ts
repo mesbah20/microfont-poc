@@ -13,7 +13,7 @@ import { ExpansionPanelHeader } from '../../expansion-panel-header/expansion-pan
 import { ExpansionSubPanelHeader } from '../../expansion-sub-panel-header/expansion-sub-panel-header';
 import { InputTextArea } from '../../input-types/input-text-area/input-text-area';
 import { InputNumber } from '../../input-types/input-number/input-number';
-import { DropdownOption, GenericDataGrid } from '../../generic-component-type/generic-data-grid/generic-data-grid';
+import { DataGridStateChange, DropdownOption, GenericDataGrid } from '../../generic-component-type/generic-data-grid/generic-data-grid';
 import { GenericMultiInputSelectOption } from '../../generic-component-type/generic-multi-select-option/generic-multi-select-option';
 import { BUTTON_VISIBILITY, ONCLICK_SAVE, ONCLICK_SAVE_NEXT, ONCLICK_VIEW } from '../../../constant/button-signals.constant';
 import { catchError, debounceTime, distinctUntilChanged, retry, timeout } from 'rxjs/operators';
@@ -35,6 +35,7 @@ import { LoaderComponent } from "../../loader/loader.component";
 import { LoaderService } from '../../../services/loader.service';
 import { DynamicTableComponent, DynamicTableConfig, TableSection, TableRow, TableCell } from '../../generic-component-type/generic-table/generic-table';
 import { AutoTableService, AutoTableOptions } from '../../../services/data-mapper.service';
+import { Label } from '../../generic-component-type/generic-label/generic-label';
 
 // Types for data selection modal
 export interface AccountData {
@@ -43,6 +44,11 @@ export interface AccountData {
   category: string;
   amount: number;
 }
+interface Country {
+  countryId: number;
+  countryNm: string;
+}
+type Option = { key: any; value: string };
 
 export interface DataSelectionConfig {
   pickTableDataSource: AccountData[];
@@ -96,6 +102,7 @@ export interface DataSelectionConfig {
     AlertExamplePage,
     InputTag,
     DynamicTableComponent,
+    Label
 ],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],
@@ -111,6 +118,7 @@ export class AllComponentsPage implements OnInit {
   subPanel1: WritableSignal<boolean> = signal(true);
   timePickerHeaderPanel: WritableSignal<boolean> = signal(true);
   genericTableHeaderPanel: WritableSignal<boolean> = signal(true);
+  displayComponentsPanel: WritableSignal<boolean> = signal(true);
   // Reference to this component's own class
   static instance: Type<AllComponentsPage> = AllComponentsPage;
   isDataSelectionModalOpen = signal(false);
@@ -136,33 +144,33 @@ export class AllComponentsPage implements OnInit {
     this.isDataSelectionModalOpen.set(false);
   }
 
-onModalResult(result: any) {
-  console.log('Modal result received:', result);
+  onModalResult(result: any) {
+    console.log('Modal result received:', result);
 
-  if (!result) return;
+    if (!result) return;
 
-  // If child sends { field, value }
-  if (result.field) {
-    this.frmGroup.get(result.field)?.setValue(result.value);
-  } else if (typeof result === 'object' && !Array.isArray(result)) {
-    const controlKeys = Object.keys(this.frmGroup.controls);
-    const patch: any = {};
-    controlKeys.forEach(key => {
-      if (result[key] !== undefined) {
-        patch[key] = result[key];
+    // If child sends { field, value }
+    if (result.field) {
+      this.frmGroup.get(result.field)?.setValue(result.value);
+    } else if (typeof result === 'object' && !Array.isArray(result)) {
+      const controlKeys = Object.keys(this.frmGroup.controls);
+      const patch: any = {};
+      controlKeys.forEach(key => {
+        if (result[key] !== undefined) {
+          patch[key] = result[key];
+        }
+      });
+      if (Object.keys(patch).length) {
+        console.log('Patching parent form with modal data:', patch);
+        this.frmGroup.patchValue(patch);
       }
-    });
-    if (Object.keys(patch).length) {
-      console.log('Patching parent form with modal data:', patch);
-      this.frmGroup.patchValue(patch);
+    } else {
+      // Fallback: set a known control
+      // this.frmGroup.get('textBox')?.setValue(result);
     }
-  } else {
-    // Fallback: set a known control
-    // this.frmGroup.get('textBox')?.setValue(result);
-  }
 
-  this.showModal = false;
-}
+    this.showModal = false;
+  }
 
   // openModal() {
   //   this.isDataSelectionModalOpen.set(true);
@@ -205,26 +213,11 @@ onModalResult(result: any) {
     loadingMessage: 'Loading transaction data...'
   };
   // Enhanced dropdown options with relationships
-  currencyOptions = [
-    { key: 'USD', value: 'US Dollar', rate: 1, taxRate: 0.05, country: 'US' },
-    { key: 'EUR', value: 'Euro', rate: 0.85, taxRate: 0.08, country: 'EU' },
-    { key: 'GBP', value: 'British Pound', rate: 0.73, taxRate: 0.07, country: 'UK' },
-    { key: 'JPY', value: 'Japanese Yen', rate: 110, taxRate: 0.03, country: 'JP' },
-    { key: 'CAD', value: 'Canadian Dollar', rate: 1.25, taxRate: 0.06, country: 'CA' },
-    { key: 'AUD', value: 'Australian Dollar', rate: 1.35, taxRate: 0.04, country: 'AU' }
-  ];
+  currencyOptions: { key: string; value: string }[] = [];
 
-  countryOptions = [
-    { key: 'US', value: 'United States', region: 'NA', riskLevel: 'low' },
-    { key: 'EU', value: 'European Union', region: 'EU', riskLevel: 'low' },
-    { key: 'UK', value: 'United Kingdom', region: 'EU', riskLevel: 'low' },
-    { key: 'JP', value: 'Japan', region: 'AS', riskLevel: 'low' },
-    { key: 'CA', value: 'Canada', region: 'NA', riskLevel: 'low' },
-    { key: 'AU', value: 'Australia', region: 'OC', riskLevel: 'low' },
-    { key: 'CN', value: 'China', region: 'AS', riskLevel: 'medium' },
-    { key: 'RU', value: 'Russia', region: 'AS', riskLevel: 'high' },
-    { key: 'BD', value: 'Bangladesh', region: 'AS', riskLevel: 'medium' }
-  ];
+
+  countryOptions: { key: string | number; value: string }[] = [];
+
 
   productCategoryOptions = [
     { key: 'electronics', value: 'Electronics', taxMultiplier: 1.2, requiresApproval: false },
@@ -299,6 +292,8 @@ onModalResult(result: any) {
       riskLevel: 'medium',
       isSelected: true,
       requiresApproval: true,
+      name: 'John Smith',
+      profileImage: 'https://i.pravatar.cc/30?img=1',
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
         { value: 'approver', label: 'Transaction Approver' },
@@ -327,6 +322,8 @@ onModalResult(result: any) {
       riskLevel: 'low',
       isSelected: false,
       requiresApproval: false,
+      name: 'Sarah Johnson',
+      profileImage: 'https://i.pravatar.cc/30?img=2',
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
         { value: 'viewer', label: 'View Only' }
@@ -354,6 +351,8 @@ onModalResult(result: any) {
       riskLevel: 'low',
       isSelected: false,
       requiresApproval: true,
+      name: 'Michael Chen',
+      profileImage: 'https://i.pravatar.cc/30?img=3',
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
         { value: 'approver', label: 'Transaction Approver' },
@@ -382,6 +381,8 @@ onModalResult(result: any) {
       riskLevel: 'low',
       isSelected: false,
       requiresApproval: true,
+      name: 'Emma Wilson',
+      profileImage: 'https://i.pravatar.cc/30?img=4',
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
         { value: 'approver', label: 'Transaction Approver' },
@@ -410,6 +411,8 @@ onModalResult(result: any) {
       riskLevel: 'low',
       isSelected: false,
       requiresApproval: true,
+      name: 'David Martinez',
+      profileImage: null,
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
         { value: 'approver', label: 'Transaction Approver' },
@@ -438,6 +441,8 @@ onModalResult(result: any) {
       riskLevel: 'low',
       isSelected: true,
       requiresApproval: true,
+      name: 'Lisa Anderson',
+      profileImage: 'https://i.pravatar.cc/30?img=6',
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
         { value: 'approver', label: 'Transaction Approver' },
@@ -726,6 +731,16 @@ private loadUsersFromApi(): void {
       );
     });
 }
+
+loadDataFromServer(event: {
+  pageIndex: number;
+  pageSize: number;
+  pageNumber: number;
+}) {
+  console.log('Page Number:', event.pageNumber);
+  console.log('Page Size:', event.pageSize);
+}
+
 
   // Helper methods for data transformation
   private generateRandomTime(): string {
@@ -1358,8 +1373,8 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
 
   ngOnInit(): void {
     // Initialize generic table with auto-generation
-    this.loadCustomTableWithSpanning();
-
+    this.loadWithFullConfig();
+    this.loadCountries()
     this.frmGroup = this.formBuilder.group({
       textBox: [{ value: '', disabled: false }, [Validators.required, Validators.minLength(3), Validators.maxLength(20), Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
       id: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
@@ -1377,7 +1392,7 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
 
       // New relatable fields
       currency: ['USD', Validators.required],
-      country: ['JP', Validators.required],
+      country: ['', Validators.required],
       productCategory: ['', Validators.required],
       subCategory: ['', Validators.required],
       taxRate: [{ value: 0, disabled: true }],
@@ -1413,6 +1428,93 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
   }
 
 
+loadCountries(): void {
+  const apiUrl = 'http://192.168.20.250:9999/centrino/api/address-country/get-all';
+
+  this.http.get<Country[] | { data?: Country[]; result?: Country[] }>(apiUrl).pipe(
+    timeout(10000),
+    catchError(error => {
+      console.error('Country API error:', error);
+      this.toastr.error('Failed to load countries. Using default options.', 'Error');
+
+      // Fallback data
+      const fallback: Country[] = [
+        { countryId: 1, countryNm: 'United States' },
+        { countryId: 2, countryNm: 'United Kingdom' },
+        { countryId: 3, countryNm: 'Canada' },
+        { countryId: 4, countryNm: 'Australia' }
+      ];
+
+      return of(fallback);
+    })
+  ).subscribe({
+    next: (res) => {
+      console.log('Raw API Response:', res);
+
+      // Normalize API response
+      const countries: Country[] = Array.isArray(res)
+        ? res
+        : res.data ?? res.result ?? [];
+
+      // ✅ Limit to 10
+      const limitedCountries = countries.slice(0, 10);
+
+      if (limitedCountries.length === 0) {
+        this.toastr.warning('No countries found', 'Warning');
+        return;
+      }
+
+      this.countryOptions = limitedCountries.map((c: Country) => ({
+        key: c.countryId,
+        value: c.countryNm
+      }));
+
+      // Set default value
+      const countryControl = this.frmGroup?.get('country');
+      if (countryControl) {
+        countryControl.patchValue(limitedCountries[0].countryId, {
+          emitEvent: false
+        });
+      }
+
+      console.log('Countries loaded successfully:', this.countryOptions);
+      this.toastr.success(
+        `Loaded ${limitedCountries.length} countries`,
+        'Success'
+      );
+    },
+    error: (err) => {
+      console.error('Unexpected error loading countries:', err);
+      this.toastr.error(
+        'An unexpected error occurred while loading countries',
+        'Error'
+      );
+    }
+  });
+}
+
+
+
+parseCurrencyXML(xml: string): { key: string; value: string }[] {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xml, 'application/xml');
+
+  const payloads = Array.from(doc.getElementsByTagName('payload'));
+
+  return payloads.map(p => {
+    const id = p.getElementsByTagName('currencyId')[0]?.textContent ?? '';
+    const name = p.getElementsByTagName('currencyFullNm')[0]?.textContent ?? '';
+    const code = p.getElementsByTagName('isoSwiftCode')[0]?.textContent ?? '';
+
+    return {
+      key: id,
+      value: `${name} (${code})`
+    };
+  });
+}
+
+
+
   private setupFieldRelationships(): void {
     // Currency changes affect country, tax rate, and amount calculations
     this.frmGroup.get('currency')?.valueChanges.pipe(
@@ -1427,7 +1529,7 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       debounceTime(300),
       distinctUntilChanged()
     ).subscribe((countryCode: string) => {
-      this.handleCountryChange(countryCode);
+      // this.handleCountryChange(countryCode);
     });
 
     // Product category changes affect subcategories and tax calculations
@@ -1505,14 +1607,14 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       this.selectedCurrency.set(currencyCode);
 
       // Auto-select related country
-      this.frmGroup.patchValue({
-        country: currency.country
-      }, { emitEvent: false });
+      // this.frmGroup.patchValue({
+      //   country: currency.country
+      // }, { emitEvent: false });
 
       // Update tax rate
-      this.frmGroup.patchValue({
-        taxRate: currency.taxRate
-      });
+      // this.frmGroup.patchValue({
+      //   taxRate: currency.taxRate
+      // });
 
       // Recalculate amounts
       this.recalculateAmounts();
@@ -1520,32 +1622,32 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       // Filter related transactions in grid
       this.filterRelatedTransactions();
 
-      this.toastr.info(`Currency changed to ${currency.value}. Auto-selected ${currency.country}`, 'Currency Update');
+      // this.toastr.info(`Currency changed to ${currency.value}. Auto-selected ${currency.country}`, 'Currency Update');
     }
   }
 
-  private handleCountryChange(countryCode: string): void {
-    const country = this.countryOptions.find(c => c.key === countryCode);
-    if (country) {
-      this.selectedCountry.set(countryCode);
+  // private handleCountryChange(countryCode: string): void {
+  //   const country = this.countryOptions.find(c => c.key === countryCode);
+  //   if (country) {
+  //     this.selectedCountry.set(countryCode);
 
-      // Update risk level
-      this.frmGroup.patchValue({
-        riskLevel: country.riskLevel
-      });
+  //     // Update risk level
+  //     this.frmGroup.patchValue({
+  //       riskLevel: country.riskLevel
+  //     });
 
-      // Update approval requirements based on risk
-      const requiresApproval = country.riskLevel === 'high' || country.riskLevel === 'medium';
-      this.frmGroup.patchValue({
-        requiresApproval: requiresApproval
-      });
+  //     // Update approval requirements based on risk
+  //     const requiresApproval = country.riskLevel === 'high' || country.riskLevel === 'medium';
+  //     this.frmGroup.patchValue({
+  //       requiresApproval: requiresApproval
+  //     });
 
-      // Update validation rules based on risk level
-      this.updateValidationRules(country.riskLevel);
+  //     // Update validation rules based on risk level
+  //     this.updateValidationRules(country.riskLevel);
 
-      this.toastr.info(`Country set to ${country.value}. Risk level: ${country.riskLevel}`, 'Country Update');
-    }
-  }
+  //     this.toastr.info(`Country set to ${country.value}. Risk level: ${country.riskLevel}`, 'Country Update');
+  //   }
+  // }
 
   private handleProductCategoryChange(categoryCode: string): void {
     const category = this.productCategoryOptions.find(c => c.key === categoryCode);
@@ -1844,6 +1946,9 @@ onTransactionDataChanged(newData: any[]): void {
   this.sampleTransactions.set(validatedData);
   this.filterRelatedTransactions();
 
+  // Reattach event listeners to new grid buttons
+  // setTimeout(() => this.attachGridButtonListeners(), 100);
+
   this.toastr.success('Transaction data updated with validation', 'Data Updated');
 }
 
@@ -1854,7 +1959,7 @@ private recalculateTransactionAmounts(transaction: any): any {
   // Get currency-specific tax rate
   const currency = this.currencyOptions.find(c => c.key === transaction.currency);
   if (currency) {
-    taxRate = currency.taxRate;
+    // taxRate = currency.taxRate;
   }
 
   // Apply category multiplier
@@ -1875,7 +1980,9 @@ private recalculateTransactionAmounts(transaction: any): any {
     requiresApproval: category?.requiresApproval || amount > 50000
   };
 }
-
+    dd(){
+      alert('dd');
+    }
   // Row-level action visibility for the transaction grid
   private getTransactionActionVisibility(row: any) {
     return {
@@ -1886,24 +1993,598 @@ private recalculateTransactionAmounts(transaction: any): any {
       progress: row.priority === 'high',                            // example: show progress only for high priority
     };
   }
-  private validateTransactionRelationships(transaction: any): void {
-    // Validate currency-country relationship
-    const currency = this.currencyOptions.find(c => c.key === transaction.currency);
-    if (currency && currency.country !== transaction.country) {
-      this.toastr.warning(`Currency-Country mismatch in ${transaction.id}`, 'Validation Warning');
-    }
 
-    // Validate category-subcategory relationship
-    const subCategory = this.subCategoryOptions.find(s => s.key === transaction.subCategory);
-    if (subCategory && subCategory.parentCategory !== transaction.productCategory) {
-      this.toastr.error(`Invalid subcategory for ${transaction.id}`, 'Validation Error');
-    }
+  // ==================== ENHANCED DATA GRID SHOWCASE ====================
+  // Signal for enhanced showcase grid expansion state
+  enhancedGridShowcase: WritableSignal<boolean> = signal(true);
 
-    // Validate minimum amount for subcategory
-    if (subCategory && transaction.amount < subCategory.minAmount) {
-      this.toastr.error(`Amount below minimum for ${transaction.subCategory} in ${transaction.id}`, 'Amount Error');
+  // Toggle for showing custom action buttons
+  showCustomActionButtons: WritableSignal<boolean> = signal(true);
+
+  // SVG icons for custom action buttons
+  approveSvgIcon = `<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17Z" fill="currentColor" />`;
+  downloadSvgIcon = `<path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor" />`;
+
+  // Enhanced action visibility with more granular control
+  enhancedActionVisibility = (row: any) => {
+    return {
+      delete: row.riskLevel !== 'high' || row.status === 'pending', // prevent delete on high-risk unless pending
+      edit: row.status !== 'completed' && row.status !== 'failed',
+      view: true,
+      print: true,
+      progress: row.riskLevel === 'high' && row.priority === 'high'
+    };
+  };
+
+  // Enhanced dropdown options with all possible statuses, priorities, and risk levels
+  enhancedDropdownOptions = () => signal<Record<string, DropdownOption[]>>({
+    status: [
+      { value: 'pending', label: 'Pending' },
+      { value: 'processing', label: 'Processing' },
+      { value: 'completed', label: 'Completed' },
+      { value: 'failed', label: 'Failed' },
+      { value: 'cancelled', label: 'Cancelled' }
+    ],
+    priority: [
+      { value: 'low', label: 'Low Priority' },
+      { value: 'normal', label: 'Normal Priority' },
+      { value: 'high', label: 'High Priority' },
+      { value: 'critical', label: 'Critical Priority' }
+    ],
+    riskLevel: [
+      { value: 'low', label: 'Low Risk' },
+      { value: 'medium', label: 'Medium Risk' },
+      { value: 'high', label: 'High Risk' }
+    ]
+  })();
+
+  // Custom render functions for enhanced showcase
+  enhancedCellRenderers = () => ({
+    // Amount column: formatted currency with conditional styling
+    amount: (cellValue: any, rowData: any) => {
+      const amount = parseFloat(cellValue) || 0;
+      const currency = rowData.currency || 'USD';
+      const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      return formatter.format(amount);
+    },
+
+    // Status column: colored badge with HTML
+    status: (cellValue: any) => {
+      const statusColors: Record<string, string> = {
+        'completed': '#10b981',
+        'failed': '#ef4444',
+        'pending': '#f59e0b',
+        'processing': '#3b82f6',
+        'cancelled': '#6b7280'
+      };
+      const color = statusColors[cellValue] || '#6b7280';
+      return `<span style="display: inline-block; background-color: ${color}; color: white; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600;">${cellValue?.toUpperCase()}</span>`;
+    },
+
+    // Priority column: icon + text
+    priority: (cellValue: any) => {
+      const icons: Record<string, string> = {
+        'high': '⚠️',
+        'normal': '➖',
+        'low': '✓',
+        'critical': '🔴'
+      };
+      const icon = icons[cellValue] || '➖';
+      return `<span style="font-size: 14px; margin-right: 4px;">${icon}</span>${cellValue?.toUpperCase()}`;
+    },
+
+    // Risk level column: color-coded badges
+    riskLevel: (cellValue: any) => {
+      const riskColors: Record<string, { bg: string; text: string }> = {
+        'high': { bg: '#fee2e2', text: '#991b1b' },
+        'medium': { bg: '#fef3c7', text: '#92400e' },
+        'low': { bg: '#dcfce7', text: '#15803d' }
+      };
+      const colors = riskColors[cellValue] || { bg: '#f3f4f6', text: '#374151' };
+      return `<span style="background-color: ${colors.bg}; color: ${colors.text}; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">${cellValue?.toUpperCase()}</span>`;
+    },
+
+    // Total amount with formatted currency
+    totalAmount: (cellValue: any, rowData: any) => {
+      const amount = parseFloat(cellValue) || 0;
+      const currency = rowData.currency || 'USD';
+      const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 2
+      });
+      return `<strong>${formatter.format(amount)}</strong>`;
+    },
+
+    // ============= NEW: BUTTON EXAMPLES =============
+    // Action buttons example
+    actionButtons: (cellValue: any, rowData: any) => {
+      const rowDataJson = btoa(JSON.stringify(rowData));
+      return `
+        <div style="display: flex; gap: 2px;">
+          <button class="grid-button" data-action="approve" data-row="${rowDataJson}" style="background-color: #10b981; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+            ✓ Approve
+          </button>
+          <button class="grid-button" data-action="reject" data-row="${rowDataJson}" style="background-color: #ef4444; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+            ✕ Reject
+          </button>
+
+        </div>
+      `;
+    },
+
+    // Single action button with dynamic styling
+    downloadButton: (cellValue: any, rowData: any) => {
+      const canDownload = rowData.status === 'completed' || rowData.status === 'processing';
+      const bgColor = canDownload ? '#3b82f6' : '#d1d5db';
+      const cursor = canDownload ? 'pointer' : 'not-allowed';
+      const opacity = canDownload ? 1 : 0.5;
+      return `
+        <button style="background-color: ${bgColor}; color: white; padding: 6px 14px; border: none; border-radius: 4px; cursor: ${cursor}; opacity: ${opacity}; font-size: 12px; font-weight: 600;" ${canDownload ? '' : 'disabled'}>
+          📥 Download
+        </button>
+      `;
+    },
+
+    // ============= NEW: PROFILE PICTURE EXAMPLES =============
+    // Profile picture with initials fallback
+    profilePic: (cellValue: any, rowData: any) => {
+      const imageUrl = cellValue || rowData.profileImage;
+      const name = rowData.name || rowData.fromAccount || 'User';
+      const initials = name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+
+      if (imageUrl && imageUrl.startsWith('http')) {
+        // Image URL provided - show image
+        return `
+          <img src="${imageUrl}" alt="${name}"
+               style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid #e5e7eb; cursor: pointer;"
+               title="${name}" />
+        `;
+      } else {
+        // Fallback to initials avatar
+        const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+        const colorIndex = initials.charCodeAt(0) % colors.length;
+        const bgColor = colors[colorIndex];
+        return `
+          <div style="width: 28px; height: 28px; border-radius: 50%; background-color: ${bgColor}; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; border: 1px solid #e5e7eb;">
+            ${initials}
+          </div>
+        `;
+      }
+    },
+
+    // Profile with name and role combo
+    profileCard: (cellValue: any, rowData: any) => {
+      const imageUrl = cellValue || rowData.profileImage;
+      const name = rowData.name || rowData.fromAccount || 'Unknown User';
+      const role = rowData.department || rowData.assignedRole || 'User';
+      const initials = name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+
+      let profileHtml = '';
+      if (imageUrl && imageUrl.startsWith('http')) {
+        profileHtml = `<img src="${imageUrl}" alt="${name}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;" />`;
+      } else {
+        const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+        const colorIndex = initials.charCodeAt(0) % colors.length;
+        const bgColor = colors[colorIndex];
+        profileHtml = `
+          <div style="width: 24px; height: 24px; border-radius: 50%; background-color: ${bgColor}; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px;">
+            ${initials}
+          </div>
+        `;
+      }
+
+      return `
+        <div style="display: flex; align-items: center; gap: 8px;">
+          ${profileHtml}
+          <div style="display: flex; flex-direction: column;">
+            <span style="font-weight: 600; font-size: 12px; color: #1f2937;">${name}</span>
+            <span style="font-size: 11px; color: #6b7280;">${role}</span>
+          </div>
+        </div>
+      `;
+    },
+
+    // Link renderer - makes any cell clickable
+    id: (cellValue: any, rowData: any) => {
+      const id = cellValue || 'N/A';
+      return `
+        <a href="https://chatgpt.com/"
+           onclick="alert('Transaction ID: ${id}')"
+           style="color: #0ea5e9; text-decoration: none; font-weight: 600; cursor: pointer; border-bottom: 1px dotted #0ea5e9; padding-bottom: 2px;">
+          ${id}
+        </a>
+      `;
+    },
+
+    // Generic link renderer
+    link: (cellValue: any, rowData: any) => {
+      const text = cellValue || 'View';
+      const url = rowData.url || 'javascript:void(0)';
+      const isExternal = url && url.startsWith('http');
+      return `
+        <a href="${url}"
+           ${isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''}
+           style="color: #0ea5e9; text-decoration: none; font-weight: 600; cursor: pointer; border-bottom: 1px dotted #0ea5e9; padding-bottom: 2px;">
+          ${text} ${isExternal ? '↗' : ''}
+        </a>
+      `;
+    },
+
+    // Clickable name (with link to profile)
+    nameLink: (cellValue: any, rowData: any) => {
+      const name = cellValue || rowData.name || 'Unknown';
+      const profileId = rowData.id || 'N/A';
+      return `
+        <a href="javascript:void(0)"
+           onclick="alert('View profile for: ${name} (ID: ${profileId})')"
+           style="color: #0ea5e9; text-decoration: none; font-weight: 600; cursor: pointer; border-bottom: 1px solid #0ea5e9;">
+          ${name}
+        </a>
+      `;
+    },
+
+    // ============= BUTTON IN COLUMN - Status Action Button =============
+    // Single button per status (Edit button for pending status)
+    statusAction: (cellValue: any, rowData: any) => {
+      const status = cellValue || 'Unknown';
+      const rowDataJson = btoa(JSON.stringify(rowData));
+
+      if (status === 'pending') {
+        return `
+          <button class="grid-button" data-action="edit" data-row="${rowDataJson}"
+                  style="background-color: #f59e0b; color: white; padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+            ✎ Edit
+          </button>
+        `;
+      } else if (status === 'completed') {
+        return `
+          <button class="grid-button" data-action="view" data-row="${rowDataJson}"
+                  style="background-color: #10b981; color: white; padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+            ✓ View
+          </button>
+        `;
+      } else if (status === 'failed') {
+        return `
+          <button class="grid-button" data-action="retry" data-row="${rowDataJson}"
+                  style="background-color: #ef4444; color: white; padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+            ↻ Retry
+          </button>
+        `;
+      }
+      return `<span style="color: #6b7280;">${status}</span>`;
+    },
+
+    // ============= BUTTON IN COLUMN - Priority Action Button =============
+    // Priority based action buttons
+    priorityAction: (cellValue: any, rowData: any) => {
+      const priority = cellValue || 'normal';
+      const rowDataJson = btoa(JSON.stringify(rowData));
+
+      if (priority === 'critical' || priority === 'high') {
+        return `
+          <button class="grid-button" data-action="escalate" data-row="${rowDataJson}"
+                  style="background-color: #dc2626; color: white; padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+            ⬆ Escalate
+          </button>
+        `;
+      } else if (priority === 'low') {
+        return `
+          <button class="grid-button" data-action="archive" data-row="${rowDataJson}"
+                  style="background-color: #6b7280; color: white; padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+            📦 Archive
+          </button>
+        `;
+      }
+      return `<span style="color: #6b7280;">${priority}</span>`;
+    },
+
+    // ============= BUTTON IN COLUMN - Multiple Buttons Row =============
+    // Quick action buttons (View + Edit + Delete inline)
+    quickActions: (cellValue: any, rowData: any) => {
+      const rowDataJson = btoa(JSON.stringify(rowData));
+      return `
+        <div style="display: flex; gap: 6px;">
+          <button  class="grid-button" data-action="quick-view" data-row="${rowDataJson}"
+                  title="View"
+                  style="background-color: #3b82f6; color: white; width: 32px; height: 32px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;">
+            👁
+          </button>
+          <button class="grid-button" data-action="quick-edit" data-row="${rowDataJson}"
+                  title="Edit"
+                  style="background-color: #f59e0b; color: white; width: 32px; height: 32px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;">
+            ✎
+          </button>
+          <button class="grid-button" data-action="quick-delete" data-row="${rowDataJson}"
+                  title="Delete"
+                  style="background-color: #ef4444; color: white; width: 32px; height: 32px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;">
+            🗑
+          </button>
+        </div>
+      `;
+    }
+  });
+
+  // Cell style resolvers for conditional cell styling
+  enhancedCellStyleResolvers = () => ({
+    amount: [
+      {
+        // Green text for amounts > 50K
+        condition: (cellValue: any) => parseFloat(cellValue) > 50000,
+        styles: { color: '#059669', fontWeight: 'bold', fontSize: '16px' }
+      },
+      {
+        // Bold for amounts > 100K
+        condition: (cellValue: any) => parseFloat(cellValue) > 100000,
+        cssClasses: ['font-bold', 'text-lg'],
+        styles: { color: '#dc2626', fontWeight: 'bold', fontSize: '16px' }
+      }
+    ],
+    status: [
+      {
+        condition: (cellValue: any) => cellValue === 'completed',
+        styles: { fontWeight: 'bold', color: '#059669' }
+      },
+      {
+        condition: (cellValue: any) => cellValue === 'failed',
+        styles: { fontWeight: 'bold', color: '#dc2626' }
+      }
+    ],
+    priority: [
+      {
+        condition: (cellValue: any) => cellValue === 'high' || cellValue === 'critical',
+        cssClasses: ['font-bold'],
+        styles: { color: '#dc2626', fontWeight: 'bold' }
+      }
+    ],
+    riskLevel: [
+      {
+        condition: (cellValue: any) => cellValue === 'high',
+        styles: { backgroundColor: '#fee2e2', color: '#991b1b', fontWeight: 'bold' }
+      },
+      {
+        condition: (cellValue: any) => cellValue === 'medium',
+        styles: { backgroundColor: '#fef3c7', color: '#92400e', fontWeight: 'bold' }
+      },
+      {
+        condition: (cellValue: any) => cellValue === 'low',
+        styles: { backgroundColor: '#dcfce7', color: '#15803d', fontWeight: 'normal' }
+      }
+    ]
+  });
+
+  // Row style resolvers for conditional row styling
+  enhancedRowStyleResolvers = () => {
+    const resolvers: any[] = [
+      {
+        // Highlight high-risk AND high-amount transactions with light red background
+        condition: (rowData: any) =>
+          rowData.riskLevel === 'high' && parseFloat(rowData.totalAmount) > 100000,
+        cssClasses: [],
+        styles: {
+          backgroundColor: '#fef2f2',
+          borderLeft: '4px solid #dc2626',
+          fontWeight: 'bold'
+        }
+      },
+      {
+        // Highlight pending transactions with light blue background
+        condition: (rowData: any) => rowData.status === 'pending',
+        cssClasses: [],
+        styles: {
+          backgroundColor: '#eff6ff',
+          borderLeft: 'none',
+          fontWeight: 'normal'
+        }
+      },
+      {
+        // Highlight failed transactions with reduced opacity
+        condition: (rowData: any) => rowData.status === 'failed',
+        cssClasses: [],
+        styles: {
+          backgroundColor: '#fecaca',
+          opacity: 0.8,
+          fontWeight: 'normal'
+        }
+      }
+    ];
+    return resolvers;
+  };
+
+  // Handler for enhanced pagination changes
+  onEnhancedPaginationChange(event: any) {
+    console.log('Enhanced grid pagination change:', event);
+    // In a real app, this would trigger a backend API call with:
+    // - pageIndex, pageSize (from event)
+    // - Current filters, sort, search terms
+    this.toastr.info(`Pagination: Page ${event.pageIndex + 1}, Size ${event.pageSize}`, 'Pagination Changed');
+  }
+
+  // Handler for enhanced data grid state changes (backend pagination)
+  onEnhancedStateChange(state: DataGridStateChange) {
+    console.log('Enhanced grid state changed:', state);
+    const params = {
+      pageIndex: state.pageIndex,
+      pageSize: state.pageSize,
+      sortColumn: state.sortColumn,
+      sortDirection: state.sortDirection,
+      search: state.searchTerm
+    };
+    console.log('Requesting data with params:', params);
+
+  }
+
+  // Handler for Approve Transaction custom action
+  onApproveTransaction(serializedData: string): void {
+    try {
+      const transaction = JSON.parse(serializedData);
+      console.log('Approve transaction:', transaction);
+
+      // Update transaction status
+      const transactions = this.sampleTransactions();
+      const updated = transactions.map(t => {
+        if (t.id === transaction.id) {
+          return { ...t, status: 'completed', requiresApproval: false };
+        }
+        return t;
+      });
+
+      this.sampleTransactions.set(updated);
+      this.toastr.success(`Transaction ${transaction.id} approved!`, 'Approved', { timeOut: 3000 });
+    } catch (error) {
+      this.toastr.error('Error approving transaction', 'Error');
     }
   }
+
+  // Handler for Download Transaction custom action
+  onDownloadTransaction(serializedData: string): void {
+    try {
+      const transaction = JSON.parse(serializedData);
+      console.log('Download transaction report:', transaction);
+
+      // Create a simple CSV export
+      const csv = `
+        Transaction Report
+        ==================
+        ID: ${transaction.id}
+        Amount: ${transaction.currency} ${transaction.amount}
+        Status: ${transaction.status}
+        Priority: ${transaction.priority}
+        Risk Level: ${transaction.riskLevel}
+        Date: ${new Date().toISOString()}
+              `;
+
+      // Create blob and download
+      const blob = new Blob([csv], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `transaction-${transaction.id}.txt`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+
+      this.toastr.success(`Downloaded report for ${transaction.id}`, 'Downloaded', { timeOut: 3000 });
+    } catch (error) {
+      this.toastr.error('Error downloading transaction', 'Error');
+    }
+  }
+
+  // Handler for toggling custom action buttons visibility
+  onToggleActionButtons(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.showCustomActionButtons.set(target.checked);
+  }
+
+  // Handler for onCellButtonClick output event from GenericDataGrid
+  // This is triggered when buttons rendered in grid cells are clicked
+  onGridCellButtonClick(event: any): void {
+    console.log('Cell button click event received:', event);
+    const { action, rowData, column, timestamp } = event;
+    console.log(`Action: ${action}, Column: ${column}, Row ID: ${rowData?.id}`);
+
+    // Route to handleGridButtonClick to process the action
+    this.handleGridButtonClick(action, rowData);
+  }
+
+  // Attach event listeners to grid buttons
+  // attachGridButtonListeners(): void {
+  //   const buttons = document.querySelectorAll('.grid-button');
+  //   buttons.forEach(button => {
+  //     button.addEventListener('click', (e: Event) => {
+  //       e.preventDefault();
+  //       const btn = e.target as HTMLElement;
+  //       const action = btn.getAttribute('data-action');
+  //       const rowDataEncoded = btn.getAttribute('data-row');
+
+  //       if (action && rowDataEncoded) {
+  //         try {
+  //           const rowData = JSON.parse(atob(rowDataEncoded));
+  //           this.handleGridButtonClick(action, rowData);
+  //         } catch (error) {
+  //           console.error('Error parsing row data:', error);
+  //         }
+  //       }
+  //     });
+  //   });
+  // }
+
+  // Handle grid button clicks
+  handleGridButtonClick(action: string, rowData: any): void {
+    const id = rowData.id || 'Unknown';
+    const status = rowData.status || 'Unknown';
+    const priority = rowData.priority || 'normal';
+
+    switch (action) {
+      // Approve/Reject/Review actions
+      case 'approve':
+        this.toastr.success(`Approved transaction: ${id}`, 'Success');
+        break;
+      case 'reject':
+        this.toastr.error(`Rejected transaction: ${id}`, 'Rejected');
+        break;
+      case 'review':
+        this.toastr.info(`Reviewing transaction: ${id}`, 'Review');
+        break;
+
+      // Status actions
+      case 'edit':
+        this.toastr.info(`Editing transaction: ${id}`, 'Edit Mode');
+        break;
+      case 'view':
+        this.toastr.info(`Viewing completed transaction: ${id}`, 'View');
+        break;
+      case 'retry':
+        this.toastr.warning(`Retrying failed transaction: ${id}`, 'Retry');
+        break;
+
+      // Priority actions
+      case 'escalate':
+        this.toastr.error(`Escalated transaction: ${id} (${priority})`, 'Escalated');
+        break;
+      case 'archive':
+        this.toastr.success(`Archived transaction: ${id}`, 'Archived');
+        break;
+
+      // Quick actions
+      case 'quick-view':
+        this.dd();
+        // this.toastr.info(`Quick view: ${id}`, 'View');
+        break;
+      case 'quick-edit':
+        this.toastr.info(`Quick edit: ${id}`, 'Edit');
+        break;
+      case 'quick-delete':
+        this.toastr.error(`Delete transaction: ${id}?`, 'Delete');
+        break;
+
+      default:
+        console.log(`Action: ${action}, Row:`, rowData);
+    }
+  }
+
+  // private validateTransactionRelationships(transaction: any): void {
+  //   // Validate currency-country relationship
+  //   const currency = this.currencyOptions.find(c => c.key === transaction.currency);
+  //   // if (currency && currency.country !== transaction.country) {
+  //   //   this.toastr.warning(`Currency-Country mismatch in ${transaction.id}`, 'Validation Warning');
+  //   // }
+
+  //   // Validate category-subcategory relationship
+  //   const subCategory = this.subCategoryOptions.find(s => s.key === transaction.subCategory);
+  //   if (subCategory && subCategory.parentCategory !== transaction.productCategory) {
+  //     this.toastr.error(`Invalid subcategory for ${transaction.id}`, 'Validation Error');
+  //   }
+
+  //   // Validate minimum amount for subcategory
+  //   if (subCategory && transaction.amount < subCategory.minAmount) {
+  //     this.toastr.error(`Amount below minimum for ${transaction.subCategory} in ${transaction.id}`, 'Amount Error');
+  //   }
+  // }
 
   // Method to get filtered options for template
   getFilteredSubCategories(): any[] {
@@ -1955,8 +2636,10 @@ private recalculateTransactionAmounts(transaction: any): any {
         calculatedTax: formValue.calculatedTax,
         totalAmount: formValue.totalAmount,
         riskLevel: formValue.riskLevel,
-        isSelected:formValue.isSelected,
+        isSelected: formValue.isSelected,
         requiresApproval: formValue.requiresApproval,
+        name: `User ${Math.floor(Math.random() * 1000)}`,
+        profileImage: null,
         availableRoles: [
           { value: 'admin', label: 'Administrator' },
           { value: 'approver', label: 'Transaction Approver' },
@@ -2098,9 +2781,9 @@ private recalculateTransactionAmounts(transaction: any): any {
 
     // Currency-Country relationship
     const currency = this.currencyOptions.find(c => c.key === formValue.currency);
-    if (currency && currency.country !== formValue.country) {
-      errors.push('Currency and Country do not match');
-    }
+    // if (currency && currency.country !== formValue.country) {
+    //   errors.push('Currency and Country do not match');
+    // }
 
     // Category-Subcategory relationship
     const subCategory = this.subCategoryOptions.find(s => s.key === formValue.subCategory);
@@ -2168,7 +2851,7 @@ private recalculateTransactionAmounts(transaction: any): any {
   // Method to get relationship status
   getRelationshipStatus(): any {
     return {
-      currencyCountryMatch: this.isCurrencyCountryMatch(),
+      // currencyCountryMatch: this.isCurrencyCountryMatch(),
       categorySubcategoryMatch: this.isCategorySubcategoryMatch(),
       amountValid: this.isAmountValidForSubcategory(),
       highValueTransaction: this.isHighValueTransaction(),
@@ -2178,12 +2861,12 @@ private recalculateTransactionAmounts(transaction: any): any {
     };
   }
 
-  private isCurrencyCountryMatch(): boolean {
-    const currency = this.frmGroup.get('currency')?.value;
-    const country = this.frmGroup.get('country')?.value;
-    const currencyData = this.currencyOptions.find(c => c.key === currency);
-    return currencyData ? currencyData.country === country : false;
-  }
+  // private isCurrencyCountryMatch(): boolean {
+  //   const currency = this.frmGroup.get('currency')?.value;
+  //   const country = this.frmGroup.get('country')?.value;
+  //   const currencyData = this.currencyOptions.find(c => c.key === currency);
+  //   return currencyData ? currencyData.country === country : false;
+  // }
 
   private isCategorySubcategoryMatch(): boolean {
     const category = this.frmGroup.get('productCategory')?.value;
@@ -2333,31 +3016,39 @@ private recalculateTransactionAmounts(transaction: any): any {
 
 
 
-  ngAfterViewInit(): void {
-         currency : 'CAD';
-    setTimeout(() => {
-      // this.steps = [
-      //   {
-      //     title: 'Personal Information',
-      //     subtitle: 'Enter your basic details',
-      //     form: 'personalInfoForm',
-      //     formContent: this.step1Template
-      //   },
-      //   {
-      //     title: 'Contact Details',
-      //     subtitle: 'Add your contact information',
-      //     form: 'contactForm',
-      //     formContent: this.step2Template
-      //   },
-      //   {
-      //     title: 'Review & Submit',
-      //     subtitle: 'Review your information',
-      //     form: 'reviewForm',
-      //     formContent: this.step3Template
-      //   }
-      // ];
-    });
-  }
+ngAfterViewInit(): void {
+  document.addEventListener('click', (e: Event) => {
+    const target = e.target as HTMLElement;
+
+    const button = target.closest('.grid-button') as HTMLElement;
+
+    if (button) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const action = button.getAttribute('data-action');
+      const rowDataEncoded = button.getAttribute('data-row');
+
+      console.log('Grid button clicked:', { action, hasData: !!rowDataEncoded });
+
+      if (action && rowDataEncoded) {
+        try {
+          const rowData = JSON.parse(atob(rowDataEncoded));
+          this.handleGridButtonClick(action, rowData);
+        } catch (error) {
+          console.error('Error parsing row data:', error);
+        }
+      }
+    }
+  });
+
+  setTimeout(() => {
+    this.restoreGridSelections();
+  }, 100);
+
+  this.loadUsersFromApi();
+
+}
 
   handleFileChange(files: File[]): void {
     console.log('Selected files:', files);
@@ -2565,125 +3256,7 @@ handleColumnSelectAll($event:any): void {
 
   // Generic Table Example - Static Data
   genericTableConfig = signal<DynamicTableConfig>({
-    sections: [
-      {
-        title: 'Personal Information',
-        rows: [
-          {
-            cells: [
-              { label: 'Full Name', width: '30%' },
-              { value: 'John Doe', width: '70%' }
-            ]
-          },
-          {
-            cells: [
-              { label: 'Email Address', width: '30%' },
-              { value: 'john.doe@example.com', width: '70%' }
-            ]
-          },
-          {
-            cells: [
-              { label: 'Phone Number', width: '30%' },
-              { value: '+1 (555) 123-4567', width: '70%' }
-            ]
-          },
-          {
-            cells: [
-              { label: 'Date of Birth', width: '30%' },
-              { value: 'January 15, 1990', width: '70%' }
-            ]
-          }
-        ]
-      },
-      {
-        title: 'Address Details',
-        rows: [
-          {
-            cells: [
-              { label: 'Street Address', width: '30%' },
-              { value: '123 Main Street', width: '70%' }
-            ]
-          },
-          {
-            cells: [
-              { label: 'City', width: '30%' },
-              { value: 'New York', width: '70%' }
-            ]
-          },
-          {
-            cells: [
-              { label: 'State', width: '30%' },
-              { value: 'NY', width: '70%' }
-            ]
-          },
-          {
-            cells: [
-              { label: 'ZIP Code', width: '30%' },
-              { value: '10001', width: '70%', highlighted: true }
-            ]
-          }
-        ]
-      },
-      {
-        title: 'Account Information',
-        rows: [
-          {
-            cells: [
-              { label: 'Account Number', width: '30%' },
-              { value: 'ACC-123456789', width: '70%', highlighted: true }
-            ]
-          },
-          {
-            cells: [
-              { label: 'Account Type', width: '30%' },
-              { value: 'Savings Account', width: '70%' }
-            ]
-          },
-          {
-            cells: [
-              { label: 'Balance', width: '30%' },
-              { value: '$50,000.00', width: '70%', className: 'text-green-600 font-bold' }
-            ]
-          },
-          {
-            cells: [
-              { label: 'Status', width: '30%' },
-              { value: 'Active', width: '70%', className: 'text-green-600' }
-            ]
-          }
-        ]
-      },
-      {
-        title: 'Transaction Summary',
-        rows: [
-          {
-            cells: [
-              { label: 'Total Transactions', width: '30%' },
-              { value: '127', width: '70%' }
-            ]
-          },
-          {
-            cells: [
-              { label: 'Last Transaction Date', width: '30%' },
-              { value: 'March 15, 2024', width: '70%' }
-            ]
-          },
-          {
-            cells: [
-              { label: 'Monthly Average', width: '30%' },
-              { value: '$2,500.00', width: '70%' }
-            ]
-          },
-          {
-            cells: [
-              { label: 'Notes', colspan: 2, value: 'This account has been active for 5 years with consistent transaction history.', className: 'italic text-gray-600' }
-            ]
-          }
-        ]
-      }
-    ],
-    loading: false,
-    error: null
+    sections: []
   });
 
   // Sample Account Data
@@ -2786,12 +3359,12 @@ handleColumnSelectAll($event:any): void {
    */
   loadWithAutoGeneration(): void {
     console.log('🚀 Loading with AUTO-GENERATION (zero config)...');
-    
+
     const config = this.autoTable.autoGenerateTable(this.SAMPLE_ACCOUNT_DATA);
-    
+
     this.genericTableConfig.set(config);
     this.currentTableMode.set('Auto-Generation (Zero Config)');
-    
+
     console.log('✅ Table generated automatically!', config);
     this.toastr.success('Table generated automatically with zero configuration!', 'Auto-Generation');
   }
@@ -2801,7 +3374,7 @@ handleColumnSelectAll($event:any): void {
    */
   loadWithMinimalConfig(): void {
     console.log('🎨 Loading with MINIMAL CONFIG...');
-    
+
     const config = this.autoTable.autoGenerateTable(this.SAMPLE_ACCOUNT_DATA, {
       // Highlight important fields
       highlightFields: [
@@ -2809,7 +3382,7 @@ handleColumnSelectAll($event:any): void {
         'availableBalance',
         'currentBalance'
       ],
-      
+
       // Auto-format currency fields
       currencyFields: [
         'availableBalance',
@@ -2821,7 +3394,7 @@ handleColumnSelectAll($event:any): void {
         'blockedAmount',
         'renewedPrincipalAmount'
       ],
-      
+
       // Auto-format date fields
       dateFields: [
         'openDate',
@@ -2830,10 +3403,10 @@ handleColumnSelectAll($event:any): void {
         'accountRenewalDate'
       ]
     });
-    
+
     this.genericTableConfig.set(config);
     this.currentTableMode.set('With Formatting (Minimal Config)');
-    
+
     console.log('✅ Table generated with formatting!', config);
     this.toastr.success('Table generated with formatting!', 'Minimal Config');
   }
@@ -2843,15 +3416,16 @@ handleColumnSelectAll($event:any): void {
    */
   loadWithFullConfig(): void {
     console.log('✨ Loading with FULL CUSTOMIZATION...');
-    
+
     const config = this.autoTable.autoGenerateTable(this.SAMPLE_ACCOUNT_DATA, {
+     // groupBy:'none',//for single object data
       // Highlight important fields
       highlightFields: [
         'accountHolderName',
         'availableBalance',
         'currentBalance'
       ],
-      
+
       // Auto-format currency fields
       currencyFields: [
         'availableBalance',
@@ -2864,7 +3438,7 @@ handleColumnSelectAll($event:any): void {
         'totalTermAmount',
         'renewedPrincipalAmount'
       ],
-      
+
       // Auto-format date fields
       dateFields: [
         'openDate',
@@ -2872,23 +3446,40 @@ handleColumnSelectAll($event:any): void {
         'lastRenewalDate',
         'accountRenewalDate'
       ],
-      
+
       // Make these fields full width
       fullWidthFields: [
         'accountHolderName',
+        'contactAddress',
         'specialInstruction',
         'customerCategory'
       ],
-      
+
       // Custom section titles
       sectionTitles: {
         'accountInfo': 'Account Information',
         'balanceDetails': 'Balance Details'
       },
-      
+       fieldOrder: [
+      'accountHolderName',
+      'city',
+      'contactAddress',
+      'customerCode',
+      'country',
+      'accountType',
+      'telephone',
+      'accountStatus',
+      'currency',
+      'customerCategory',
+      'specialInstruction'
+    ],
+     fieldCustomizations: {
+      'city': { colspan: 2, highlighted: true, style: { color: '#dc2626', fontWeight: 'bold', fontSize: '14px' }}
+    },
+
       // Custom field labels
       fieldLabels: {
-        'accountHolderName': 'Account Holder Name',
+        'accountHolderName': 'Account Holder Names',
         'contactAddress': 'Contact Address',
         'accountType': 'Account Type',
         'accountStatus': 'Account Status',
@@ -2915,10 +3506,10 @@ handleColumnSelectAll($event:any): void {
         'accountRenewalDate': 'Account Renewal Date'
       }
     });
-    
+
     this.genericTableConfig.set(config);
     this.currentTableMode.set('Full Customization');
-    
+
     console.log('✅ Table generated with full customization!', config);
     this.toastr.success('Table generated with full customization!', 'Full Config');
   }
@@ -2938,7 +3529,7 @@ handleColumnSelectAll($event:any): void {
         'employmentInfo': 'Employment Information'
       }
     });
-    
+
     this.genericTableConfig.set(config);
     this.currentTableMode.set('Customer Data Example');
     this.toastr.info('Loaded customer data example', 'Customer Data');
@@ -2959,7 +3550,7 @@ handleColumnSelectAll($event:any): void {
         'accountDetails': 'Account Details'
       }
     });
-    
+
     this.genericTableConfig.set(config);
     this.currentTableMode.set('Transaction Data Example');
     this.toastr.info('Loaded transaction data example', 'Transaction Data');
@@ -2967,19 +3558,19 @@ handleColumnSelectAll($event:any): void {
 
   /**
    * Load Custom Table with Rowspan and Colspan Examples
-   * 
+   *
    * This demonstrates how to use colspan and rowspan for advanced table layouts:
-   * 
+   *
    * COLSPAN: Use colspan to make a cell span multiple columns
    *   Example: { value: 'Some text', colspan: 3 } spans 3 columns
-   * 
+   *
    * ROWSPAN: Use rowspan to make a cell span multiple rows
    *   Example: { label: 'Category', rowspan: 4 } spans 4 rows
    *   Note: When using rowspan, you must skip cells in subsequent rows
-   * 
+   *
    * COMBINED: You can combine both for complex layouts
    *   Example: { value: 'Header', colspan: 2, rowspan: 2 }
-   * 
+   *
    * IMPORTANT: When using rowspan:
    *   - The first row defines the cell with rowspan
    *   - Subsequent rows must have fewer cells (skip the spanned position)

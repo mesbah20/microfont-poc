@@ -41,11 +41,10 @@
       <div class="space-y-6 animate-fade-in">
         @for (section of tableConfig()!.sections; track trackByIndex($index)) {
           <div class="bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200
-                      transform transition-all duration-300 hover:shadow-3xl hover:-translate-y-1">
+                      transform transition-all duration-300 hover:shadow-3xl">
 
             <!-- Section Header -->
-            <div class="bg-gradient-to-r from-slate-700 to-slate-600 text-white px-4 py-3
-                        font-bold text-sm tracking-wide shadow-md border-b-2 border-slate-800"
+            <div style="font-weight: 500;" class="bg-[var(--theme-primary)] text-white px-4 py-1  text-sm tracking-wide shadow-md"
                  [ngClass]="section.headerClass || ''">
               {{ section.title }}
             </div>
@@ -61,6 +60,7 @@
                         [ngClass]="getCellClass(cell)"
                         [attr.colspan]="cell.colspan && cell.colspan > 1 ? cell.colspan : null"
                         [attr.rowspan]="cell.rowspan && cell.rowspan > 1 ? cell.rowspan : null"
+                        [style]="cell.style"
                         [style.width]="cell.width || null">
                         {{ displayValue(cell) }}
                       </td>

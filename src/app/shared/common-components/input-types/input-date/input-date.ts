@@ -58,6 +58,11 @@ export class InputDate {
   readonly displayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
   readonly customErrorMessages = input<{ [key: string]: string }>({});
 
+  hasCustomMessage(errorKey: string): boolean {
+    const messages = this.customErrorMessages();
+    return !!messages && errorKey in messages;
+  }
+
   getCustomErrorMessage(errorKey: string): string {
     const control = this.frmGroup().get(this.controlName());
     let message = `${this.label()} has validation error: ${errorKey}`;
@@ -85,7 +90,7 @@ export class InputDate {
     return this.getCustomErrorKeys().length > 0;
   }
 
-  constructor() { 
+  constructor() {
     // Add custom validator when component initializes
     effect(() => {
       const control = this.frmGroup().get(this.controlName());
@@ -170,7 +175,7 @@ export class InputDate {
 
   getDateSeparator(): string {
     if (this.dateFormat() === 'DD MMM, YYYY') {
-      return ' '; 
+      return ' ';
     }
     return this.dateFormat().includes('/') ? '/' : '-';
   }
@@ -592,57 +597,83 @@ getDetailedErrorMessage(): string {
   
   // Check for required error first
   if (errors['required']) {
-    return `${this.label()} is required!`;
+    return this.hasCustomMessage('required')
+      ? this.getCustomErrorMessage('required')
+      : `${this.label()} is required!`;
   }
-  
+
   // Check for year out of range error
   if (errors['yearOutOfRange']) {
-    const yearInfo = errors['yearOutOfRange'];
-    return `Year ${yearInfo.selectedYear} is not allowed. Please select a year between ${yearInfo.minYear} and ${yearInfo.maxYear}.`;
+    return this.hasCustomMessage('yearOutOfRange')
+      ? this.getCustomErrorMessage('yearOutOfRange')
+      : (() => {
+          const yearInfo = errors['yearOutOfRange'];
+          return `Year ${yearInfo.selectedYear} is not allowed. Please select a year between ${yearInfo.minYear} and ${yearInfo.maxYear}.`;
+        })();
   }
-  
+
   // Check for invalid characters
   if (errors['invalidCharacters']) {
-    if (this.dateFormat() === 'DD MMM, YYYY') {
-      return 'Only numbers, letters, spaces and commas are allowed';
-    } else {
-      return `Only numbers and ${this.getDateSeparator()} are allowed`;
-    }
+    return this.hasCustomMessage('invalidCharacters')
+      ? this.getCustomErrorMessage('invalidCharacters')
+      : (() => {
+          if (this.dateFormat() === 'DD MMM, YYYY') {
+            return 'Only numbers, letters, spaces and commas are allowed';
+          } else {
+            return `Only numbers and ${this.getDateSeparator()} are allowed`;
+          }
+        })();
   }
-  
+
   // Check for format errors
   if (errors['invalidDateFormat']) {
-    const currentValue = control.value || '';
-    if (this.hasConsecutiveSeparators(currentValue)) {
-      return `Consecutive ${this.getDateSeparator()} separators are not allowed`;
-    }
-    if (this.hasInvalidSeparatorPattern(currentValue)) {
-      return `Invalid date format - please use ${this.dateFormat()} format`;
-    }
-    return `Please enter date in ${this.dateFormat()} format`;
+    return this.hasCustomMessage('invalidDateFormat')
+      ? this.getCustomErrorMessage('invalidDateFormat')
+      : (() => {
+          const currentValue = control.value || '';
+          if (this.hasConsecutiveSeparators(currentValue)) {
+            return `Consecutive ${this.getDateSeparator()} separators are not allowed`;
+          }
+          if (this.hasInvalidSeparatorPattern(currentValue)) {
+            return `Invalid date format - please use ${this.dateFormat()} format`;
+          }
+          return `Please enter date in ${this.dateFormat()} format`;
+        })();
   }
-  
+
   // Check for invalid date with detailed info
   if (errors['invalidDate']) {
-    const details = errors['invalidDateDetails'];
-    if (details) {
-      return `${details.monthName} ${details.year} only has ${details.maxDays} days. You entered day ${details.enteredDay}`;
-    }
-    return 'Please enter a valid date';
+    return this.hasCustomMessage('invalidDate')
+      ? this.getCustomErrorMessage('invalidDate')
+      : (() => {
+          const details = errors['invalidDateDetails'];
+          if (details) {
+            return `${details.monthName} ${details.year} only has ${details.maxDays} days. You entered day ${details.enteredDay}`;
+          }
+          return 'Please enter a valid date';
+        })();
   }
-  
+
   // Check for min date error
   if (errors['minDate']) {
-    const minDateInfo = errors['minDate'];
-    const minDateStr = this.formatDateForDisplay(minDateInfo.minDate);
-    return `Date must be on or after ${minDateStr}`;
+    return this.hasCustomMessage('minDate')
+      ? this.getCustomErrorMessage('minDate')
+      : (() => {
+          const minDateInfo = errors['minDate'];
+          const minDateStr = this.formatDateForDisplay(minDateInfo.minDate);
+          return `Date must be on or after ${minDateStr}`;
+        })();
   }
-  
+
   // Check for max date error
   if (errors['maxDate']) {
-    const maxDateInfo = errors['maxDate'];
-    const maxDateStr = this.formatDateForDisplay(maxDateInfo.maxDate);
-    return `Date must be on or before ${maxDateStr}`;
+    return this.hasCustomMessage('maxDate')
+      ? this.getCustomErrorMessage('maxDate')
+      : (() => {
+          const maxDateInfo = errors['maxDate'];
+          const maxDateStr = this.formatDateForDisplay(maxDateInfo.maxDate);
+          return `Date must be on or before ${maxDateStr}`;
+        })();
   }
   
   return 'Please enter a valid date';
@@ -738,8 +769,8 @@ private convertDisplayFormatToInputFormat(displayValue: string): string | null {
 
   // Month abbreviation to number mapping
   const monthMap: { [key: string]: string } = {
-    'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04', 
-    'may': '05', 'jun': '06', 'jul': '07', 'aug': '08', 
+    'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04',
+    'may': '05', 'jun': '06', 'jul': '07', 'aug': '08',
     'sep': '09', 'oct': '10', 'nov': '11', 'dec': '12'
   };
 
@@ -1373,19 +1404,19 @@ private isPartialMonthAbbreviationInputValid(value: string): boolean {
   // For partial input, just check basic patterns
   const partialPattern = /^(\d{0,2})(\s+([A-Za-z]{0,3})(\s*,?\s*(\d{0,4}))?)?$/;
   const match = value.match(partialPattern);
-  
+
   if (!match) return false;
-  
+
   const dayPart = match[1];
   const monthPart = match[3] || '';
   const yearPart = match[5] || '';
-  
+
   // Basic validation for partial input
   if (dayPart) {
     const day = parseInt(dayPart);
     if (!isNaN(day) && (day < 1 || day > 31)) return false;
   }
-  
+
   if (monthPart && monthPart.length === 3) {
     const monthMap: { [key: string]: number } = {
       'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
@@ -1393,12 +1424,12 @@ private isPartialMonthAbbreviationInputValid(value: string): boolean {
     };
     if (!monthMap[monthPart.toLowerCase()]) return false;
   }
-  
+
   if (yearPart && yearPart.length === 4) {
     const year = parseInt(yearPart);
     if (!isNaN(year) && (year < 1900 || year > 2030)) return false;
   }
-  
+
   return true;
 }
 
@@ -1408,18 +1439,18 @@ private isPartialMonthAbbreviationInputValid(value: string): boolean {
   getMinDate(): Date | null {
     const minDateValue = this.minDate();
     if (!minDateValue) return null;
-    
+
     if (minDateValue instanceof Date) {
       return new Date(minDateValue.getFullYear(), minDateValue.getMonth(), minDateValue.getDate());
     }
-    
+
     if (typeof minDateValue === 'string') {
       const date = new Date(minDateValue);
       if (!isNaN(date.getTime())) {
         return new Date(date.getFullYear(), date.getMonth(), date.getDate());
       }
     }
-    
+
     return null;
   }
 
@@ -1429,18 +1460,18 @@ private isPartialMonthAbbreviationInputValid(value: string): boolean {
   getMaxDate(): Date | null {
     const maxDateValue = this.maxDate();
     if (!maxDateValue) return null;
-    
+
     if (maxDateValue instanceof Date) {
       return new Date(maxDateValue.getFullYear(), maxDateValue.getMonth(), maxDateValue.getDate());
     }
-    
+
     if (typeof maxDateValue === 'string') {
       const date = new Date(maxDateValue);
       if (!isNaN(date.getTime())) {
         return new Date(date.getFullYear(), date.getMonth(), date.getDate());
       }
     }
-    
+
     return null;
   }
 
@@ -1449,7 +1480,7 @@ private isPartialMonthAbbreviationInputValid(value: string): boolean {
    */
   private formatDateForDisplay(date: Date | string): string {
     let dateObj: Date;
-    
+
     if (date instanceof Date) {
       dateObj = date;
     } else {
@@ -1458,7 +1489,7 @@ private isPartialMonthAbbreviationInputValid(value: string): boolean {
         return String(date);
       }
     }
-    
+
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return `${String(dateObj.getDate()).padStart(2, '0')} ${monthNames[dateObj.getMonth()]}, ${dateObj.getFullYear()}`;
   }
@@ -1472,7 +1503,7 @@ private dateFormatValidator(control: AbstractControl): { [key: string]: any } | 
   // Check if the value is a Date object
   if (control.value instanceof Date) {
     dateObject = control.value as Date;
-    
+
     // Check year range for Date objects
     const year = dateObject.getFullYear();
     if (year < 1900 || year > 2030) {
@@ -1514,12 +1545,12 @@ private dateFormatValidator(control: AbstractControl): { [key: string]: any } | 
         };
       }
     }
-    
+
     // Date objects are valid - they're already validated
     return null;
   } else if (typeof control.value === 'string') {
     value = control.value;
-    
+
     // Check if it's an ISO format string (from previous conversion)
     if (this.isISOFormat(value)) {
       const date = new Date(value);
@@ -1565,15 +1596,15 @@ private dateFormatValidator(control: AbstractControl): { [key: string]: any } | 
           }
         }
 
-        return null; 
+        return null;
       }
     }
-    
+
     // Check if it's already in display format
     if (this.isDisplayFormat(value)) {
       return this.validateMonthAbbreviationFormat(value);
     }
-    
+
     // Otherwise validate against the configured dateFormat
     return this.validateStandardDateFormat(value);
   } else {
@@ -1582,7 +1613,7 @@ private dateFormatValidator(control: AbstractControl): { [key: string]: any } | 
 
   // Validate based on the current format
   const format = this.dateFormat();
-  
+
   if (format === 'DD MMM, YYYY') {
     return this.validateMonthAbbreviationFormat(value);
   } else {
@@ -1592,20 +1623,20 @@ private dateFormatValidator(control: AbstractControl): { [key: string]: any } | 
 
 private validateMonthAbbreviationFormat(value: string): { [key: string]: any } | null {
   const match = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/);
-  
+
   if (!match) {
     return { invalidDateFormat: true };
   }
-  
+
   const day = parseInt(match[1]);
   const monthAbbr = match[2].toLowerCase();
   const year = parseInt(match[3]);
-  
+
   // Check for NaN values
   if (isNaN(day) || isNaN(year)) {
     return { invalidDateFormat: true };
   }
-  
+
   // Validate year range specifically
   if (year < 1900 || year > 2030) {
     return {
@@ -1616,35 +1647,35 @@ private validateMonthAbbreviationFormat(value: string): { [key: string]: any } |
       }
     };
   }
-  
+
   // Month abbreviation mapping
   const monthMap: { [key: string]: number } = {
     'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
     'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12
   };
-  
+
   const month = monthMap[monthAbbr];
   if (month === undefined) {
     return { invalidDateFormat: true };
   }
-  
+
   // Validate day range
   if (day < 1 || day > 31) {
     return { invalidDate: true };
   }
-  
+
   // Check if the date actually exists
   const date = new Date(year, month - 1, day);
-  const isValidDate = date.getFullYear() === year && 
-                      date.getMonth() === (month - 1) && 
+  const isValidDate = date.getFullYear() === year &&
+                      date.getMonth() === (month - 1) &&
                       date.getDate() === day;
-  
+
   if (!isValidDate) {
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                        'July', 'August', 'September', 'October', 'November', 'December'];
     const daysInMonth = new Date(year, month, 0).getDate();
-    
-    return { 
+
+    return {
       invalidDate: true,
       invalidDateDetails: {
         monthName: monthNames[month - 1],
@@ -1684,20 +1715,20 @@ private validateMonthAbbreviationFormat(value: string): { [key: string]: any } |
       };
     }
   }
-  
+
   return null;
 }
 private validateStandardDateFormat(value: string): { [key: string]: any } | null {
   const format = this.dateFormat();
   const separator = format.includes('/') ? '/' : '-';
   const parts = value.split(separator);
-  
+
   if (parts.length !== 3) {
     return { invalidDateFormat: true };
   }
-  
+
   let day: number, month: number, year: number;
-  
+
   switch (format) {
     case 'DD/MM/YYYY':
     case 'DD-MM-YYYY':
@@ -1714,12 +1745,12 @@ private validateStandardDateFormat(value: string): { [key: string]: any } | null
     default:
       return { invalidDateFormat: true };
   }
-  
+
   // Check for NaN values
   if (isNaN(day) || isNaN(month) || isNaN(year)) {
     return { invalidDateFormat: true };
   }
-  
+
   // Validate year range specifically
   if (year < 1900 || year > 2030) {
     return {
@@ -1730,24 +1761,24 @@ private validateStandardDateFormat(value: string): { [key: string]: any } | null
       }
     };
   }
-  
+
   // Validate other basic ranges
   if (month < 1 || month > 12 || day < 1 || day > 31) {
     return { invalidDate: true };
   }
-  
+
   // Check if the date actually exists (catches cases like June 31)
   const date = new Date(year, month - 1, day);
-  const isValidDate = date.getFullYear() === year && 
-                      date.getMonth() === (month - 1) && 
+  const isValidDate = date.getFullYear() === year &&
+                      date.getMonth() === (month - 1) &&
                       date.getDate() === day;
-  
+
   if (!isValidDate) {
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                        'July', 'August', 'September', 'October', 'November', 'December'];
     const daysInMonth = new Date(year, month, 0).getDate();
-    
-    return { 
+
+    return {
       invalidDate: true,
       invalidDateDetails: {
         monthName: monthNames[month - 1],
@@ -1787,7 +1818,7 @@ private validateStandardDateFormat(value: string): { [key: string]: any } | null
       };
     }
   }
-  
+
   return null;
 }
 

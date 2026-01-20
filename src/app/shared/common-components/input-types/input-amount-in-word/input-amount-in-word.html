@@ -58,7 +58,7 @@
     </div>
 
     <!-- AMOUNT IN WORDS -->
-    <div class="text-sm mt-1 text-gray-600 amount-in-words w-80">
+    <div class="text-xs mt-1 text-gray-600 amount-in-words w-80">
       {{ amountToWord() }}
     </div>
   }
@@ -133,25 +133,53 @@
       <p
       class="text-xs text-red-500 leading-4 ms-1">
         @if (hasError('required')) {
-          {{ label() }} is required..!
+          @if (hasCustomMessage('required')) {
+            {{ getCustomErrorMessage('required') }}
+          } @else {
+            {{ label() }} is required..!
+          }
         }
         @if (hasError('min')) {
-          Minimum amount required is {{ getCurrencyConfig().symbol }}{{ getErrorValue('min') }}
+          @if (hasCustomMessage('min')) {
+            {{ getCustomErrorMessage('min') }}
+          } @else {
+            Minimum amount required is {{ getCurrencyConfig().symbol }}{{ getErrorValue('min') }}
+          }
         }
         @if (hasError('max')) {
-          Maximum amount allowed is {{ getCurrencyConfig().symbol }}{{ getErrorValue('max') }}
+          @if (hasCustomMessage('max')) {
+            {{ getCustomErrorMessage('max') }}
+          } @else {
+            Maximum amount allowed is {{ getCurrencyConfig().symbol }}{{ getErrorValue('max') }}
+          }
         }
         @if (hasError('maxLengthNumber')) {
-          Maximum {{ getErrorValue('maxLengthNumber').requiredLength }} digits allowed
+          @if (hasCustomMessage('maxLengthNumber')) {
+            {{ getCustomErrorMessage('maxLengthNumber') }}
+          } @else {
+            Maximum {{ getErrorValue('maxLengthNumber').requiredLength }} digits allowed
+          }
         }
         @if (hasError('leadingZeros')) {
-          Leading zeros are not allowed (e.g., 0987 should be 987)
+          @if (hasCustomMessage('leadingZeros')) {
+            {{ getCustomErrorMessage('leadingZeros') }}
+          } @else {
+            Leading zeros are not allowed (e.g., 0987 should be 987)
+          }
         }
         @if (hasError('invalidAmount')) {
-          Invalid amount format. Maximum {{ getErrorValue('invalidAmount').maxDecimals }} decimal places allowed
+          @if (hasCustomMessage('invalidAmount')) {
+            {{ getCustomErrorMessage('invalidAmount') }}
+          } @else {
+            Invalid amount format. Maximum {{ getErrorValue('invalidAmount').maxDecimals }} decimal places allowed
+          }
         }
         @if (hasError('negativeNotAllowed')) {
-          Negative amounts are not allowed
+          @if (hasCustomMessage('negativeNotAllowed')) {
+            {{ getCustomErrorMessage('negativeNotAllowed') }}
+          } @else {
+            Negative amounts are not allowed
+          }
         }
 
         @if (hasCustomErrors()) {

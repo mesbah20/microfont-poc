@@ -116,33 +116,37 @@
            <p
       class="text-xs text-red-500 leading-4 ms-1">
         @if (hasError('required')) {
-          {{ label() }} is required..!
+          @if (hasCustomMessage('required')) {
+            {{ getCustomErrorMessage('required') }}
+          } @else {
+            {{ label() }} is required..!
+          }
         }
 
-        @if (hasError('min')) {
-          Minimum amount required is {{ getErrorValue('min') }}
-        }
+          @if (hasError('min') && !hasCustomMessage('min')) {
+              Minimum amount required is {{ getErrorValue('min') }}
+            }
 
-        @if (hasError('max')) {
-          Maximum amount allowed is {{ getErrorValue('max') }}
-        }
+            @if (hasError('max') && !hasCustomMessage('max')) {
+              Maximum amount allowed is {{ getErrorValue('max') }}
+            }
 
-        @if (hasError('maxLengthNumber')) {
+        @if (hasError('maxLengthNumber') && !hasCustomMessage('maxLengthNumber') ) {
           Maximum {{ getErrorValue('maxLengthNumber').requiredLength }} digits allowed
         }
-        @else if (hasError('maxlength')) {
+        @else if (hasError('maxlength') && !hasCustomMessage('maxlength')) {
           Maximum {{ getErrorValue('maxlength').requiredLength }} characters allowed
         }
 
-        @if (hasError('leadingZeros')) {
+        @if (hasError('leadingZeros') && !hasCustomMessage('leadingZeros')) {
           Leading zeros are not allowed (e.g., 0987 should be 987)
         }
 
-        @if (hasError('invalidAmount')) {
+        @if (hasError('invalidAmount') && !hasCustomMessage('invalidAmount') ) {
           Invalid amount format. Maximum {{ getErrorValue('invalidAmount').maxDecimals }} decimal places allowed
         }
 
-        @if (hasError('negativeNotAllowed')) {
+        @if (hasError('negativeNotAllowed') && !hasCustomMessage('negativeNotAllowed')) {
           Negative amounts are not allowed
         }
 

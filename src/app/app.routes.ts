@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { Layout } from './layout/layout';
-import { Landing } from './features/landing/landing/landing';
+import { Landing } from './layout/landing/landing';
 import { AllComponentsPage } from './shared/common-components/test-component-page/all-components-page/all-components-page';
 
 export const routes: Routes = [
@@ -16,7 +16,7 @@ export const routes: Routes = [
       layout: 'empty'
     },
     children: [
-      { path: '', loadChildren: () => import('./features/landing/landing.routing').then(m => m.landingRouting) },
+      { path: '', loadChildren: () => import('./layout/landing.routing').then(m => m.landingRouting) },
     ]
   },
   {
@@ -25,7 +25,7 @@ export const routes: Routes = [
       layout: 'empty'
     },
     children: [
-      { path: 'dashboard', loadChildren: () => import('./features/landing/landing.routing').then(m => m.landingRouting) },
+      { path: 'dashboard', loadChildren: () => import('./layout/landing.routing').then(m => m.landingRouting) },
       { path: 'poc', loadChildren: () => import('./shared/features/approval/poc.routing').then(m => m.PocRouting) },
      // { path: 'gl', loadChildren: () => import('./modules/finbook/finbook-routing').then(m => m.FinBookRouting) },
     ]

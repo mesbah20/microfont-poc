@@ -13,6 +13,7 @@ export interface FieldCustomization {
   rowspan?: number;           // Number of rows to span
   highlighted?: boolean;      // Yellow background
   className?: string;         // Custom CSS class
+  style?: Record<string, string>; // Inline styles
   formatter?: (value: any) => string; // Custom formatter
 }
 
@@ -300,7 +301,8 @@ export class AutoTableService {
           rowspan: field.rowspan || customization.rowspan,
           type: 'value',
           highlighted: field.highlighted,
-          className: field.className || customization.className
+          className: field.className || customization.className,
+          style: customization.style
         });
 
         columnsUsed += (colspan > 1 ? colspan : 1);

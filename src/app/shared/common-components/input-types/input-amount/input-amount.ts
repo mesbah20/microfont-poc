@@ -67,26 +67,26 @@ export class InputAmount {
   static amountValidator(decimalPlaces: number, allowLeadingZeros: boolean) {
     return (control: AbstractControl): ValidationErrors | null => {
       if (!control.value) return null;
-      
+
       const value = control.value.toString();
-      
+
       // Check for leading zeros (like 0987)
       if (!allowLeadingZeros && /^0\d+/.test(value)) {
         return { leadingZeros: { value: control.value } };
       }
-      
+
       // Create regex based on decimal places
-      const decimalRegex = decimalPlaces > 0 
+      const decimalRegex = decimalPlaces > 0
         ? new RegExp(`^\\d+(\\.\\d{1,${decimalPlaces}})?$`)
         : /^\d+$/;
-      
+
       if (!decimalRegex.test(value)) {
-        return { invalidAmount: { 
-          value: control.value, 
-          maxDecimals: decimalPlaces 
+        return { invalidAmount: {
+          value: control.value,
+          maxDecimals: decimalPlaces
         } };
       }
-      
+
       return null;
     };
   }
@@ -94,12 +94,12 @@ export class InputAmount {
   static negativeAmountValidator(allowNegative: boolean) {
     return (control: AbstractControl): ValidationErrors | null => {
       if (!control.value) return null;
-      
+
       const numValue = parseFloat(control.value);
       if (!allowNegative && numValue < 0) {
         return { negativeNotAllowed: { value: control.value } };
       }
-      
+
       return null;
     };
   }
@@ -108,20 +108,25 @@ export class InputAmount {
   static maxLengthNumberValidator(maxLength: number) {
     return (control: AbstractControl): ValidationErrors | null => {
       if (!control.value) return null;
-      
+
       const value = control.value.toString();
       if (value.length > maxLength) {
-        return { 
-          maxLengthNumber: { 
+        return {
+          maxLengthNumber: {
             actualLength: value.length,
             requiredLength: maxLength,
             value: control.value
-          } 
+          }
         };
       }
-      
+
       return null;
     };
+  }
+
+  hasCustomMessage(errorKey: string): boolean {
+  const messages = this.customErrorMessages();
+  return !!messages && errorKey in messages;
   }
 
   private updateValidators(): void {
@@ -131,17 +136,17 @@ export class InputAmount {
   const existingValidators = control.validator ? [control.validator] : [];
 
   const validators = [...existingValidators];
-    
+
     // Check if field was already required
     if (this.isRequired()) {
       validators.push(Validators.required);
     }
-    
+
     // Add min/max validators if specified
     if (this.minAmt() !== undefined) {
       validators.push(Validators.min(this.minAmt()!));
     }
-    
+
     if (this.maxAmt() !== undefined) {
       validators.push(Validators.max(this.maxAmt()!));
     }
@@ -151,16 +156,16 @@ export class InputAmount {
       validators.push(InputAmount.maxLengthNumberValidator(this.maxLen()!));
       validators.push(Validators.maxLength(this.maxLen()!));
     }
-    
+
     // Add custom amount validator
     validators.push(InputAmount.amountValidator(
-      this.decimalPlaces(), 
+      this.decimalPlaces(),
       this.allowLeadingZeros()
     ));
-    
+
     // Add negative validator
     validators.push(InputAmount.negativeAmountValidator(this.allowNegative()));
-    
+
     // Update the control's validators
     control.setValidators(validators);
     control.updateValueAndValidity();
@@ -172,7 +177,7 @@ export class InputAmount {
     const stateClasses = this.isDisabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : 'bg-white';
     const errorClasses = this.isInvalidState() ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-300' : 'border-gray-300';
     const customClasses = this.cssClass() || '';
-    
+
     return `${baseClasses} ${stateClasses} ${errorClasses} ${customClasses}`;
   });
 
@@ -196,7 +201,7 @@ export class InputAmount {
   getErrorValue(errorCode: string): any {
     const control = this.frmGroup().get(this.controlName());
     const error = control?.getError(errorCode);
-    
+
     // For min and max errors, Angular returns an object {min: x, actual: y}
     if (errorCode === 'min' && error) {
       return error.min;
@@ -204,7 +209,7 @@ export class InputAmount {
     if (errorCode === 'max' && error) {
       return error.max;
     }
-    
+
     // For custom validators
     if (typeof error === 'object' && error !== null) {
       return error;
@@ -221,7 +226,7 @@ export class InputAmount {
     const input = event.target as HTMLInputElement;
     const control = this.frmGroup().get(this.controlName());
     let value = input.value;
-    
+
     // Remove leading zeros (convert "0345" to "345", but keep "0" and "0.5")
     if (value && !this.allowLeadingZeros()) {
       // Remove leading zeros but preserve single zero and decimal numbers starting with zero
@@ -229,7 +234,7 @@ export class InputAmount {
         value = value.replace(/^0+/, '') || '0';
       }
     }
-    
+
     // Handle decimal places restriction
     if (value.includes('.')) {
       const parts = value.split('.');
@@ -238,65 +243,65 @@ export class InputAmount {
         value = parts[0] + '.' + parts[1].substring(0, this.decimalPlaces());
       }
     }
-    
+
     // Apply maxLength restriction if specified
     if (this.maxLen() && value.length > this.maxLen()!) {
       value = value.slice(0, this.maxLen()!);
     }
-    
+
     // Update input and form control if value changed
     if (input.value !== value) {
       input.value = value;
       control?.setValue(value);
     }
-    
+
     this.valueChange.emit(control?.value);
   }
 
   // Handle paste events to validate pasted content
   onPaste(event: ClipboardEvent): void {
     event.preventDefault();
-    
+
     const paste = event.clipboardData?.getData('text') || '';
     const input = event.target as HTMLInputElement;
     const control = this.frmGroup().get(this.controlName());
-    
+
     // Clean the pasted value
     let cleanValue = paste.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except decimal
-    
+
     // Remove multiple decimal points (keep only the first one)
     const decimalCount = (cleanValue.match(/\./g) || []).length;
     if (decimalCount > 1) {
       const firstDecimalIndex = cleanValue.indexOf('.');
-      cleanValue = cleanValue.substring(0, firstDecimalIndex + 1) + 
+      cleanValue = cleanValue.substring(0, firstDecimalIndex + 1) +
                    cleanValue.substring(firstDecimalIndex + 1).replace(/\./g, '');
     }
-    
+
     // Handle decimal places
     if (cleanValue.includes('.')) {
       const parts = cleanValue.split('.');
       if (parts[1] && parts[1].length > this.decimalPlaces()) {
         cleanValue = parts[0] + '.' + parts[1].substring(0, this.decimalPlaces());
       }
-      
+
       // If decimal places is 0, remove decimal point
       if (this.decimalPlaces() === 0) {
         cleanValue = parts[0];
       }
     }
-    
+
     // Remove leading zeros
     if (cleanValue && !this.allowLeadingZeros()) {
       if (cleanValue !== '0' && !cleanValue.startsWith('0.') && /^0+/.test(cleanValue)) {
         cleanValue = cleanValue.replace(/^0+/, '') || '0';
       }
     }
-    
+
     // Apply max length
     if (this.maxLen() && cleanValue.length > this.maxLen()!) {
       cleanValue = cleanValue.slice(0, this.maxLen()!);
     }
-    
+
     // Set the cleaned value
     input.value = cleanValue;
     control?.setValue(cleanValue);
@@ -310,20 +315,20 @@ export class InputAmount {
     const currentLength = currentValue.length;
     const char = event.key;
     const cursorPosition = input.selectionStart || 0;
-    
+
     // Allow control keys (backspace, delete, tab, escape, enter, arrows)
     if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key) ||
         // Allow Ctrl combinations
         (event.ctrlKey && ['a', 'c', 'v', 'x', 'z'].includes(event.key.toLowerCase()))) {
       return true;
     }
-    
+
     // Only allow numbers and decimal point
     if (!/[\d.]/.test(char)) {
       event.preventDefault();
       return false;
     }
-    
+
     // Handle decimal point restrictions
     if (char === '.') {
       // Prevent multiple decimal points
@@ -331,44 +336,44 @@ export class InputAmount {
         event.preventDefault();
         return false;
       }
-      
+
       // If decimal places is 0, don't allow decimal point
       if (this.decimalPlaces() === 0) {
         event.preventDefault();
         return false;
       }
-      
+
       return true;
     }
-    
+
     // Handle digit input after decimal point
     if (currentValue.includes('.')) {
       const decimalIndex = currentValue.indexOf('.');
       const afterDecimal = currentValue.substring(decimalIndex + 1);
-      
+
       // If cursor is after decimal point and we already have max decimal places
       if (cursorPosition > decimalIndex && afterDecimal.length >= this.decimalPlaces()) {
         event.preventDefault();
         return false;
       }
     }
-    
+
     // Prevent leading zeros (except for decimal numbers)
     if (char === '0' && currentValue === '' && !this.allowLeadingZeros()) {
       return true; // Allow single zero
     }
-    
+
     if (currentValue === '0' && /\d/.test(char) && char !== '.' && !this.allowLeadingZeros()) {
       event.preventDefault();
       return false;
     }
-    
+
     // Check max length
     if (this.maxLen() && currentLength >= this.maxLen()!) {
       event.preventDefault();
       return false;
     }
-    
+
     return true;
   }
 
@@ -378,13 +383,13 @@ export class InputAmount {
     return '0.' + '0'.repeat(this.decimalPlaces() - 1) + '1';
   }
 
-  
+
   // Get custom error message for a specific error key
  getCustomErrorMessage(errorKey: string): string {
     const customMessages = this.customErrorMessages();
     const control = this.frmGroup().get(this.controlName());
     let message = `${this.label()} has validation error: ${errorKey}`;
-   
+
     if (typeof customMessages[errorKey] === 'string') {
       message = customMessages[errorKey];
     } else if (customMessages[errorKey] && typeof customMessages[errorKey] === 'object' && 'message' in customMessages[errorKey]) {
@@ -438,8 +443,8 @@ onChange(event: Event): void {
 onBlur(): void {
   const control = this.frmGroup().get(this.controlName());
   const value = control ? control.value : undefined;
-  this.onChanged.emit(value); 
-  this.onBlurred.emit(value);  
+  this.onChanged.emit(value);
+  this.onBlurred.emit(value);
 }
-  
+
 }

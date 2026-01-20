@@ -1,7 +1,7 @@
 import {Component, HostListener} from '@angular/core';
-import {Navbar} from './layouts/layouts/navbar/navbar';
-import {Sidebar} from './layouts/layouts/sidebar/sidebar';
 import {RouterOutlet} from '@angular/router';
+import { Navbar } from './layouts/navbar/navbar';
+import { Sidebar } from './layouts/sidebar/sidebar';
 
 @Component({
   selector: 'app-layout',

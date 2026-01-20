@@ -115,16 +115,32 @@
       <p
       class="text-xs text-red-500 leading-4 ms-1">
         @if (frmGroup().get(controlName())?.hasError('required')) {
-          {{ label() }} is required..!
+          @if (hasCustomMessage('required')) {
+            {{ getCustomErrorMessage('required') }}
+          } @else {
+            {{ label() }} is required..!
+          }
         }
         @if (frmGroup().get(controlName())?.hasError('minlength')) {
-          {{ label() }} must be at least {{ frmGroup().get(controlName())?.errors?.['minlength']?.requiredLength }} characters.
+          @if (hasCustomMessage('minlength')) {
+            {{ getCustomErrorMessage('minlength') }}
+          } @else {
+            {{ label() }} must be at least {{ frmGroup().get(controlName())?.errors?.['minlength']?.requiredLength }} characters.
+          }
         }
         @if (frmGroup().get(controlName())?.hasError('maxlength')) {
-          {{ label() }} cannot be more than {{ frmGroup().get(controlName())?.errors?.['maxlength']?.requiredLength }} characters.
+          @if (hasCustomMessage('maxlength')) {
+            {{ getCustomErrorMessage('maxlength') }}
+          } @else {
+            {{ label() }} cannot be more than {{ frmGroup().get(controlName())?.errors?.['maxlength']?.requiredLength }} characters.
+          }
         }
         @if (frmGroup().get(controlName())?.hasError('specialCharacterNotAllowed')) {
-          {{ label() }} contains invalid characters.
+          @if (hasCustomMessage('specialCharacterNotAllowed')) {
+            {{ getCustomErrorMessage('specialCharacterNotAllowed') }}
+          } @else {
+            {{ label() }} contains invalid characters.
+          }
         }
         @else if (hasCustomErrors()) {
           @for (errorKey of getCustomErrorKeys(); track errorKey) {

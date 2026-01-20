@@ -16,7 +16,7 @@ import { FormControlHighlightDirective } from '../../../directives/form-control-
     ReactiveFormsModule,
     FormControlHighlightDirective,
     NgClass,
-    MatTooltipModule, 
+    MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
@@ -120,6 +120,10 @@ export class InputTextBox {
         event.preventDefault();
       }
     }
+  }
+  hasCustomMessage(errorKey: string): boolean {
+  const messages = this.customErrorMessages();
+  return !!messages && errorKey in messages;
   }
 
   onKeyDown(event: KeyboardEvent): void {

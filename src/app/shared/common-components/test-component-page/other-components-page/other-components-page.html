@@ -75,7 +75,7 @@
                   [useInlineEdit]="true"
                   [editableColumns]="['amount', 'status', 'priority', 'currency', 'country', 'productCategory', 'subCategory', 'assignedRole']"
                   [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
-                  [selectedColumns]="['id', 'amount', 'currency']"
+                  [selectedColumns]="['id', 'amount', 'currency','country']"
                   (onRowDoubleClick)="onRowDblClick($event)"
                   (onChecked)="onTransactionRowSelect($event)"
                   ></generic-data-grid>

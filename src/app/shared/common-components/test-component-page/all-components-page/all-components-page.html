@@ -29,8 +29,8 @@
                     (onBlurred)="onBlur($event)"
                     (onChanged)="onTextBoxChanged($event)"
                     [customErrorMessages]="{
-                      required: 'Transaction reference is required',
-                      minlength: 'Minimum 3 characters required',
+                      required: 'Transaction reference is requiredsss',
+                      minlength: 'Minimum 3 characters requiredssss',
                       maxlength: 'Maximum 20 characters allowed',
                       pattern: 'Only alphanumeric characters and underscores are allowed'
                     }"
@@ -46,7 +46,6 @@
                     displayMode="outline"
                     [options]="currencyOptions"
                     [tooltip]="'Currency selection affects country and tax rate'"
-                    [searchable]="false"
                     (onSelect)="handleCategorySelection($event)"
                   ></input-select-option-field>
                 </div>
@@ -488,7 +487,7 @@
               </div>
             </section>
 
-            <!-- Transaction Grid Section -->
+            <!-- Transaction Grid Section (Original) -->
             <section class="transaction-grid-section bg-white rounded-lg shadow-sm">
               <app-expansion-panel-header
                 [isOpenSignal]="businessHeaderPanel"
@@ -529,13 +528,82 @@
                   [selectionStateField]="'isSelected'"
                   [selectionStateFunction]="isOrderProcessable"
                   [selectionUpdateField]="'isSelected'"
-
+                  (onPaginationChange)="loadDataFromServer($event)"
                   (onChecked)="onTransactionRowSelect($event)"
                   (onSelectAllChange)="onTransactionSelectAll($event)"
                   (dataSourceChanged)="onTransactionDataChanged($event)"
+                  (onCellButtonClick)="onGridCellButtonClick($event)"
                 ></generic-data-grid>
               </div>
             </section>
+
+            <!-- ENHANCED DATA GRID SHOWCASE - Complete Feature Demonstration -->
+            <section class="transaction-grid-section bg-white rounded-lg shadow-sm mt-10">
+              <app-expansion-panel-header
+                [isOpenSignal]="enhancedGridShowcase"
+                [panelTitle]="'Enhanced Data Grid - Complete Feature Showcase'"
+              />
+
+
+
+                <!-- Toggle for custom action buttons -->
+
+
+                <generic-data-grid
+                  #enhancedShowcaseGrid
+                  [id]="'enhanced-showcase-grid'"
+
+                  [backendPaginationEnabled]="true"
+                  [dataSource]="sampleTransactions()"
+                  [initPageSize]="6"
+                  [pageSizeOptions]="[5, 10, 15, 20]"
+                  [enableSelection]="true"
+                  [showEditButton]="true"
+                  [showDeleteButton]="true"
+                  [showViewButton]="true"
+                  [showCustomAction1]="showCustomActionButtons()"
+                  [customActionSvg1]="approveSvgIcon"
+                  [customActionTooltip1]="'Approve Transaction'"
+                  (onExtraAction1Click)="onApproveTransaction($event)"
+                  [showCustomAction2]="showCustomActionButtons()"
+                  [customActionSvg2]="downloadSvgIcon"
+                  [customActionTooltip2]="'Download Report'"
+                  (onExtraAction2Click)="onDownloadTransaction($event)"
+                  [searchEnabled]="true"
+                  [showPrintButton]="true"
+                  [useInlineEdit]="true"
+
+                  [editableColumns]="['amount', 'status', 'priority', 'riskLevel']"
+                  [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
+                  [dropdownColumns]="['status', 'priority', 'riskLevel']"
+                  [dropdownOptions]="enhancedDropdownOptions()"
+                  [selectedColumns]="['id', 'profileCard', 'amount', 'currency', 'priorityAction', 'quickActions', 'riskLevel']"
+
+                  [tblClass]="'showcase-enhanced-table'"
+                  [gridTitle]="'Enhanced Transaction Grid'"
+
+                  [cellRenderFunctions]="enhancedCellRenderers()"
+                  [cellStyleResolvers]="enhancedCellStyleResolvers()"
+                  [rowStyleResolvers]="enhancedRowStyleResolvers()"
+                  [backendPaginationEnabled]="true"
+
+                  [actionVisibility]="enhancedActionVisibility"
+
+                  (onFHEditClick)="onTransactionEdit($event)"
+                  (onFHDeleteClick)="onTransactionDelete($event)"
+                  (onFHViewClick)="onTransactionView($event)"
+                  (onPrint)="onTransactionPrint($event)"
+                  (onPaginationChange)="onEnhancedPaginationChange($event)"
+                  (onDataGridStateChange)="onEnhancedStateChange($event)"
+                  (dataSourceChanged)="onTransactionDataChanged($event)"
+                  (onChecked)="onTransactionRowSelect($event)"
+                  (onSelectAllChange)="onTransactionSelectAll($event)"
+                >
+                </generic-data-grid>
+
+            </section>
+
+
 
             <!-- Time Picker Data Grid Section -->
             <section class="transaction-grid-section bg-white rounded-lg shadow-sm mt-6">
@@ -584,60 +652,15 @@
               />
 
               <div class="p-4">
-                <!-- Control Buttons -->
-                <div class="mb-6 flex flex-wrap gap-3">
-                  <button
-                    (click)="loadWithAutoGeneration()"
-                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">
-                    ⚡ Auto-Generate
-                  </button>
-
-                  <button
-                    (click)="loadWithMinimalConfig()"
-                    class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm">
-                    🎨 With Formatting
-                  </button>
-
-                  <button
-                    (click)="loadWithFullConfig()"
-                    class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition text-sm">
-                    ✨ Full Customization
-                  </button>
-
-                  <button
-                    (click)="loadCustomerData()"
-                    class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition text-sm">
-                    👤 Customer Data
-                  </button>
-
-                  <button
-                    (click)="loadTransactionData()"
-                    class="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 transition text-sm">
-                    💳 Transaction Data
-                  </button>
-
-                  <button
-                    (click)="loadCustomTableWithSpanning()"
-                    class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition text-sm">
-                    🔀 Rowspan & Colspan
-                  </button>
-                </div>
-
-                <!-- Info Box -->
-                <div class="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
-                  <p class="text-sm text-blue-800">
-                    <strong>Current Mode:</strong> {{ currentTableMode() }}
-                  </p>
-                </div>
 
                 <!-- Dynamic Table -->
-                <app-dynamic-table
+                <generic-table
                   [config]="genericTableConfig()"
                   [showHeader]="true"
                   [showFooter]="true"
                   [customTitle]="'Account Information'"
-                  [customSubtitle]="'Sample banking account data - ' + currentTableMode()">
-                </app-dynamic-table>
+                  [customSubtitle]="'Sample banking account data - ' ">
+                </generic-table>
               </div>
             </section>
           </div>
@@ -659,7 +682,7 @@
     <generic-modal
       [isVisible]="showModal"
       [modalTitle]="'Account Selection'"
-      [cssClass]="'modal-sm'"
+      [cssClass]="'modal-xl'"
       [okButtonText]="'Process'"
       [modalComponent]="modalComponent"
       [modalComponentData]="modalComponentData"
@@ -675,15 +698,110 @@
   <app-alert-example-page></app-alert-example-page>
 </div>
 
-<!-- Example: Generic Data Grid with two extra action buttons -->
+<!-- SECTION 5: DISPLAY COMPONENTS -->
+<section class="rounded-lg mt-8">
+  <app-expansion-sub-panel-header
+    [subPanelTitle]="'Display Components - Generic Label'"
+    [isOpenSignal]="displayComponentsPanel"
+  />
+
+  @if(displayComponentsPanel()) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+
+      <!-- Basic Label (Static Text) -->
+      <div class="component-demo">
+        <h4 class="component-title">Basic Label</h4>
+        <generic-label
+          [labelValue]="'Transaction Status'"
+          [visible]="true"
+        />
+      </div>
+
+      <!-- Label with Form Control (Simple Display) -->
+      <div class="component-demo">
+        <h4 class="component-title">Form Control Display</h4>
+        <generic-label
+          [frmGroup]="frmGroup"
+          [controlName]="'currency'"
+          [labelValue]="'Selected Currency'"
+          [displayMode]="'vertical'"
+          [visible]="true"
+          [tooltip]="'Displays the currently selected currency value'"
+        />
+      </div>
+
+      <!-- Selectable Label (Mapped Display) -->
+      <div class="component-demo">
+        <h4 class="component-title">Mapped Value Display</h4>
+        <generic-label
+          [frmGroup]="frmGroup"
+          [controlName]="'dropdown'"
+          [labelValue]="'Priority Level'"
+          [displayMode]="'vertical'"
+          [isSelectable]="true"
+          [options]="dropdownOptions"
+          [visible]="true"
+          [tooltip]="'Shows the human-readable priority level based on the selected key'"
+        />
+      </div>
+
+      <!-- Required Field Indicator -->
+      <div class="component-demo">
+        <h4 class="component-title">Required Field Display</h4>
+        <generic-label
+          [frmGroup]="frmGroup"
+          [controlName]="'textBox'"
+          [labelValue]="'Transaction Reference'"
+          [displayMode]="'vertical'"
+          [isRequired]="true"
+          [visible]="true"
+          [tooltip]="'Displays the transaction reference with required indicator'"
+        />
+      </div>
+
+      <!-- Horizontal Display Mode -->
+      <div class="component-demo">
+        <h4 class="component-title">Horizontal Layout</h4>
+        <generic-label
+          [frmGroup]="frmGroup"
+          [controlName]="'amount'"
+          [labelValue]="'Amount'"
+          [displayMode]="'horizontal'"
+          [visible]="true"
+          [tooltip]="'Amount displayed in horizontal layout'"
+        />
+      </div>
+
+      <!-- Hidden Component Demo -->
+      <div class="component-demo">
+        <h4 class="component-title">Conditional Visibility</h4>
+        <generic-label
+          [frmGroup]="frmGroup"
+          [controlName]="'totalAmount'"
+          [labelValue]="'Total Amount'"
+          [displayMode]="'vertical'"
+          [visible]="false"
+          [tooltip]="'This component is hidden (visible=false)'"
+        />
+        <p class="text-sm text-gray-500 mt-2">This label is hidden due to visible="false"</p>
+      </div>
+
+    </div>
+  }
+</section>
+
+<!-- Example: Generic Data Grid with two extra action buttons and server-like pagination -->
 <generic-data-grid
   [dataSource]="sampleApiData()"
+  [initPageSize]="5"
+  [pageSizeOptions]="[5, 10, 20]"
   [showCustomAction1]="true"
   [customActionIcon1]="'apps.svg'"
   [customActionTooltip1]="'Flag row'"
   (onExtraAction1Click)="handleExtra1($event)"
   [enableSelection]="true"
   [selectionStateField]="'email'"
+  (onPaginationChange)="loadDataFromServer($event)"
   [showCustomAction2]="true"
   [customActionIcon2]="'report'"
   [customActionTooltip2]="'Download row data'"

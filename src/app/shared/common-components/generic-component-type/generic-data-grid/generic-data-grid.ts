@@ -1,5 +1,6 @@
-import { Component, input, output, signal, computed, OnInit, OnDestroy, effect, WritableSignal } from '@angular/core';
+import { Component, input, output, signal, computed, OnInit, OnDestroy, effect, WritableSignal, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FormsModule, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -16,6 +17,63 @@ import { ExpansionPanelHeader } from '../../expansion-panel-header/expansion-pan
 import { GenericButton } from '../generic-button/generic-button';
 import { InputTime } from '../../input-types/input-time/input-time';
 
+/**
+ * Defines custom styling for a cell based on cell value or row data
+ */
+export interface CellStyleDefinition {
+  /** Condition to apply styles (row data and cell value available) */
+  condition: (cellValue: any, rowData?: any) => boolean;
+  /** Custom CSS classes to apply */
+  cssClasses?: string | string[];
+  /** Inline styles object */
+  styles?: Record<string, string | number>;
+  /** Custom HTML attributes */
+  attributes?: Record<string, string>;
+}
+
+/**
+ * Defines custom styling for an entire row based on row data
+ */
+export interface RowStyleDefinition {
+  /** Condition to apply styles */
+  condition: (rowData: any) => boolean;
+  /** Custom CSS classes to apply */
+  cssClasses?: string | string[];
+  /** Inline styles object */
+  styles?: Record<string, string | number>;
+}
+
+/**
+ * Emitted when pagination state changes (page, sort, filter)
+ * Used for backend data requests
+ */
+export interface DataGridStateChange {
+  pageIndex: number;
+  pageSize: number;
+  sortColumn: string;
+  sortDirection: 'asc' | 'desc';
+  searchTerm: string;
+  totalRecords: number;
+  totalPages: number;
+}
+
+/**
+ * Defines custom content rendering for a cell or column
+ */
+export interface CellRenderFunction {
+  (cellValue: any, rowData: any, rowIndex: number, columnProperty: string): string | SafeHtml | any;
+}
+
+/**
+ * Defines custom row rendering
+ */
+export interface RowRenderFunction {
+  (rowData: any, rowIndex: number): Record<string, string | number>;
+}
+
+/**
+ * Legacy row styling interface - superseded by RowStyleDefinition
+ */
 export interface TableRowDesigner {
   condition: (item: any) => boolean;
   backgroundColor?: string;
@@ -47,6 +105,26 @@ export interface GridColumn {
   showSelectAll?: boolean; // New property for checkbox columns
   readOnly?: boolean; // New property to make checkboxes read-only
   isTimeField?: boolean; // New property for time picker fields
+
+  // NEW: Complete styling freedom
+  /** Custom CSS classes to apply to all cells in this column */
+  cssClasses?: string | string[];
+  /** Inline styles to apply to all cells in this column */
+  styles?: Record<string, string | number>;
+  /** Header-specific CSS classes */
+  headerCssClasses?: string | string[];
+  /** Header-specific inline styles */
+  headerStyles?: Record<string, string | number>;
+
+  // NEW: Conditional styling per cell
+  /** Apply styles conditionally based on cell value or row data */
+  cellStyleDefinitions?: CellStyleDefinition[];
+
+  // NEW: Custom content rendering
+  /** Function to render arbitrary content (HTML, icons, badges, components, etc.) */
+  renderFunction?: CellRenderFunction;
+  /** Template reference for custom cell rendering */
+  cellTemplate?: TemplateRef<any>;
 }
 
 export interface GridAction {
@@ -122,9 +200,11 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   readonly showPrintButton = input<boolean>(false);
   readonly showCustomAction1 = input<boolean>(false);
   readonly customActionIcon1 = input<string>('');
+  readonly customActionSvg1 = input<string>('');
   readonly customActionTooltip1 = input<string>('');
   readonly showCustomAction2 = input<boolean>(false);
   readonly customActionIcon2 = input<string>('');
+  readonly customActionSvg2 = input<string>('');
   readonly customActionTooltip2 = input<string>('');
   readonly iconPathPrefix = input<string>('/asset/icons');
   readonly enableSelection = input<boolean>(false);
@@ -165,6 +245,28 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   // Per-row action visibility override. Return a map like { delete: false } to hide delete for that row.
   readonly actionVisibility = input<(row: T) => ActionVisibilityMap>();
 
+  readonly cellRenderFunctions = input<Record<string, CellRenderFunction>>({});
+  /** Conditional cell styling per column */
+  readonly cellStyleResolvers = input<Record<string, CellStyleDefinition[]>>({});
+  /** Row-level conditional styling */
+  readonly rowStyleResolvers = input<RowStyleDefinition[]>([]);
+  /** Enable backend-driven pagination - emit state changes instead of filtering locally */
+  readonly backendPaginationEnabled = input<boolean>(false);
+
+  readonly onPaginationChange = output<{
+    pageIndex: number;
+    pageSize: number;
+    pageNumber: number;
+  }>();
+
+  // NEW: Backend-driven pagination state change event
+  /**
+   * Emitted when pagination state changes (page, sort, filter, search)
+   * Used to signal parent component to fetch data from backend
+   * Only emitted if backendPaginationEnabled is true
+   */
+  readonly onDataGridStateChange = output<DataGridStateChange>();
+
 
 
   // Basic Outputs
@@ -181,6 +283,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   readonly onPrint = output<string>();
   readonly onExtraAction1Click = output<string>();
   readonly onExtraAction2Click = output<string>();
+  readonly onCellButtonClick = output<any>();
   readonly dataSourceChanged = output<T[]>();
   readonly onRowDoubleClick = output<string>();
 
@@ -230,7 +333,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   selectedCount = computed(() => this._selectedRows().size);
   isAllSelected = computed(() => this._selectedRows().size === this.displayedData().length && this.displayedData().length > 0);
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder, private sanitizer: DomSanitizer) {
     // Data source effect
     effect(() => {
       const data = this.dataSource();
@@ -666,19 +769,52 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
       this._sortColumn.set(column);
       this._sortDirection.set('asc');
     }
+    this._currentPage.set(0); // Reset to first page when sorting changes
     this.applyFilters();
+    this.emitDataGridStateChange(); // NEW: Emit state change for backend
   }
 
   // Pagination
   onPageChange(event: PageEvent): void {
     this._currentPage.set(event.pageIndex);
     this._pageSize.set(event.pageSize);
+
+    // Emit pagination info for server-side usage
+    this.onPaginationChange.emit({
+      pageIndex: event.pageIndex,
+      pageSize: event.pageSize,
+      pageNumber: event.pageIndex + 1
+    });
+
+    // NEW: Emit backend-driven pagination state changes
+    this.emitDataGridStateChange();
   }
+
+  /**
+   * Emits the current grid state (pagination, sorting, filtering, search)
+   * Used for backend-driven pagination and data requests
+   */
+  private emitDataGridStateChange(): void {
+    if (this.backendPaginationEnabled()) {
+      this.onDataGridStateChange.emit({
+        pageIndex: this._currentPage(),
+        pageSize: this._pageSize(),
+        sortColumn: this._sortColumn(),
+        sortDirection: this._sortDirection(),
+        searchTerm: this._searchTerm(),
+        totalRecords: this._filteredData().length,
+        totalPages: this.totalPages()
+      });
+    }
+  }
+
 
   // Search
   onSearch(term: string): void {
     this._searchTerm.set(term);
+    this._currentPage.set(0); // Reset to first page when search term changes
     this.applyFilters();
+    this.emitDataGridStateChange(); // NEW: Emit state change for backend
   }
 
   // Row selection
@@ -805,6 +941,11 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
     return `${prefix}/${iconName}${hasExt ? '' : '.svg'}`;
   }
 
+  // Safely render HTML/SVG content
+  getSafeHtml(html: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
   // Row styling
   getRowStyle(item: T): any {
     for (const designer of this.rowDesignerList()) {
@@ -817,7 +958,174 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
         };
       }
     }
+
+    // NEW: Apply row style definitions (advanced styling)
+    for (const styleDefinition of this.rowStyleResolvers()) {
+      if (styleDefinition.condition(item)) {
+        return this.buildStyleObject(
+          styleDefinition.styles,
+          styleDefinition.cssClasses
+        );
+      }
+    }
+
     return {};
+  }
+
+  /**
+   * Get cell-specific styling based on column and row data
+   * Supports:
+   * - Column-level CSS classes and styles
+   * - Conditional cell styling based on cell value or row data
+   * - Cell-level style overrides
+   */
+  getCellStyle(column: GridColumn, cellValue: any, rowData: T): any {
+    const styles: any = {};
+
+    // Apply column-level styles
+    if (column.styles) {
+      Object.assign(styles, column.styles);
+    }
+
+    // Apply conditional cell styling from cellStyleDefinitions
+    if (column.cellStyleDefinitions && column.cellStyleDefinitions.length > 0) {
+      for (const styleDef of column.cellStyleDefinitions) {
+        if (styleDef.condition(cellValue, rowData)) {
+          if (styleDef.styles) {
+            Object.assign(styles, styleDef.styles);
+          }
+          break; // Apply first matching condition
+        }
+      }
+    }
+
+    // Apply styling from cellStyleResolvers (global configuration)
+    const resolvers = this.cellStyleResolvers()[column.property];
+    if (resolvers && resolvers.length > 0) {
+      for (const styleDef of resolvers) {
+        if (styleDef.condition(cellValue, rowData)) {
+          if (styleDef.styles) {
+            Object.assign(styles, styleDef.styles);
+          }
+          break;
+        }
+      }
+    }
+
+    return styles;
+  }
+
+  /**
+   * Get CSS classes for a cell
+   * Combines column-level classes with conditional classes
+   */
+  getCellCssClasses(column: GridColumn, cellValue: any, rowData: T): string[] {
+    const classes: string[] = [];
+
+    // Add column-level CSS classes
+    if (column.cssClasses) {
+      if (typeof column.cssClasses === 'string') {
+        classes.push(column.cssClasses);
+      } else {
+        classes.push(...column.cssClasses);
+      }
+    }
+
+    // Add conditional CSS classes from cellStyleDefinitions
+    if (column.cellStyleDefinitions && column.cellStyleDefinitions.length > 0) {
+      for (const styleDef of column.cellStyleDefinitions) {
+        if (styleDef.condition(cellValue, rowData)) {
+          if (styleDef.cssClasses) {
+            if (typeof styleDef.cssClasses === 'string') {
+              classes.push(styleDef.cssClasses);
+            } else {
+              classes.push(...styleDef.cssClasses);
+            }
+          }
+          break;
+        }
+      }
+    }
+
+    // Add conditional CSS classes from global cellStyleResolvers
+    const resolvers = this.cellStyleResolvers()[column.property];
+    if (resolvers && resolvers.length > 0) {
+      for (const styleDef of resolvers) {
+        if (styleDef.condition(cellValue, rowData)) {
+          if (styleDef.cssClasses) {
+            if (typeof styleDef.cssClasses === 'string') {
+              classes.push(styleDef.cssClasses);
+            } else {
+              classes.push(...styleDef.cssClasses);
+            }
+          }
+          break;
+        }
+      }
+    }
+
+    return classes;
+  }
+
+  /**
+   * Render cell content using custom render function
+   * Supports rendering: HTML, text, icons, badges, buttons, custom components
+   */
+  renderCellContent(column: GridColumn, cellValue: any, rowData: T, rowIndex: number): any {
+    // Check for custom render function
+    const renderFunc = this.cellRenderFunctions()[column.property];
+    if (renderFunc && typeof renderFunc === 'function') {
+      const result = renderFunc(cellValue, rowData, rowIndex, column.property);
+      // If result is a string with HTML, wrap it as safe HTML for rendering
+      if (typeof result === 'string' && result.includes('<')) {
+        return this.getSafeHtml(result);
+      }
+      return result;
+    }
+
+    // Check for column-level render function
+    if (column.renderFunction && typeof column.renderFunction === 'function') {
+      const result = column.renderFunction(cellValue, rowData, rowIndex, column.property);
+      // If result is a string with HTML, wrap it as safe HTML for rendering
+      if (typeof result === 'string' && result.includes('<')) {
+        return this.getSafeHtml(result);
+      }
+      return result;
+    }
+
+    // Default: return cell value
+    return cellValue;
+  }
+
+  // Handler for button clicks in rendered cells
+  onRenderedButtonClick(action: string, rowData: any, columnName: string): void {
+    this.onCellButtonClick.emit({
+      action: action,
+      rowData: rowData,
+      column: columnName,
+      timestamp: new Date()
+    });
+  }
+
+  /**
+   * Check if a cell should use custom rendering
+   */
+  hasCustomCellRendering(column: GridColumn): boolean {
+    const globalRenderFunc = this.cellRenderFunctions()[column.property];
+    return !!(globalRenderFunc || column.renderFunction);
+  }
+
+  /**
+   * Helper method to build style object from styles and CSS classes
+   */
+  private buildStyleObject(styles?: Record<string, string | number>, cssClasses?: string | string[]): any {
+    const result: any = {};
+
+    if (styles) {
+      Object.assign(result, styles);
+    }
+
+    return result;
   }
 
   // Utility methods

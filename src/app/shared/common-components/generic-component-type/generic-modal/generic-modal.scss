@@ -44,7 +44,7 @@
 
   &.modal-sm { max-width: 600px; height: auto; }
   &.modal-lg { max-width: 900px; height: auto; }
-  &.modal-xl { max-width: 90%; height: 100vh; }
+  &.modal-xl { max-width: 90%; height: auto; }
   &.modal-fullscreen {
     max-width: calc(100vw - 4rem);
     height: calc(100vh - 4rem);
@@ -56,9 +56,12 @@
     }
 
     .modal-body {
+      padding: .8rem;
       flex: 1;
-      overflow-y: auto;   // allows scrolling if content is long
-      max-height: none;
+      overflow-y: auto;
+      min-height: auto;
+      background: #ffffff;
+      position: relative;
     }
   }
 }

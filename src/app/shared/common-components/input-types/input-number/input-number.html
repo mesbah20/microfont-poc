@@ -124,19 +124,35 @@
       <p
       class="text-xs text-red-500 leading-4 ms-1">
         @if (hasError('required')) {
-          {{ label() }} is required!
+          @if (hasCustomMessage('required')) {
+            {{ getCustomErrorMessage('required') }}
+          } @else {
+            {{ label() }} is required!
+          }
         }
 
         @if (hasError('min')) {
-          Minimum value required is {{ getErrorValue('min') }}
+          @if (hasCustomMessage('min')) {
+            {{ getCustomErrorMessage('min') }}
+          } @else {
+            Minimum value required is {{ getErrorValue('min') }}
+          }
         }
 
         @if (hasError('max')) {
-          Maximum value allowed is {{ getErrorValue('max') }}
+          @if (hasCustomMessage('max')) {
+            {{ getCustomErrorMessage('max') }}
+          } @else {
+            Maximum value allowed is {{ getErrorValue('max') }}
+          }
         }
 
         @if (hasError('pattern')) {
-          Only whole numbers are allowed
+          @if (hasCustomMessage('pattern')) {
+            {{ getCustomErrorMessage('pattern') }}
+          } @else {
+            Only whole numbers are allowed
+          }
         }
 
         @if (hasCustomErrors()) {

@@ -14,6 +14,7 @@ export interface TableCell {
   highlighted?: boolean;    // Apply highlight style
   className?: string;       // Custom CSS class
   width?: string;          // Custom width (e.g., '25%', '200px')
+  style?: Record<string, string>; // Inline styles for direct CSS
 }
 
 /**
@@ -43,7 +44,7 @@ export interface DynamicTableConfig {
 }
 
 @Component({
-  selector: 'app-dynamic-table',
+  selector: 'generic-table',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './generic-table.html',
@@ -176,4 +177,5 @@ export class DynamicTableComponent implements OnInit {
     }
     return '-';
   }
+
 }
