@@ -22,7 +22,7 @@
 
 <!-- ======================== MAIN CONTENT ======================== -->
 @else if (tableConfig()) {
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 p-8">
+  <div class=" bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 p-8">
     <div class="max-w-6xl mx-auto">
 
       <!-- Header -->
@@ -73,12 +73,6 @@
         }
       </div>
 
-      <!-- Footer -->
-      @if (showFooter) {
-        <div class="mt-8 text-center text-sm text-slate-500 animate-fade-in">
-          Last updated: {{ currentTime() | date:'medium' }}
-        </div>
-      }
     </div>
   </div>
 }

@@ -63,68 +63,72 @@
     </div>
   }
 
-  <!-- ======================== HORIZONTAL / VERTICAL ======================== -->
-  @else {
-    @if (displayMode() === 'vertical') {
-      <label class="input-label block leading-tight flex items-center gap-1">
-        {{ label() }}
-        @if (isRequired()) { <span class="text-red-500">*</span> }
-        <span class="text-xs text-gray-500 ml-2">({{ getCurrencyConfig().code }})</span>
-      </label>
-    }
-
-    @if (displayMode() === 'horizontal') {
-      <label class="input-label relative flex items-center gap-1">
-        {{ label() }}
-        @if (isRequired()) { <span class="text-red-500">*</span> }
-        <span class="text-xs text-gray-500 ml-2">({{ getCurrencyConfig().code }})</span>
-      </label>
-    }
-
-
-         <div ngClass="{'input-wrapper-horizontal:'}" class="input-wrapper" [class.has-value]="frmGroup().get(controlName())?.value">
-        <input
-          [formControlName]="controlName()"
-          [attr.controlName]="controlName()"
-          [readonly]="isReadonly()"
-          [ngClass]="{ 'readonly-input': isReadonly(), 'pl-8': true }"
-          type="number"
-          matInput
-          [matTooltip]="tooltip()"
-          [matTooltipPosition]="tooltipPosition()"
-          [matTooltipClass]="tooltipClass()"
-          [matTooltipDisabled]="!tooltip()"
-          [placeholder]="placeholder() ?? 'Enter ' + label()"
-          [step]="getStepValue()"
-          [min]="allowNegative() ? null : 0"
-          [max]="maxAmt() || null"
-          class="custom-input"
-          (input)="onChangeInput($event); onInput($event)"
-          (change)="onChange($event)"
-          (keypress)="onKeyPress($event)"
-          (paste)="onPaste($event)"
-          (blur)="onBlur()"
-        />
-
-        @if (!isReadonly() && !frmGroup().get(controlName())?.disabled) {
-            <button
-            type="button"
-            class="clear-button"
-            (click)="clearInput()"
-            [attr.aria-label]="'Clear ' + label()">
-                              <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px" fill="#000000">
-                    <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
-                  </svg>
-          </button>
-        }
-      </div>
-
-      <!-- AMOUNT IN WORDS -->
-      <div class="text-sm mt-1 text-gray-600 amount-in-words w-80">
-        {{ amountToWord() }}
-      </div>
-
+ <!-- ======================== HORIZONTAL / VERTICAL ======================== -->
+@else {
+  @if (displayMode() === 'vertical') {
+    <label class="input-label block leading-tight flex items-center gap-1">
+      {{ label() }}
+      @if (isRequired()) { <span class="text-red-500">*</span> }
+      <span class="text-xs text-gray-500 ml-2">({{ getCurrencyConfig().code }})</span>
+    </label>
   }
+
+  @if (displayMode() === 'horizontal') {
+    <label class="input-label relative flex items-center gap-1">
+      {{ label() }}
+      @if (isRequired()) { <span class="text-red-500">*</span> }
+      <span class="text-xs text-gray-500 ml-2">({{ getCurrencyConfig().code }})</span>
+    </label>
+  }
+
+  <div style="width: 250px;" class="">
+    <div class="input-wrapper" [class.has-value]="frmGroup().get(controlName())?.value">
+      <input
+        [formControlName]="controlName()"
+        [attr.controlName]="controlName()"
+        [readonly]="isReadonly()"
+        [ngClass]="{ 'readonly-input': isReadonly(), 'pl-8': true }"
+        type="number"
+        matInput
+        [matTooltip]="tooltip()"
+        [matTooltipPosition]="tooltipPosition()"
+        [matTooltipClass]="tooltipClass()"
+        [matTooltipDisabled]="!tooltip()"
+        [placeholder]="placeholder() ?? 'Enter ' + label()"
+        [step]="getStepValue()"
+        [min]="allowNegative() ? null : 0"
+        [max]="maxAmt() || null"
+        class="custom-input"
+        (input)="onChangeInput($event); onInput($event)"
+        (change)="onChange($event)"
+        (keypress)="onKeyPress($event)"
+        (paste)="onPaste($event)"
+        (blur)="onBlur()"
+      />
+
+      @if (!isReadonly() && !frmGroup().get(controlName())?.disabled) {
+        <button
+          type="button"
+          class="clear-button"
+          (click)="clearInput()"
+          [attr.aria-label]="'Clear ' + label()">
+          <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -960 960 960" width="15px" fill="#000000">
+            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+          </svg>
+        </button>
+      }
+    </div>
+
+    <!-- AMOUNT IN WORDS - below input field for both modes -->
+    <div class="text-sm mt-1 text-gray-600 amount-in-words  w-80">
+      {{ amountToWord() }}
+    </div>
+  </div>
+}
+
+
+
+
 
   <!-- ======================== VALIDATION ======================== -->
     <div

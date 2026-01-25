@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { InputTextBox } from '../../input-types/input-text-box/input-text-box';
 import { InputIdBox } from '../../input-types/input-id-box/input-id-box';
 import { InputAmountInWord } from '../../input-types/input-amount-in-word/input-amount-in-word';
+import {  InputTagComponent } from '../../input-types/input-tag/input-tag';
 import { InputSelectOptionField } from '../../input-types/input-select-option-field/input-select-option-field';
 import { InputFile } from '../../input-types/input-file/input-file';
 import { InputOfficeBox } from '../../input-types/input-office-box/input-office-box';
@@ -18,7 +19,6 @@ import { GenericMultiInputSelectOption } from '../../generic-component-type/gene
 import { BUTTON_VISIBILITY, ONCLICK_SAVE, ONCLICK_SAVE_NEXT, ONCLICK_VIEW } from '../../../constant/button-signals.constant';
 import { catchError, debounceTime, distinctUntilChanged, retry, timeout } from 'rxjs/operators';
 import { InputDate } from '../../input-types/input-date/input-date';
-import { InputTag } from '../../input-types/input-tag/input-tag';
 import { OtherComponentsPage } from '../other-components-page/other-components-page';
 import { CommonModule } from '@angular/common';
 import {ToastHelperService} from '../../../services/toast-helper.service';
@@ -86,6 +86,7 @@ export interface DataSelectionConfig {
     GenericButton,
     InputTextArea,
     InputAmountInWord,
+    InputTagComponent,
     InputSelectOptionField,
     InputDate,
     CommonModule,
@@ -100,9 +101,9 @@ export interface DataSelectionConfig {
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
     AlertExamplePage,
-    InputTag,
     DynamicTableComponent,
-    Label
+    Label,
+
 ],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],
@@ -117,6 +118,7 @@ export class AllComponentsPage implements OnInit {
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
   subPanel1: WritableSignal<boolean> = signal(true);
   timePickerHeaderPanel: WritableSignal<boolean> = signal(true);
+  datePickerHeaderPanel: WritableSignal<boolean> = signal(true);
   genericTableHeaderPanel: WritableSignal<boolean> = signal(true);
   displayComponentsPanel: WritableSignal<boolean> = signal(true);
   // Reference to this component's own class
@@ -267,6 +269,30 @@ export class AllComponentsPage implements OnInit {
     { key: 'option3', value: 'Low Priority Transaction' },
     { key: 'option4', value: 'Urgent Processing Required' },
     { key: 'option5', value: 'Standard Processing' }
+  ];
+
+  // Tag Input value for ngModel binding
+  tagInputValue: string[] = [];
+
+  // Tag suggestions for autocomplete
+  tagSuggestions = [
+    'urgent',
+    'priority',
+    'review',
+    'approved',
+    'pending',
+    'processing',
+    'completed',
+    'high-risk',
+    'low-risk',
+    'international',
+    'domestic',
+    'bulk',
+    'single',
+    'recurring',
+    'one-time',
+    'automated',
+    'manual'
   ];
 
   // Enhanced sample transactions with relatable fields
@@ -500,6 +526,56 @@ export class AllComponentsPage implements OnInit {
       status: 'pending'
     }
   ]);
+
+  // Sample date transaction data for date picker grid
+  sampleDateTransactions = signal([
+    {
+      id: 'TRX001',
+      description: 'Invoice Processing',
+      transactionDate: '2026-01-15',
+      dueDate: '2026-01-30',
+      completionDate: '2026-01-28',
+      status: 'completed',
+      amount: 5000
+    },
+    {
+      id: 'TRX002',
+      description: 'Payment Approval',
+      transactionDate: '2026-01-18',
+      dueDate: '2026-01-25',
+      completionDate: null,
+      status: 'pending',
+      amount: 12500
+    },
+    {
+      id: 'TRX003',
+      description: 'Budget Reconciliation',
+      transactionDate: '2026-01-10',
+      dueDate: '2026-01-20',
+      completionDate: '2026-01-19',
+      status: 'completed',
+      amount: 25000
+    },
+    {
+      id: 'TRX004',
+      description: 'Expense Reimbursement',
+      transactionDate: '2026-01-20',
+      dueDate: '2026-02-05',
+      completionDate: null,
+      status: 'in_progress',
+      amount: 3500
+    }
+  ]);
+
+  // Dropdown options for date picker grid
+  dateGridDropdownOptions = signal<Record<string, DropdownOption[]>>({
+    status: [
+      { value: 'pending', label: 'Pending' },
+      { value: 'in_progress', label: 'In Progress' },
+      { value: 'completed', label: 'Completed' },
+      { value: 'cancelled', label: 'Cancelled' }
+    ]
+  });
 
   // Dropdown options for schedule status
   scheduleDropdownOptions = signal<Record<string, DropdownOption[]>>({
@@ -1352,6 +1428,12 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
     this.toastr.info('Schedule data has been updated', 'Schedule Changed');
   }
 
+  onDateTransactionDataChanged(updatedData: any[]): void {
+    console.log('Date transaction data updated:', updatedData);
+    this.sampleDateTransactions.set(updatedData);
+    this.toastr.info('Date transaction data has been updated', 'Transaction Changed');
+  }
+
   // Helper method to calculate total working hours
   private calculateTotalHours(startTime: string, endTime: string): number {
     if (!startTime || !endTime) return 0;
@@ -1389,6 +1471,7 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       number: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       officeCode: ['', [Validators.required, Validators.maxLength(10), Validators.minLength(3)]],
       fileUpload: [null],
+      tags: [[], [Validators.required, Validators.minLength(1), Validators.maxLength(5)]],
 
       // New relatable fields
       currency: ['USD', Validators.required],

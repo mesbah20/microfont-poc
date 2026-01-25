@@ -16,7 +16,7 @@
             <!-- SECTION 1: OUTLINE MODE COMPONENTS -->
             <section class="rounded-lg">
 
-              <div class="grid grid-cols-1 md:grid-cols-3">
+              <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-x-2">
 
                 <!-- Transaction Reference -->
                 <div class="">
@@ -144,7 +144,7 @@
                 [isOpenSignal]="subPanel1"
                 [subPanelTitle]="'Configuration Fields'"
               />
-                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
+                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-x-2">
 
                 <!-- Account ID -->
                 <div class="">
@@ -328,19 +328,25 @@
                     (onChanged)="onInputTextAreaChanged($event)"
                   ></input-text-area>
                 </div>
+
+                <!-- Tag Input Example -->
                 <div class="component-section">
-                   <input-tag
-                    [frmGroup]="frmGroup"
-                    controlName="categories"
-                    label="Categories"
-                    placeholder="Add category..."
-                    [maxTags]="10"
-                    [allowDuplicates]="false"
-                    (onTagAdded)="onTagAdded($event)"
-                    (onTagRemoved)="onTagRemoved($event)"
-                    (onTagsChanged)="onTagsChanged($event)">
-                  </input-tag>
+                  <input-tag
+                    [disabled]="false"
+                    [placeholder]="'Add tags (press Enter or comma)'"
+                    [maxItems]="5"
+                    [draggable]="true"
+                    [removable]="true"
+
+                    [editable]="true"
+                    [autocompleteItems]="tagSuggestions"
+                    [tooltip]="'Add relevant tags for categorization'"
+                    (onAdd)="onTagAdded($event)"
+                    (onRemove)="onTagRemoved($event)"
+                    [modelAsStrings]="true">
+                  ></input-tag>
                 </div>
+
               </div>
 
             </section>
@@ -375,7 +381,7 @@
                 [panelTitle]="'Transaction Management'"
               />
 
-              <div class="">
+              <div class="gap-2">
                 <!-- Text Input - Horizontal -->
                 <div class="component-section">
                   <input-text-box
@@ -440,6 +446,10 @@
                     [tooltip]="'Select transaction priority'"
                     (onSelect)="handleCategorySelection($event)"
                   ></input-select-option-field>
+                </div>
+                <div>
+
+
                 </div>
 
                 <!-- Multi-Select Services - Horizontal -->
@@ -644,6 +654,48 @@
               </div>
             </section>
 
+            <!-- Date Picker Data Grid Section -->
+            <section class="transaction-grid-section bg-white rounded-lg shadow-sm mt-6">
+              <app-expansion-panel-header
+                [isOpenSignal]="datePickerHeaderPanel"
+                [panelTitle]="'Date Picker Data Grid Example'"
+              />
+
+              <div class="p-4">
+
+                <generic-data-grid
+                  #datePickerGrid
+                  [id]="'date-picker-transactions'"
+                  [dataSource]="sampleDateTransactions()"
+                  [initPageSize]="5"
+                  [pageSizeOptions]="[4, 8, 12]"
+                  [enableSelection]="true"
+                  [showEditButton]="true"
+                  [showDeleteButton]="true"
+                  [showViewButton]="true"
+                  [searchEnabled]="true"
+                  [useInlineEdit]="true"
+                  [editableColumns]="['description', 'transactionDate', 'dueDate', 'completionDate', 'status']"
+                  [dateColumns]="['transactionDate', 'dueDate', 'completionDate']"
+                  [dropdownColumns]="['status']"
+                  [dropdownOptions]="dateGridDropdownOptions()"
+                  [selectedColumns]="['id', 'description', 'transactionDate', 'dueDate', 'completionDate', 'status', 'amount']"
+                  [numberColumns]="['amount']"
+                  [customColumnNames]="{
+                    id: 'Transaction ID',
+                    description: 'Description',
+                    transactionDate: 'Transaction Date',
+                    dueDate: 'Due Date',
+                    completionDate: 'Completion Date',
+                    status: 'Status',
+                    amount: 'Amount'
+                  }"
+                  [tblClass]="'date-transaction-table'"
+                  (dataSourceChanged)="onDateTransactionDataChanged($event)">
+                </generic-data-grid>
+              </div>
+            </section>
+
             <!-- Generic Table Example Section -->
             <section class="transaction-grid-section bg-white rounded-lg shadow-sm mt-6">
               <app-expansion-panel-header
@@ -684,6 +736,8 @@
       [modalTitle]="'Account Selection'"
       [cssClass]="'modal-xl'"
       [okButtonText]="'Process'"
+      [showDefaultFooter]="true"
+      [showOkButton]="true"
       [modalComponent]="modalComponent"
       [modalComponentData]="modalComponentData"
       (modalClosed)="onModalClose(false)"
@@ -706,13 +760,13 @@
   />
 
   @if(displayComponentsPanel()) {
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 mt-4">
 
       <!-- Basic Label (Static Text) -->
       <div class="component-demo">
         <h4 class="component-title">Basic Label</h4>
         <generic-label
-          [labelValue]="'Transaction Status'"
+          [labelKey]="'Transaction Status'"
           [visible]="true"
         />
       </div>
@@ -723,7 +777,7 @@
         <generic-label
           [frmGroup]="frmGroup"
           [controlName]="'currency'"
-          [labelValue]="'Selected Currency'"
+          [labelKey]="'Selected Currency'"
           [displayMode]="'vertical'"
           [visible]="true"
           [tooltip]="'Displays the currently selected currency value'"
@@ -736,7 +790,7 @@
         <generic-label
           [frmGroup]="frmGroup"
           [controlName]="'dropdown'"
-          [labelValue]="'Priority Level'"
+          [labelKey]="'Priority Level'"
           [displayMode]="'vertical'"
           [isSelectable]="true"
           [options]="dropdownOptions"
@@ -751,7 +805,7 @@
         <generic-label
           [frmGroup]="frmGroup"
           [controlName]="'textBox'"
-          [labelValue]="'Transaction Reference'"
+          [labelKey]="'Transaction Reference'"
           [displayMode]="'vertical'"
           [isRequired]="true"
           [visible]="true"
@@ -765,7 +819,7 @@
         <generic-label
           [frmGroup]="frmGroup"
           [controlName]="'amount'"
-          [labelValue]="'Amount'"
+          [labelKey]="'Amount'"
           [displayMode]="'horizontal'"
           [visible]="true"
           [tooltip]="'Amount displayed in horizontal layout'"
@@ -778,7 +832,7 @@
         <generic-label
           [frmGroup]="frmGroup"
           [controlName]="'totalAmount'"
-          [labelValue]="'Total Amount'"
+          [labelKey]="'Total Amount'"
           [displayMode]="'vertical'"
           [visible]="false"
           [tooltip]="'This component is hidden (visible=false)'"

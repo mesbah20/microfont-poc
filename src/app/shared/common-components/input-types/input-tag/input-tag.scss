@@ -1,326 +1,212 @@
-.tag-input-container {
-    width: 100%;
-    max-width: 32rem; // max-w-lg equivalent
-    margin: 0 auto;
-    margin-top: 2.5rem; // mt-10 equivalent
+.tag-input-wrapper {
+  width: 100%;
+  position: relative;
 
-    .tag-input-wrapper {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      border: 1px solid #d1d5db; // border-gray-300
-      border-radius: 0.375rem; // rounded-md
-      padding: 0.5rem; // p-2
-      gap: 0.5rem; // space-x-2 equivalent
+  .tag-chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    min-height: 40px;
+    padding: 4px;
+  }
 
-      .tags-container {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.5rem; // gap-2
+  mat-chip-row {
+    cursor: pointer;
+    transition: all 0.2s ease;
 
-        .tag-item {
-          display: flex;
-          align-items: center;
-          background-color: #dbeafe; // bg-blue-100
-          color: #1d4ed8; // text-blue-700
-          padding: 0.25rem 0.5rem; // px-2 py-1
-          border-radius: 9999px; // rounded-full
-          font-size: 0.875rem; // text-sm
-          line-height: 1.25rem;
-
-          .tag-text {
-            margin-right: 0.5rem; // ml-2 equivalent
-          }
-
-          .tag-remove-btn {
-            background: none;
-            border: none;
-            color: #3b82f6; // text-blue-500
-            cursor: pointer;
-            font-size: 1rem;
-            line-height: 1;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            &:hover {
-              color: #1d4ed8; // hover:text-blue-700
-            }
-
-            &:focus {
-              outline: none;
-              color: #1d4ed8;
-            }
-          }
-        }
-      }
-
-      .tag-input-field {
-        flex: 1;
-        border: none;
-        outline: none;
-        background: transparent;
-        font-size: 0.875rem;
-
-        &:focus {
-          outline: none;
-          box-shadow: none;
-        }
-
-        &::placeholder {
-          color: #9ca3af; // placeholder gray
-        }
-      }
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    .error-message {
-      margin-top: 0.5rem; // mt-2
-      font-size: 0.875rem; // text-sm
-      color: #ef4444; // text-red-500
+    &.cdk-drag-preview {
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+      opacity: 0.8;
+    }
 
-      &.hidden {
-        display: none;
+    &.cdk-drag-placeholder {
+      opacity: 0.3;
+    }
+
+    &[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+
+      &:hover {
+        transform: none;
+        box-shadow: none;
       }
     }
   }
 
-  // Responsive adjustments
-  @media (max-width: 640px) {
-    .tag-input-container {
-      max-width: 100%;
-      margin-top: 1rem;
+  .error-message {
+    margin-top: 4px;
+    min-height: 20px;
+  }
+}
 
-      .tag-input-wrapper {
-        padding: 0.375rem;
-
-        .tags-container {
-          gap: 0.375rem;
-
-          .tag-item {
-            font-size: 0.75rem;
-            padding: 0.125rem 0.375rem;
-          }
-        }
-      }
+// Minimal Theme
+.tag-input-theme-minimal {
+  mat-form-field {
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
     }
   }
 
-  // Dark theme support (if your project uses it)
-  .dark {
-    .tag-input-container {
-      .tag-input-wrapper {
-        border-color: #374151; // dark border
-        background-color: #1f2937; // dark background
+  mat-chip-row {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+    font-size: 13px;
+    padding: 4px 8px;
+    height: auto;
+    min-height: 28px;
 
-        .tags-container {
-          .tag-item {
-            background-color: #1e40af; // dark blue background
-            color: #93c5fd; // light blue text
-
-            .tag-remove-btn {
-              color: #60a5fa; // light blue
-
-              &:hover {
-                color: #93c5fd;
-              }
-            }
-          }
-        }
-
-        .tag-input-field {
-          color: #f9fafb; // light text
-
-          &::placeholder {
-            color: #6b7280; // darker placeholder
- .tag-input-container {
-    width: 100%;
-    max-width: 32rem; // max-w-lg equivalent
-    margin: 0 auto;
-    margin-top: 2.5rem; // mt-10 equivalent
-
-    .tag-input-wrapper {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      border: 1px solid #d1d5db; // border-gray-300
-      border-radius: 0.375rem; // rounded-md
-      padding: 0.5rem; // p-2
-      gap: 0.5rem; // space-x-2 equivalent
-
-      .tags-container {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.5rem; // gap-2
-
-        .tag-item {
-          display: flex;
-          align-items: center;
-          background-color: #dbeafe; // bg-blue-100
-          color: #1d4ed8; // text-blue-700
-          padding: 0.25rem 0.5rem; // px-2 py-1
-          border-radius: 9999px; // rounded-full
-          font-size: 0.875rem; // text-sm
-          line-height: 1.25rem;
-
-          .tag-text {
-            margin-right: 0.5rem; // ml-2 equivalent
-          }
-
-          .tag-remove-btn {
-            background: none;
-            border: none;
-            color: #3b82f6; // text-blue-500
-            cursor: pointer;
-            font-size: 1rem;
-            line-height: 1;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            &:hover {
-              color: #1d4ed8; // hover:text-blue-700
-            }
-
-            &:focus {
-              outline: none;
-              color: #1d4ed8;
-            }
-          }
-        }
-      }
-
-      .tag-input-field {
-        flex: 1;
-        border: none;
-        outline: none;
-        background: transparent;
-        font-size: 0.875rem;
-
-        &:focus {
-          outline: none;
-          box-shadow: none;
-        }
-
-        &::placeholder {
-          color: #9ca3af; // placeholder gray
-        }
-      }
+    &:hover {
+      background-color: #e8e8e8;
     }
 
-    .error-message {
-      margin-top: 0.5rem; // mt-2
-      font-size: 0.875rem; // text-sm
-      color: #ef4444; // text-red-500
+    .mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
 
-      &.hidden {
-        display: none;
-      }
+// Dark Theme
+.tag-input-theme-dark {
+  mat-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: #2d2d2d;
     }
   }
 
-  // Responsive adjustments
-  @media (max-width: 640px) {
-    .tag-input-container {
-      max-width: 100%;
-      margin-top: 1rem;
+  mat-chip-row {
+    background-color: #3d3d3d;
+    color: #fff;
+    border: 1px solid #555;
 
-      .tag-input-wrapper {
-        padding: 0.375rem;
+    &:hover {
+      background-color: #4d4d4d;
+    }
 
-        .tags-container {
-          gap: 0.375rem;
-
-          .tag-item {
-            font-size: 0.75rem;
-            padding: 0.125rem 0.375rem;
-          }
-        }
-      }
+    .mat-icon {
+      color: #fff;
     }
   }
 
-  // Dark theme support (if your project uses it)
-  .dark {
-    .tag-input-container {
-      .tag-input-wrapper {
-        border-color: #374151; // dark border
-        background-color: #1f2937; // dark background
+  input {
+    color: #fff;
 
-        .tags-container {
-          .tag-item {
-            background-color: #1e40af; // dark blue background
-            color: #93c5fd; // light blue text
+    &::placeholder {
+      color: #999;
+    }
+  }
+}
 
-            .tag-remove-btn {
-              color: #60a5fa; // light blue
+// Bootstrap Theme
+.tag-input-theme-bootstrap {
+  mat-chip-row {
+    background-color: #0d6efd;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 14px;
+    padding: 6px 12px;
 
-              &:hover {
-                color: #93c5fd;
-              }
-            }
-          }
-        }
+    &:hover {
+      background-color: #0b5ed7;
+    }
 
-        .tag-input-field {
-          color: #f9fafb; // light text
+    .mat-icon {
+      color: #fff;
+    }
+  }
+}
 
-          &::placeholder {
-            color: #6b7280; // darker placeholder
-          }
-        }
-      }
+// Bootstrap 3 Info Theme
+.tag-input-theme-bootstrap3-info {
+  mat-chip-row {
+    background-color: #5bc0de;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 14px;
+    padding: 6px 12px;
+    border: 1px solid #46b8da;
 
-      .error-message {
-        color: #f87171; // lighter red for dark theme
+    &:hover {
+      background-color: #46b8da;
+    }
+
+    .mat-icon {
+      color: #fff;
+    }
+  }
+}
+
+// Foundation Theme
+.tag-input-theme-foundation-theme {
+  mat-chip-row {
+    background-color: #008CBA;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 14px;
+    padding: 6px 12px;
+
+    &:hover {
+      background-color: #007095;
+    }
+
+    .mat-icon {
+      color: #fff;
+    }
+  }
+}
+
+// Drag and drop animations
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-animating {
+  transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+// Custom scrollbar for autocomplete
+mat-autocomplete {
+  .mat-mdc-autocomplete-panel {
+    max-height: 256px;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+
+      &:hover {
+        background: #555;
       }
     }
   }
+}
 
-  // Animation for tag removal
-  .tag-item {
-    transition: all 0.2s ease-in-out;
-
-    &.removing {
-      opacity: 0;
-      transform: scale(0.8);
-    }
-  }
-
-  // Focus states for accessibility
+// Responsive adjustments
+@media (max-width: 768px) {
   .tag-input-wrapper {
-    &:focus-within {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    .tag-chip-grid {
+      gap: 4px;
     }
-  }
-        }
-      }
 
-      .error-message {
-        color: #f87171; // lighter red for dark theme
-      }
-    }
-  }
-
-  // Animation for tag removal
-  .tag-item {
-    transition: all 0.2s ease-in-out;
-
-    &.removing {
-      opacity: 0;
-      transform: scale(0.8);
-    }
-  }
-
-  // Focus states for accessibility
-  .tag-input-wrapper {
-    &:focus-within {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    mat-chip-row {
+      font-size: 12px;
+      padding: 4px 8px;
     }
   }
 }

@@ -14,7 +14,7 @@ type Option = { key: any; value: string };
 })
 export class Label implements OnInit {
   // Original inputs
-  readonly labelValue = input<string>('');
+  readonly labelKey = input<string>('');
   readonly visible = input<boolean>(true);
 
   // New inputs from InputDisplayField
@@ -89,6 +89,6 @@ export class Label implements OnInit {
   }
 
   get label(): string {
-    return this.labelValue();
+    return this.labelKey();
   }
 }

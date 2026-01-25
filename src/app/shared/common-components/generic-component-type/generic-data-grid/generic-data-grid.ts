@@ -16,6 +16,7 @@ import { GenericMultiInputSelectOption } from '../generic-multi-select-option/ge
 import { ExpansionPanelHeader } from '../../expansion-panel-header/expansion-panel-header';
 import { GenericButton } from '../generic-button/generic-button';
 import { InputTime } from '../../input-types/input-time/input-time';
+import { InputDate } from '../../input-types/input-date/input-date';
 
 /**
  * Defines custom styling for a cell based on cell value or row data
@@ -105,6 +106,7 @@ export interface GridColumn {
   showSelectAll?: boolean; // New property for checkbox columns
   readOnly?: boolean; // New property to make checkboxes read-only
   isTimeField?: boolean; // New property for time picker fields
+  isDateField?: boolean; // New property for date picker fields
 
   // NEW: Complete styling freedom
   /** Custom CSS classes to apply to all cells in this column */
@@ -183,7 +185,8 @@ export interface Option {
     GenericMultiInputSelectOption,
     ExpansionPanelHeader,
     GenericButton,
-    InputTime
+    InputTime,
+    InputDate
   ],
   templateUrl: './generic-data-grid.html',
   styleUrl: './generic-data-grid.scss'
@@ -239,6 +242,8 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   readonly selectionUpdateField = input<string>('');
   // Time Field Inputs
   readonly timeColumns = input<string[]>([]); // Columns that should use time picker
+  // Date Field Inputs
+  readonly dateColumns = input<string[]>([]); // Columns that should use date picker
   // Summary
   readonly summaryColumns = input<string[]>([]);
   readonly groupByColumns = input<string[]>([]);
@@ -868,15 +873,41 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
     const rowData = { ...this.displayedData()[index] };
     this._editingData.set(rowData);
 
-    // Create form group for time fields
+    // Create form group for time and date fields
     const formControls: any = {};
     this.timeColumns().forEach(timeCol => {
       const value = rowData[timeCol] || '';
       formControls[timeCol] = [value];
     });
 
+    this.dateColumns().forEach(dateCol => {
+      const value = rowData[dateCol] || '';
+      formControls[dateCol] = [value];
+    });
+
     if (Object.keys(formControls).length > 0) {
-      this._editingFormGroup.set(this.formBuilder.group(formControls));
+      const newFormGroup = this.formBuilder.group(formControls);
+      this._editingFormGroup.set(newFormGroup);
+
+      // Subscribe to form control value changes for date and time fields
+      // This captures changes from date picker and time picker selections
+      this.dateColumns().forEach(dateCol => {
+        const control = newFormGroup.get(dateCol);
+        if (control) {
+          control.valueChanges.subscribe(value => {
+            this.setEditingValue(dateCol, this.formatDateValue(value));
+          });
+        }
+      });
+
+      this.timeColumns().forEach(timeCol => {
+        const control = newFormGroup.get(timeCol);
+        if (control) {
+          control.valueChanges.subscribe(value => {
+            this.setEditingValue(timeCol, value);
+          });
+        }
+      });
     }
   }
 
@@ -901,6 +932,45 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
     this._editingRow.set(null);
     this._editingData.set({});
     this._editingFormGroup.set(null);
+  }
+
+  // Check if a column is a date column
+  isDateColumn(columnProperty: string): boolean {
+    return this.dateColumns().includes(columnProperty);
+  }
+
+  // Check if a column is a time column
+  isTimeColumn(columnProperty: string): boolean {
+    return this.timeColumns().includes(columnProperty);
+  }
+
+  // Format date value to ISO string (YYYY-MM-DD) using local time (not UTC)
+  formatDateValue(value: any): string {
+    if (!value) return '';
+
+    // If it's already a string in ISO format, return it
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+      return value;
+    }
+
+    // If it's a Date object, convert using local time to avoid timezone offset issues
+    if (value instanceof Date) {
+      const year = value.getFullYear();
+      const month = String(value.getMonth() + 1).padStart(2, '0');
+      const day = String(value.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Try to parse as date
+    const date = new Date(value);
+    if (!isNaN(date.getTime())) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    return value;
   }
 
   // Actions
@@ -1292,13 +1362,23 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   }
 
   onTimeFieldChange(property: string, timeValue: string): void {
-    this.setEditingValue(property, timeValue);
-
-    // Also update the form control if it exists
+    // Get the value from the form control to ensure we have the latest value
     const formGroup = this._editingFormGroup();
-    if (formGroup && formGroup.get(property)) {
-      formGroup.get(property)?.setValue(timeValue);
-    }
+    const formValue = formGroup?.get(property)?.value;
+    const finalValue = formValue !== undefined ? formValue : timeValue;
+
+    // Update editing data with the correct value
+    this.setEditingValue(property, finalValue);
+  }
+
+  onDateFieldChange(property: string, dateValue: any): void {
+    // Get the value from the form control to ensure we have the latest value
+    const formGroup = this._editingFormGroup();
+    const formValue = formGroup?.get(property)?.value;
+    const finalValue = formValue !== undefined ? formValue : dateValue;
+
+    // Update editing data with the correct value
+    this.setEditingValue(property, finalValue);
   }
 
 

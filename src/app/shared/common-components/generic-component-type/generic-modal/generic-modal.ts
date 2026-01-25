@@ -32,7 +32,7 @@ export class GenericModal implements OnInit, OnDestroy, OnChanges {
   @Input() cssClass: string = "";
   @Input() closeOnBackdropClick: boolean = true;
   @Input() showDefaultFooter: boolean = false;
-  @Input() showOkButton: boolean = false;
+  @Input() showOkButton: boolean = true;
   @Input() okButtonText: string = 'OK';
   // @Input() showCancelButton: boolean = true;
   // @Input() cancelButtonText: string = 'Cancel';

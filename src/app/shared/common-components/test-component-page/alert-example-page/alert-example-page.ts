@@ -9,7 +9,7 @@ import { Label } from '../../generic-component-type/generic-label/generic-label'
   selector: 'app-alert-example-page',
   imports: [
     ConfirmationDialogue,
-    Label,
+
   ],
   templateUrl: './alert-example-page.html',
   styleUrl: './alert-example-page.scss'

@@ -1,136 +1,83 @@
- <div
-   [formGroup]="frmGroup()"
-    [ngClass]="{
-      'input-container-vertical': displayMode() === 'vertical',
-      'input-container-horizontal': displayMode() === 'horizontal',
-      'input-container-outline': displayMode() === 'outline'
-    }">
+<div class="tag-input-wrapper" [ngClass]="'tag-input-theme-' + theme()">
+  <mat-form-field appearance="outline" class="w-full">
 
-    <!-- ======================== OUTLINE MODE ======================== -->
-    @if (displayMode() === 'outline') {
-      <div class="input-wrapper relative" [class.has-value]="frmGroup().get(controlName())?.value">
-        <div class="tag-input-container">
-          <!-- Tags Display -->
-          <div class="tags-container">
-            @for (tag of tags; track $index) {
-              <div class="tag-item">
-                <span>{{ tag }}</span>
-                @if (!isReadonly()) {
-                  <button
-                    type="button"
-                    class="tag-remove-btn"
-                    (click)="removeTag($index)"
-                    [attr.aria-label]="'Remove tag: ' + tag">
-                    ×
-                  </button>
-                }
-              </div>
-            }
-          </div>
+    <!-- Chip Grid with Drag and Drop -->
+    <mat-chip-grid
+      #chipGrid
+      [disabled]="isDisabled()"
+      cdkDropList
+      [cdkDropListData]="tags()"
+      [cdkDropListDisabled]="!draggable() || isDisabled()"
+      [cdkDropListConnectedTo]="dragZone()"
+      (cdkDropListDropped)="drop($event)"
+      cdkDropListOrientation="horizontal"
+      class="tag-chip-grid">
 
-          <!-- Input Field -->
-          @if (!isReadonly()) {
-            <input
-              id="floating_outlined_tag"
-              [(ngModel)]="currentInput"
-              [placeholder]="' '"
-              class="tag-input peer block px-3 pt-4 pb-2 text-gray-900 bg-transparent border-0 appearance-none
-  focus:outline-none focus:ring-0 focus:border-blue-600 transition-all duration-200"
-              [matTooltip]="tooltip()"
-              [matTooltipPosition]="tooltipPosition()"
-              [matTooltipClass]="tooltipClass()"
-              [matTooltipDisabled]="!tooltip()"
-              [maxlength]="maxLength() || null"
-              (keydown)="onKeyDown($event)"
-              type="text" />
+      <!-- Individual Tags -->
+      @for (tag of tags(); track trackByFn($index, tag); let i = $index) {
+        <mat-chip-row
+          cdkDrag
+          [cdkDragData]="tag"
+          [cdkDragDisabled]="!draggable() || isDisabled() || isTagReadonly(tag)"
+          [editable]="isTagEditable(tag)"
+          (edited)="editTag(tag, $event)"
+          [removable]="isTagRemovable(tag)"
+          (removed)="removeTag(tag)"
+          [disabled]="isTagReadonly(tag)"
+          [matTooltip]="tooltip()"
+          [matTooltipPosition]="tooltipPosition()"
+          [matTooltipDisabled]="!tooltip()">
+
+          <!-- Display value -->
+          {{ getDisplayValue(tag) }}
+
+          <!-- Remove button -->
+          @if (isTagRemovable(tag)) {
+            <button matChipRemove [attr.aria-label]="'Remove ' + getDisplayValue(tag)">
+              <mat-icon>cancel</mat-icon>
+            </button>
           }
-        </div>
+        </mat-chip-row>
+      }
 
-        <!-- FLOATING LABEL -->
-        <label
-          for="floating_outlined_tag"
-          class="floating-input-label">
-          {{ label() }}
-          @if (isRequired) { <span class="text-red-500">*</span> }
-        </label>
-      </div>
+      <!-- Input field for adding new tags -->
+      @if (!isDisabled() && (maxItems() === null || tags().length < maxItems()!)) {
+        <input
+          #inputField
+          [id]="inputId()"
+          [class]="inputClass()"
+          matInput
+          [placeholder]="getPlaceholderText()"
+          [matAutocomplete]="auto"
+          [matChipInputFor]="chipGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes()"
+          (matChipInputTokenEnd)="addTag($event)"
+          (input)="onInputChange($any($event.target).value)"
+          (focus)="onInputFocus($event)"
+          (blur)="onInputBlur($event)"
+          (paste)="onPasteEvent($event)"
+          [disabled]="isDisabled()" />
+      }
+    </mat-chip-grid>
+
+    <!-- Autocomplete Dropdown -->
+    @if (autocompleteItems().length > 0 || autocompleteObservable()) {
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        (optionSelected)="selectTag($event)">
+        @for (item of filteredItems(); track trackByFn($index, item)) {
+          <mat-option [value]="item">
+            <span>{{ getDisplayValue(item) }}</span>
+          </mat-option>
+        }
+      </mat-autocomplete>
     }
+  </mat-form-field>
 
-    <!-- ======================== HORIZONTAL / VERTICAL ======================== -->
-    @else {
-      @if (displayMode() === 'vertical') {
-        <label class="input-label block mb-1">
-          {{ label() }}
-          @if (isRequired) { <span class="text-red-500">*</span> }
-        </label>
-      }
-
-      @if (displayMode() === 'horizontal') {
-        <label class="input-label">
-          {{ label() }}
-          @if (isRequired) { <span class="text-red-500">*</span> }
-        </label>
-      }
-
-      <div class="input-wrapper" [class.has-value]="frmGroup().get(controlName())?.value">
-        <div class="tag-input-container">
-          <!-- Tags Display -->
-          <div class="tags-container">
-            @for (tag of tags; track $index) {
-              <div class="tag-item">
-                <span>{{ tag }}</span>
-                @if (!isReadonly()) {
-                  <button
-                    type="button"
-                    class="tag-remove-btn"
-                    (click)="removeTag($index)"
-                    [attr.aria-label]="'Remove tag: ' + tag">
-                    ×
-                  </button>
-                }
-              </div>
-            }
-          </div>
-
-          <!-- Input Field -->
-          @if (!isReadonly()) {
-            <input
-              [(ngModel)]="currentInput"
-              [placeholder]="placeholder()"
-              class="tag-input custom-input"
-              [matTooltip]="tooltip()"
-              [matTooltipPosition]="tooltipPosition()"
-              [matTooltipClass]="tooltipClass()"
-              [matTooltipDisabled]="!tooltip()"
-              [maxlength]="maxLength() || null"
-              (keydown)="onKeyDown($event)"
-              type="text" />
-          }
-        </div>
-      </div>
-    }
-
-    <!-- ======================== ERROR MESSAGES ======================== -->
-    <div class="relative h-0">
-      @if (showError) {
-        <div class="text-red-500 text-xs absolute top-0 left-0 w-full">
-          {{ errorMessage }}
-        </div>
-      }
-
-      <!-- ======================== VALIDATION ======================== -->
-      @if (frmGroup().get(controlName())?.errors && (frmGroup().get(controlName())?.touched ||
-    frmGroup().get(controlName())?.dirty)) {
-        <div class="text-red-500 text-sm absolute top-0 left-0 w-full">
-          @if (frmGroup().get(controlName())?.hasError('required')) {
-            {{ label() }} is required..!
-          }
-          @else if (hasCustomErrors()) {
-            @for (errorKey of getCustomErrorKeys(); track errorKey) {
-              <div>{{ getCustomErrorMessage(errorKey) }}</div>
-            }
-          }
-        </div>
-      }
+  <!-- Validation Messages -->
+  @if (hasErrors()) {
+    <div class="error-message">
+      <p class="text-xs text-red-500">{{ getErrorMessage() }}</p>
     </div>
-  </div>
+  }
+</div>

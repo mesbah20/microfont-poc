@@ -200,7 +200,7 @@ input[type="number"]::placeholder {
 }
 
 .input-container-horizontal {
-  @apply w-full flex flex-col sm:flex-row justify-start items-start sm:items-center gap-0;
+  @apply w-full flex flex-col sm:flex-row justify-start items-start sm:items-center gap-2  my-2;
 }
 
 .input-container-vertical {
@@ -744,15 +744,22 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 
 
 .select-date{
-  @apply flex items-center w-full;
-   max-width: 250px;
+  @apply flex items-center;
+   width: 100%;
+}
+
+.input-container-horizontal .select-date {
+  width: 250px;
 }
 
 .input-wrapper {
-   @apply flex items-center w-full;
-    max-width: 250px;
+   @apply flex items-center;
    width: 100%;
    position: relative;
+}
+
+.input-container-horizontal .input-wrapper {
+  width: 250px;
 }
 
 .select-wrapper {
