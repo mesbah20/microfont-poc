@@ -1,11 +1,12 @@
 import { Component, forwardRef, input, output, OnDestroy, inject, computed, effect } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormGroup, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { Observable, Subject, BehaviorSubject, EMPTY } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, filter, startWith, takeUntil, map, catchError } from 'rxjs/operators';
 import { AddressService } from '../../../services/address.service';
 import { AddressDto } from '../../../models/address.model';
+import { InputTextBox } from '../input-text-box/input-text-box';
 
 @Component({
   selector: 'input-address-search',
@@ -13,7 +14,8 @@ import { AddressDto } from '../../../models/address.model';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    InputTextBox
   ],
   templateUrl: './input-address-search.html',
   styleUrls: ['./input-address-search.scss'],
@@ -38,6 +40,24 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
   readonly tooltipClass = input<string>('custom-tooltip');
   readonly customErrorMessages = input<{ [key: string]: string }>({});
 
+  // Address field visibility controls
+  readonly showAreaNameField = input<boolean>(true);
+  readonly showThanaField = input<boolean>(true);
+  readonly showPostOfficeField = input<boolean>(true);
+  readonly showDistrictField = input<boolean>(true);
+  readonly showPostalCodeField = input<boolean>(false);
+
+  // Address field labels
+  readonly areaNameLabel = input<string>('Area Name');
+  readonly thanaLabel = input<string>('Thana');
+  readonly postOfficeLabel = input<string>('Post Office');
+  readonly districtLabel = input<string>('District');
+  readonly postalCodeLabel = input<string>('Postal Code');
+
+  // Address field settings
+  readonly makeFieldsReadonly = input<boolean>(true);
+  readonly addressFieldsDisplayMode = input<'horizontal' | 'vertical' | 'outline'>('vertical');
+
   // Output events
   readonly addressSelected = output<AddressDto>();
   readonly searchChanged = output<string>();
@@ -45,10 +65,14 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
 
   // Services
   private addressService = inject(AddressService);
+  private fb = inject(FormBuilder);
   private destroy$ = new Subject<void>();
 
+  // Internal form group for address fields
+  addressFieldsGroup: FormGroup;
+
   // State management
-  public selectedAddress$ = new BehaviorSubject<AddressDto | null>(null);
+  private selectedAddress$ = new BehaviorSubject<AddressDto | null>(null);
   filteredAddresses$: Observable<AddressDto[]>;
   isLoading$ = new BehaviorSubject<boolean>(false);
   showDropdown$ = new BehaviorSubject<boolean>(false);
@@ -61,8 +85,18 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
   // Computed properties
   readonly isDisabled = computed(() => this.frmGroup().get(this.controlName())?.disabled || false);
   readonly isRequired = computed(() => this.isRequiredField());
+  readonly isFieldsReadonly = computed(() => this.makeFieldsReadonly());
 
   constructor() {
+    // Initialize address fields form group
+    this.addressFieldsGroup = this.fb.group({
+      areaName: [''],
+      thana: [''],
+      postOffice: [''],
+      district: [''],
+      postalCode: ['']
+    });
+
     // Setup the search pipeline
     this.filteredAddresses$ = new Observable(subscriber => {
       // This will be handled by the search input changes
@@ -77,8 +111,18 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
         ).subscribe(value => {
           if (value !== this.selectedAddress$.value) {
             this.selectedAddress$.next(value);
+            this.updateAddressFields(value);
           }
         });
+      }
+    });
+
+    // Effect to set readonly state on address fields
+    effect(() => {
+      if (this.isFieldsReadonly()) {
+        this.addressFieldsGroup.disable();
+      } else {
+        this.addressFieldsGroup.enable();
       }
     });
   }
@@ -118,6 +162,21 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
       }
     }
     return message;
+  }
+
+  // Update individual address fields
+  private updateAddressFields(address: AddressDto | null): void {
+    if (address) {
+      this.addressFieldsGroup.patchValue({
+        areaName: address.areaName || '',
+        thana: address.thana || '',
+        postOffice: address.postOffice || '',
+        district: address.district || '',
+        postalCode: address.postalCode || ''
+      });
+    } else {
+      this.addressFieldsGroup.reset();
+    }
   }
 
   // Search functionality
@@ -173,6 +232,9 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
       control.markAsTouched();
     }
 
+    // Update individual address fields
+    this.updateAddressFields(address);
+
     this.addressSelected.emit(address);
     this.valueChanged.emit(address);
     this.onChange(address);
@@ -197,6 +259,7 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
     this.searchValue = '';
     this.selectedAddress$.next(null);
     this.showDropdown$.next(false);
+    this.updateAddressFields(null);
 
     const control = this.frmGroup().get(this.controlName());
     if (control) {
@@ -206,6 +269,18 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
 
     this.valueChanged.emit(null);
     this.onChange(null);
+  }
+
+  // Address field change handlers
+  onAddressFieldChanged(field: keyof AddressDto, value: string): void {
+    if (!this.isFieldsReadonly()) {
+      const currentAddress = this.selectedAddress$.value || {} as AddressDto;
+      const updatedAddress = { ...currentAddress, [field]: value };
+
+      this.selectedAddress$.next(updatedAddress);
+      this.onChange(updatedAddress);
+      this.valueChanged.emit(updatedAddress);
+    }
   }
 
   // Helper methods
@@ -222,6 +297,7 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
   writeValue(value: AddressDto | null): void {
     this.selectedAddress$.next(value);
     this.searchValue = value ? this.getDisplayValue(value) : '';
+    this.updateAddressFields(value);
   }
 
   registerOnChange(fn: (value: AddressDto | null) => void): void {

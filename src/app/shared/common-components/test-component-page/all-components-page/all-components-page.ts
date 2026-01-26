@@ -36,6 +36,8 @@ import { LoaderService } from '../../../services/loader.service';
 import { DynamicTableComponent, DynamicTableConfig, TableSection, TableRow, TableCell } from '../../generic-component-type/generic-table/generic-table';
 import { AutoTableService, AutoTableOptions } from '../../../services/data-mapper.service';
 import { Label } from '../../generic-component-type/generic-label/generic-label';
+import { InputAddressSearch } from '../../input-types/input-address-search/input-address-search';
+import { AddressDto } from '../../../models/address.model';
 
 // Types for data selection modal
 export interface AccountData {
@@ -103,6 +105,7 @@ export interface DataSelectionConfig {
     AlertExamplePage,
     DynamicTableComponent,
     Label,
+    InputAddressSearch,
 
 ],
   templateUrl: './all-components-page.html',
@@ -192,6 +195,7 @@ export class AllComponentsPage implements OnInit {
   OtherComponentsPageComponent: Type<any> = OtherComponentsPage;
   modalComponentData?: any = null;
   selectedRowIds = signal<Set<string>>(new Set());
+  selectedRows = signal<any[]>([]);
   transactionActionVisibility = (row: any) => this.getTransactionActionVisibility(row);
 
   // Data Selection Modal Configuration
@@ -1382,26 +1386,31 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
 
   const rowData = JSON.parse(event.data);
 
+  const ids = Array.from(this.selectedRowIds());
   if (event.checked) {
-    // Add to selected rows
+    // Add to selected rows - use update() for signals, not push()
+    this.selectedRows.update(rows => [...rows, rowData]);
     this.selectedRowIds.update(ids => {
+      console.log(rowData);
       const newIds = new Set(ids);
       newIds.add(rowData.id);
       return newIds;
     });
-
+    console.log(this.selectedRows())
     // Store all selected rows in localStorage
-    this.saveMultipleSelectionsToStorage();
+    // this.saveMultipleSelectionsToStorage();
 
     console.log(`Row ${rowData.id} selected and stored in localStorage`);
     this.toastr.info(`Transaction ${rowData.id} selected. Total: ${this.selectedRowIds().size}`, 'Row Selected');
   } else {
-    // Remove from selected rows
+    // Remove from selected rows - filter out the deselected row
+    this.selectedRows.update(rows => rows.filter(row => row.id !== rowData.id));
     this.selectedRowIds.update(ids => {
       const newIds = new Set(ids);
       newIds.delete(rowData.id);
       return newIds;
     });
+    console.log(this.selectedRows())
 
     // Update localStorage with remaining selections
     this.removeSelectionFromStorage(rowData.id);
@@ -1454,6 +1463,10 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
 
 
   ngOnInit(): void {
+    // Clear previous session's selected rows from localStorage
+    localStorage.removeItem('selectedRows');
+    localStorage.removeItem('rowData');
+
     // Initialize generic table with auto-generation
     this.loadWithFullConfig();
     this.loadCountries()
@@ -1492,13 +1505,15 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       multiSelectHorizontal: [[]],
       numberHorizontal: ['', [Validators.pattern('^[0-9]*$')]],
       officeCodeHorizontal: ['', [Validators.maxLength(10), Validators.minLength(3)]],
-      quillEditor: ['']
+      quillEditor: [''],
+      deliveryAddress: [null, Validators.required],
     });
 
     this.setupFieldRelationships();
     setTimeout(() => {
       this.restoreGridSelections();
     }, 100);
+
 
 
 
@@ -3801,4 +3816,23 @@ handleColumnSelectAll($event:any): void {
     this.currentTableMode.set('Custom Table with Rowspan & Colspan');
     this.toastr.success('Loaded custom table with rowspan and colspan examples!', 'Advanced Customization');
   }
+
+
+  // Address Search Component Methods
+  onAddressSelected(address: AddressDto): void {
+    console.log('Address selected in demo:', address);
+    this.toastr.success('Address selected successfully!', 'Address Search');
+  }
+
+  onAddressSearchChanged(query: string): void {
+    console.log('Address search query changed:', query);
+    if (query.length >= 2) {
+      this.toastr.info(`Searching for: ${query}`, 'Address Search');
+    }
+  }
+
 }
+
+
+
+
