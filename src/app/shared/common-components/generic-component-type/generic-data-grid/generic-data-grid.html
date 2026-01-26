@@ -357,7 +357,7 @@
 
                           <!-- Read-only Checkbox Display -->
                           <ng-template #readOnlyCheckbox>
-                            <mat-checkbox [checked]="getPropertyValue(element, column.property)" [disabled]="true"
+                            <mat-checkbox [checked]="getPropertyValue(element, column.property)" [disabled]="false"
                               [aria-label]="column.header + ' for row ' + (i + 1)" class="data-checkbox readonly">
                             </mat-checkbox>
                           </ng-template>

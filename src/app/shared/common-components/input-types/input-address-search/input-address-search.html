@@ -1,0 +1,80 @@
+<mat-form-field appearance="outline" class="address-search-field">
+  <mat-label>{{ label() }}</mat-label>
+
+  <input
+    matInput
+    type="text"
+    [formControl]="searchControl"
+    [placeholder]="placeholder()"
+    class="custom-input"
+    [matAutocomplete]="addressAutocomplete"
+    (blur)="onBlur()"
+    (focus)="onFocus()"
+    class="address-search-input"
+  >
+
+  <mat-autocomplete
+    #addressAutocomplete="matAutocomplete"
+    [displayWith]="displayFn"
+    class="address-autocomplete"
+    autoActiveFirstOption
+  >
+    <mat-option
+      *ngFor="let address of filteredAddresses$ | async; trackBy: trackByFn"
+      [value]="address"
+      (onSelectionChange)="onAddressSelected(address)"
+      class="address-option"
+    >
+      <div class="address-option-content">
+        <div class="address-primary">
+          <strong>{{ address.areaName }}</strong>
+        </div>
+        <div class="address-secondary">
+          {{ address.thana }}, {{ address.postOffice }}, {{ address.district }}
+          <span *ngIf="address.postalCode" class="postal-code">
+            - {{ address.postalCode }}
+          </span>
+        </div>
+      </div>
+    </mat-option>
+
+    <!-- Loading indicator -->
+    <mat-option *ngIf="isLoading$ | async" disabled class="loading-option">
+      <div class="loading-content">
+        <span>Searching...</span>
+      </div>
+    </mat-option>
+
+    <!-- No results message -->
+    <mat-option
+      *ngIf="(filteredAddresses$ | async)?.length === 0 && !(isLoading$ | async) && searchControl.value && searchControl.value.length >= 2"
+      disabled
+      class="no-results-option"
+    >
+      <div class="no-results-content">
+        <span>No addresses found for "{{ searchControl.value }}"</span>
+      </div>
+    </mat-option>
+  </mat-autocomplete>
+
+  <!-- Clear button -->
+  <button
+    *ngIf="searchControl.value"
+    matSuffix
+    mat-icon-button
+    type="button"
+    (click)="clearSearch()"
+    class="clear-button"
+    tabindex="-1"
+  >
+    <mat-icon>clear</mat-icon>
+  </button>
+
+  <!-- Loading spinner -->
+  <mat-spinner
+    *ngIf="isLoading$ | async"
+    matSuffix
+    diameter="20"
+    class="loading-spinner"
+  ></mat-spinner>
+</mat-form-field>
