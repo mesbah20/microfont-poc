@@ -1,4 +1,4 @@
-import {Component, input, output, signal, effect, ElementRef, ViewChild, OnInit, OnDestroy, AfterViewInit, forwardRef} from '@angular/core';
+import {Component, input, output, signal, effect, ElementRef, ViewChild, OnInit, OnDestroy, AfterViewInit, forwardRef, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {MatChipsModule, MatChipEditedEvent, MatChipInputEvent} from '@angular/material/chips';
@@ -8,8 +8,9 @@ import {MatInputModule} from '@angular/material/input';
 import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {CdkDragDrop, moveItemInArray, DragDropModule} from '@angular/cdk/drag-drop';
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, debounceTime, switchMap} from 'rxjs';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import {HttpClient} from '@angular/common/http';
 
 export interface TagItem {
   id?: string | number;
@@ -47,19 +48,21 @@ export interface TagItem {
 export class InputTagComponent implements OnInit, AfterViewInit, OnDestroy, ControlValueAccessor {
   // Input bindings
   readonly placeholder = input<string>('Add a tag...');
+  readonly label = input<string>('');
   readonly maxItems = input<number | null>(null);
   readonly minItems = input<number>(0);
   readonly allowDuplicates = input<boolean>(false);
   readonly modelAsStrings = input<boolean>(true);
   readonly removable = input<boolean>(true);
   readonly editable = input<boolean>(false);
-  readonly draggable = input<boolean>(false);
+  readonly draggable = input<boolean>(true);
   readonly disabled = input<boolean>(false);
   readonly displayBy = input<string>('name');
   readonly identifyBy = input<string>('id');
   readonly autocompleteItems = input<TagItem[] | string[]>([]);
+  readonly autocompleteItemsApiEndpoint = input<string>('');
   readonly autocompleteObservable = input<((text: string) => Observable<any>) | null>(null);
-  readonly onlyFromAutocomplete = input<boolean>(false);
+  readonly onlyFromAutocomplete = input<boolean>(true);
   readonly separatorKeysCodes = input<number[]>([ENTER, COMMA]);
   readonly theme = input<string>('default');
   readonly inputId = input<string>('');
@@ -81,6 +84,17 @@ export class InputTagComponent implements OnInit, AfterViewInit, OnDestroy, Cont
   @ViewChild('inputField') inputField!: ElementRef<HTMLInputElement>;
   @ViewChild('auto') auto!: any;
 
+  // Services
+  private http = inject(HttpClient);
+
+  // Input for API endpoint
+  readonly apiEndpoint = input<string>('');
+  readonly apiSearchParam = input<string>('search');
+  readonly isLoading = signal<boolean>(false);
+
+  // Private subject for API calls
+  private apiSearch$ = new Subject<string>();
+
   // Internal state
   tags = signal<(TagItem | string)[]>([]);
   filteredItems = signal<(TagItem | string)[]>([]);
@@ -98,7 +112,75 @@ export class InputTagComponent implements OnInit, AfterViewInit, OnDestroy, Cont
   }
 
   ngOnInit() {
-    // Initialize if needed
+    // Load autocomplete items from API if endpoint is provided
+    if (this.autocompleteItemsApiEndpoint()) {
+      this.loadAutocompleteItemsFromApi();
+    }
+
+    // Setup API search if endpoint is provided
+    this.setupApiSearch();
+  }
+
+  /**
+   * Load initial autocomplete items from API
+   */
+  private loadAutocompleteItemsFromApi(): void {
+    this.isLoading.set(true);
+
+    this.http.get<TagItem[] | string[]>(this.autocompleteItemsApiEndpoint()).subscribe({
+      next: (items) => {
+        this.filteredItems.set(items);
+        this.isLoading.set(false);
+        console.log('Autocomplete items loaded from API:', items);
+      },
+      error: (error) => {
+        console.error('Error loading autocomplete items from API:', error);
+        this.isLoading.set(false);
+        this.filteredItems.set([]);
+      }
+    });
+  }
+
+  /**
+   * Setup API-based autocomplete search
+   * Subscribes to search input and calls API endpoint
+   */
+  private setupApiSearch(): void {
+    if (!this.apiEndpoint()) {
+      return;
+    }
+
+    this.apiSearch$.pipe(
+      debounceTime(300),
+      switchMap((query: string) => {
+        if (!query.trim()) {
+          this.filteredItems.set([]);
+          return [];
+        }
+
+        this.isLoading.set(true);
+        const params = { [this.apiSearchParam()]: query };
+
+        return this.http.get<TagItem[]>(this.apiEndpoint(), { params }).pipe(
+          debounceTime(300),
+          switchMap(results => {
+            this.isLoading.set(false);
+            this.filteredItems.set(results);
+            return [];
+          })
+        );
+      })
+    ).subscribe();
+  }
+
+  /**
+   * Trigger API search when user types
+   * Call this from onInputChange when apiEndpoint is set
+   */
+  searchFromApi(query: string): void {
+    if (this.apiEndpoint()) {
+      this.apiSearch$.next(query);
+    }
   }
 
   ngAfterViewInit() {

@@ -1,5 +1,9 @@
 <div class="tag-input-wrapper " [ngClass]="'tag-input-theme-' + theme()">
   <mat-form-field appearance="outline" class="w-full">
+    <!-- Label -->
+    @if (label()) {
+      <mat-label>{{ label() }}</mat-label>
+    }
 
     <!-- Chip Grid with Drag and Drop -->
     <mat-chip-grid
