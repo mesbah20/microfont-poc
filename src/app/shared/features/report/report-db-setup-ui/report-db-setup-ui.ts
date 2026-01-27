@@ -327,7 +327,6 @@ export class ReportDbSetupUI implements OnInit {
       this.dbService.getById(id).subscribe({
         next: (connection: any) => {
           console.log('Loaded connection data:', connection);
-          console.log('vAppName from API:', connection.vAppName || connection.v_app_name);
 
           // Populate form with fetched connection (handle both old and new formats)
           this.connectionForm.patchValue({
@@ -345,7 +344,6 @@ export class ReportDbSetupUI implements OnInit {
             password: '' // Clear password for security
           });
 
-          console.log('Form values after patch:', this.connectionForm.value);
           // this.toastr.info('Connection loaded. Please enter password and verify details.', 'Connection Loaded');
           this.loading.set(false);
         },

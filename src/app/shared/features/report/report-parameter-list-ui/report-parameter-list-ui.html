@@ -93,7 +93,7 @@
               ></input-select-option-field>
             }
 
-            <!-- API Endpoint (Conditional) -->
+            <!-- API Endpoint (Conditional)
             @if (showApiEndpoint()) {
               <input-select-option-field
                 [frmGroup]="reportForm"
@@ -104,7 +104,7 @@
                 [searchable]="true"
                 placeholder="Select API endpoint"
               ></input-select-option-field>
-            }
+            } -->
 
             <!-- Modal for Report Selection -->
             <generic-modal
@@ -112,6 +112,7 @@
               [modalTitle]="'Select Report'"
               [cssClass]="'modal-lg'"
               [closeOnBackdropClick]="false"
+              [showDefaultFooter]="true"
               [modalComponent]="modalComponent"
               [modalComponentData]="modalComponentData"
               (modalClosed)="onModalClose()"
@@ -129,7 +130,7 @@
                 [frmGroup]="reportForm"
                 [controlName]="'reportFile'"
                 [label]="'Report File (.rptdesign)'"
-                
+                [isVertical]="true"
                 [fileExtension]="'.rptdesign'"
                 (selectedFilesChanged)="onFileSelected($event)"
               ></input-file>

@@ -86,6 +86,7 @@ export class ParameterModalComponent implements OnInit {
     { key: '{{homeBranch}}', value: 'Home Branch' },
     { key: '{{transactionDate}}', value: 'Transaction Date' },
     { key: '{{systemDate}}', value: 'System Date' },
+    { key: '{{authToken}}', value: 'Auth Token' },
     { key: '{{firstDateOfMonth}}', value: 'First Date of Month' },
     { key: '{{lastDateOfMonth}}', value: 'Last Date of Month' },
     { key: '{{firstDateOfYear}}', value: 'First Date of Year' },
@@ -349,11 +350,7 @@ export class ParameterModalComponent implements OnInit {
           item.key === '{{systemDate}}'
         );
       case 'STRING':
-        return this.predefinedDefaultValues.filter(item => 
-          !item.key.toLowerCase().includes('date') && 
-          !item.key.toLowerCase().includes('amount') &&
-          item.key !== 'TODAY'
-        );
+        return this.predefinedDefaultValues;
       case 'NUMBER':
         return this.predefinedDefaultValues.filter(item => 
           item.key.toLowerCase().includes('amount') || 

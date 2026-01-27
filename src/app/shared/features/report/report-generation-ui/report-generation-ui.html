@@ -67,7 +67,7 @@
 
                   <!-- TEXT/STRING Parameter -->
                   @if (param.dataType === 'TEXT' || (param.dataType === 'STRING' && param.inputType !== 'SELECT')) {
-                    @if (param.inputType === 'MULTI') {
+                    @if (param.inputType === 'TEXTAREA') {
                       <!-- Multi-line Text -->
                       <div class="col-span-2">
                         <input-text-area
@@ -78,7 +78,8 @@
                           [placeholder]="'Enter ' + param.parameterLabel"
                           [rows]="3"
                           [maxLen]="param.maxLength || 500"
-                          [enable]="param.isReadOnly === true"
+                          [enable]="param.readOnly === true"
+                          [hidden]="!param.visible"
                         ></input-text-area>
 
                       </div>
@@ -89,10 +90,11 @@
                           [frmGroup]="parameterForm"
                           [controlName]="param.parameterName"
                           [label]="param.parameterLabel"
-                          
-                          [maxLength]="param.maxLength || 255"
+                          [hidden]="!param?.visible"
+                          [maxLength]="param.maxLength"
                           [placeholder]="'Enter ' + param.parameterLabel"
-                          [isReadonly]="param.isReadOnly === true"
+                          [isReadonly]="param.readOnly === true"
+                          [hidden]="!param.visible"
                         ></input-text-box>
 
                       </div>
@@ -110,7 +112,7 @@
                         [minValue]="param.minValue"
                         [maxValue]="param.maxValue"
                         [placeholder]="'Enter ' + param.parameterLabel"
-                        [isReadonly]="param.isReadOnly === true"
+                        [isReadonly]="param.readOnly === true"
                       ></input-number>
 
                     </div>
@@ -124,7 +126,7 @@
                         [controlName]="param.parameterName"
                         [label]="param.parameterLabel + (param.required ? ' *' : '')"
                         
-                        [isReadonly]="param.isReadOnly === true"
+                        [isReadonly]="param.readOnly === true"
                       ></input-date>
 
                     </div>

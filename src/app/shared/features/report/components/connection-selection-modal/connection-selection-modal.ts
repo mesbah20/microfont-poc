@@ -16,7 +16,7 @@ export interface ConnectionItem {
   port?: string;
   service?: string;
   username?: string;
-  v_app_name?: string;
+  vAppName?: string;
   isDefaultConnection?: boolean;
   // Legacy fields for backward compatibility
   databaseType?: string;
@@ -119,7 +119,7 @@ export class ConnectionSelectionModalComponent implements OnInit {
           port: conn.port || this.extractPortFromAddress(conn.dbServerAddress),
           service: conn.service || conn.databaseName,
           username: conn.username,
-          v_app_name: conn.v_app_name || 'ultimus',
+          vAppName: conn.vAppName || conn.v_app_name || 'ultimus',
           isDefaultConnection: conn.isDefaultConnection,
           // Keep legacy fields for compatibility
           databaseType: conn.databaseType,

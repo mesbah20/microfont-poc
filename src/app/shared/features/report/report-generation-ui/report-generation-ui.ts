@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, Type, WritableSignal, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, Type, WritableSignal, effect, inject, signal, ChangeDetectorRef } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -64,6 +64,7 @@ export class ReportGenerationUI implements OnInit {
   private reportBackendService = inject(ReportBackendService);
   private reportRegistrationService = inject(ReportRegistrationService);
   private dialogUtils = inject(DialogUtils);
+  private cdr = inject(ChangeDetectorRef);
   showModal = false;
   // Form and state properties
   selectionForm!: FormGroup;
@@ -337,13 +338,19 @@ onModalResult(result: any) {
           this.selectedFormat.set(formats[0]);
         }
 
-        this.loading.set(false);
+        setTimeout(() => {
+          this.loading.set(false);
+          this.cdr.detectChanges();
+        });
        // this.toastr.success('Report loaded successfully', 'Success');
       },
       error: (err) => {
         console.error('Error loading report metadata:', err);
         this.toastr.error('Failed to load report metadata', 'Error');
-        this.loading.set(false);
+        setTimeout(() => {
+          this.loading.set(false);
+          this.cdr.detectChanges();
+        });
       }
     });
   }
@@ -414,13 +421,19 @@ onModalResult(result: any) {
           this.selectedFormat.set(formats[0]);
         }
 
-        this.loading.set(false);
+        setTimeout(() => {
+          this.loading.set(false);
+          this.cdr.detectChanges();
+        });
        // this.toastr.success('Report loaded successfully', 'Success');
       },
       error: (err) => {
         console.error('Error loading report metadata:', err);
         this.toastr.error(`Failed to load report by ${type}`, 'Error');
-        this.loading.set(false);
+        setTimeout(() => {
+          this.loading.set(false);
+          this.cdr.detectChanges();
+        });
       }
     });
   }
@@ -493,7 +506,6 @@ onModalResult(result: any) {
         if (param.minValue !== undefined) validators.push(Validators.min(param.minValue));
         if (param.maxValue !== undefined) validators.push(Validators.max(param.maxValue));
       }
-console.log(param);
       // Set default value
       let defaultValue: any = '';
       if (param.defaultValue) {
@@ -685,7 +697,7 @@ console.log(param);
       if (value instanceof Date) {
         value = value.toISOString().split('T')[0];
       }
-
+      console.log("processedParameters[key]: ", key)
       // Process template variables
       processedParameters[key] = this.processParameterTemplate(value);
     });
@@ -697,18 +709,25 @@ console.log(param);
       appCode: appCode
     };
 
+    console.log("request ", request)
     this.reportBackendService.generateReportNew(request).subscribe({
       next: (blob) => {
         // Preview the report instead of downloading
         this.previewReport(blob, metadata.reportName);
 
         this.toastr.success(`Report "${metadata.reportName}" generated successfully!`, 'Success');
-        this.generating.set(false);
+        setTimeout(() => {
+          this.generating.set(false);
+          this.cdr.detectChanges();
+        });
       },
       error: (err) => {
         console.error('Error generating report:', err);
         this.toastr.error('Failed to generate report. Please try again.', 'Error');
-        this.generating.set(false);
+        setTimeout(() => {
+          this.generating.set(false);
+          this.cdr.detectChanges();
+        });
       }
     });
   }
@@ -793,12 +812,18 @@ console.log(param);
         const filename = `${metadata.reportName}_${new Date().getTime()}.${extension}`;
 
         this.reportBackendService.downloadBlob(blob, filename);
-        this.generating.set(false);
+        setTimeout(() => {
+          this.generating.set(false);
+          this.cdr.detectChanges();
+        });
       },
       error: (err) => {
         console.error('Error generating report:', err);
         this.toastr.error('Failed to generate report. Please try again.', 'Error');
-        this.generating.set(false);
+        setTimeout(() => {
+          this.generating.set(false);
+          this.cdr.detectChanges();
+        });
       }
     });
   }
@@ -918,7 +943,7 @@ console.log(param);
 
   /**
    * Process parameter template variables
-   * Supports: {{userId}}, {{userBranch}}, {{userName}}, {{currentDate}}, {{transactionDate}}, {{userRole}}, TODAY
+   * Supports: {{userId}}, {{userBranch}}, {{userName}}, {{currentDate}}, {{authToken}}, {{transactionDate}}, {{userRole}}, TODAY
    */
   private processParameterTemplate(value: string): string {
     console.log("Processing template: ", value);
@@ -939,6 +964,7 @@ console.log(param);
       'homeBranch': this.getHomeBranch(),
       'userName': this.getUserName(),
       'userRole': this.getUserRole(),
+      'authToken': this.getAuthToken(),
       'currentDate': this.getCurrentDate(),
       'systemDate': new Date().toISOString().split('T')[0],
       'transactionDate': this.getTransactionDate(),
@@ -1045,6 +1071,14 @@ getAccountNumber(){
     const userRole = sessionStorage.getItem('userRole') || localStorage.getItem('userRole') || '';
     console.log('getUserRole() result:', userRole);
     return userRole;
+  }
+
+  /**
+   * Get user role from session/localStorage
+   */
+  private getAuthToken(): string {
+    const authToken = sessionStorage.getItem('access_token') || localStorage.getItem('access_token') || '';
+    return authToken;
   }
 
   /**

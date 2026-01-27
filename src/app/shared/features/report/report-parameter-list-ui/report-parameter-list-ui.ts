@@ -15,7 +15,7 @@ import { ParameterModalComponent } from '../components/parameter-modal/parameter
 
 import { ReportRegistrationService, ReportDTO } from '../services/report-registration.service';
 import { DatabaseConnectionService } from '../services/database-connection.service';
-import { ApiEndpointService } from '../services/api-endpoint.service';
+//import { ApiEndpointService } from '../services/api-endpoint.service';
 import { catchError, of } from 'rxjs';
 import { InputTextBox } from '../../../common-components/input-types/input-text-box/input-text-box';
 import { BUTTON_VISIBILITY, MENU_NAME, ONCLICK_DELETE, ONCLICK_RESET, ONCLICK_SAVE, ONCLICK_UPDATE } from '../../../constant/button-signals.constant';
@@ -72,7 +72,7 @@ export class ReportParameterListUI implements OnInit {
   private toastr = inject(ToastrService);
   private reportService = inject(ReportRegistrationService);
   private dbService = inject(DatabaseConnectionService);
-  private apiService = inject(ApiEndpointService);
+  //private apiService = inject(ApiEndpointService);
   private authResourceService = inject(AuthResourceService);
   private _authService = inject(AuthService);
   private _userService = inject(UserService);
@@ -138,7 +138,7 @@ export class ReportParameterListUI implements OnInit {
 
   // Dynamic data for dropdowns
   databaseConnections: { key: string, value: string }[] = [];
-  apiEndpoints: { key: string, value: string }[] = [];
+  // apiEndpoints: { key: string, value: string }[] = [];
 
   // Report list loaded from backend
   reportList: any[] = [];
@@ -157,19 +157,12 @@ export class ReportParameterListUI implements OnInit {
     { key: 'YEARLY', value: 'Yearly' },
   ];
 
-  // Data Source options for parameters
-  dataSourceOptions = [
-    { key: 'STATIC', value: 'Static Options (Manual)' },
-    { key: 'API', value: 'API Endpoint' },
-    { key: 'DATABASE', value: 'Database Query' },
-    { key: 'FUNCTION', value: 'Custom Function' },
-  ];
-
   // Predefined default values for different parameter types
   predefinedDefaultValues = [
     { key: '{{homeBranch}}', value: 'Home Branch' },
     { key: '{{transactionDate}}', value: 'Transaction Date' },
     { key: '{{systemDate}}', value: 'System Date' },
+    { key: '{{authToken}}', value: 'Auth Token' },
     { key: '{{firstDateOfMonth}}', value: 'First Date of Month' },
     { key: '{{lastDateOfMonth}}', value: 'Last Date of Month' },
     { key: '{{firstDateOfYear}}', value: 'First Date of Year' },
@@ -225,7 +218,7 @@ export class ReportParameterListUI implements OnInit {
     this.setupParameterColumns();
     this.setupFunctionIdListener();
     this.loadDatabaseConnections();
-    this.loadApiEndpoints();
+    // this.loadApiEndpoints();
     // this.loadReports();
     this.loadReportFunctionsData();
   }
@@ -258,7 +251,7 @@ export class ReportParameterListUI implements OnInit {
    */
   getFilteredPredefinedValues(): Array<{ key: string, value: string }> {
     const dataType = this.parameterForm.get('dataType')?.value;
-
+    console.log("fff: ",dataType);
     switch (dataType) {
       case 'DATE':
         return this.predefinedDefaultValues.filter(item =>
@@ -268,11 +261,7 @@ export class ReportParameterListUI implements OnInit {
           item.key === '{{systemDate}}'
         );
       case 'STRING':
-        return this.predefinedDefaultValues.filter(item =>
-          !item.key.toLowerCase().includes('date') &&
-          !item.key.toLowerCase().includes('amount') &&
-          item.key !== 'TODAY'
-        );
+        return this.predefinedDefaultValues;
       case 'NUMBER':
         return this.predefinedDefaultValues.filter(item =>
           item.key.toLowerCase().includes('amount') ||
@@ -280,6 +269,8 @@ export class ReportParameterListUI implements OnInit {
           item.key === '{{accountNumber}}' ||
           item.key === 'UserInput'
         );
+      case 'SELECT':
+        return this.predefinedDefaultValues;
       default:
         return this.predefinedDefaultValues;
     }
@@ -370,7 +361,6 @@ export class ReportParameterListUI implements OnInit {
       functionName: [{ value: '', disabled: true }],
       dataSourceType: ['', [Validators.required]],
       databaseConnectionId: [''],
-      apiEndpointId: [''],
       reportFile: [null],
       reportFileName: ['', [Validators.maxLength(150)]],
       outputFormats: [['PDF'], [Validators.required]],
@@ -438,55 +428,14 @@ export class ReportParameterListUI implements OnInit {
    */
   private updateDataSourceValidators(dataSourceType: string) {
     const dbControl = this.reportForm.get('databaseConnectionId');
-    const apiControl = this.reportForm.get('apiEndpointId');
 
     dbControl?.clearValidators();
-    apiControl?.clearValidators();
 
     if (dataSourceType === 'DATABASE' || dataSourceType === 'BOTH') {
       dbControl?.setValidators([Validators.required]);
     }
-    if (dataSourceType === 'API' || dataSourceType === 'BOTH') {
-      apiControl?.setValidators([Validators.required]);
-    }
 
     dbControl?.updateValueAndValidity();
-    apiControl?.updateValueAndValidity();
-  }
-
-  /**
-   * Setup listener for parameter data type changes
-   */
-  private setupParameterDataTypeListener() {
-    this.parameterForm.get('dataType')?.valueChanges.subscribe(dataType => {
-      this.updateParameterValidators(dataType);
-    });
-  }
-
-  /**
-   * Update parameter validators based on data type
-   */
-  private updateParameterValidators(dataType: string) {
-    const selectOptionsControl = this.parameterForm.get('selectOptions');
-    const inputTypeControl = this.parameterForm.get('inputType');
-
-    selectOptionsControl?.clearValidators();
-
-    // Set default input type based on data type
-    if (dataType === 'NUMBER') {
-      inputTypeControl?.setValue('NUMBER');
-    } else if (dataType === 'STRING') {
-      inputTypeControl?.setValue('TEXT');
-    } else if (dataType === 'DATE') {
-      inputTypeControl?.setValue('DATE');
-    } else if (dataType === 'BOOLEAN') {
-      inputTypeControl?.setValue('SWITCH');
-    } else if (dataType === 'SELECT') {
-      selectOptionsControl?.setValidators([Validators.required]);
-      inputTypeControl?.setValue('SELECT');
-    }
-
-    selectOptionsControl?.updateValueAndValidity();
   }
 
   /**
@@ -522,10 +471,10 @@ export class ReportParameterListUI implements OnInit {
     return dataSourceType === 'DATABASE' || dataSourceType === 'BOTH';
   }
 
-  showApiEndpoint(): boolean {
-    const dataSourceType = this.reportForm.get('dataSourceType')?.value;
-    return dataSourceType === 'API' || dataSourceType === 'BOTH';
-  }
+  // showApiEndpoint(): boolean {
+  //   const dataSourceType = this.reportForm.get('dataSourceType')?.value;
+  //   return dataSourceType === 'API' || dataSourceType === 'BOTH';
+  // }
 
   /**
    * Get filtered input type options based on data type
@@ -697,20 +646,20 @@ export class ReportParameterListUI implements OnInit {
   /**
    * Load API endpoints from backend
    */
-  private loadApiEndpoints() {
-    this.apiService.getAll().subscribe({
-      next: (endpoints) => {
-        this.apiEndpoints = endpoints.map(ep => ({
-          key: ep.id!.toString(),
-          value: `${ep.id}-${ep.endpointName}`
-        }));
-      },
-      error: (err) => {
-        console.error('Error loading API endpoints:', err);
-        // this.toastr.error('Failed to load API endpoints', 'Error');
-      }
-    });
-  }
+  // private loadApiEndpoints() {
+  //   this.apiService.getAll().subscribe({
+  //     next: (endpoints) => {
+  //       this.apiEndpoints = endpoints.map(ep => ({
+  //         key: ep.id!.toString(),
+  //         value: `${ep.id}-${ep.endpointName}`
+  //       }));
+  //     },
+  //     error: (err) => {
+  //       console.error('Error loading API endpoints:', err);
+  //       // this.toastr.error('Failed to load API endpoints', 'Error');
+  //     }
+  //   });
+  // }
 
   /**
    * Load reports from backend
@@ -851,7 +800,6 @@ export class ReportParameterListUI implements OnInit {
           functionName: selectedFunction?.functionName || '',
           dataSourceType: report.dataSourceType,
           databaseConnectionId: report.databaseConnectionId || '',
-          apiEndpointId: report.apiEndpointId || '',
           reportFileName: report.reportFileName || '',
           outputFormats: report.outputFormats || ['PDF'],
           // visible: report.visible !== undefined ? report.visible : true,
@@ -1171,7 +1119,6 @@ export class ReportParameterListUI implements OnInit {
       functionId: formValue.functionId,
       dataSourceType: formValue.dataSourceType,
       databaseConnectionId: formValue.databaseConnectionId || undefined,
-      apiEndpointId: formValue.apiEndpointId || undefined,
       outputFormats: formValue.outputFormats,
       isVisible: formValue.visible,
       autoGenPeriod: formValue.autoGenPeriod || "D",
@@ -1282,7 +1229,6 @@ export class ReportParameterListUI implements OnInit {
       functionId: formValue.functionId,
       dataSourceType: formValue.dataSourceType,
       databaseConnectionId: formValue.databaseConnectionId || undefined,
-      apiEndpointId: formValue.apiEndpointId || undefined,
       outputFormats: formValue.outputFormats,
       isVisible: formValue.visible,
       autoGenPeriod: formValue.autoGenPeriod || undefined,

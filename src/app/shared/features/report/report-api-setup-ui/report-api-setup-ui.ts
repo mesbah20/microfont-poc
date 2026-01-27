@@ -66,6 +66,7 @@ export class ReportApiSetupUI implements OnInit {
   // Authentication Type options
   authenticationTypeOptions = [
     { key: 'NONE', value: 'None' },
+    { key: 'APPTOKEN', value: 'App Token' },
     { key: 'BASIC', value: 'Basic Auth' },
     { key: 'BEARER', value: 'Bearer Token' },
     { key: 'APIKEY', value: 'API Key' },

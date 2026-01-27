@@ -263,8 +263,8 @@ export interface ReportParameterMetadata {
   dependsOnParameter?: string;
   helpText?: string;
   required?:boolean;
-  isReadOnly?:boolean;
-  isVisible?:boolean;
+  readOnly?:boolean;
+  visible?:boolean;
 }
 
 export interface ReportGenerationRequest {
