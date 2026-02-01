@@ -804,7 +804,6 @@ private loadUsersFromApi(): void {
       }));
 
       this.sampleApiData.set(transformedData);
-      console.log('✅ Loaded and transformed users from API:', transformedData);
       this.toastr.success(
         `Loaded ${users.length} users from API`,
         'Data Loaded'
@@ -3821,13 +3820,13 @@ handleColumnSelectAll($event:any): void {
   // Address Search Component Methods
   onAddressSelected(address: AddressDto): void {
     console.log('Address selected in demo:', address);
-    this.toastr.success('Address selected successfully!', 'Address Search');
+    // this.toastr.success('Address selected successfully!', 'Address Search');
   }
 
   onAddressSearchChanged(query: string): void {
     console.log('Address search query changed:', query);
     if (query.length >= 2) {
-      this.toastr.info(`Searching for: ${query}`, 'Address Search');
+      // this.toastr.info(`Searching for: ${query}`, 'Address Search');
     }
   }
 

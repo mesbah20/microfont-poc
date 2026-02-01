@@ -282,7 +282,7 @@
                           <mat-select [value]="getEditingValue(column.property)"
                             (selectionChange)="setEditingValue(column.property, $event.value)"
                             [multiple]="column.isMultiSelect" class="inline-select">
-                            <mat-option *ngFor="let option of getDropdownOptions(column, element)"
+                          <mat-option *ngFor="let option of getDropdownOptions(column, element)"
                               [value]="option.value" [disabled]="option.disabled">
                               {{ option.label }}
                             </mat-option>
