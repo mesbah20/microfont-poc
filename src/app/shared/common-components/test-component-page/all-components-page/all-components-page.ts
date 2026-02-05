@@ -38,6 +38,9 @@ import { AutoTableService, AutoTableOptions } from '../../../services/data-mappe
 import { Label } from '../../generic-component-type/generic-label/generic-label';
 import { InputAddressSearch } from '../../input-types/input-address-search/input-address-search';
 import { AddressDto } from '../../../models/address.model';
+import { FilePreviewComponent, FilePreviewData } from '../../file-preview/file-preview.component';
+import { MatInputModule } from '@angular/material/input';
+import { MatIcon } from '@angular/material/icon';
 
 // Types for data selection modal
 export interface AccountData {
@@ -82,6 +85,7 @@ export interface DataSelectionConfig {
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    MatIcon,
     InputTextBox,
     InputIdBox,
     GenericSwitch,
@@ -106,6 +110,7 @@ export interface DataSelectionConfig {
     DynamicTableComponent,
     Label,
     InputAddressSearch,
+    FilePreviewComponent
 
 ],
   templateUrl: './all-components-page.html',
@@ -147,6 +152,21 @@ export class AllComponentsPage implements OnInit {
   }
   onModalClosed() {
     this.isDataSelectionModalOpen.set(false);
+  }
+
+   pdfData: FilePreviewData = {
+    base64: 'JVBERi0xLjQKJeLjz9MKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZwovUGFnZXMgMiAwIFIKPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzCi9Db3VudCAxCi9LaWRzIFsgMyAwIFIgXQo+PgplbmRvYmoKMyAwIG9iago8PCAvVHlwZSAvUGFnZQovUGFyZW50IDIgMCBSCi9NZWRpYUJveCBbMCAwIDYxMiA3OTJdCi9Db250ZW50cyA0IDAgUgovUmVzb3VyY2VzIDw8ID4+IAo+PgplbmRvYmoKNCAwIG9iago8PCAvTGVuZ3RoIDQ0ID4+CnN0cmVhbQpCVCAvRjEgMjQgVGYgNzIgNzIwIFRkIChIZWxsbyBXb3JsZCkgVGoKRVQKZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgNQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMTAgMDAwMDAgbiAKMDAwMDAwMDA2MCAwMDAwMCBuIAowMDAwMDAwMTEzIDAwMDAwIG4gCjAwMDAwMDAyMjEgMDAwMDAgbiAKdHJhaWxlcgo8PCAvUm9vdCAxIDAgUgovU2l6ZSA1ID4+CnN0YXJ0eHJlZgozMTIKJSVFT0YK', // Make sure this is valid
+    fileName: 'document.pdf',
+    mimeType: 'application/pdf'
+  };
+
+  onPdfError(error: string) {
+    console.error('PDF Preview Error:', error);
+    // Handle error (show toast, etc.)
+  }
+
+  onPdfLoad() {
+    console.log('PDF loaded successfully');
   }
 
   onModalResult(result: any) {
@@ -1469,13 +1489,16 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
     // Initialize generic table with auto-generation
     this.loadWithFullConfig();
     this.loadCountries()
+
+    // Set default selected file for file preview demo
+    this.selectedFile.set(this.sampleFiles()[0]);
     this.frmGroup = this.formBuilder.group({
       textBox: [{ value: '', disabled: false }, [Validators.required, Validators.minLength(3), Validators.maxLength(20), Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
       id: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
       textArea: ['', [Validators.required, Validators.maxLength(500)]],
       switch: [true],
-      amount: ['', [Validators.required, Validators.max(1000000), Validators.min(1)]],
-      amountToWord: ['', [Validators.required, Validators.max(1000000), Validators.min(1)]],
+      amount: ['', [Validators.required, Validators.max(2000000), Validators.min(1)]],
+      amountToWord: ['', [Validators.required, Validators.max(2000000), Validators.min(1)]],
       dropdown: ['', Validators.required],
       multiSelect: [[]],
       // categories: [[], Validators.required],
@@ -3830,7 +3853,50 @@ handleColumnSelectAll($event:any): void {
     }
   }
 
+  // File Preview Component Demo Data
+  readonly sampleFiles = signal<FilePreviewData[]>([
+    {
+      fileName: 'sample-document.pdf',
+      mimeType: 'application/pdf',
+      url: 'https://cdn.mozilla.net/pdfjs/tracemonkey.pdf'
+    },
+    {
+      fileName: 'sample-image.jpg',
+      mimeType: 'image/jpeg',
+      url: 'https://picsum.photos/800/600?random=1'
+    }
+  ]);
+
+  readonly selectedFile = signal<FilePreviewData | null>(null);
+
+  selectSampleFile(file: FilePreviewData) {
+    this.selectedFile.set(file);
+  }
+
+  onFileDownload(fileData: FilePreviewData) {
+    // Handle file download
+    console.log('Downloading file:', fileData.fileName);
+    // You can implement actual download logic here
+  }
+
+  onFileFullscreen(fileData: FilePreviewData) {
+    // Handle fullscreen view
+    console.log('Opening fullscreen for:', fileData.fileName);
+    // You can implement fullscreen modal logic here
+  }
+
+  onFileError(error: string) {
+    console.error('File preview error:', error);
+    this.toastr.error(error, 'Preview Error');
+  }
+
+  onFileLoad() {
+    console.log('File loaded successfully');
+  }
+
 }
+
+
 
 
 

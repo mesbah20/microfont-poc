@@ -78,17 +78,18 @@
            class="address-dropdown">
 
         <!-- Search Results -->
-        <div *ngFor="let address of searchResults; trackBy: trackByFn"
+        <div *ngFor="let address of searchResults(); trackBy: trackByFn"
              class="address-option"
+            (mousedown)="onAddressSelected(address); $event.preventDefault()"
              (click)="onAddressSelected(address)">
           <div class="address-content">
-            <div class="address-primary">{{ address.areaName }}</div>
+            <div class="address-primary">{{ getPrimaryField(address) }}</div>
             <div class="address-secondary">
-              {{ address.thana }}, {{ address.postOffice }}, {{ address.district }}
-              <span *ngIf="address.postalCode" class="postal-code"> - {{ address.postalCode }}</span>
+              {{ address.thanaNm }}, {{ address.unionMuniName }}, {{ address.districtNm }}
             </div>
           </div>
         </div>
+
 
         <!-- Loading State -->
         <div *ngIf="isLoading$ | async" class="dropdown-loading">
@@ -102,7 +103,7 @@
         </div>
 
         <!-- No Results -->
-        <div *ngIf="searchResults.length === 0 && !(isLoading$ | async) && searchValue.length >= 2"
+        <div *ngIf="searchResults().length === 0 && !(isLoading$ | async) && searchValue.length >= 2"
              class="dropdown-no-results">
           <div class="no-results-content">
             <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,9 +137,23 @@
     </div>
   </div>
 
+  <!-- Manual Information Field -->
+  <div *ngIf="showManualField()" class="manual-info-section">
+    <input-text-box
+      [frmGroup]="addressFieldsGroup"
+      [controlName]="'manualInfo'"
+      [label]="manualFieldLabel()"
+      [placeholder]="'Enter additional information...'"
+      [displayMode]="addressFieldsDisplayMode()"
+      [isReadonly]="false"
+      [tooltip]="'Additional information that can be manually entered'"
+      (valueChanged)="onManualFieldChanged($event)"
+    ></input-text-box>
+  </div>
+
   <!-- Individual Address Fields Section -->
   <div class="address-fields-section"
-       *ngIf="showAreaNameField() || showThanaField() || showPostOfficeField() || showDistrictField() || showPostalCodeField()"
+       *ngIf="showAreaNameField() || showThanaField() || showPostOfficeField() || showDistrictField() || showPostalCodeField() || showCountryField() || showMouzaField()"
        [ngClass]="{
          'fields-horizontal': addressFieldsDisplayMode() === 'horizontal',
          'fields-vertical': addressFieldsDisplayMode() === 'vertical',
@@ -149,76 +164,120 @@
     <div class="address-fields-grid">
 
       <!-- Area Name Field -->
-      <div *ngIf="showAreaNameField()" class="address-field">
+      @if(addressFieldsGroup.get('areaName')?.value) {
+      <div  class="address-field">
         <input-text-box
           [frmGroup]="addressFieldsGroup"
           [controlName]="'areaName'"
           [label]="areaNameLabel()"
           [placeholder]="'Area '"
           [displayMode]="addressFieldsDisplayMode()"
-          [isReadonly]="isFieldsReadonly()"
+          [isReadonly]="makeFieldsReadonly()"
           [tooltip]="'Area name from selected address'"
           (valueChanged)="onAddressFieldChanged('areaName', $event)"
         ></input-text-box>
       </div>
+      }
+
 
       <!-- Thana Field -->
-      <div *ngIf="showThanaField()" class="address-field">
-        <input-text-box
-          [frmGroup]="addressFieldsGroup"
-          [controlName]="'thana'"
-          [label]="thanaLabel()"
-          [placeholder]="'Thana '"
-          [displayMode]="addressFieldsDisplayMode()"
-          [isReadonly]="isFieldsReadonly()"
-          [tooltip]="'Thana from selected address'"
-          (valueChanged)="onAddressFieldChanged('thana', $event)"
-        ></input-text-box>
-      </div>
+        @if( addressFieldsGroup.get('thana')?.value) {
+          <div  class="address-field">
+            <input-text-box
+              [frmGroup]="addressFieldsGroup"
+              [controlName]="'thana'"
+              [label]="thanaLabel()"
+              [placeholder]="'Thana '"
+              [displayMode]="addressFieldsDisplayMode()"
+              [isReadonly]="makeFieldsReadonly()"
+              [tooltip]="'Thana from selected address'"
+              (valueChanged)="onAddressFieldChanged('thana', $event)"
+            ></input-text-box>
+          </div>
+        }
+
 
       <!-- Post Office Field -->
-      <div *ngIf="showPostOfficeField()" class="address-field">
+       @if(addressFieldsGroup.get('postOffice')?.value) {
+          <div  class="address-field">
         <input-text-box
           [frmGroup]="addressFieldsGroup"
           [controlName]="'postOffice'"
           [label]="postOfficeLabel()"
           [placeholder]="'Post '"
           [displayMode]="addressFieldsDisplayMode()"
-          [isReadonly]="isFieldsReadonly()"
+          [isReadonly]="makeFieldsReadonly()"
           [tooltip]="'Post office from selected address'"
           (valueChanged)="onAddressFieldChanged('postOffice', $event)"
         ></input-text-box>
       </div>
+       }
 
-      <!-- District Field -->
-      <div *ngIf="showDistrictField()" class="address-field">
+       <!-- District Field -->
+       @if(addressFieldsGroup.get('district')?.value) {
+      <div  class="address-field">
         <input-text-box
           [frmGroup]="addressFieldsGroup"
           [controlName]="'district'"
           [label]="districtLabel()"
           [placeholder]="'District'"
           [displayMode]="addressFieldsDisplayMode()"
-          [isReadonly]="isFieldsReadonly()"
+          [isReadonly]="makeFieldsReadonly()"
           [tooltip]="'District from selected address'"
           (valueChanged)="onAddressFieldChanged('district', $event)"
         ></input-text-box>
       </div>
+       }
 
-      <!-- Postal Code Field -->
-      <div *ngIf="showPostalCodeField()" class="address-field">
+
+       <!-- Postal Code Field -->
+       @if(addressFieldsGroup.get('postalCode')?.value) {
+      <div  class="address-field">
         <input-text-box
           [frmGroup]="addressFieldsGroup"
           [controlName]="'postalCode'"
           [label]="postalCodeLabel()"
           [placeholder]="'Postal'"
           [displayMode]="addressFieldsDisplayMode()"
-          [isReadonly]="isFieldsReadonly()"
+          [isReadonly]="makeFieldsReadonly()"
           [tooltip]="'Postal code from selected address'"
           (valueChanged)="onAddressFieldChanged('postalCode', $event)"
         ></input-text-box>
       </div>
+       }
 
-    </div>
-  </div>
 
-</div>
+      <!-- Country Field -->
+       @if(addressFieldsGroup.get('country')?.value) {
+         <div class="address-field">
+        <input-text-box
+          [frmGroup]="addressFieldsGroup"
+          [controlName]="'country'"
+          [label]="countryLabel()"
+          [placeholder]="'Country'"
+          [displayMode]="addressFieldsDisplayMode()"
+          [isReadonly]="makeFieldsReadonly()"
+          [tooltip]="'Country from selected address'"
+          (valueChanged)="onAddressFieldChanged('country', $event)"
+        ></input-text-box>
+      </div>
+       }
+
+
+      <!-- Mouza Field -->
+       @if(addressFieldsGroup.get('mouza')?.value) {
+      <div class="address-field">
+        <input-text-box
+          [frmGroup]="addressFieldsGroup"
+          [controlName]="'mouza'"
+          [label]="mouzaLabel()"
+          [placeholder]="'Mouza'"
+          [displayMode]="addressFieldsDisplayMode()"
+          [isReadonly]="makeFieldsReadonly()"
+          [tooltip]="'Mouza from selected address'"
+          (valueChanged)="onAddressFieldChanged('mouza', $event)"
+        ></input-text-box>
+      </div>
+
+       }
+

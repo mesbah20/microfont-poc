@@ -1,148 +1,87 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { AddressDto, AddressSearchResponse } from '../models/address.model';
+import { AddressDto, AddressSearchResponse, AddressDisplayOption } from '../models/address.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AddressService {
   private http = inject(HttpClient);
-  private baseUrl = environment.apiBaseUrl + '/address';
+  private baseUrl = 'http://localhost:8002/centrino/api/address-mv';
 
-  // Mock demo data for testing
-  private mockAddresses: AddressDto[] = [
-    {
-      id: 'addr_001',
-      areaName: 'Mirpur',
-      thana: 'Mirpur',
-      postOffice: 'Mirpur',
-      district: 'Dhaka',
-      postalCode: '1216',
-      fullAddress: 'Mirpur, Dhaka 1216'
-    },
-    {
-      id: 'addr_002',
-      areaName: 'Dhanmondi',
-      thana: 'Dhanmondi',
-      postOffice: 'Dhanmondi',
-      district: 'Dhaka',
-      postalCode: '1212',
-      fullAddress: 'Dhanmondi, Dhaka 1212'
-    },
-    {
-      id: 'addr_003',
-      areaName: 'Gulshan',
-      thana: 'Gulshan',
-      postOffice: 'Gulshan',
-      district: 'Dhaka',
-      postalCode: '1212',
-      fullAddress: 'Gulshan, Dhaka 1212'
-    },
-    {
-      id: 'addr_004',
-      areaName: 'Banani',
-      thana: 'Banani',
-      postOffice: 'Banani',
-      district: 'Dhaka',
-      postalCode: '1213',
-      fullAddress: 'Banani, Dhaka 1213'
-    },
-    {
-      id: 'addr_005',
-      areaName: 'Cantonment',
-      thana: 'Cantonment',
-      postOffice: 'Cantonment',
-      district: 'Dhaka',
-      postalCode: '1213',
-      fullAddress: 'Cantonment, Dhaka 1213'
-    },
-    {
-      id: 'addr_006',
-      areaName: 'Uttara',
-      thana: 'Uttara',
-      postOffice: 'Uttara',
-      district: 'Dhaka',
-      postalCode: '1230',
-      fullAddress: 'Uttara, Dhaka 1230'
-    },
-    {
-      id: 'addr_007',
-      areaName: 'Motijheel',
-      thana: 'Motijheel',
-      postOffice: 'Motijheel',
-      district: 'Dhaka',
-      postalCode: '1213',
-      fullAddress: 'Motijheel, Dhaka 1213'
-    },
-    {
-      id: 'addr_008',
-      areaName: 'Kawran Bazar',
-      thana: 'Kawran Bazar',
-      postOffice: 'Kawran Bazar',
-      district: 'Dhaka',
-      postalCode: '1215',
-      fullAddress: 'Kawran Bazar, Dhaka 1215'
-    },
-    {
-      id: 'addr_009',
-      areaName: 'Farmgate',
-      thana: 'Farmgate',
-      postOffice: 'Farmgate',
-      district: 'Dhaka',
-      postalCode: '1215',
-      fullAddress: 'Farmgate, Dhaka 1215'
-    },
-    {
-      id: 'addr_010',
-      areaName: 'Bashundhara',
-      thana: 'Bashundhara',
-      postOffice: 'Bashundhara',
-      district: 'Dhaka',
-      postalCode: '1229',
-      fullAddress: 'Bashundhara, Dhaka 1229'
-    },
-    {
-      id: 'addr_011',
-      areaName: 'Mohakhali',
-      thana: 'Mohakhali',
-      postOffice: 'Mohakhali',
-      district: 'Dhaka',
-      postalCode: '1206',
-      fullAddress: 'Mohakhali, Dhaka 1206'
-    },
-    {
-      id: 'addr_012',
-      areaName: 'Shantinagar',
-      thana: 'Shantinagar',
-      postOffice: 'Shantinagar',
-      district: 'Dhaka',
-      postalCode: '1217',
-      fullAddress: 'Shantinagar, Dhaka 1217'
-    }
-  ];
-
+  /**
+   * Search addresses and return raw API response
+   */
   searchAddress(query: string): Observable<AddressSearchResponse> {
-    // Demo mode: return mock data filtered by query
-    const filtered = this.mockAddresses.filter(addr =>
-      addr.areaName.toLowerCase().includes(query.toLowerCase()) ||
-      addr.thana.toLowerCase().includes(query.toLowerCase()) ||
-      addr.postOffice.toLowerCase().includes(query.toLowerCase()) ||
-      addr.district.toLowerCase().includes(query.toLowerCase())
+    const params = new HttpParams().set('searchText', query);
+    const token = sessionStorage.getItem('access_token');
+
+    const headers: any = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return this.http.get<AddressSearchResponse>(
+      `${this.baseUrl}/search`,
+      { params, headers }
     );
+  }
 
-    return of({
-      data: filtered,
-      total: filtered.length
-    });
+  /**
+   * Search addresses and transform to display format
+   */
+  searchAddressForDisplay(query: string): Observable<AddressDisplayOption[]> {
+    return this.searchAddress(query).pipe(
+      map(addresses => this.transformToDisplayOptions(addresses))
+    );
+  }
 
-    /* For real API, uncomment this:
-    const params = new HttpParams()
-      .set('query', query)
-      .set('limit', '10');
+  /**
+   * Transform API response to display-friendly format
+   */
+  private transformToDisplayOptions(addresses: AddressDto[]): AddressDisplayOption[] {
+    return addresses.map(addr => ({
+      id: addr.villWardId,
+      displayText: this.formatDisplayText(addr),
+      area: addr.villWardNm,
+      thana: addr.thanaNm,
+      district: addr.districtNm,
+      division: addr.divisionNm,
+      fullAddress: this.formatFullAddress(addr)
+    }));
+  }
 
-    return this.http.get<AddressSearchResponse>(`${this.baseUrl}/search`, { params });
-    */
+  /**
+   * Format address for dropdown display
+   */
+  private formatDisplayText(addr: AddressDto): string {
+    return `${addr.villWardNm}, ${addr.unionMuniName}, ${addr.thanaNm}, ${addr.districtNm}`;
+  }
+
+  /**
+   * Format complete address
+   */
+  private formatFullAddress(addr: AddressDto): string {
+    const parts = [
+      addr.villWardNm,
+      addr.unionMuniName,
+      addr.thanaNm,
+      addr.districtNm,
+      addr.divisionNm
+    ].filter(Boolean);
+
+    return parts.join(', ');
+  }
+
+  /**
+   * Get address by ID
+   */
+  getAddressById(id: string): Observable<AddressDto | undefined> {
+    return this.searchAddress('').pipe(
+      map(addresses => addresses.find(addr => addr.villWardId === id))
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { Component, forwardRef, input, output, OnDestroy, inject, computed, effect } from '@angular/core';
+import { Component, forwardRef, input, output, OnDestroy, inject, computed, effect, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormGroup, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
@@ -46,6 +46,9 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
   readonly showPostOfficeField = input<boolean>(true);
   readonly showDistrictField = input<boolean>(true);
   readonly showPostalCodeField = input<boolean>(false);
+  readonly showCountryField = input<boolean>(true);
+  readonly showMouzaField = input<boolean>(true);
+  readonly showManualField = input<boolean>(true);
 
   // Address field labels
   readonly areaNameLabel = input<string>('Area Name');
@@ -53,6 +56,9 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
   readonly postOfficeLabel = input<string>('Post Office');
   readonly districtLabel = input<string>('District');
   readonly postalCodeLabel = input<string>('Postal Code');
+  readonly countryLabel = input<string>('Country');
+  readonly mouzaLabel = input<string>('Mouza');
+  readonly manualFieldLabel = input<string>('Additional Information');
 
   // Address field settings
   readonly makeFieldsReadonly = input<boolean>(true);
@@ -62,6 +68,7 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
   readonly addressSelected = output<AddressDto>();
   readonly searchChanged = output<string>();
   readonly valueChanged = output<AddressDto | null>();
+  readonly manualInfoChanged = output<string>();
 
   // Services
   private addressService = inject(AddressService);
@@ -77,6 +84,7 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
   isLoading$ = new BehaviorSubject<boolean>(false);
   showDropdown$ = new BehaviorSubject<boolean>(false);
   searchValue = '';
+  searchResults = signal<AddressDto[]>([]);
 
   // ControlValueAccessor properties
   private onChange = (value: AddressDto | null) => {};
@@ -94,7 +102,10 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
       thana: [''],
       postOffice: [''],
       district: [''],
-      postalCode: ['']
+      postalCode: [''],
+      country: [''],
+      mouza: [''],
+      manualInfo: ['']
     });
 
     // Setup the search pipeline
@@ -119,8 +130,15 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
 
     // Effect to set readonly state on address fields
     effect(() => {
-      if (this.isFieldsReadonly()) {
-        this.addressFieldsGroup.disable();
+      if (this.makeFieldsReadonly()) {
+        // Disable all fields except manualInfo
+        Object.keys(this.addressFieldsGroup.controls).forEach(key => {
+          if (key !== 'manualInfo') {
+            this.addressFieldsGroup.get(key)?.disable();
+          } else {
+            this.addressFieldsGroup.get(key)?.enable();
+          }
+        });
       } else {
         this.addressFieldsGroup.enable();
       }
@@ -168,11 +186,13 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
   private updateAddressFields(address: AddressDto | null): void {
     if (address) {
       this.addressFieldsGroup.patchValue({
-        areaName: address.areaName || '',
-        thana: address.thana || '',
-        postOffice: address.postOffice || '',
-        district: address.district || '',
-        postalCode: address.postalCode || ''
+        areaName: address.villWardNm || '',
+        thana: address.thanaNm || '',
+        postOffice: address.unionMuniName || '',
+        district: address.districtNm || '',
+        postalCode: '',
+        country: address.countryNm || '',
+        mouza: address.mouzaNm || ''
       });
     } else {
       this.addressFieldsGroup.reset();
@@ -202,11 +222,13 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
   }
 
   private searchTimeout: any;
-  public searchResults: AddressDto[] = [];
 
   private performSearch(query: string): void {
     this.addressService.searchAddress(query).pipe(
-      map(response => response.data || []),
+      map(response => {
+        console.log('Address search response:', response);
+        return response || [];
+      }),
       catchError((error) => {
         console.error('Address search error:', error);
         this.isLoading$.next(false);
@@ -214,7 +236,8 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
       }),
       takeUntil(this.destroy$)
     ).subscribe(addresses => {
-      this.searchResults = addresses;
+      console.log('Setting search results:', addresses);
+      this.searchResults.set(addresses);
       this.isLoading$.next(false);
     });
   }
@@ -244,7 +267,7 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
     if (this.selectedAddress$.value) {
       this.searchValue = '';
     }
-    this.showDropdown$.next(this.searchResults.length > 0);
+    this.showDropdown$.next(this.searchResults().length > 0);
   }
 
   onInputBlur(): void {
@@ -272,25 +295,61 @@ export class InputAddressSearch implements ControlValueAccessor, OnDestroy {
   }
 
   // Address field change handlers
-  onAddressFieldChanged(field: keyof AddressDto, value: string): void {
-    if (!this.isFieldsReadonly()) {
-      const currentAddress = this.selectedAddress$.value || {} as AddressDto;
-      const updatedAddress = { ...currentAddress, [field]: value };
+  onAddressFieldChanged(field: string, value: string): void {
+    if (!this.makeFieldsReadonly()) {
+      const fieldMapping: { [key: string]: keyof AddressDto } = {
+        'areaName': 'villWardNm',
+        'thana': 'thanaNm',
+        'postOffice': 'unionMuniName',
+        'district': 'districtNm',
+        'country': 'countryNm',
+        'mouza': 'mouzaNm'
+        // 'postalCode' not mapped as it's not in AddressDto
+      };
 
-      this.selectedAddress$.next(updatedAddress);
-      this.onChange(updatedAddress);
-      this.valueChanged.emit(updatedAddress);
+      const actualField = fieldMapping[field];
+      if (actualField) {
+        const currentAddress = this.selectedAddress$.value || {} as AddressDto;
+        const updatedAddress = { ...currentAddress, [actualField]: value };
+
+        this.selectedAddress$.next(updatedAddress);
+        this.onChange(updatedAddress);
+        this.valueChanged.emit(updatedAddress);
+      }
     }
+  }
+
+  // Manual field change handler
+  onManualFieldChanged(value: string): void {
+    this.manualInfoChanged.emit(value);
   }
 
   // Helper methods
   getDisplayValue(address: AddressDto | null): string {
     if (!address) return '';
-    return `${address.areaName}, ${address.thana}, ${address.postOffice}, ${address.district}`;
+    return `${address.villWardNm}, ${address.unionMuniName}, ${address.thanaNm}, ${address.districtNm}`;
+  }
+
+  /**
+   * Choose the most relevant primary label for a result based on current searchValue.
+   * Falls back to village/ward name.
+   */
+  getPrimaryField(address: AddressDto): string {
+    const q = (this.searchValue || '').toLowerCase().trim();
+    if (!q) return address.villWardNm;
+
+    // Prefer the field that best matches the query
+    if (address.thanaNm && address.thanaNm.toLowerCase().includes(q)) return address.thanaNm;
+    if (address.unionMuniName && address.unionMuniName.toLowerCase().includes(q)) return address.unionMuniName;
+    if (address.districtNm && address.districtNm.toLowerCase().includes(q)) return address.districtNm;
+    if (address.mouzaNm && address.mouzaNm.toLowerCase().includes(q)) return address.mouzaNm;
+    if (address.villWardNm && address.villWardNm.toLowerCase().includes(q)) return address.villWardNm;
+
+    return address.villWardNm;
   }
 
   trackByFn(index: number, address: AddressDto): string {
-    return address.id || `${address.areaName}-${address.thana}-${address.postOffice}-${address.district}`;
+    return address.villWardId;
   }
 
   // ControlValueAccessor implementation

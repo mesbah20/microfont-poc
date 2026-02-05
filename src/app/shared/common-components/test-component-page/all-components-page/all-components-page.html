@@ -659,6 +659,7 @@
 
                   [editableColumns]="['amount', 'status', 'priority', 'riskLevel']"
                   [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
+
                   [dropdownColumns]="['status', 'priority', 'riskLevel']"
                   [dropdownOptions]="enhancedDropdownOptions()"
                   [selectedColumns]="['id', 'profileCard', 'amount', 'currency', 'priorityAction', 'quickActions', 'riskLevel']"
@@ -944,6 +945,44 @@
   label="loader"
   (onClick)="showLoader()"/>
 </div>
+
+      <!-- FILE PREVIEW COMPONENT SECTION -->
+      <section class="rounded-lg mb-8">
+        <div class="bg-gradient-to-r from-green-50 to-teal-50 p-6 rounded-lg border border-green-200">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+            File Preview Component Demo
+          </h3>
+
+          <!-- Sample File Selection -->
+        
+
+          <!-- File Preview Component -->
+          <div class="bg-white p-4 rounded-lg border border-gray-200">
+            <!-- <file-preview
+              [fileData]="selectedFile()"
+              [width]="'100%'"
+              [height]="'500px'"
+              [showControls]="true"
+              [showDownload]="true"
+              [showFullscreen]="true"
+              [placeholder]="'Select a file from above to preview'"
+              (onDownload)="onFileDownload($event)"
+              (onFullscreen)="onFileFullscreen($event)"
+              (onError)="onFileError($event)"
+              (onLoad)="onFileLoad()"
+            ></file-preview> -->
+            <file-preview
+              [fileData]="pdfData"
+              [width]="'100%'"
+              [height]="'600px'"
+              (onError)="onPdfError($event)"
+              (onLoad)="onPdfLoad()">
+            </file-preview>
+          </div>
+
+        </div>
+      </section>
 
 
 
