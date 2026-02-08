@@ -13,6 +13,11 @@ export interface InAppNotification {
   data?: any;
   read: boolean;
   createdAt: string;
+   redirect?: {
+    url?: string;
+    target?: string;
+  };
+
 }
 
 export interface ChatMessage {
@@ -47,6 +52,7 @@ export class NovuService {
       data: result.data,
       read: !!result.isRead,
       createdAt: result.createdAt ?? new Date().toISOString(),
+      redirect: result.redirect
     };
   }
 
@@ -435,7 +441,7 @@ export class NovuService {
       (payload: any) => {
         const result = payload?.result;
         if (!result) return;
-
+        console.log('NOVU DEBUG: notification_received raw payload', payload);
         const workflowId = result?.workflow?.identifier;
 
         // Novu Notification object carries custom payload under `data`.
@@ -551,6 +557,7 @@ export class NovuService {
             data: n.data,
             read: n.isRead,
             createdAt: n.createdAt,
+            redirect: n.redirect  
           }));
 
       notifications.sort(
