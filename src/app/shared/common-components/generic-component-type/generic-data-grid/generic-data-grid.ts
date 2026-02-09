@@ -258,6 +258,8 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   /** Enable backend-driven pagination - emit state changes instead of filtering locally */
   readonly backendPaginationEnabled = input<boolean>(false);
 
+  readonly showPaginator = input<boolean>(true);
+
   readonly onPaginationChange = output<{
     pageIndex: number;
     pageSize: number;
@@ -489,36 +491,43 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   // Enhanced checkbox methods
 
   // Method to handle individual checkbox changes in display mode
-  onCheckboxChange(item: T, property: string, checked: boolean, displayIndex: number): void {
-    if (this.readOnlyCheckboxColumns().includes(property)) {
-      return; // Don't allow changes for read-only checkboxes
-    }
-
-    // Update the data source
-    const actualIndex = this._currentPage() * this._pageSize() + displayIndex;
-    const sourceIndex = this._dataSource().findIndex((sourceItem, i) => {
-      // Find the actual index in the original data source
-      const filteredItem = this._filteredData()[actualIndex];
-      return sourceItem === filteredItem;
-    });
-
-    if (sourceIndex !== -1) {
-      const updatedData = [...this._dataSource()];
-      (updatedData[sourceIndex] as any)[property] = checked;
-
-      this._dataSource.set(updatedData);
-      this.applyFilters();
-
-      // Emit events
-      this.dataSourceChanged.emit(updatedData);
-      this.onCheckboxValueChange.emit({
-        item: item,
-        property: property,
-        value: checked,
-        index: actualIndex
-      });
-    }
+ onCheckboxChange(item: T, property: string, checked: boolean, displayIndex: number): void {
+  if (this.readOnlyCheckboxColumns().includes(property)) {
+    return;
   }
+
+  const actualIndex = this._currentPage() * this._pageSize() + displayIndex;
+  const sourceIndex = this._dataSource().findIndex((sourceItem, i) => {
+    const filteredItem = this._filteredData()[actualIndex];
+    return sourceItem === filteredItem;
+  });
+
+  if (sourceIndex !== -1) {
+    // Create a new array and update the specific item
+    const updatedData = [...this._dataSource()];
+    // IMPORTANT: Also create a new object reference for the item being updated
+    updatedData[sourceIndex] = {
+      ...updatedData[sourceIndex],
+      [property]: checked
+    };
+
+    this._dataSource.set(updatedData);
+    this.applyFilters();
+
+    // Log to verify emission
+    console.log('Emitting dataSourceChanged:', updatedData);
+    this.dataSourceChanged.emit(updatedData);
+
+    this.onCheckboxValueChange.emit({
+      item: item,
+      property: property,
+      value: checked,
+      index: actualIndex
+    });
+  } else {
+    console.warn('Source index not found for checkbox change');
+  }
+}
 
   // Method to check if all values in a column are checked
   isAllColumnValuesChecked(property: string): boolean {

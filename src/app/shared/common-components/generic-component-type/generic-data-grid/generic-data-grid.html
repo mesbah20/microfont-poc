@@ -393,7 +393,8 @@
             </table>
           </div>
 
-          <!-- Pagination -->
+          @if(showPaginator()){
+                <!-- Pagination -->
           <div class="pagination-container" *ngIf="_filteredData().length > 0">
             <mat-paginator
               [length]="_filteredData().length"
@@ -405,6 +406,8 @@
               aria-label="Select page">
             </mat-paginator>
           </div>
+          }
+
 
           <!-- Status Bar -->
            @if(_filteredData().length > 0) {
