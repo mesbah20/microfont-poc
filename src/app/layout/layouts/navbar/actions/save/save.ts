@@ -18,6 +18,8 @@ export class Save {
   @Input() label = 'Save';
   /** Signal to toggle when clicked (lets you reuse the button for multiple save flows). */
   @Input() clickSignal: WritableSignal<boolean> = ONCLICK_SAVE;
+  /** Whether the button should be disabled */
+  @Input() disabled = false;
 
   frmGroup = signal<FormGroup>(FormGroupSignal());
   private activityLog = inject(ActivityLogService);
@@ -31,9 +33,9 @@ export class Save {
   }
 
 async save() {
-  if (this.frmGroup().invalid) {
-    return;
-  }
+  // if (this.frmGroup().invalid) {
+  //   return;
+  // }
 
   this.loaderService.show();
   this.clickSignal.set(true);

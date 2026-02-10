@@ -10,7 +10,7 @@ import { AddressDto, AddressSearchResponse, AddressDisplayOption } from '../mode
 })
 export class AddressService {
   private http = inject(HttpClient);
-  private baseUrl = 'http://localhost:8002/centrino/api/address-mv';
+  private baseUrl = environment.addressApiUrl;
 
   /**
    * Search addresses and return raw API response

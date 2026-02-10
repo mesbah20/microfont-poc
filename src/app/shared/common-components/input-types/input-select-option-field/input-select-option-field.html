@@ -15,6 +15,8 @@
         <input
           #searchInput
           id="select_outlined"
+          [formControlName]="controlName()"
+          [attr.controlName]="controlName()"
           type="text"
           [disabled]="isReadonly() ?? false"
           [value]="searchTerm()"
@@ -94,6 +96,7 @@
         <select
           id="select_outlined"
           [formControlName]="controlName()"
+          [attr.controlName]="controlName()"
           [compareWith]="compareFN"
           [disabled]="isReadonly() ?? false"
           [ngClass]="{ 'readonly-input': isReadonly() }"

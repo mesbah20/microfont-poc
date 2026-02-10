@@ -58,7 +58,7 @@
   <!-- ======================== HORIZONTAL / VERTICAL ======================== -->
   @else {
     @if (displayMode() === 'vertical') {
-      <label class="input-label block">
+      <label class="input-label block leading-tight">
         {{ label() }}
         @if (isRequired()) { <span class="text-red-500">*</span> }
       </label>
@@ -75,6 +75,7 @@
         <div ngClass="{'input-wrapper-horizontal:'}" class="input-wrapper" [class.has-value]="frmGroup().get(controlName())?.value">
         <input
           [formControlName]="controlName()"
+           [attr.controlName]="controlName()"
           [ngClass]="{'readonly-input': isReadonly()}"
           [readonly]="isReadonly()"
           matInput

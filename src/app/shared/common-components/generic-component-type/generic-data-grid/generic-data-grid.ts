@@ -293,7 +293,8 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   readonly onCellButtonClick = output<any>();
   readonly dataSourceChanged = output<T[]>();
   readonly onRowDoubleClick = output<string>();
-
+// Add this to your inputs
+  readonly uniqueIdField = input<string>('id');
   // Enhanced Checkbox Outputs
   readonly onCheckboxValueChange = output<CheckboxChangeEvent>();
   readonly onColumnSelectAll = output<ColumnSelectAllEvent>();
@@ -489,44 +490,64 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   }
 
   // Enhanced checkbox methods
+onCheckboxChange(item: T, property: string, checked: boolean, displayIndex: number): void {
+  console.log('🔴 onCheckboxChange CALLED', { item, property, checked, displayIndex });
 
-  // Method to handle individual checkbox changes in display mode
- onCheckboxChange(item: T, property: string, checked: boolean, displayIndex: number): void {
   if (this.readOnlyCheckboxColumns().includes(property)) {
+    console.log('🔴 Read-only column, returning');
     return;
   }
 
-  const actualIndex = this._currentPage() * this._pageSize() + displayIndex;
-  const sourceIndex = this._dataSource().findIndex((sourceItem, i) => {
-    const filteredItem = this._filteredData()[actualIndex];
-    return sourceItem === filteredItem;
+  // Get unique ID field
+  const idField = this.uniqueIdField();
+  console.log('🔴 Using ID field:', idField);
+
+  if (!idField) {
+    console.error('🔴 ERROR: No uniqueIdField specified!');
+    return;
+  }
+
+  const itemId = item[idField];
+  console.log('🔴 Looking for item with ID:', itemId);
+
+  // Find by unique ID instead of reference
+  const sourceIndex = this._dataSource().findIndex((sourceItem) => {
+    return sourceItem[idField] === itemId;
   });
 
-  if (sourceIndex !== -1) {
-    // Create a new array and update the specific item
-    const updatedData = [...this._dataSource()];
-    // IMPORTANT: Also create a new object reference for the item being updated
-    updatedData[sourceIndex] = {
-      ...updatedData[sourceIndex],
-      [property]: checked
-    };
+  console.log('🔴 Source index found:', sourceIndex);
 
-    this._dataSource.set(updatedData);
-    this.applyFilters();
-
-    // Log to verify emission
-    console.log('Emitting dataSourceChanged:', updatedData);
-    this.dataSourceChanged.emit(updatedData);
-
-    this.onCheckboxValueChange.emit({
-      item: item,
-      property: property,
-      value: checked,
-      index: actualIndex
+  if (sourceIndex === -1) {
+    console.error('🔴 ERROR: Could not find item in source data!', {
+      itemId,
+      idField,
+      sourceLength: this._dataSource().length,
+      item
     });
-  } else {
-    console.warn('Source index not found for checkbox change');
+    return;
   }
+
+  // Update the item
+  const updatedData = [...this._dataSource()];
+  updatedData[sourceIndex] = {
+    ...updatedData[sourceIndex],
+    [property]: checked
+  };
+
+  console.log('🔴 Updated item:', updatedData[sourceIndex]);
+
+  this._dataSource.set(updatedData);
+  this.applyFilters();
+
+  console.log('🔴 EMITTING dataSourceChanged');
+  this.dataSourceChanged.emit(updatedData);
+
+  this.onCheckboxValueChange.emit({
+    item: updatedData[sourceIndex],
+    property: property,
+    value: checked,
+    index: sourceIndex
+  });
 }
 
   // Method to check if all values in a column are checked

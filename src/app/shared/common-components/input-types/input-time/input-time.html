@@ -8,11 +8,12 @@
 
   <!-- ======================== OUTLINE MODE ======================== -->
   <ng-container *ngIf="displayMode === 'outline'">
-    <div class="input-wrapper relative" [class.has-value]="frmGroup.get(controlName)?.value">
+    <div class="input-wrapper relative" [class.has-value]="frmGroup.get(controlName())?.value">
       <input
         type="time"
-        [id]="controlName"
-        [formControlName]="controlName"
+
+        [attr.controlName]="controlName()"
+        [formControlName]="controlName()"
         [readonly]="isReadonly"
         [disabled]="isReadonly"
         [min]="minTime"
@@ -25,15 +26,15 @@
 
       <!-- FLOATING LABEL -->
       <label
-        [for]="controlName"
+        [for]="controlName()"
         class="floating-input-label">
         {{ label }}
-        <span *ngIf="frmGroup.get(controlName)?.errors?.['required']" class="text-red-500">*</span>
+        <span *ngIf="frmGroup.get(controlName())?.errors?.['required']" class="text-red-500">*</span>
       </label>
 
       <!-- CLEAR BUTTON -->
       <button
-        *ngIf="!isReadonly && !frmGroup.get(controlName)?.disabled"
+        *ngIf="!isReadonly && !frmGroup.get(controlName())?.disabled"
         type="button"
         class="clear-button"
         (click)="clearInput()"
@@ -44,7 +45,7 @@
       </button>
 
       <!-- TIME PICKER ICON -->
-      <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3 pointer-events-none" *ngIf="!frmGroup.get(controlName)?.value">
+      <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3 pointer-events-none" *ngIf="!frmGroup.get(controlName())?.value">
         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
           fill="currentColor" viewBox="0 0 24 24">
           <path fill-rule="evenodd" d="M2 12C2 6.477..." clip-rule="evenodd" />
@@ -55,21 +56,21 @@
 
   <!-- ======================== HORIZONTAL / VERTICAL ======================== -->
   <ng-container *ngIf="displayMode !== 'outline'">
-    <label *ngIf="displayMode === 'vertical'" [for]="controlName" class="input-label block leading-tight">
+    <label *ngIf="displayMode === 'vertical'" [for]="controlName()" class="input-label block leading-tight">
       {{ label }}
-      <span *ngIf="frmGroup.get(controlName)?.errors?.['required']" class="text-red-500">*</span>
+      <span *ngIf="frmGroup.get(controlName())?.errors?.['required']" class="text-red-500">*</span>
     </label>
 
-    <div class="input-wrapper relative" [class.has-value]="frmGroup.get(controlName)?.value">
+    <div class="input-wrapper relative" [class.has-value]="frmGroup.get(controlName())?.value">
       <label *ngIf="displayMode === 'horizontal'" class="input-label">
         {{ label }}
-        <span *ngIf="frmGroup.get(controlName)?.errors?.['required']" class="text-red-500">*</span>
+        <span *ngIf="frmGroup.get(controlName())?.errors?.['required']" class="text-red-500">*</span>
       </label>
 
       <input
         type="time"
-        [id]="controlName"
-        [formControlName]="controlName"
+        [id]="controlName()"
+        [formControlName]="controlName()"
         [readonly]="isReadonly"
         [disabled]="isReadonly"
         [min]="minTime"
@@ -81,7 +82,7 @@
         (blur)="onBlur()" />
 
       <button
-        *ngIf="!isReadonly && !frmGroup.get(controlName)?.disabled"
+        *ngIf="!isReadonly && !frmGroup.get(controlName())?.disabled"
         type="button"
         class="clear-button"
         (click)="clearInput()"
@@ -91,7 +92,7 @@
         </svg>
       </button>
 
-      <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3 pointer-events-none" *ngIf="!frmGroup.get(controlName)?.value">
+      <div class="absolute inset-y-0 end-0 top-0 flex items-center pe-3 pointer-events-none" *ngIf="!frmGroup.get(controlName())?.value">
         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
           fill="currentColor" viewBox="0 0 24 24">
           <path fill-rule="evenodd" d="M2 12C2 6.477..." clip-rule="evenodd" />
@@ -103,8 +104,8 @@
   <!-- ======================== VALIDATION ======================== -->
     <div
     class="mt-0 min-h-[1.5rem]">
-    <div *ngIf="frmGroup.get(controlName)?.errors && (frmGroup.get(controlName)?.touched || frmGroup.get(controlName)?.dirty)" class="text-red-500 text-sm absolute top-0 left-0 w-full">
-      <span *ngIf="frmGroup.get(controlName)?.hasError('required')">
+    <div *ngIf="frmGroup.get(controlName())?.errors && (frmGroup.get(controlName())?.touched || frmGroup.get(controlName())?.dirty)" class="text-red-500 text-sm absolute top-0 left-0 w-full">
+      <span *ngIf="frmGroup.get(controlName())?.hasError('required')">
         {{ label }} is required!
       </span>
     </div>

@@ -43,17 +43,17 @@
 
     <!-- RIGHT (DESKTOP BUTTONS) -->
     <div class="flex items-center space-x-[3px] hidden sm:flex">
-      @if (buttons().save) { <app-save></app-save> }
-      @if (buttons().saveNext) { <app-save label="Save & Next" [clickSignal]="onClickSaveNext"></app-save> }
-      @if (buttons().update) { <app-update></app-update> }
-      @if (buttons().updateNext) { <app-update label="Update & Next" [clickSignal]="onClickUpdateNext"></app-update> }
-      @if (buttons().view) { <app-view></app-view> }
-      @if (buttons().delete) { <app-delete></app-delete> }
-      @if (buttons().reset) { <app-reset></app-reset> }
-      @if (buttons().exit) { <app-exit></app-exit> }
+      @if (isButtonVisible('save')) { <app-save [disabled]="!isButtonEnabled('save')"></app-save> }
+      @if (isButtonVisible('saveNext')) { <app-save label="Save & Next" [clickSignal]="onClickSaveNext" [disabled]="!isButtonEnabled('saveNext')"></app-save> }
+      @if (isButtonVisible('update')) { <app-update [disabled]="!isButtonEnabled('update')"></app-update> }
+      @if (isButtonVisible('updateNext')) { <app-update label="Update & Next" [clickSignal]="onClickUpdateNext" [disabled]="!isButtonEnabled('updateNext')"></app-update> }
+      @if (isButtonVisible('view')) { <app-view [disabled]="!isButtonEnabled('view')"></app-view> }
+      @if (isButtonVisible('delete')) { <app-delete [disabled]="!isButtonEnabled('delete')"></app-delete> }
+      @if (isButtonVisible('reset')) { <app-reset [disabled]="!isButtonEnabled('reset')"></app-reset> }
+      @if (isButtonVisible('exit')) { <app-exit [disabled]="!isButtonEnabled('exit')"></app-exit> }
 
-        @if (buttons().customAction) {
-          <custom-action></custom-action>
+        @if (isButtonVisible('customAction')) {
+          <custom-action [disabled]="!isButtonEnabled('customAction')"></custom-action>
         }
     </div>
 
@@ -86,14 +86,14 @@
       class="p-4 space-y-3 transform transition-transform duration-300"
       [class]="toggleMenu ? 'translate-y-0' : '-translate-y-4'">
 
-      @if (buttons().save) { <app-save></app-save> }
-      @if (buttons().saveNext) { <app-save label="Save & Next" [clickSignal]="onClickSaveNext"></app-save> }
-      @if (buttons().update) { <app-update></app-update> }
-      @if (buttons().updateNext) { <app-update label="Update & Next" [clickSignal]="onClickUpdateNext"></app-update> }
-      @if (buttons().view) { <app-view></app-view> }
-      @if (buttons().delete) { <app-delete></app-delete> }
-      @if (buttons().reset) { <app-reset></app-reset> }
-      @if (buttons().exit) { <app-exit></app-exit> }
+      @if (isButtonVisible('save')) { <app-save [disabled]="!isButtonEnabled('save')"></app-save> }
+      @if (isButtonVisible('saveNext')) { <app-save label="Save & Next" [clickSignal]="onClickSaveNext" [disabled]="!isButtonEnabled('saveNext')"></app-save> }
+      @if (isButtonVisible('update')) { <app-update [disabled]="!isButtonEnabled('update')"></app-update> }
+      @if (isButtonVisible('updateNext')) { <app-update label="Update & Next" [clickSignal]="onClickUpdateNext" [disabled]="!isButtonEnabled('updateNext')"></app-update> }
+      @if (isButtonVisible('view')) { <app-view [disabled]="!isButtonEnabled('view')"></app-view> }
+      @if (isButtonVisible('delete')) { <app-delete [disabled]="!isButtonEnabled('delete')"></app-delete> }
+      @if (isButtonVisible('reset')) { <app-reset [disabled]="!isButtonEnabled('reset')"></app-reset> }
+      @if (isButtonVisible('exit')) { <app-exit [disabled]="!isButtonEnabled('exit')"></app-exit> }
 
     </div>
   </div>

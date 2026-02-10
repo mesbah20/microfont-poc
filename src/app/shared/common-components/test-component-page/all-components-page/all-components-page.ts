@@ -1,3 +1,4 @@
+import { Moment } from 'moment';
 // Enhanced TypeScript Component with Relatable Fields
 import { Component, effect, inject, OnInit, signal, TemplateRef, ViewChild, WritableSignal, Type } from '@angular/core';
 
@@ -16,7 +17,7 @@ import { InputTextArea } from '../../input-types/input-text-area/input-text-area
 import { InputNumber } from '../../input-types/input-number/input-number';
 import { DataGridStateChange, DropdownOption, GenericDataGrid } from '../../generic-component-type/generic-data-grid/generic-data-grid';
 import { GenericMultiInputSelectOption } from '../../generic-component-type/generic-multi-select-option/generic-multi-select-option';
-import { BUTTON_VISIBILITY, ONCLICK_SAVE, ONCLICK_SAVE_NEXT, ONCLICK_VIEW } from '../../../constant/button-signals.constant';
+import { BUTTON_VISIBILITY, ONCLICK_EXIT, ONCLICK_SAVE, ONCLICK_SAVE_NEXT, ONCLICK_VIEW, ButtonUtils } from '../../../constant/button-signals.constant';
 import { catchError, debounceTime, distinctUntilChanged, retry, timeout } from 'rxjs/operators';
 import { InputDate } from '../../input-types/input-date/input-date';
 import { OtherComponentsPage } from '../other-components-page/other-components-page';
@@ -41,6 +42,7 @@ import { AddressDto } from '../../../models/address.model';
 import { FilePreviewComponent, FilePreviewData } from '../../file-preview/file-preview.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
+import { MonthYearPickerComponent } from '../../input-types/month-year-picker/month-year-picker';
 
 // Types for data selection modal
 export interface AccountData {
@@ -110,7 +112,8 @@ export interface DataSelectionConfig {
     DynamicTableComponent,
     Label,
     InputAddressSearch,
-    FilePreviewComponent
+    FilePreviewComponent,
+    MonthYearPickerComponent
 
 ],
   templateUrl: './all-components-page.html',
@@ -134,6 +137,7 @@ export class AllComponentsPage implements OnInit {
   isDataSelectionModalOpen = signal(false);
   onClickSave = ONCLICK_SAVE;
   onclickView = ONCLICK_VIEW;
+  onclickExit = ONCLICK_EXIT;
   @ViewChild('transactionGrid') gridComponent!: GenericDataGrid;
   showLoading = signal(false);
   // Methods for modal events
@@ -726,15 +730,25 @@ export class AllComponentsPage implements OnInit {
 
     effect(() => {
     if(this.onClickSave()) {
+
         this.save();
         ONCLICK_SAVE.set(false);
     }
   });
+
     effect(() => {
       if (ONCLICK_SAVE_NEXT()) {
         this.save();
         ONCLICK_SAVE_NEXT.set(false);
         // TODO: navigate to next step/page if needed
+      }
+    });
+
+    effect(() => {
+      if(ONCLICK_EXIT()) {
+        console.log('Exit button clicked - implementing exit logic');
+         window.history.back();
+        ONCLICK_EXIT.set(false);
       }
     });
   }
@@ -851,10 +865,9 @@ loadDataFromServer(event: {
     return Math.round((Math.random() * 2 + 7.5) * 100) / 100; // 7.5 to 9.5 hours
   }
 
-  private getRandomStatus(): string {
-    const statuses = ['active', 'inactive', 'pending'];
-    return statuses[Math.floor(Math.random() * statuses.length)];
-  }
+  private getRandomStatus(): boolean {
+  return Math.random() > 0.5; 
+}
 
   // Fallback data method
   private loadFallbackData(): void {
@@ -1489,7 +1502,7 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
     // Initialize generic table with auto-generation
     this.loadWithFullConfig();
     this.loadCountries()
-
+    this.disableSaveButton();
     // Set default selected file for file preview demo
     this.selectedFile.set(this.sampleFiles()[0]);
     this.frmGroup = this.formBuilder.group({
@@ -1518,7 +1531,7 @@ onTransactionRowSelect(event: { data: string, checked: boolean }): void {
       totalAmount: [{ value: 0, disabled: true }],
       riskLevel: [{ value: '', disabled: true }],
       requiresApproval: [{ value: false }],
-
+      dateField: [null, Validators.required],
       // Horizontal display mode controls (same as outline section)
       textBoxHorizontal: ['', [Validators.minLength(3), Validators.maxLength(20), Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
       currencyHorizontal: ['EUR',Validators.required],
@@ -2034,7 +2047,7 @@ showDynamicToasts() {
     this.toastr.info(`Editing transaction: ${transaction.id}`, 'Edit Mode');
   }
 
-onTransactionDataChanged(newData: any[]): void {
+ onTransactionDataChanged(newData: any[]): void {
   console.log('Transaction data changed:', newData);
 
   // Validate amounts in the updated data
@@ -2711,6 +2724,11 @@ private recalculateTransactionAmounts(transaction: any): any {
     return this.filteredSubCategories();
   }
 
+  onDateSelected($event:Date): void {
+    this.frmGroup.patchValue({  $event });
+    this.toastr.info(`Selected date: ${$event}`, 'Date Selected');
+  }
+
   // Method to check if approval is required
   isApprovalRequired(): boolean {
     return this.frmGroup.get('requiresApproval')?.value || false;
@@ -3361,8 +3379,84 @@ handleColumnSelectAll($event:any): void {
   onBlur(value: string): void {
     console.log('Textbox blurred, value:', value);
     this.frmGroup.get('currency')?.setValue('CAD');
-
   }
+
+  // Disable buttons (visible but not clickable)
+  disableSaveButton(): void {
+    ButtonUtils.disableButtons(['save']);
+    this.toastr.warning('Save button disabled (visible but not clickable)', 'Button Control');
+  }
+
+  disableViewButton(): void {
+    ButtonUtils.disableButtons(['view']);
+    this.toastr.warning('View button disabled (visible but not clickable)', 'Button Control');
+  }
+
+  disableMultipleButtons(): void {
+    ButtonUtils.disableButtons(['save', 'view', 'delete']);
+    this.toastr.warning('Save, View, and Delete buttons disabled', 'Button Control');
+  }
+
+  // Enable buttons
+  enableSaveButton(): void {
+    ButtonUtils.enableButtons(['save']);
+    this.toastr.success('Save button enabled', 'Button Control');
+  }
+
+  enableViewButton(): void {
+    ButtonUtils.enableButtons(['view']);
+    this.toastr.success('View button enabled', 'Button Control');
+  }
+
+  enableAllButtons(): void {
+    ButtonUtils.enableButtons(['save', 'view', 'delete', 'reset', 'exit']);
+    this.toastr.success('All buttons enabled', 'Button Control');
+  }
+
+  // Hide buttons completely
+  hideSaveButton(): void {
+    ButtonUtils.hideButtons(['save']);
+    this.toastr.info('Save button hidden', 'Button Control');
+  }
+
+  hideViewButton(): void {
+    ButtonUtils.hideButtons(['view']);
+    this.toastr.info('View button hidden', 'Button Control');
+  }
+
+  // Show buttons
+  showSaveButton(): void {
+    ButtonUtils.showButtons(['save']);
+    this.toastr.info('Save button shown and enabled', 'Button Control');
+  }
+
+  showViewButton(): void {
+    ButtonUtils.showButtons(['view']);
+    this.toastr.info('View button shown and enabled', 'Button Control');
+  }
+
+  // Dynamic button control based on form state
+  updateButtonsBasedOnForm(): void {
+    const isValid = this.frmGroup.valid;
+    const isDirty = this.frmGroup.dirty;
+
+    if (!isValid) {
+      // Form invalid - disable save, enable view
+      ButtonUtils.disableButtons(['save']);
+      ButtonUtils.enableButtons(['view']);
+      this.toastr.warning('Form invalid - Save disabled, View enabled', 'Form State');
+    } else if (!isDirty) {
+      // No changes - disable save
+      ButtonUtils.disableButtons(['save']);
+      this.toastr.info('No changes detected - Save disabled', 'Form State');
+    } else {
+      // Valid and has changes - enable save
+      ButtonUtils.enableButtons(['save']);
+      this.toastr.success('Form valid with changes - Save enabled', 'Form State');
+    }
+  }
+
+
 
   /**
    * Get today's date for minDate

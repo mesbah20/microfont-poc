@@ -1,5 +1,5 @@
 <div [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'" [style]="styles()" [matTooltip]="tooltip()">
-    <label class="input-label" [attr.for]="id() || null">
+    <label class="input-label leading-tight" [attr.for]="id() || null">
         {{ label() }}
         @if (isRequired()) { <span class="required">*</span> }
     </label>

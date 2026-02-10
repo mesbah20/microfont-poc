@@ -21,7 +21,7 @@ import { FormControlHighlightDirective } from '../../../directives/form-control-
 export class InputTime {
 
   @Input({ required: true }) frmGroup!: FormGroup;
-  @Input({ required: true }) controlName!: string;
+  readonly controlName = input.required<string>();
   @Input({ required: true }) label!: string;
   @Input() minTime: string = '00:00';
   @Input() maxTime: string = '23:59';
@@ -38,11 +38,11 @@ export class InputTime {
   }
 
   onBlur() {
-    this.frmGroup.get(this.controlName)?.markAsTouched();
+    this.frmGroup.get(this.controlName())?.markAsTouched();
   }
 
   clearInput(): void {
-    const control = this.frmGroup.get(this.controlName);
+    const control = this.frmGroup.get(this.controlName());
     if (control) {
       control.setValue('');
       control.markAsTouched();
@@ -51,7 +51,7 @@ export class InputTime {
   }
 
   getCustomErrorMessage(errorKey: string): string {
-    const control = this.frmGroup.get(this.controlName);
+    const control = this.frmGroup.get(this.controlName());
     let message = `${this.label} has validation error: ${errorKey}`;
 
     if (typeof this.customErrorMessages[errorKey] === 'string') {
@@ -66,7 +66,7 @@ export class InputTime {
   }
 
   getCustomErrorKeys(): string[] {
-    const control = this.frmGroup.get(this.controlName);
+    const control = this.frmGroup.get(this.controlName());
     if (!control?.errors) return [];
 
     const defaultErrorKeys = ['required'];

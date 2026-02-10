@@ -29,7 +29,10 @@ export const environment = {
   // Notification Management Backend API (DO NOT CHANGE).
   novu_identifier: '1uXpKIJUa3Rg',
   novu_socket: 'http://192.168.10.56:3002',
-  novu_api: 'http://192.168.10.56:3000/novu/api'
+  novu_api: 'http://192.168.10.56:3000/novu/api',
+
+  //address api
+  addressApiUrl: 'http://localhost:8002/centrino/api/address-mv',
 
 
 };

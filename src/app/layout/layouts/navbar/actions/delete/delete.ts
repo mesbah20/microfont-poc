@@ -1,4 +1,4 @@
-﻿import {Component, effect, inject, signal} from '@angular/core';
+﻿import {Component, effect, inject, signal, Input} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatDialog} from '@angular/material/dialog';
 import { FormGroup } from '@angular/forms';
@@ -15,6 +15,8 @@ import { LoaderService } from '../../../../../shared/services/loader.service';
   styleUrl: './delete.scss'
 })
 export class Delete {
+  /** Whether the button should be disabled */
+  @Input() disabled = false;
 
   private dialog = inject(MatDialog);
   frmGroup = signal<FormGroup>(FormGroupSignal());

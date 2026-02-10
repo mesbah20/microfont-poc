@@ -18,6 +18,8 @@ export class Update {
     @Input() label = 'Update';
     /** Signal to toggle when clicked (lets you reuse the button for multiple update flows). */
     @Input() clickSignal: WritableSignal<boolean> = ONCLICK_UPDATE;
+    /** Whether the button should be disabled */
+    @Input() disabled = false;
 
     frmGroup = signal<FormGroup>(FormGroupSignal());
 private loaderService = inject(LoaderService);

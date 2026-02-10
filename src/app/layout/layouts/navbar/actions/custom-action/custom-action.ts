@@ -14,6 +14,8 @@ import { LoaderService } from '../../../../../shared/services/loader.service';
 export class CustomAction {
   /** Signal to toggle when clicked (lets you reuse the button for multiple update flows). */
   @Input() clickSignal: WritableSignal<boolean> = ONCLICK_CUSTOM_ACTION;
+  /** Whether the button should be disabled */
+  @Input() disabled = false;
   buttons = BUTTON_VISIBILITY;
   frmGroup = signal<FormGroup>(FormGroupSignal());
   private loaderService = inject(LoaderService);

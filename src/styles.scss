@@ -926,7 +926,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   cursor: pointer;
   transition: all 0.15s ease;
 
-  padding-left: 30px; /* 👈 space for the icon */
+  padding-left: 30px;
 }
 
 .a_demo_four:hover {
@@ -955,6 +955,29 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   margin-top: -5px;
   box-shadow: inset 0px 1px 0px #827066, 0px 3px 0px #19120f, 0px 6px 3px #382e29;
 }
+
+.a_demo_four:disabled,
+.a_demo_four[disabled] {
+  opacity: 0.9;
+  cursor: not-allowed;
+  background: #5874a5;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 #6b7280, 0 1px 3px rgba(0, 0, 0, 0.2);
+  transform: none;
+}
+
+.a_demo_four:disabled:hover,
+.a_demo_four[disabled]:hover {
+  box-shadow: inset 0 1px 0 #6b7280, 0 1px 3px rgba(0, 0, 0, 0.2);
+  transform: none;
+}
+
+.a_demo_four:disabled .icon,
+.a_demo_four[disabled] .icon {
+  opacity: 0.6;
+  filter: grayscale(100%);
+}
+
 
 
 .modal-wrapper {

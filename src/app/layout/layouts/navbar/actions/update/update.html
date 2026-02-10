@@ -1,7 +1,7 @@
 <button
   class="a_demo_four icon-save"
   (click)="update()"
-  [disabled]="frmGroup().invalid"
+  [disabled]="disabled || frmGroup().invalid"
   [attr.aria-label]="label"
 >
   <img src="/asset/icons/save.svg" alt="" class="icon" />

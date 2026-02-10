@@ -304,6 +304,16 @@
                   ></input-date>
                 </div>
 
+                <div>
+                  <month-year-picker
+                  [frmGroup]="frmGroup"
+                  controlName="dateField"
+                  [label]="'Select Date'"
+
+                  (dateChange)="onDateSelected($event)">
+                </month-year-picker>
+                </div>
+
                 <!-- Tax Rate (Read-only) -->
                 <div class="">
                   <input-text-box
@@ -596,6 +606,7 @@
                   [dropdownColumns]="transactionDropdownColumns()"
                   [dropdownOptions]="transactionDropdownOptions()"
                   [selectedColumns]="['id', 'amount', 'currency', 'country', 'productCategory', 'subCategory', 'status', 'riskLevel', 'totalAmount', 'requiresApproval']"
+                  [checkboxColumns]="['status']"
                   [rowDesignerList]="transactionRowDesigners()"
                   [tblClass]="'enhanced-transaction-table'"
                   [groupOptionEnabled]="true"
@@ -704,15 +715,15 @@
                   [id]="'time-picker-schedule'"
                   [dataSource]="sampleScheduleData()"
                   [pageSizeOptions]="[4,8,12]"
-                  [enableSelection]="true"
                   [showEditButton]="true"
                   [showDeleteButton]="true"
                   [showViewButton]="true"
                   [searchEnabled]="true"
-                  [useInlineEdit]="true"
+                  [useInlineEdit]="false"
                   [editableColumns]="['name', 'startTime', 'endTime', 'breakTime', 'status']"
                   [timeColumns]="['startTime', 'endTime', 'breakTime']"
                   [dropdownColumns]="['status']"
+                  [checkboxColumns]="['status']"
                   [multiSelectColumns]="['status']"
                   [dropdownOptions]="scheduleDropdownOptions()"
                   [selectedColumns]="['id', 'name', 'startTime', 'endTime', 'breakTime', 'totalHours', 'status']"
@@ -888,6 +899,8 @@
         />
       </div>
 
+
+
       <!-- Horizontal Display Mode -->
       <div class="component-demo">
         <h4 class="component-title">Horizontal Layout</h4>
@@ -930,11 +943,19 @@
   (onExtraAction1Click)="handleExtra1($event)"
   [enableSelection]="true"
   [selectionStateField]="'email'"
+  [editableColumns]="['status']"
+  [checkboxColumns]="['status']"
   (onPaginationChange)="loadDataFromServer($event)"
   [showCustomAction2]="true"
   [customActionIcon2]="'report'"
   [customActionTooltip2]="'Download row data'"
   (onExtraAction2Click)="handleExtra2($event)"
+  (onDataGridStateChange)="onEnhancedStateChange($event)"
+  [uniqueIdField]="'id'"
+  (dataSourceChanged)="onDateTransactionDataChanged($event)">
+"
+>
+
   [iconPathPrefix]="'/asset/icons'">
 </generic-data-grid>
 
@@ -955,7 +976,7 @@
           </h3>
 
           <!-- Sample File Selection -->
-        
+
 
           <!-- File Preview Component -->
           <div class="bg-white p-4 rounded-lg border border-gray-200">

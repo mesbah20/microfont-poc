@@ -9,7 +9,7 @@ import {Update} from './actions/update/update';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { CustomAction } from './actions/custom-action/custom-action';
-import { BUTTON_VISIBILITY, ONCLICK_SAVE_NEXT, ONCLICK_UPDATE_NEXT } from '../../../shared/constant/button-signals.constant';
+import { BUTTON_VISIBILITY, ONCLICK_SAVE_NEXT, ONCLICK_UPDATE_NEXT, ButtonUtils } from '../../../shared/constant/button-signals.constant';
 import { SidebarService } from '../../service/sidebar.service';
 
 @Component({
@@ -212,5 +212,14 @@ getModuleLogo(): string {
   toggleSidebar(): void {
     this.sidebarService.toggleSidebar();
     console.log('Navbar toggle clicked');
+  }
+
+  // Helper methods for button state checking
+  isButtonVisible(buttonKey: keyof import('../../../shared/models/button.actions.model').ButtonActionsModel): boolean {
+    return ButtonUtils.isButtonVisible(buttonKey);
+  }
+
+  isButtonEnabled(buttonKey: keyof import('../../../shared/models/button.actions.model').ButtonActionsModel): boolean {
+    return ButtonUtils.isButtonEnabled(buttonKey);
   }
 }

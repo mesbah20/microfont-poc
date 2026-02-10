@@ -13,7 +13,7 @@
 </button> -->
 
 
-<button (click)="reset()" [disabled]="frmGroup().invalid" class="a_demo_four icon-reset">
+<button (click)="reset()" [disabled]="disabled || frmGroup().invalid" class="a_demo_four icon-reset">
   <img src="/asset/icons/reset.svg" alt="" class="icon" />
   Reset
 </button>

@@ -1,13 +1,18 @@
+export interface ButtonState {
+  visible: boolean;
+  enabled: boolean;
+}
+
 export interface ButtonActionsModel {
-  save?: boolean,
-  saveNext?: boolean,
-  update?: boolean,
-  updateNext?: boolean,
-  view?: boolean,
-  delete?: boolean,
-  exit?: boolean,
-  reset?: boolean,
-  customAction?: boolean,// 👈 optional
+  save?: boolean | ButtonState,
+  saveNext?: boolean | ButtonState,
+  update?: boolean | ButtonState,
+  updateNext?: boolean | ButtonState,
+  view?: boolean | ButtonState,
+  delete?: boolean | ButtonState,
+  exit?: boolean | ButtonState,
+  reset?: boolean | ButtonState,
+  customAction?: boolean | ButtonState,// 👈 optional
   customButton?: {
     customAction: boolean,
     customLevel: string,
