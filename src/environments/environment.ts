@@ -32,7 +32,7 @@ export const environment = {
   novu_api: 'http://192.168.10.56:3000/novu/api',
 
   //address api
-  addressApiUrl: 'http://localhost:8002/centrino/api/address-mv',
+  addressApiUrl: 'http://192.168.10.56:8090/centrino/api/address-mv',
 
 
 };
