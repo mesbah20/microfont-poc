@@ -39,9 +39,7 @@ export class AuthService {
   async init(): Promise<boolean> {
     this._authenticated = await this.keycloak.init({
       onLoad: 'check-sso',
-      // onLoad: 'login-required',
       redirectUri: window.location.origin + window.location.pathname,
-      //silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
       pkceMethod: 'S256',
       checkLoginIframe: true,
       checkLoginIframeInterval: 5
@@ -50,20 +48,23 @@ export class AuthService {
       this._token = this.keycloak.token || '';
       this.decodeToken();
     }
-    // 🔔 Listen for global logout
+    // 🔄 Token expired → auto refresh
+    this.keycloak.onTokenExpired = () => {
+      this.keycloak.updateToken(29)
+        .then(refreshed => {
+          if (refreshed) {
+            this._token = this.keycloak.token || '';
+            this.decodeToken();
+          }
+        })
+        .catch(() => {
+          this.login();
+        });
+    };
+    // 🔔 Global logout detect
     this.keycloak.onAuthLogout = () => {
-      console.log('Detected logout from another client');
       this.login();
     };
-    // this.keycloak.onTokenExpired = () => {
-    //   this.keycloak.updateToken(30).then(refreshed => {
-    //     if (refreshed) {
-    //       console.log("Token refreshed");
-    //       this._token = this.keycloak.token || '';
-    //     }
-    //   });
-    // };
-
     return this._authenticated;
   }
 
