@@ -11,6 +11,8 @@ import { filter } from 'rxjs';
 import { CustomAction } from './actions/custom-action/custom-action';
 import { BUTTON_VISIBILITY, ONCLICK_SAVE_NEXT, ONCLICK_UPDATE_NEXT, ButtonUtils } from '../../../shared/constant/button-signals.constant';
 import { SidebarService } from '../../service/sidebar.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -36,38 +38,43 @@ export class Navbar {
   sidebarExpanded: boolean = false;
   moduleName=signal('');
   currentPageName = signal('');
-  constructor(private sidebarService: SidebarService,private router: Router) {
-    this.sidebarService.selectedModuleName$.subscribe(name => {
-      this.moduleName.set(name);
-    });
+  constructor(private sidebarService: SidebarService,private router: Router, private http: HttpClient ) {
+    // this.sidebarService.selectedModuleName$.subscribe(name => {
+    //   this.moduleName.set(name);
+    // });
+    this.moduleName.set(environment.appName);
       this.sidebarService.currentPageName$.subscribe(pageName => {
        this.currentPageName.set(pageName);
         console.log('Navbar page name updated to:', pageName);
       });
   }
 
-ngOnInit() {
-  const storedModuleName = localStorage.getItem('selectedModuleName');
-    if (storedModuleName) {
-      this.moduleName.set(storedModuleName);
+    ngOnInit() {
+      // const storedModuleName = localStorage.getItem('selectedModuleName');
+      //   if (storedModuleName) {
+      //     this.moduleName.set(storedModuleName);
+      //   }
+        // this.startModuleNameWatcher();
+      // restore page name ONCE
+      this.sidebarService.initializePageName();
+
+      this.router.events
+        .pipe(filter(event => event instanceof NavigationEnd))
+        .subscribe(() => {
+          const url = this.router.url;
+
+          if (url.includes('/landing/home')) {
+            this.sidebarService.setCurrentPageName('');
+            return;
+          }
+
+          this.updatePageNameFromRoute();
+        });
     }
-    this.startModuleNameWatcher();
-  // restore page name ONCE
-  this.sidebarService.initializePageName();
 
-  this.router.events
-    .pipe(filter(event => event instanceof NavigationEnd))
-    .subscribe(() => {
-      const url = this.router.url;
 
-      if (url.includes('/landing/home')) {
-        this.sidebarService.setCurrentPageName('');
-        return;
-      }
 
-      this.updatePageNameFromRoute();
-    });
-}
+
     private updatePageNameFromRoute() {
       try {
         const currentUrl = this.router.url;
@@ -119,52 +126,52 @@ ngOnInit() {
              functionId.toLowerCase().includes(lastSegment);
     }
 
-  private startModuleNameWatcher() {
-    // Check immediately
-    this.updateModuleFromStorage();
+  // private startModuleNameWatcher() {
+  //   // Check immediately
+  //   this.updateModuleFromStorage();
 
-    // Then check every 100ms for 5 seconds after login
-    let checkCount = 0;
-    const maxChecks = 50; // 5 seconds
+  //   // Then check every 100ms for 5 seconds after login
+  //   let checkCount = 0;
+  //   const maxChecks = 50; // 5 seconds
 
-    const watcher = setInterval(() => {
-      this.updateModuleFromStorage();
-      checkCount++;
+  //   const watcher = setInterval(() => {
+  //     this.updateModuleFromStorage();
+  //     checkCount++;
 
-      if (checkCount >= maxChecks) {
-        clearInterval(watcher);
-        console.log('Module name watcher stopped');
-      }
-    }, 100);
-  }
+  //     if (checkCount >= maxChecks) {
+  //       clearInterval(watcher);
+  //       console.log('Module name watcher stopped');
+  //     }
+  //   }, 100);
+  // }
 
-  private updateModuleFromStorage() {
-    const storedModuleName = localStorage.getItem('selectedModuleName');
+  // private updateModuleFromStorage() {
+  //   const storedModuleName = localStorage.getItem('selectedModuleName');
 
-    if (storedModuleName && storedModuleName !== this.moduleName()) {
-      this.moduleName.set(storedModuleName);
-      console.log('Navbar module updated to:', storedModuleName);
-    }
-  }
+  //   if (storedModuleName && storedModuleName !== this.moduleName()) {
+  //     this.moduleName.set(storedModuleName);
+  //     console.log('Navbar module updated to:', storedModuleName);
+  //   }
+  // }
 
 
- detectModuleByPort() {
-    // Quick fix for string-only localStorage
-    const appListString = localStorage.getItem('appList');
-    const selectedModuleName = localStorage.getItem('selectedModuleName');
+//  detectModuleByPort() {
+//     // Quick fix for string-only localStorage
+//     const appListString = localStorage.getItem('appList');
+//     const selectedModuleName = localStorage.getItem('selectedModuleName');
 
-    if (selectedModuleName) {
-      this.moduleName.set(selectedModuleName);
-      this.sidebarService.setSelectedModuleName(selectedModuleName);
-    } else if (appListString && appListString === 'Sentinel') {
-      this.moduleName.set('Sentinel');
-      this.sidebarService.setSelectedModuleName('Sentinel');
-      localStorage.setItem('selectedModuleName', 'Sentinel');
-    } else {
-      this.moduleName.set('Nexo');
-    }
+//     if (selectedModuleName) {
+//       this.moduleName.set(selectedModuleName);
+//       this.sidebarService.setSelectedModuleName(selectedModuleName);
+//     } else if (appListString && appListString === 'Sentinel') {
+//       this.moduleName.set('Sentinel');
+//       this.sidebarService.setSelectedModuleName('Sentinel');
+//       localStorage.setItem('selectedModuleName', 'Sentinel');
+//     } else {
+//       this.moduleName.set('Nexo');
+//     }
 
-  }
+//   }
 getModuleLogo(): string {
   const appListString = localStorage.getItem('appList');
   const defaultLogo = '/asset/logos/default.png';
@@ -182,8 +189,8 @@ getModuleLogo(): string {
   try {
     const appList = JSON.parse(appListString);
 
-    const currentModule = appList.find(
-      (m: any) => m.appName === this.moduleName()
+ const currentModule = appList.find(
+      (m: any) => m.appId === environment.appId
     );
 
     if (currentModule?.appId) {
