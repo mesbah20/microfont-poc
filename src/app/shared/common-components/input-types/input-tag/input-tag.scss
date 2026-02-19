@@ -209,3 +209,19 @@ mat-autocomplete {
     }
   }
 }
+
+::ng-deep {
+    .mdc-notched-outline__leading {
+      border-right: none !important; 
+    }
+    .mdc-notched-outline__notch {
+      border-left: none !important;
+      border-right: none !important;
+    }
+    .mdc-notched-outline__trailing {
+      border-left: none !important;
+    }
+    .mdc-notched-outline--notched .mdc-notched-outline__notch {
+      border-top: none !important;
+    }
+  }
