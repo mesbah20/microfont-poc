@@ -26,13 +26,12 @@ export const environment = {
   reportManagementApiUrl: 'http://192.168.10.56:8090/centrino/api',
   reportGenerationApiUrl: 'http://192.168.10.56:8090',
 
-  // Notification Management Backend API (DO NOT CHANGE).
+  // Notification Management Backend API .
   novu_identifier: '1uXpKIJUa3Rg',
   novu_socket: 'http://192.168.10.56:3002',
   novu_api: 'http://192.168.10.56:3000/novu/api',
 
-  //address api
-  addressApiUrl: 'http://192.168.10.56:8090/centrino/api/address-mv',
+
 
 
 };

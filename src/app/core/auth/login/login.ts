@@ -183,7 +183,7 @@ export class Login implements OnInit {
     //   return;
     // }
 
-    let payload = this.generatePayload();
+    // let payload = this.generatePayload();
 
     const body = new HttpParams()
       .set('grant_type', 'grant_password')
@@ -211,7 +211,7 @@ export class Login implements OnInit {
         this.isLoading = false;
         console.log('Login response', response);
 
-        // ✅ OAuth2 returns access_token directly, not in returnValue
+        //  OAuth2 returns access_token directly, not in returnValue
         //comment
         if (response.access_token) {
           // Store the access token
@@ -434,23 +434,23 @@ export class Login implements OnInit {
     this.isLoading = false;
   }
 
-  generatePayload(): any {
-    const currentDateTime = new Date().toISOString();
+  // generatePayload(): any {
+  //   const currentDateTime = new Date().toISOString();
 
-    return {
-      "userId": this.frmGroup.value.username,
-      "passwordString": this.frmGroup.value.password,
-      "terminalIp": "192.168.20.69",
-      "browser": this.getBrowserName(),
-      "sessionId": this.generateSessionId(),
-      "sessionTerminalIp": "192.168.10.127",
-      "macAddress": "00:14:22:01:23:45",
-      "appId": "901",
-      "appLogInTime": "2025-08-21T10:30:00",
-      "clientPCName": "DEV-PC",
-      "clientMACAdd": "dddd-eeee-dddd-rrrr"
-    };
-  }
+  //   return {
+  //     "userId": this.frmGroup.value.username,
+  //     "passwordString": this.frmGroup.value.password,
+  //     "terminalIp": "192.168.20.69",
+  //     "browser": this.getBrowserName(),
+  //     "sessionId": this.generateSessionId(),
+  //     "sessionTerminalIp": "192.168.10.127",
+  //     "macAddress": "00:14:22:01:23:45",
+  //     "appId": "901",
+  //     "appLogInTime": "2025-08-21T10:30:00",
+  //     "clientPCName": "DEV-PC",
+  //     "clientMACAdd": "dddd-eeee-dddd-rrrr"
+  //   };
+  // }
 
   // Helper methods for generating dynamic values
   private getBrowserName(): string {
