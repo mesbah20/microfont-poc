@@ -1,7 +1,7 @@
 
 export const environment = {
   production: false,
-
+  appName: 'Microfont POC',
   // change your appId, clientId only.
   appId: '1',
   keycloak: {
@@ -20,7 +20,7 @@ export const environment = {
   apiBaseUrl:'http://192.168.20.250:9999',
   myBaseUrl:'http://192.168.20.250:9999/sentinel/api',  //*change with your api servlet*
 
-  centrinoUrl:'http://192.168.20.250:9999/centrino/api',
+  centrinoUrl:'http://192.168.20.250:9999/centrino/api/',
 
   // Report Management Backend API (DO NOT CHANGE).
   reportManagementApiUrl: 'http://192.168.10.56:8090/centrino/api',

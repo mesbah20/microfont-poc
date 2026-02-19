@@ -28,10 +28,10 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
       this.username = res.name;
     });
     this.authService.getResources().subscribe(res => {
-      localStorage.setItem('resourceList', JSON.stringify(res.data))
+      localStorage.setItem('resourceList', JSON.stringify(res))
     })
     this.authService.getUserWiseApplications().subscribe(res => {
-      localStorage.setItem('appList', JSON.stringify(res.data))
+      localStorage.setItem('appList', JSON.stringify(res))
     })
 
     this.greeting = this.getGreeting();
@@ -67,12 +67,12 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
       console.error('Pattern element not found! Retrying...');
       // Retry after a short delay if element not found (for hot reload cases)
       setTimeout(() => this.createHexagonPattern(), 50);
-      return;   
+      return;
     }
-      if (patternElement.children.length > 0) {
-    console.log('Pattern already exists, skipping recreation');
-    return;
-  }
+    if (patternElement.children.length > 0) {
+      console.log('Pattern already exists, skipping recreation');
+      return;
+    }
 
     // Clear existing hexagons before creating new ones
     patternElement.innerHTML = '';

@@ -1,4 +1,5 @@
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {map} from 'rxjs/operators';
 import { inject, Injectable } from '@angular/core';
 import Keycloak from 'keycloak-js';
 import {AuthUtils} from './auth.utils';
@@ -135,17 +136,56 @@ export class AuthService {
   }
 
 
+  private getUserId(): string {
+    const token = this.keycloak.token || '';
+    if (!token) return '';
+    const decoded = AuthUtils._decodeToken(token);
+    return decoded?.preferred_username || '';
+  }
+
   getResources(){
+    const userId = this.getUserId();
     const params = new HttpParams({
-      fromObject: { appId: environment.appId }
+      fromObject: { userId: userId, appId: environment.appId }
     });
-    let url = environment.bffUrl + '/accessible-resource/app'
-    return this.http.get<any>(url, {params});
+    let url = environment.myBaseUrl + '/resource-access/retrieveList';
+    return this.http.get<any>(url, {params}).pipe(
+      map((res: any) => {
+        const transformed = (res.resourceUserList || []).map((item: any) => ({
+          attributes: {
+            functionId: item.functionId,
+            functionName: item.functionNm,
+            moduleId: item.moduleId,
+            moduleName: item.moduleNm,
+            functionType: item.functionType,
+            quickRoute: item.quickRouteNo
+          },
+          uris: item.appRoute,
+          createFlag: item.createFlag,
+          updateFlag: item.updateFlag,
+          deleteFlag: item.deleteFlag,
+          readFlag: item.readFlag
+        }));
+        return transformed;
+      })
+    );
   }
 
   getUserWiseApplications(){
-    let url = environment.bffUrl + '/applications'
-    return this.http.get<any>(url);
+    const userId = this.getUserId();
+    const params = new HttpParams({
+      fromObject: { userId: userId }
+    });
+    let url = environment.myBaseUrl + '/user-access/getAppsByUserId';
+    return this.http.get<any>(url, {params}).pipe(
+      map((res: any) => {
+        return (res.apps || []).map((app: any) => ({
+          appId: app.appId,
+          appName: app.appName,
+          appUri: app.appUri || ''
+        }));
+      })
+    );
   }
 
   getAllApplications(){

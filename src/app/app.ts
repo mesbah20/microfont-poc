@@ -1,11 +1,11 @@
-import {Component, inject, OnInit} from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { ThemeService } from './shared/services/theme.service';
 import { GlobalActivityTrackerService } from './shared/services/global-activity-tracker.service';
 import { NovuService } from './shared/services/novu.service';
 import { LoaderService } from './shared/services/loader.service';
-import {Title} from '@angular/platform-browser';
+import { Title } from '@angular/platform-browser';
 import pkg from '../../package.json';
 
 import { environment } from '../environments/environment';
@@ -31,38 +31,38 @@ export class App implements OnInit {
   authService = inject(AuthService);
   userId: string;
   private userService = inject(UserService);
-constructor(private themeService: ThemeService,
-              public loaderService: LoaderService,
-              private router: Router,
-              private activityTracker: GlobalActivityTrackerService,
-              private rootTitle: Title,
-               private sidebarService: SidebarService,
-              private novuService: NovuService) {
-             this.router.events.pipe(filter(event=> event instanceof NavigationEnd),
-                takeUntilDestroyed()
-              ).subscribe((event:NavigationEnd) => {
-                const url = event.urlAfterRedirects;
-                 const resetRoutes = ['/', '/landing/home', '/dashboard'];
+  constructor(private themeService: ThemeService,
+    public loaderService: LoaderService,
+    private router: Router,
+    private activityTracker: GlobalActivityTrackerService,
+    private rootTitle: Title,
+    private sidebarService: SidebarService,
+    private novuService: NovuService) {
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd),
+      takeUntilDestroyed()
+    ).subscribe((event: NavigationEnd) => {
+      const url = event.urlAfterRedirects;
+      const resetRoutes = ['/', '/landing/home', '/dashboard'];
 
-              if (resetRoutes.includes(url)) {
-                ButtonUtils.resetAll();
-              }
-              });
-              }
+      if (resetRoutes.includes(url)) {
+        ButtonUtils.resetAll();
+      }
+    });
+  }
 
 
 
-async ngOnInit() {
+  async ngOnInit() {
     const isAuthenticated = await this.authService.init();
     const currentPath = window.location.pathname;
 
-  if (isAuthenticated) {
+    if (isAuthenticated) {
       this.authService.decodeToken();
 
       // Load resources with debugging
       this.authService.getResources().subscribe({
         next: (res) => {
-          localStorage.setItem('resourceList', JSON.stringify(res.data));
+          localStorage.setItem('resourceList', JSON.stringify(res));
 
           // Verify storage
           const storedResources = localStorage.getItem('resourceList');
@@ -77,7 +77,7 @@ async ngOnInit() {
         next: (res) => {
 
 
-          localStorage.setItem('appList', JSON.stringify(res.data));
+          localStorage.setItem('appList', JSON.stringify(res));
 
 
           // Verify storage
@@ -120,7 +120,7 @@ async ngOnInit() {
         if (appList) {
           const parsedAppList = JSON.parse(appList);
           const matchingModule = parsedAppList.find((app: any) => {
-            if (app.appUri && (environment.appId===app.appId)) {
+            if (app.appUri && (environment.appId === app.appId)) {
               console.log(app.appId);
               const urlMatch = app.appUri.match(/:(\d+)/);
               return urlMatch && urlMatch[1] === currentPort;
