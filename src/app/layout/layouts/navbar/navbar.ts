@@ -188,9 +188,9 @@ getModuleLogo(): string {
 
   try {
     const appList = JSON.parse(appListString);
-
+    console.log(appList);
  const currentModule = appList.find(
-      (m: any) => m.appId === environment.appId
+      (m: any) => m.appId == environment.appId
     );
 
     if (currentModule?.appId) {
