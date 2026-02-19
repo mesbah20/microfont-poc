@@ -51,12 +51,23 @@ export class Navbar {
   }
 
   ngOnInit() {
-    // restore page name ONCE
-    this.sidebarService.initializePageName();
-
-    // Compute module logo ONCE on init instead of every change detection cycle
+    // Compute module logo (may be default if appList isn't in localStorage yet)
     this.moduleLogo.set(this.computeModuleLogo());
 
+    // Recompute logo when appList becomes available (first login, API loads after init)
+    this.sidebarService.appListReady$.subscribe(() => {
+      this.moduleLogo.set(this.computeModuleLogo());
+    });
+
+    // Immediately resolve page name for the CURRENT route (handles full page reloads / URL bar changes)
+    const currentUrl = this.router.url;
+    if (currentUrl.includes('/landing/home')) {
+      this.sidebarService.setCurrentPageName('');
+    } else {
+      this.updatePageNameFromRoute();
+    }
+
+    // Subscribe for subsequent in-app navigations
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -82,6 +93,7 @@ export class Navbar {
       const resourceListString = localStorage.getItem('resourceList');
       if (!resourceListString) {
         console.log('No resourceList found');
+        this.sidebarService.setCurrentPageName('');
         return;
       }
 
@@ -90,12 +102,8 @@ export class Navbar {
       // Find matching function based on current route
       const matchingFunction = resourceList.find((item: any) => {
         if (item?.attributes?.functionId && item?.attributes?.functionName) {
-          // Try to match the functionId with the current route
-          // You might need to adjust this logic based on your route structure
           const functionId = item.attributes.functionId.toLowerCase();
           const currentPath = currentUrl.toLowerCase();
-          console.log('page name', item.attributes.functionName);
-          // Check if the route contains the functionId or part of it
           return currentPath.includes(functionId) ||
             currentPath.includes(functionId.replace(/[^a-z0-9]/g, '')) ||
             this.isRouteMatch(currentPath, functionId);
@@ -107,6 +115,9 @@ export class Navbar {
         this.sidebarService.setCurrentPageName(
           matchingFunction.attributes.functionName
         );
+      } else {
+        // Clear stale page name when no match is found for the new route
+        this.sidebarService.setCurrentPageName('');
       }
 
 
@@ -187,7 +198,7 @@ export class Navbar {
 
     try {
       const appList = JSON.parse(appListString);
-      console.log('appList ',appList);
+      console.log('appList ', appList);
       const currentModule = appList.find(
         (m: any) => m.appId == environment.appId
       );

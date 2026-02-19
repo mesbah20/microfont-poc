@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,10 +10,12 @@ export class SidebarService {
   private _selectedModuleName = new BehaviorSubject<string>('');
   selectedModuleName$ = this._selectedModuleName.asObservable();
   sidebarExpanded$ = this._sidebarExpanded.asObservable();
+  private _appListReady = new Subject<void>();
+  appListReady$ = this._appListReady.asObservable();
   private router = inject(Router);
 
-private _currentPageName = new BehaviorSubject<string>('');
- currentPageName$ = this._currentPageName.asObservable();
+  private _currentPageName = new BehaviorSubject<string>('');
+  currentPageName$ = this._currentPageName.asObservable();
 
   setSelectedModuleName(moduleName: string): void {
     this._selectedModuleName.next(moduleName);
@@ -22,7 +24,7 @@ private _currentPageName = new BehaviorSubject<string>('');
 
   getSelectedModuleName(): string {
     return this._selectedModuleName.value;
-   }
+  }
   toggleSidebar(): void {
     this._sidebarExpanded.next(!this._sidebarExpanded.value);
   }
@@ -31,14 +33,14 @@ private _currentPageName = new BehaviorSubject<string>('');
     this._sidebarExpanded.next(isExpanded);
   }
 
- setCurrentPageName(pageName: string): void {
-      this._currentPageName.next(pageName);
-      localStorage.setItem('currentPageName', pageName);
-    }
+  setCurrentPageName(pageName: string): void {
+    this._currentPageName.next(pageName);
+    localStorage.setItem('currentPageName', pageName);
+  }
 
-    getCurrentPageName(): string {
-      return this._currentPageName.value;
-    }
+  getCurrentPageName(): string {
+    return this._currentPageName.value;
+  }
 
   initializePageName(): void {
     // Check if we're on the home page
@@ -54,6 +56,10 @@ private _currentPageName = new BehaviorSubject<string>('');
     if (storedPageName) {
       this._currentPageName.next(storedPageName);
     }
+  }
+
+  notifyAppListReady(): void {
+    this._appListReady.next();
   }
 
 }

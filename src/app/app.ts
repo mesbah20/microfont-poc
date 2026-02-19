@@ -85,6 +85,9 @@ export class App implements OnInit {
 
           // Detect module after appList is loaded
           this.detectAndSetModuleByPort();
+
+          // Notify navbar to recompute logo now that appList is available
+          this.sidebarService.notifyAppListReady();
         },
         error: (error) => {
           console.error('Error loading applications:', error);
