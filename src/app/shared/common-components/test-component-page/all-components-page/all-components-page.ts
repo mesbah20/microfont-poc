@@ -3334,27 +3334,27 @@
     transactionRowDesigners = signal<TableRowDesigner[]>([
       {
         condition: (item: any) => item.riskLevel === 'high',
-        // backgroundColor: '#fee2e2',
-        // textColor: '#dc2626',
-        // borderColor: '#fca5a5'
+        backgroundColor: '#fee2e2',
+        textColor: '#991b1b',
+        borderColor: '#fca5a5'
       },
       {
         condition: (item: any) => item.riskLevel === 'medium',
-        // backgroundColor: '#d8d4c5ff',
-        // textColor: '#d97706',
-        // borderColor: '#d4d4d4ff'
+        backgroundColor: '#fef3c7',
+        textColor: '#92400e',
+        borderColor: '#fcd34d'
       },
       {
         condition: (item: any) => item.riskLevel === 'low',
-        // backgroundColor: '#dcfce7',
-        // textColor: '#070707ff',
-        // borderColor: '#86efac'
+        backgroundColor: '#dcfce7',
+        textColor: '#15803d',
+        borderColor: '#86efac'
       },
       {
-        condition: (item: any) => item.requiresApproval,
-        // backgroundColor: '#e0e7ff',
-        // textColor: '#3730a3',
-        // borderColor: '#a5b4fc'
+        condition: (item: any) => item.requiresApproval && parseFloat(item.totalAmount || 0) > 100000,
+        backgroundColor: '#e0e7ff',
+        textColor: '#3730a3',
+        borderColor: '#a5b4fc'
       }
     ]);
 

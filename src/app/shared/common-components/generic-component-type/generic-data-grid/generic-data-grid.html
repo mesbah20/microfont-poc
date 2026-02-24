@@ -78,6 +78,7 @@
                 <!-- Header, Rows, Footer -->
                 <tr mat-header-row *matHeaderRowDef="getDisplayedColumnsWithCount()" class="header-style"></tr>
                 <tr mat-row *matRowDef="let row; columns: getDisplayedColumnsWithCount()" class="data-row"
+                  [ngStyle]="getRowStyle(row)"
                   (dblclick)="emitRowDoubleClick(row)"></tr>
                 <tr mat-footer-row *matFooterRowDef="getDisplayedColumnsWithCount()" class="footer-row"></tr>
               </table>
@@ -386,6 +387,7 @@
               <!-- Row Template -->
               <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()" class="header-row"></tr>
               <tr mat-row *matRowDef="let row; let i = index; columns: getDisplayedColumns()" class="data-row"
+                [ngStyle]="getRowStyle(row)"
                 [class.selected]="isRowSelected(i)" [class.editing]="isRowEditing(i)" [class.even-row]="i % 2 === 0"
                 [class.odd-row]="i % 2 !== 0"
                 (dblclick)="emitRowDoubleClick(row)">
