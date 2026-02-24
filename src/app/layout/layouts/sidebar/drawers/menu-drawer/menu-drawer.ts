@@ -123,27 +123,35 @@ export class MenuDrawer implements OnInit {
     let resourceList = JSON.parse(resourceListString);
     const dummyData: UserAccessItem[] = resourceList.filter((item:any) =>
       item?.attributes?.functionType != 'R'
-    ).map((m: any) => ({
-      FunctionId: m.attributes.functionId,
-      FunctionName: m.attributes.functionName,
-      HOFunctionFlag: '0',
-      AllowMaintAddFlag: '1',
-      AllowMaintEditFlag: '1',
-      AllowMaintDelFlag: '0',
-      AllowMaintViewFlag: '1',
-      AllowMaintAuthFlag: '1',
-      AllowProcessFlag: '1',
-      AllowReportViewFlag: '1',
-      AllowReportPrintFlag: '1',
-      AllowReportGenFlag: '1',
-      AllowAnyOfficeOpsFlag: '1',
-      ModuleId: m.attributes.moduleId,
-      ModuleName: m.attributes.moduleName,
-      AppRoute: m.uris,
-      ItemType: 'F',
-      QuickRouteNo: m.attributes.quickRoute,
-      IsFinancial: '0'
-    }));
+    ).map((m: any) => {
+      // Normalize route: prefer first URI if array, otherwise use provided uri or attributes.routePath
+      const uri = Array.isArray(m.uris) ? m.uris[0] : m.uris;
+      const candidate = uri || m.attributes?.routePath || '';
+      const normalizedRoute = candidate ? (candidate.startsWith('/') ? candidate : '/' + candidate) : '';
+
+      return {
+        FunctionId: m.attributes.functionId,
+        FunctionName: m.attributes.functionName,
+        HOFunctionFlag: '0',
+        AllowMaintAddFlag: '1',
+        AllowMaintEditFlag: '1',
+        AllowMaintDelFlag: '0',
+        AllowMaintViewFlag: '1',
+        AllowMaintAuthFlag: '1',
+        AllowProcessFlag: '1',
+        AllowReportViewFlag: '1',
+        AllowReportPrintFlag: '1',
+        AllowReportGenFlag: '1',
+        AllowAnyOfficeOpsFlag: '1',
+        ModuleId: m.attributes.moduleId,
+        ModuleName: m.attributes.moduleName,
+        AppRoute: m.uris,
+        routePath: normalizedRoute,
+        ItemType: 'F',
+        QuickRouteNo: m.attributes.quickRoute,
+        IsFinancial: '0'
+      } as UserAccessItem;
+    });
     // const dummyData: UserAccessItem[] = [
     //   {
     //     FunctionId: 'F001',
