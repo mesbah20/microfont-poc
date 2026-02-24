@@ -27,6 +27,7 @@ interface UserAccessItem {
   ModuleId: string;
   ModuleName: string;
   AppRoute: string | string[];
+  routePath:string | string[];
   ItemType: string;
   QuickRouteNo: string;
   IsFinancial: string;
@@ -81,9 +82,9 @@ export class MenuDrawer implements OnInit {
   }
 
   getRoute(item: UserAccessItem): string {
-  const route = Array.isArray(item.AppRoute)
-    ? item.AppRoute[0]
-    : item.AppRoute;
+  const route = Array.isArray(item.routePath)
+    ? item.routePath[0]
+    : item.routePath;
 
   return route?.startsWith('/') ? route : '/' + route;
 }
