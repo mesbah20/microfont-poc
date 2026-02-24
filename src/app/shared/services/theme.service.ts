@@ -135,57 +135,7 @@ export class ThemeService {
         '--primary-700': '#111827',
       }
     },
-    {
-  id: 'plumBlush',
-  name: 'Plum Blush',
-  icon: 'palette',
-  primary: '#521F32',
-  secondary: '#BA7A92',
-  accent: '#D4A5AD',
-  background: '#F0F3F3',
-  btn: '#521F32',
-  cssVariables: {
-    '--primary-50': '#F8DDDA',
-    '--primary-100': '#D4A5AD',
-    '--primary-500': '#BA7A92',
-    '--primary-600': '#8E4F68',
-    '--primary-700': '#521F32',
-  }
-},
-{
-  id: 'steelTeal',
-  name: 'Steel Teal',
-  icon: 'palette',
-  primary: '#0D393C',
-  secondary: '#556586',
-  accent: '#8597BF',
-  background: '#F1F1F1',
-  btn: '#0D393C',
-  cssVariables: {
-    '--primary-50': '#F1F1F1',
-    '--primary-100': '#D6DDE8',
-    '--primary-500': '#556586',
-    '--primary-600': '#0D393C',
-    '--primary-700': '#1B1B1D',
-  }
-},
-{
-  id: 'royalVioletDark',
-  name: 'Royal Violet Dark',
-  icon: 'auto_awesome',
-  primary: '#612386',
-  secondary: '#331352',
-  accent: '#1C0F23',
-  background: '#F0F0F0',
-  btn: '#612386',
-  cssVariables: {
-    '--primary-50': '#F0F0F0',
-    '--primary-100': '#E2D6EC',
-    '--primary-500': '#612386',
-    '--primary-600': '#331352',
-    '--primary-700': '#1C0F23',
-  }
-}
+   
 
   ];
 
