@@ -274,7 +274,16 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
    */
   readonly onDataGridStateChange = output<DataGridStateChange>();
 
-
+  /**
+   * Emitted when a cell value changes (especially for dropdown selections)
+   * Useful for triggering cascading updates or dependent dropdowns
+   */
+  readonly onCellValueChange = output<{
+    rowData: T;
+    columnProperty: string;
+    oldValue: any;
+    newValue: any;
+  }>();
 
   // Basic Outputs
   readonly onSelectAllChange = output<{
@@ -413,7 +422,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
 
       // Dropdown properties
       isDropdown: this.dropdownColumns().includes(prop),
-      dropdownOptions: this.dropdownOptions()[prop] || [],
+      dropdownOptions: [], // Not used anymore, options come from input
       dropdownOptionsSource: this.dynamicDropdownSources()[prop],
       isMultiSelect: this.multiSelectColumns().includes(prop),
 
@@ -440,8 +449,8 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
       }
     }
 
-    // Static options from configuration
-    return column.dropdownOptions || [];
+    // Static options from current input configuration
+    return this.dropdownOptions()[column.property] || [];
   }
 
   // Method to get display text for dropdown values
@@ -464,6 +473,7 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
   // Enhanced setEditingValue to handle all input types
   setEditingValue(property: string, value: any): void {
     const column = this.columns().find(col => col.property === property);
+    const oldValue = (this._editingData() as any)?.[property];
 
     if (column?.isCheckbox) {
       // Ensure boolean value for checkboxes
@@ -481,6 +491,16 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
       }
     } else {
       this._editingData.set({ ...this._editingData(), [property]: value } as Partial<T>);
+    }
+
+    // Emit cell value change event
+    if (oldValue !== value) {
+      this.onCellValueChange.emit({
+        rowData: this._editingData() as T,
+        columnProperty: property,
+        oldValue: oldValue,
+        newValue: value
+      });
     }
   }
 

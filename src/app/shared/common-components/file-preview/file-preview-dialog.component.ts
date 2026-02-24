@@ -1,8 +1,8 @@
-import { Component, inject, input, signal, computed, OnDestroy, effect } from '@angular/core';
+import { Component, inject, signal, computed, OnDestroy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
@@ -373,7 +373,8 @@ export class FilePreviewDialogComponent {
   private http = inject(HttpClient);
   private dialogRef = inject(MatDialogRef<FilePreviewDialogComponent>);
 
-  readonly fileData = input<FilePreviewData | null>(null);
+  private dialogData = inject(MAT_DIALOG_DATA, { optional: true }) as FilePreviewData | null;
+  readonly fileData = signal<FilePreviewData | null>(this.dialogData ?? null);
 
   // Internal state
   readonly isLoading = signal<boolean>(false);
@@ -495,7 +496,7 @@ export class FilePreviewDialogComponent {
           cell?.toString() || `Column ${index + 1}`
         ) || [];
 
-        const dataRows = jsonData.slice(1, 1000); // Limit rows
+        const dataRows = jsonData.slice(1, 10000); // Limit to 10k rows for performance
 
         sheets.push({
           name: sheetName,
@@ -544,23 +545,27 @@ export class FilePreviewDialogComponent {
     this.textContent.set(text);
   }
 
-  private async loadPdfPreview(data: FilePreviewData) {
-    let url: string;
+private async loadPdfPreview(data: FilePreviewData) {
+  let url: string;
 
-    if (data.base64) {
-      url = data.base64.startsWith('data:') ? data.base64 : `data:application/pdf;base64,${data.base64}`;
-    } else if (data.data) {
-      url = URL.createObjectURL(data.data);
-      this.blobUrl = url;
-    } else if (data.url) {
-      url = data.url;
-    } else {
-      throw new Error('No valid PDF data provided');
-    }
-
-    const safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-    this.previewUrl.set(safeUrl);
+  if (data.base64) {
+    url = data.base64.startsWith('data:')
+      ? data.base64
+      : `data:application/pdf;base64,${data.base64}`;
+  } else if (data.data) {
+    url = URL.createObjectURL(data.data);
+    this.blobUrl = url;
+  } else if (data.url) {
+    url = data.url;
+  } else {
+    throw new Error('No valid PDF data provided');
   }
+
+  url = `${url}#toolbar=0`;
+
+  const safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  this.previewUrl.set(safeUrl);
+}
 
   private isImageFile(fileName: string): boolean {
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp', '.tiff'];

@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { UserAccessItem } from '../../../../../core/auth/login/login';
+import { SidebarService } from '../../../../service/sidebar.service';
 
 @Component({
     selector: 'app-search',
@@ -16,10 +17,15 @@ export class Search implements OnInit {
     toastr = inject(ToastrService);
 
     constructor(
-        private router: Router
+        private router: Router,
+        private sidebarService: SidebarService
     ) { }
 
     ngOnInit(): void {
+        this.sidebarService.resourceListReady$.subscribe(() => {
+            this.loadUserAccessList();
+        });
+        // Load immediately if already available
         this.loadUserAccessList();
     }
 

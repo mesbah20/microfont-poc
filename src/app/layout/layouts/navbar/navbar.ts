@@ -59,6 +59,11 @@ export class Navbar {
       this.moduleLogo.set(this.computeModuleLogo());
     });
 
+    // Update page name when resourceList becomes available
+    this.sidebarService.resourceListReady$.subscribe(() => {
+      this.updatePageNameFromRoute();
+    });
+
     // Immediately resolve page name for the CURRENT route (handles full page reloads / URL bar changes)
     const currentUrl = this.router.url;
     if (currentUrl.includes('/landing/home')) {

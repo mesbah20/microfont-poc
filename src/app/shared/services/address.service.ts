@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AddressDto, AddressSearchResponse, AddressDisplayOption } from '../models/address.model';
+import { LoaderService } from './loader.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ import { AddressDto, AddressSearchResponse, AddressDisplayOption } from '../mode
 export class AddressService {
   private http = inject(HttpClient);
   private baseUrl = environment.centrinoUrl + '/address-mv';
+  private loader = inject(LoaderService);
 
   /**
    * Search addresses and return raw API response
@@ -23,6 +25,9 @@ export class AddressService {
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
+
+    // Tell global interceptor to skip showing the loader for address searches
+    headers['X-Skip-Loader'] = 'true';
 
     return this.http.get<AddressSearchResponse>(
       `${this.baseUrl}/search`,

@@ -12,6 +12,8 @@ export class SidebarService {
   sidebarExpanded$ = this._sidebarExpanded.asObservable();
   private _appListReady = new Subject<void>();
   appListReady$ = this._appListReady.asObservable();
+  private _resourceListReady = new Subject<void>();
+  resourceListReady$ = this._resourceListReady.asObservable();
   private router = inject(Router);
 
   private _currentPageName = new BehaviorSubject<string>('');
@@ -60,6 +62,10 @@ export class SidebarService {
 
   notifyAppListReady(): void {
     this._appListReady.next();
+  }
+
+  notifyResourceListReady(): void {
+    this._resourceListReady.next();
   }
 
 }

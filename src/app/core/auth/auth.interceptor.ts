@@ -15,8 +15,15 @@ export const authInterceptor = (
 
     const loader = inject(LoaderService);
 
-    // 👉 Show loader before request
-    loader.show();
+    // If request asks to skip loader (header) or is an address search, don't show loader
+    const skipLoaderHeader = req.headers.get?.('X-Skip-Loader') === 'true';
+    const isAddressSearch = req.url.includes('/address-mv/');
+    const shouldShowLoader = !skipLoaderHeader && !isAddressSearch;
+
+    if (shouldShowLoader) {
+        // 👉 Show loader before request
+        loader.show();
+    }
 
     const newReq = req.clone({
         headers: req.headers
@@ -24,14 +31,17 @@ export const authInterceptor = (
             .set('branchId', '1')
     });
 
-    return next(newReq).pipe(
+    // If caller requested skipping loader, remove the header before forwarding
+    const forwardedReq = newReq.headers.get?.('X-Skip-Loader') ? newReq.clone({ headers: newReq.headers.delete('X-Skip-Loader') }) : newReq;
+
+    return next(forwardedReq).pipe(
         catchError((error) => {
             return throwError(() => error);
         }),
 
-        // 👉 Always hide loader (success or error)
+        // 👉 Hide loader only if we showed it
         finalize(() => {
-            loader.hide();
+            if (shouldShowLoader) loader.hide();
         })
     );
 };

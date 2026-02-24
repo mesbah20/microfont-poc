@@ -19,6 +19,7 @@ export interface FilePreviewData {
   fileName?: string;
   mimeType?: string;
   data?: Blob;
+  fileSize?: number; // in bytes
 }
 
 export type FileType = 'pdf' | 'excel' | 'image' | 'text' | 'unknown';
@@ -133,8 +134,8 @@ interface ExcelSheet {
                 }
 
                 @if (showFullscreen()) {
-                  <button mat-icon-button matTooltip="Open in new tab" (click)="openInNewTab()">
-                    <mat-icon>open_in_new</mat-icon>
+                  <button mat-icon-button matTooltip="Open in modal" (click)="openFullscreen()">
+                    <mat-icon>fullscreen</mat-icon>
                   </button>
                 }
 
@@ -535,7 +536,7 @@ export class FilePreviewComponent implements OnDestroy {
   readonly width = input<string>('100%');
   readonly height = input<string>('500px');
   readonly showControls = input<boolean>(true);
-  readonly showDownload = input<boolean>(true);
+  readonly showDownload = input<boolean>(false);
   readonly showFullscreen = input<boolean>(true);
   readonly loading = input<boolean>(false);
   readonly placeholder = input<string>('No file to preview');
@@ -836,22 +837,27 @@ export class FilePreviewComponent implements OnDestroy {
     }
   }
 
-  openInNewTab() {
+  /**
+   * Emits the "fullscreen" intent so the parent can decide how to present it
+   * (e.g., open `FilePreviewDialogComponent` in a modal).
+   */
+  openFullscreen() {
     const data = this.fileData();
     if (!data) return;
 
     try {
-      if (data.url) {
-        window.open(data.url, '_blank');
-      } else {
-        // For base64 or blob data, create a temporary URL
-        this.downloadFile(); // Fallback to download
-      }
-
       this.onFullscreen.emit(data);
     } catch (error) {
-      this.error.set('Failed to open in new tab');
+      this.error.set('Failed to open fullscreen preview');
     }
+  }
+
+  /**
+   * Backward-compatible alias (previous behavior was "open in new tab").
+   * Kept to avoid breaking existing callers.
+   */
+  openInNewTab() {
+    this.openFullscreen();
   }
 
   // Image zoom controls

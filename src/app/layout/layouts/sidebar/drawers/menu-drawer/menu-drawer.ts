@@ -70,6 +70,10 @@ export class MenuDrawer implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.sidebarService.resourceListReady$.subscribe(() => {
+      this.loadUserAccessList();
+    });
+    // Load immediately if already available
     this.loadUserAccessList();
     this.themeSub = this.themeService.currentTheme$.subscribe(themeId => {
       this.activeTheme = themeId;

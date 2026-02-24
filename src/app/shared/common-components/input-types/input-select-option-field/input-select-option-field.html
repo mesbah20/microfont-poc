@@ -149,7 +149,8 @@
         <input
           #searchInput
           type="text"
-
+          [formControlName]="controlName()"
+          [attr.controlName]="controlName()"
           [disabled]="isReadonly() ?? false"
           [placeholder]="placeholder() ?? ' Search ' + label().toLowerCase()"
           [value]="searchTerm()"
@@ -214,6 +215,7 @@
         <!-- NON-SEARCHABLE REGULAR SELECT -->
         <select
           [formControlName]="controlName()"
+          [attr.controlName]="controlName()"
           [compareWith]="compareFN"
           [disabled]="isReadonly() ?? false"
 

@@ -1,25 +1,29 @@
 @if (!isHidden) {
-  <!-- ======================== FORM FIELD MODE (with FormGroup) ======================== -->
+  <!-- FORM FIELD MODE -->
   @if (frmGroup()) {
     <div
       [formGroup]="frmGroup()!"
       [ngClass]="{
         'input-container-vertical': displayMode() === 'vertical',
         'input-container-horizontal': displayMode() === 'horizontal'
-      }"
-    >
+      }">
+
       <!-- VERTICAL MODE -->
       @if (displayMode() === 'vertical') {
         <label
           class="input-label block mb-1"
           [matTooltip]="tooltip()"
-          [matTooltipDisabled]="!tooltip()"
-        >
+          [matTooltipDisabled]="!tooltip()">
           {{ label }}
           @if (isRequired()) { <span class="text-red-500">*</span> }
         </label>
         <div class="display-value">
-          <span class="input-label" style="font-weight: bold">{{ getValue() }}</span>
+          <span
+            class="input-label"
+            [ngClass]="customClass()"
+            [ngStyle]="getStyles()">
+            {{ getValue() }}
+          </span>
         </div>
       }
 
@@ -29,23 +33,27 @@
           <span
             class="input-label"
             [matTooltip]="tooltip()"
-            [matTooltipDisabled]="!tooltip()"
-          >
+            [matTooltipDisabled]="!tooltip()">
             {{ label }}@if (isRequired()) {<span class="text-red-500">*</span>}:
-            <span class="font-bold">{{ getValue() }}</span>
+            <span
+              [ngClass]="customClass()"
+               [ngStyle]="getStyles()">
+              {{ getValue() }}
+            </span>
           </span>
         </div>
       }
     </div>
   }
 
-  <!-- ======================== SIMPLE LABEL MODE (no FormGroup) ======================== -->
+  <!-- SIMPLE LABEL MODE -->
   @if (!frmGroup()) {
     <div
       class="input-label relative"
+      [ngClass]="customClass()"
+       [ngStyle]="getStyles()"
       [matTooltip]="tooltip()"
-      [matTooltipDisabled]="!tooltip()"
-    >
+      [matTooltipDisabled]="!tooltip()">
       {{ label }}
       @if (isRequired()) {
         <span class="text-red-500">*</span>

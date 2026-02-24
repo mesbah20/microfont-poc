@@ -66,9 +66,14 @@ export class App implements OnInit {
 
           // Verify storage
           const storedResources = localStorage.getItem('resourceList');
+
+          // Notify that resourceList is ready
+          this.sidebarService.notifyResourceListReady();
         },
         error: (error) => {
           console.error('Error loading resources:', error);
+          localStorage.setItem('resourceList', '[]');
+          this.sidebarService.notifyResourceListReady();
         }
       });
 
@@ -91,6 +96,8 @@ export class App implements OnInit {
         },
         error: (error) => {
           console.error('Error loading applications:', error);
+          localStorage.setItem('appList', '[]');
+          this.sidebarService.notifyAppListReady();
         }
       });
 

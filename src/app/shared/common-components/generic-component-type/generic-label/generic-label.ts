@@ -25,6 +25,11 @@ export class Label implements OnInit {
   readonly isSelectable = input<boolean>(false);
   readonly options = input<Option[] | null>(null);
   readonly tooltip = input<string>('');
+ readonly color = input<string>('');
+readonly fontSize = input<string>('');
+readonly fontWeight = input<string>('');
+readonly customClass = input<string>('');
+readonly customStyle = input<Record<string, string>>({});
 
   // Mapping state
   displayText = signal<string>('');
@@ -61,6 +66,15 @@ export class Label implements OnInit {
     this._lastControlValue = control.value ?? '';
     this._syncDisplayFromValue(this._lastControlValue);
   }
+
+  getStyles(): Record<string, string> {
+  return {
+    ...(this.color() && { color: this.color() }),
+    ...(this.fontSize() && { fontSize: this.fontSize() }),
+    ...(this.fontWeight() && { fontWeight: this.fontWeight() }),
+    ...this.customStyle()
+  };
+}
 
   private _syncDisplayFromValue(val: any) {
     const opts = this.options() || [];

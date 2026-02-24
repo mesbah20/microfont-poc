@@ -49,6 +49,11 @@ export class ModuleDrawer implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.sidebarService.appListReady$.subscribe(() => {
+      this.loadModulesList();
+      this.setSelectedModuleByPort();
+    });
+    // Load immediately if already available
     this.loadModulesList();
     this.themeSub = this.themeService.currentTheme$.subscribe(themeId => {
       this.activeTheme = themeId;

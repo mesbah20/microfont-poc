@@ -421,7 +421,7 @@
                     [maxItems]="5"
                     [draggable]="true"
                     [removable]="true"
-
+                    [label]="'tag'"
                     [editable]="true"
                     [autocompleteItems]="tagSuggestions"
                     [tooltip]="'Add relevant tags for categorization'"
@@ -626,6 +626,7 @@
                   (onPaginationChange)="loadDataFromServer($event)"
                   (onChecked)="onTransactionRowSelect($event)"
                   (onSelectAllChange)="onTransactionSelectAll($event)"
+                  (onCellValueChange)="onCellValueChanged($event)"
                   (dataSourceChanged)="onTransactionDataChanged($event)"
                   (onCellButtonClick)="onGridCellButtonClick($event)"
                 ></generic-data-grid>
@@ -691,6 +692,7 @@
                   (onPrint)="onTransactionPrint($event)"
                   (onPaginationChange)="onEnhancedPaginationChange($event)"
                   (onDataGridStateChange)="onEnhancedStateChange($event)"
+                  (onCellValueChange)="onCellValueChanged($event)"
                   (dataSourceChanged)="onTransactionDataChanged($event)"
                   (onChecked)="onTransactionRowSelect($event)"
                   (onSelectAllChange)="onTransactionSelectAll($event)"
@@ -866,6 +868,7 @@
           [labelKey]="'Selected Currency'"
           [displayMode]="'vertical'"
           [visible]="true"
+          [customStyle]="{ color: '#6366f1', textDecoration: 'underline' }"
           [tooltip]="'Displays the currently selected currency value'"
         />
       </div>
@@ -975,32 +978,11 @@
             File Preview Component Demo
           </h3>
 
-          <!-- Sample File Selection -->
-
-
-          <!-- File Preview Component -->
-          <div class="bg-white p-4 rounded-lg border border-gray-200">
-            <!-- <file-preview
-              [fileData]="selectedFile()"
-              [width]="'100%'"
-              [height]="'500px'"
-              [showControls]="true"
-              [showDownload]="true"
-              [showFullscreen]="true"
-              [placeholder]="'Select a file from above to preview'"
-              (onDownload)="onFileDownload($event)"
-              (onFullscreen)="onFileFullscreen($event)"
-              (onError)="onFileError($event)"
-              (onLoad)="onFileLoad()"
-            ></file-preview> -->
-            <file-preview
-              [fileData]="pdfData"
-              [width]="'100%'"
-              [height]="'600px'"
-              (onError)="onPdfError($event)"
-              (onLoad)="onPdfLoad()">
-            </file-preview>
-          </div>
+          <!-- Excel preview card -->
+          <file-preview-card
+            [fileData]="excelData"
+            (previewClicked)="openFilePreviewModal($event)">
+          </file-preview-card>
 
         </div>
       </section>

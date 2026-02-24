@@ -22,6 +22,7 @@ interface ColLimitExceededEvent {
 
 @Component({
   selector: 'input-text-area',
+  standalone: true,
   imports: [
     ReactiveFormsModule,
     NgClass,
