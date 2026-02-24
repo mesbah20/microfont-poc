@@ -55,6 +55,7 @@ export class Search implements OnInit {
         ModuleId: m.attributes.moduleId,
         ModuleName: m.attributes.moduleName,
         AppRoute: m.uris,
+        routePath: m.routePath,
         ItemType: 'F',
         QuickRouteNo: m.attributes.quickRoute,
         IsFinancial: '0'
@@ -72,11 +73,11 @@ export class Search implements OnInit {
         const enteredCode = input.value.trim();
         if (!enteredCode) return;
         const match = this.userAccessList.find(
-            x => x.QuickRouteNo.toString() === enteredCode
+            x => x.QuickRouteNo.toString().toLowerCase() === enteredCode.toLowerCase()
         );
 
         if (match) {
-            this.router.navigate(match.AppRoute);
+            this.router.navigate(match.routePath);
         } else {
             this.toastr.warning('Invalid Route Number.', 'Invalid');
         }
