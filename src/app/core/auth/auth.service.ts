@@ -148,7 +148,7 @@ export class AuthService {
     const params = new HttpParams({
       fromObject: { userId: userId, appId: environment.appId }
     });
-    let url = environment.myBaseUrl + '/resource-access/retrieveList';
+    let url = environment.sentinelUrl + '/resource-access/retrieveList';
     return this.http.get<any>(url, {params}).pipe(
       map((res: any) => {
         const transformed = (res.resourceUserList || []).map((item: any) => ({
@@ -176,7 +176,7 @@ export class AuthService {
     const params = new HttpParams({
       fromObject: { userId: userId }
     });
-    let url = environment.myBaseUrl + '/user-access/getAppsByUserId';
+    let url = environment.sentinelUrl  + '/user-access/getAppsByUserId';
     return this.http.get<any>(url, {params}).pipe(
       map((res: any) => {
         return (res.apps || []).map((app: any) => ({
