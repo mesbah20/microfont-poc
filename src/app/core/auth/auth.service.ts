@@ -161,6 +161,7 @@ export class AuthService {
             quickRoute: item.quickRouteNo
           },
           uris: item.appRoute,
+          routePath: item.routePath,
           createFlag: item.createFlag,
           updateFlag: item.updateFlag,
           deleteFlag: item.deleteFlag,

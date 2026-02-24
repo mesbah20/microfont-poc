@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -27,7 +33,7 @@ interface UserAccessItem {
   ModuleId: string;
   ModuleName: string;
   AppRoute: string | string[];
-  routePath:string | string[];
+  routePath: string | string[];
   ItemType: string;
   QuickRouteNo: string;
   IsFinancial: string;
@@ -35,12 +41,7 @@ interface UserAccessItem {
 
 @Component({
   selector: 'app-menu-drawer',
-  imports: [
-    RouterLink,
-    RouterModule,
-    MatIcon,
-    CommonModule
-  ],
+  imports: [RouterLink, RouterModule, MatIcon, CommonModule],
   templateUrl: './menu-drawer.html',
   standalone: true,
   styleUrl: './menu-drawer.scss',
@@ -48,12 +49,11 @@ interface UserAccessItem {
     trigger('expandCollapse', [
       state('open', style({ height: '*', opacity: 1 })),
       state('closed', style({ height: '0px', opacity: 0 })),
-      transition('open <=> closed', animate('300ms ease-in-out'))
-    ])
-  ]
+      transition('open <=> closed', animate('300ms ease-in-out')),
+    ]),
+  ],
 })
 export class MenuDrawer implements OnInit {
-
   openSections: { [key: string]: boolean } = {};
   userAccessList: UserAccessItem[] = [];
   menuSections: any[] = [];
@@ -66,9 +66,9 @@ export class MenuDrawer implements OnInit {
   constructor(
     private http: HttpClient,
     private themeService: ThemeService,
-     private sidebarService: SidebarService,
-     private router: Router
-  ) { }
+    private sidebarService: SidebarService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.sidebarService.resourceListReady$.subscribe(() => {
@@ -76,19 +76,18 @@ export class MenuDrawer implements OnInit {
     });
     // Load immediately if already available
     this.loadUserAccessList();
-    this.themeSub = this.themeService.currentTheme$.subscribe(themeId => {
+    this.themeSub = this.themeService.currentTheme$.subscribe((themeId) => {
       this.activeTheme = themeId;
     });
   }
 
   getRoute(item: UserAccessItem): string {
-  const route = Array.isArray(item.routePath)
-    ? item.routePath[0]
-    : item.routePath;
+    const route = Array.isArray(item.routePath)
+      ? item.routePath[0]
+      : item.routePath;
 
-  return route?.startsWith('/') ? route : '/' + route;
-}
-
+    return route?.startsWith('/') ? route : '/' + route;
+  }
 
   loadUserAccessList(): void {
     let resourceListString = localStorage.getItem('resourceList');
@@ -116,42 +115,38 @@ export class MenuDrawer implements OnInit {
     //   });
 
     //------------ testing with dummy data ------------
-    if(!resourceListString){
+    if (!resourceListString) {
       this.userAccessList = [];
       return;
     }
-    let resourceList = JSON.parse(resourceListString);
-    const dummyData: UserAccessItem[] = resourceList.filter((item:any) =>
-      item?.attributes?.functionType != 'R'
-    ).map((m: any) => {
-      // Normalize route: prefer first URI if array, otherwise use provided uri or attributes.routePath
-      const uri = Array.isArray(m.uris) ? m.uris[0] : m.uris;
-      const candidate = uri || m.attributes?.routePath || '';
-      const normalizedRoute = candidate ? (candidate.startsWith('/') ? candidate : '/' + candidate) : '';
 
-      return {
-        FunctionId: m.attributes.functionId,
-        FunctionName: m.attributes.functionName,
-        HOFunctionFlag: '0',
-        AllowMaintAddFlag: '1',
-        AllowMaintEditFlag: '1',
-        AllowMaintDelFlag: '0',
-        AllowMaintViewFlag: '1',
-        AllowMaintAuthFlag: '1',
-        AllowProcessFlag: '1',
-        AllowReportViewFlag: '1',
-        AllowReportPrintFlag: '1',
-        AllowReportGenFlag: '1',
-        AllowAnyOfficeOpsFlag: '1',
-        ModuleId: m.attributes.moduleId,
-        ModuleName: m.attributes.moduleName,
-        AppRoute: m.uris,
-        routePath: normalizedRoute,
-        ItemType: 'F',
-        QuickRouteNo: m.attributes.quickRoute,
-        IsFinancial: '0'
-      } as UserAccessItem;
-    });
+    let resourceList = JSON.parse(resourceListString);
+    const dummyData: UserAccessItem[] = resourceList
+      .filter((item: any) => item?.attributes?.functionType != 'R')
+      .map((m: any) => {
+        return {
+          FunctionId: m.attributes.functionId,
+          FunctionName: m.attributes.functionName,
+          HOFunctionFlag: '0',
+          AllowMaintAddFlag: '1',
+          AllowMaintEditFlag: '1',
+          AllowMaintDelFlag: '0',
+          AllowMaintViewFlag: '1',
+          AllowMaintAuthFlag: '1',
+          AllowProcessFlag: '1',
+          AllowReportViewFlag: '1',
+          AllowReportPrintFlag: '1',
+          AllowReportGenFlag: '1',
+          AllowAnyOfficeOpsFlag: '1',
+          ModuleId: m.attributes.moduleId,
+          ModuleName: m.attributes.moduleName,
+          AppRoute: m.uris,
+          routePath: m.routePath,
+          ItemType: 'F',
+          QuickRouteNo: m.attributes.quickRoute,
+          IsFinancial: '0',
+        } as UserAccessItem;
+      });
     // const dummyData: UserAccessItem[] = [
     //   {
     //     FunctionId: 'F001',
@@ -251,46 +246,45 @@ export class MenuDrawer implements OnInit {
     this.isLoading = false;
     this.userAccessList = dummyData;
     this.generateMenuFromAccess();
-
   }
 
   generateMenuFromAccess() {
-
     const uniqueMenuNames = [
       ...new Set(
         this.userAccessList
           //.filter(item => item.ModuleName?.toLowerCase() !== 'report')
-          .map(item => item.ModuleName)
-      )
+          .map((item) => item.ModuleName),
+      ),
     ];
-  const sortedMenuNames = uniqueMenuNames.sort((a, b) => a.localeCompare(b));
-    this.menuSections = sortedMenuNames.map(name => ({
+    const sortedMenuNames = uniqueMenuNames.sort((a, b) => a.localeCompare(b));
+    this.menuSections = sortedMenuNames.map((name) => ({
       key: name.toLowerCase().replace(/\s+/g, ''),
       label: name,
-      icon: this.getIcon(name)
+      icon: this.getIcon(name),
     }));
 
-    this.groupedMenu = this.userAccessList.reduce((acc: { [key: string]: UserAccessItem[] }, item) => {
-      if (!acc[item.ModuleName]) {
-        acc[item.ModuleName] = [];
-      }
-      acc[item.ModuleName].push(item);
-      return acc;
-    }, {});
+    this.groupedMenu = this.userAccessList.reduce(
+      (acc: { [key: string]: UserAccessItem[] }, item) => {
+        if (!acc[item.ModuleName]) {
+          acc[item.ModuleName] = [];
+        }
+        acc[item.ModuleName].push(item);
+        return acc;
+      },
+      {},
+    );
 
-
-    uniqueMenuNames.forEach(name => {
+    uniqueMenuNames.forEach((name) => {
       const key = name.toLowerCase().replace(/\s+/g, '');
       this.openSections[key] = false;
     });
-
   }
 
   getIcon(name: string) {
     const map: any = {
       Configuration: 'settings',
       Operation: 'work',
-      Dashboard: 'dashboard'
+      Dashboard: 'dashboard',
     };
     return map[name] || 'folder';
   }
@@ -303,37 +297,34 @@ export class MenuDrawer implements OnInit {
     return this.openSections[section];
   }
 
-onMenuItemClick(item: UserAccessItem): void {
-  console.log('Menu item clicked:', item);
+  onMenuItemClick(item: UserAccessItem): void {
+    console.log('Menu item clicked:', item);
 
-  // Store function id
-  localStorage.setItem('currentFunctionId', item.FunctionId);
+    // Store function id
+    localStorage.setItem('currentFunctionId', item.FunctionId);
 
-  // Navigate using normalized route
-  const route = this.getRoute(item);
-  console.log('Navigating to:', route);
+    // Navigate using normalized route
+    const route = this.getRoute(item);
+    console.log('Navigating to:', route);
 
-  this.router.navigate([route])
-    .then(success => {
-      if (success) {
-        this.sidebarService.setCurrentPageName(item.FunctionName);
-      }
-    })
-    .catch(err => {
-      console.error('Navigation failed:', err);
-      this.router.navigate(['/home']);
-      // this.sidebarService.setCurrentPageName('Home');
-    });
-}
-
-
- getItemsByMenu(menuName: string) {
-    const items = this.groupedMenu[menuName] || [];
-    return items.sort((a: UserAccessItem, b: UserAccessItem) =>
-      a.FunctionName.localeCompare(b.FunctionName)
-    );
+    this.router
+      .navigate([route])
+      .then((success) => {
+        if (success) {
+          this.sidebarService.setCurrentPageName(item.FunctionName);
+        }
+      })
+      .catch((err) => {
+        console.error('Navigation failed:', err);
+        this.router.navigate(['/home']);
+        // this.sidebarService.setCurrentPageName('Home');
+      });
   }
 
-
+  getItemsByMenu(menuName: string) {
+    const items = this.groupedMenu[menuName] || [];
+    return items.sort((a: UserAccessItem, b: UserAccessItem) =>
+      a.FunctionName.localeCompare(b.FunctionName),
+    );
+  }
 }
-
