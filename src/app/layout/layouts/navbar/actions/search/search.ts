@@ -77,7 +77,7 @@ export class Search implements OnInit {
         );
 
         if (match) {
-            this.router.navigate(match.routePath);
+            this.router.navigate([match.routePath]);
         } else {
             this.toastr.warning('Invalid Route Number.', 'Invalid');
         }
