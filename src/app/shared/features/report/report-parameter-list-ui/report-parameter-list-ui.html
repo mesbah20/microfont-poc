@@ -16,20 +16,20 @@
           <app-expansion-panel-header [isOpenSignal]="reportInfoPanel" [panelTitle]="'Report Information'"></app-expansion-panel-header>
 
           @if (reportInfoPanel()) {
-          <div class="form-grid-2-col">
-            
+          <div class="grid md:grid-cols-2 gap-x-2">
+
             <!-- Report Id with Lookup -->
             <input-id-box
               [frmGroup]="reportForm"
               [controlName]="'id'"
               [label]="'Report ID'"
-              
+
               [isDotsVisible]="true"
               [tooltip]="'Click to select report'"
               [tooltipPosition]="'above'"
               [placeholder]=""
               [tooltipDelay]="300"
-         
+
               (dotsClicked)="openReportModal()"
               (onChanged)="onIdBoxChanged($event)"
               (onBlurred)="loadReportById($event)"
@@ -40,7 +40,7 @@
               [frmGroup]="reportForm"
               controlName="reportName"
               label="Report Name"
-              
+
               [maxLength]="150"
             ></input-text-box>
 
@@ -49,7 +49,7 @@
               [frmGroup]="reportForm"
               [controlName]="'functionId'"
               [label]="'Function ID'"
-              
+
               [isDotsVisible]="true"
               [tooltip]="'Click to select function'"
               [tooltipPosition]="'above'"
@@ -64,7 +64,7 @@
               [frmGroup]="reportForm"
               controlName="functionName"
               label="Function Name"
-              
+
               placeholder="Auto-populated from Function ID"
               [isReadonly]="true"
             ></input-text-box>
@@ -75,7 +75,7 @@
               controlName="dataSourceType"
               label="Data Source Type"
               [options]="dataSourceTypeOptions"
-              
+
               [searchable]="true"
               placeholder="Select data source"
             ></input-select-option-field>
@@ -87,7 +87,7 @@
                 controlName="databaseConnectionId"
                 label="Database Connection"
                 [options]="databaseConnections"
-                
+
                 [searchable]="true"
                 placeholder="Select database connection"
               ></input-select-option-field>
@@ -100,7 +100,7 @@
                 controlName="apiEndpointId"
                 label="API Endpoint"
                 [options]="apiEndpoints"
-                
+
                 [searchable]="true"
                 placeholder="Select API endpoint"
               ></input-select-option-field>
@@ -121,8 +121,8 @@
           </div>
 
           <!-- Full Width Fields -->
-          <div class="form-grid-2-col mt-4">
-            
+          <div class="grid md:grid-cols-2 gap-x-2 mt-4">
+
 
             <!-- Report File Upload -->
             <div class="mb-4">
@@ -139,7 +139,7 @@
                 [frmGroup]="reportForm"
                 controlName="reportFileName"
                 label="Report File Name"
-                
+
                 [maxLength]="150"
                 placeholder="e.g., Report File Name"
             ></input-text-box>
@@ -171,7 +171,7 @@
               controlName="autoGenPeriod"
               label="Auto Generation Period"
               [options]="autoGenPeriodOptions"
-              
+
               [searchable]="false"
               placeholder="Select period (optional)"
             ></input-select-option-field>
@@ -203,7 +203,7 @@
           <app-expansion-sub-panel-header [isOpenSignal]="parameterSubPanel" [subPanelTitle]="'Parameter Management'" [isButton]="true" [buttonText]="'Add'" [buttonIcon]="'add'" (addAction)="openParameterForm()"></app-expansion-sub-panel-header>
 
           @if (parameterSubPanel()) {
-            <div class="form-grid-col-1 mt-4">
+            <div class="grid md:grid-cols-1 gap-x-2 mt-4">
                 <!-- Parameter Table -->
               @if (parameters().length > 0) {
                 <generic-data-grid
@@ -223,7 +223,7 @@
               } @else {
                 <div class="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                   <svg class="mx-auto text-gray-400" style="height: 3rem; width: 3rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                   </svg>
                   <p class="mt-4 text-sm text-gray-500">No parameters defined.</p>
@@ -242,7 +242,7 @@
     @if (false) {
       <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto m-4">
-          
+
           <!-- Modal Header -->
           <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 border-b border-gray-200 rounded-t-lg">
             <div class="flex items-center justify-between">
@@ -266,7 +266,7 @@
                 [frmGroup]="parameterForm"
                 controlName="parameterName"
                 label="Parameter Name"
-                
+
                 [maxLength]="50"
                 placeholder="e.g., branch_id"
               ></input-text-box>
@@ -276,7 +276,7 @@
                 [frmGroup]="parameterForm"
                 controlName="parameterLabel"
                 label="Parameter Label"
-                
+
                 [maxLength]="100"
                 placeholder="e.g., Branch Id"
               ></input-text-box>
@@ -287,7 +287,7 @@
                 controlName="dataType"
                 label="Data Type"
                 [options]="parameterDataTypeOptions"
-                
+
                 [searchable]="true"
                 placeholder="Select data type"
               ></input-select-option-field>
@@ -299,7 +299,7 @@
                 controlName="inputType"
                 label="Input Type"
                 [options]="getFilteredInputTypeOptions()"
-                
+
                 placeholder="Select input type"
               ></input-select-option-field>
 
@@ -309,16 +309,16 @@
                   [frmGroup]="parameterForm"
                   controlName="dataSource"
                   label="Data Source"
-                  
+
                   placeholder="Enter API URL, SQL query, function() or leave empty for static options"
                 ></input-text-box>
-                
+
                 @if (getDataSourceError()) {
                   <div class="text-red-500 text-sm mt-1">
                     {{ getDataSourceError() }}
                   </div>
                 }
-                
+
               }
 
               @if (showDropdownOptions() && hasDataSource()) {
@@ -336,14 +336,14 @@
                   [frmGroup]="parameterForm"
                   controlName="formatPattern"
                   label="Date Format"
-                  
+
                   placeholder="e.g., dd/MM/yyyy"
                 ></input-text-box>
               }
 
               <!-- Default Value Section -->
               <div class="col-span-2">
-                
+
                 <!-- For BOOLEAN types - use switch for default -->
                 @if (parameterForm.get('dataType')?.value === 'BOOLEAN') {
                   <generic-switch
@@ -359,7 +359,7 @@
                     controlName="defaultValue"
                     label="Default Value"
                     [options]="getSelectOptionsForDefault()"
-                    
+
                     [searchable]="false"
                     placeholder="Select default option"
                   ></input-select-option-field>
@@ -370,7 +370,7 @@
                     controlName="defaultValueType"
                     label="Default Value Type"
                     [options]="[{key: 'predefined', value: 'Predefined Template'}, {key: 'custom', value: 'Custom Value'}]"
-                    
+
                     [searchable]="false"
                     placeholder="Select type"
                   ></input-select-option-field>
@@ -381,7 +381,7 @@
                       controlName="defaultValue"
                       label="Predefined Value"
                       [options]="getFilteredPredefinedValues()"
-                      
+
                       [searchable]="true"
                       placeholder="Select predefined value"
                     ></input-select-option-field>
@@ -393,7 +393,7 @@
                         [frmGroup]="parameterForm"
                         controlName="customDefaultValue"
                         label="Custom Default Value"
-                        
+
                         placeholder="Select date"
                       ></input-date>
                     } @else if (parameterForm.get('dataType')?.value === 'NUMBER') {
@@ -401,7 +401,7 @@
                         [frmGroup]="parameterForm"
                         controlName="customDefaultValue"
                         label="Custom Default Value"
-                        
+
                         placeholder="Enter number"
                       ></input-number>
                     } @else {
@@ -409,7 +409,7 @@
                         [frmGroup]="parameterForm"
                         controlName="customDefaultValue"
                         label="Custom Default Value"
-                        
+
                         placeholder="Enter custom value"
                       ></input-text-box>
                     }
@@ -424,7 +424,7 @@
                   [frmGroup]="parameterForm"
                   controlName="minLength"
                   label="Min Length"
-                  
+
                   [type]="'number'"
                   placeholder="Minimum length"
                 ></input-text-box>
@@ -433,7 +433,7 @@
                   [frmGroup]="parameterForm"
                   controlName="maxLength"
                   label="Max Length"
-                  
+
                   [type]="'number'"
                   placeholder="Maximum length"
                 ></input-text-box>
@@ -445,7 +445,7 @@
                   [frmGroup]="parameterForm"
                   controlName="minValue"
                   label="Min Value"
-                  
+
                   [type]="'number'"
                   placeholder="Minimum value"
                 ></input-text-box>
@@ -454,7 +454,7 @@
                   [frmGroup]="parameterForm"
                   controlName="maxValue"
                   label="Max Value"
-                  
+
                   [type]="'number'"
                   placeholder="Maximum value"
                 ></input-text-box>
@@ -471,12 +471,12 @@
                   [frmGroup]="parameterForm"
                   [controlName]="'selectOptions'"
                   [label]="getSelectOptionsLabel()"
-                  
+
                   [placeholder]="getSelectOptionsPlaceholder()"
                   [rows]="3"
                   [maxLen]="1000"
                 ></input-text-area>
-                
+
                 @if (!hasDataSource()) {
                   <div class="text-amber-600 text-xs mt-1">
                     <strong>Required:</strong> Either provide Data Source above OR enter static options here
@@ -489,7 +489,7 @@
                 [frmGroup]="parameterForm"
                 controlName="helpText"
                 label="Help Text"
-                
+
                 [maxLength]="200"
                 placeholder="Optional hint for users"
               ></input-text-box>
@@ -535,7 +535,7 @@
             <generic-button
               [label]="isEditingParameter() ? 'Update' : 'Add to List'"
               [icon]="isEditingParameter() ? 'update' : 'add'"
-              
+
               (onClick)="onModalClose()"
               [cssClass]="'bg-blue-600 hover:bg-blue-700 text-white'"
             ></generic-button>

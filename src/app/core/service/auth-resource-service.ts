@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import {Observable, of, tap} from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { AppFunctionsRequest } from '../utils/model/common.model';
 
 @Injectable({
   providedIn: 'root'
@@ -68,15 +69,21 @@ export class AuthResourceService {
     );
   }
 
-  getReportFunctions(functionId?:number, functionName?:string): Observable<any[]> {
-    const url = `${environment.bffUrl}/app-functions?functionType=R&functionId=${functionId?functionId:''}&functionName=${functionName?functionName:''}`;
+  getFilteredFunction(request: AppFunctionsRequest): Observable<any> {
+    let params = new HttpParams();
 
-    return this.http.get<{ data: any[], meta: any }>(url).pipe(
-      map(res => res.data ?? []),
-      catchError(err => {
-        console.error("Error in getReportFunctions:", err);
-        return of([]);
-      })
-    );
+    if (request.appId != null) {
+      params = params.set('appId', request.appId.toString());
+    }
+    if (request.moduleId) {
+      params = params.set('moduleId', request.moduleId);
+    }
+    if (request.functionType) {
+      params = params.set('functionType', request.functionType);
+    }
+
+    const url = `${environment.sentinelUrl}/resource/retrieveResources`;
+    return this.http.get<any>(url, { params });
   }
+
 }

@@ -34,6 +34,7 @@ import { GenericModal } from '../../../common-components/generic-component-type/
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AuthResourceService } from '../../../../core/service/auth-resource-service';
 import { UserService } from '../../../../core/user/user.service';
+import { AppFunctionsRequest } from '../../../../core/utils/model/common.model';
 
 
 /**
@@ -226,24 +227,29 @@ export class ReportParameterListUI implements OnInit {
   /**
    * Setup listener for default value changes
    */
-  private loadReportFunctionsData(): void {
+  private loadReportFunctionsData(appId?: number, moduleId?: string): void {
+    const request: AppFunctionsRequest = {
+      // appId: appId ?? 1,          // default if needed
+      moduleId: moduleId ?? null, // optional
+      functionType: 'R'
+    };
 
-    // Fetch Applications
-    this.authResourceService.getReportFunctions()
+    this.authResourceService.getFilteredFunction(request)
       .pipe(
         catchError((error) => {
           console.error('Error loading applications:', error);
           return of([]);
         })
       )
-      .subscribe((functions) => {
-        console.log(functions);
-        this.functionList = functions.map(app => ({
+      .subscribe((response) => {
+        // Extract functions from response (depends on API)
+        const functions = response.data ?? response;  // <--- declare variable here
+
+        this.functionList = (functions as any[]).map((app: any) => ({
           functionId: app.functionId.toString(),
-          functionName: app.functionName
+          functionName: app.functionNm
         }));
       });
-
   }
 
   /**
@@ -300,20 +306,20 @@ export class ReportParameterListUI implements OnInit {
   /**
    * Setup listener for dataSource field changes
    */
-  private setupDataSourceChangeListener() {
-    this.parameterForm.get('dataSource')?.valueChanges.subscribe(() => {
-      this.updateSelectOptionsValidators();
-    });
+  // private setupDataSourceChangeListener() {
+  //   this.parameterForm.get('dataSource')?.valueChanges.subscribe(() => {
+  //     this.updateSelectOptionsValidators();
+  //   });
 
-    // Also listen to dataType and inputType changes
-    this.parameterForm.get('dataType')?.valueChanges.subscribe(() => {
-      this.updateSelectOptionsValidators();
-    });
+  //   // Also listen to dataType and inputType changes
+  //   this.parameterForm.get('dataType')?.valueChanges.subscribe(() => {
+  //     this.updateSelectOptionsValidators();
+  //   });
 
-    this.parameterForm.get('inputType')?.valueChanges.subscribe(() => {
-      this.updateSelectOptionsValidators();
-    });
-  }
+  //   this.parameterForm.get('inputType')?.valueChanges.subscribe(() => {
+  //     this.updateSelectOptionsValidators();
+  //   });
+  // }
 
   /**
    * Setup function ID listener to populate function name
@@ -756,26 +762,39 @@ export class ReportParameterListUI implements OnInit {
    * On Blur Load function by input string
    */
 
-  loadFunctionById(functionId: number) {
-    this.authResourceService.getReportFunctions(functionId)
+  loadFunctionById(functionId: number, appId?: number, moduleId?: string) {
+    const request: AppFunctionsRequest = {
+      appId: appId ?? 1,        // default appId if needed
+      moduleId: moduleId ?? null,
+      functionType: 'R'         // assuming 'R' for report functions
+    };
+
+    this.authResourceService.getFilteredFunction(request)
       .pipe(
         catchError((error) => {
-          console.error('Error loading applications:', error);
+          console.error('Error loading function by ID:', error);
           return of([]);
         })
       )
-      .subscribe((functions) => {
+      .subscribe((response) => {
+        // Extract data from response
+        const functions = response.data ?? response;
+
         console.log(functions);
-        if(functions?.length>0){
+
+        const matchedFunction = functions.find((f: any) => f.functionId === functionId);
+
+        if (matchedFunction) {
           this.reportForm.patchValue({
-            functionId: functions[0].functionId,
+            functionId: matchedFunction.functionId,
+            functionName: matchedFunction.functionNm,
           });
-        }else{
+        } else {
           this.reportForm.patchValue({
             functionId: '',
+            functionName: '',
           });
         }
-
       });
   }
 
@@ -790,8 +809,8 @@ export class ReportParameterListUI implements OnInit {
         this.currentReportId.set(report.id!);
 
         // Find and set function name
-        const selectedFunction = this.functionList.find(f => f.functionId === report.functionId);
-
+        const selectedFunction = this.functionList.find(f => f.functionId == report.functionId);
+        // console.log('Selected function for report:', selectedFunction);
         // Populate form with fetched report data
         this.reportForm.patchValue({
           id: report.id,
