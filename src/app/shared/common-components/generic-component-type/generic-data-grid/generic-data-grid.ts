@@ -780,42 +780,43 @@ onCheckboxChange(item: T, property: string, checked: boolean, displayIndex: numb
   }
 
   // Sorting
-  // Generate dynamic page size options based on dataset size
-  getPageSizeOptions(): number[] {
-    const customOptions = this.pageSizeOptions();
+getPageSizeOptions(): number[] {
+  const customOptions = this.pageSizeOptions();
+  const dataLength = this._filteredData().length;
 
-    // If custom options are provided, use them
-    if (customOptions && customOptions.length > 0) {
-      return customOptions.sort((a, b) => a - b);
-    }
+  let options: number[] = [];
 
-    // Otherwise, generate smart options based on data size
-    const dataLength = this._filteredData().length;
-    const options: number[] = [];
-
+  if (customOptions && customOptions.length > 0) {
+    options = [...customOptions];
+  } else {
     if (dataLength <= 100) {
-      options.push(5, 10, 25, 50);
+      options = [5, 10, 25, 50];
     } else if (dataLength <= 500) {
-      options.push(10, 25, 50, 100);
+      options = [10, 25, 50, 100];
     } else if (dataLength <= 1000) {
-      options.push(25, 50, 100, 250);
+      options = [25, 50, 100, 250];
     } else if (dataLength <= 5000) {
-      options.push(50, 100, 250, 500);
+      options = [50, 100, 250, 500];
     } else if (dataLength <= 10000) {
-      options.push(100, 250, 500, 1000);
+      options = [100, 250, 500, 1000];
     } else {
-      // For very large datasets (>10k)
-      options.push(250, 500, 1000, 2500);
+      options = [250, 500, 1000, 2500];
     }
-
-    // Always include the current page size if not already there
-    const currentSize = this._pageSize();
-    if (!options.includes(currentSize)) {
-      options.push(currentSize);
-    }
-
-    return options.sort((a, b) => a - b);
   }
+
+  // Always include current page size
+  const currentSize = this._pageSize();
+  if (!options.includes(currentSize)) {
+    options.push(currentSize);
+  }
+
+  //  Add "All" option (data length)
+  if (dataLength > 0 && !options.includes(dataLength)) {
+    options.push(dataLength);
+  }
+
+  return options.sort((a, b) => a - b);
+}
 
   onSort(column: string): void {
     if (this._sortColumn() === column) {
@@ -830,20 +831,26 @@ onCheckboxChange(item: T, property: string, checked: boolean, displayIndex: numb
   }
 
   // Pagination
-  onPageChange(event: PageEvent): void {
+onPageChange(event: PageEvent): void {
+  const dataLength = this._filteredData().length;
+
+  // If "All" selected
+  if (event.pageSize === dataLength) {
+    this._currentPage.set(0);
+  } else {
     this._currentPage.set(event.pageIndex);
-    this._pageSize.set(event.pageSize);
-
-    // Emit pagination info for server-side usage
-    this.onPaginationChange.emit({
-      pageIndex: event.pageIndex,
-      pageSize: event.pageSize,
-      pageNumber: event.pageIndex + 1
-    });
-
-    // NEW: Emit backend-driven pagination state changes
-    this.emitDataGridStateChange();
   }
+
+  this._pageSize.set(event.pageSize);
+
+  this.onPaginationChange.emit({
+    pageIndex: this._currentPage(),
+    pageSize: event.pageSize,
+    pageNumber: this._currentPage() + 1
+  });
+
+  this.emitDataGridStateChange();
+}
 
   /**
    * Emits the current grid state (pagination, sorting, filtering, search)
@@ -1070,16 +1077,12 @@ onCheckboxChange(item: T, property: string, checked: boolean, displayIndex: numb
   getRowStyle(item: T): any {
     for (const designer of this.rowDesignerList()) {
       if (designer.condition(item)) {
-        const style: any = {};
-        if (designer.backgroundColor) style.backgroundColor = designer.backgroundColor;
-        if (designer.textColor) style.color = designer.textColor;
-        if (designer.fontWeight) style.fontWeight = designer.fontWeight;
-        if (designer.borderColor) {
-          style.borderColor = designer.borderColor;
-          style.borderStyle = 'solid'; // Ensure border is visible
-          style.borderWidth = '1px';
-        }
-        return style;
+        return {
+          backgroundColor: designer.backgroundColor,
+          color: designer.textColor,
+          fontWeight: designer.fontWeight,
+          borderColor: designer.borderColor
+        };
       }
     }
 
@@ -1134,13 +1137,6 @@ onCheckboxChange(item: T, property: string, checked: boolean, displayIndex: numb
           break;
         }
       }
-    }
-
-    // Apply row-level styles that affect cells (color, fontWeight)
-    const rowStyles = this.getRowStyle(rowData);
-    if (rowStyles) {
-      if (rowStyles.color) styles.color = rowStyles.color;
-      if (rowStyles.fontWeight) styles.fontWeight = rowStyles.fontWeight;
     }
 
     return styles;

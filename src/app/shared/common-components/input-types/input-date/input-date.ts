@@ -118,7 +118,7 @@ export class InputDate {
             if (this.includeTime()===1) {
               const isoString = this.convertDateToISO8601(value);
               control.setValue(isoString, { emitEvent: false });
-              
+
               // Update the input element to show the display format
               const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
               const displayValue = `${String(value.getDate()).padStart(2, '0')} ${monthNames[value.getMonth()]}, ${value.getFullYear()}`;
@@ -129,7 +129,7 @@ export class InputDate {
             } else {
               const isoDateTime = this.convertDateToISO8601DateTime(value);
               control.setValue(isoDateTime, { emitEvent: false });
-              
+
               // Update the input element to show the display format
               const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
               const displayValue = `${String(value.getDate()).padStart(2, '0')} ${monthNames[value.getMonth()]}, ${value.getFullYear()}`;
@@ -140,7 +140,7 @@ export class InputDate {
             }
           }
         });
-        
+
         // Clean up subscription when effect is destroyed
         return () => subscription.unsubscribe();
       }
@@ -186,7 +186,7 @@ onDateSelected(event: any): void {
     let date = event.value as Date;
     const selectedYear = date.getFullYear();
     const control = this.frmGroup().get(this.controlName());
-    
+
 
     if (!this.includeTime()) {
       date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -196,7 +196,7 @@ onDateSelected(event: any): void {
       if (selectedYear < 1900 || selectedYear > 2030) {
         // Don't set the invalid date
         control.setValue('');
-        
+
         // Set specific error for year range
         control.setErrors({
           ...control.errors,
@@ -206,13 +206,13 @@ onDateSelected(event: any): void {
             maxYear: 2030
           }
         });
-        
+
         // Clear the input display
         const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
         if (inputElement) {
           inputElement.value = '';
         }
-        
+
         // Show user-friendly message
         this.showYearValidationMessage(selectedYear);
         return;
@@ -253,7 +253,7 @@ onDateSelected(event: any): void {
         }
         return;
       }
-      
+
       // Clear any existing year range, minDate, or maxDate errors
       if (control.errors?.['yearOutOfRange'] || control.errors?.['minDate'] || control.errors?.['maxDate']) {
         const errors = { ...control.errors };
@@ -262,25 +262,28 @@ onDateSelected(event: any): void {
         delete errors['maxDate'];
         control.setErrors(Object.keys(errors).length ? errors : null);
       }
-      
+
       // Set the valid date
       control.setValue(date);
-      
+
       // Update the input display immediately
       const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       const displayValue = `${String(date.getDate()).padStart(2, '0')} ${monthNames[date.getMonth()]}, ${date.getFullYear()}`;
-      
+
       const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
       if (inputElement) {
         inputElement.value = displayValue;
       }
+
+     
+      this.onBlur();
     }
   }
 }
 
 private showYearValidationMessage(selectedYear: number): void {
   let message = '';
-  
+
   if (selectedYear < 1900) {
     message = `Year ${selectedYear} is too old. Please select a year between 1900 and 2030.`;
   } else if (selectedYear > 2030) {
@@ -288,7 +291,7 @@ private showYearValidationMessage(selectedYear: number): void {
   }
 
   console.warn(message);
-  
+
 }
 
  onKeyDown(event: KeyboardEvent): void {
@@ -319,7 +322,7 @@ private showYearValidationMessage(selectedYear: number): void {
       event.preventDefault();
       return;
     }
-    
+
     // Check if adding this separator would create consecutive separators
     const newValue = currentValue.substring(0, cursorPosition) + separator + currentValue.substring(cursorPosition);
     if (this.hasConsecutiveSeparators(newValue)) {
@@ -356,15 +359,15 @@ private showYearValidationMessage(selectedYear: number): void {
 // onInputChange(event: Event): void {
 //   const input = event.target as HTMLInputElement;
 //   let value = input.value;
-  
+
 //   // Ensure we're working with a string
 //   if (typeof value !== 'string') {
 //     value = String(value || '');
 //   }
-  
+
 //   const format = this.dateFormat();
 //   const control = this.frmGroup().get(this.controlName());
-  
+
 //   // Handle the 'DD MMM, YYYY' display format
 //   if (format === 'DD MMM, YYYY') {
 //     // Allow letters, numbers, spaces, and commas for month abbreviation format
@@ -385,7 +388,7 @@ private showYearValidationMessage(selectedYear: number): void {
 //     // Remove any characters that are not numbers or the expected separator
 //     const separator = this.getDateSeparator();
 //     const cleanValue = value.replace(new RegExp(`[^0-9\\${separator}]`, 'g'), '');
-    
+
 //     if (cleanValue !== value) {
 //       input.value = cleanValue;
 //       control?.setValue(cleanValue);
@@ -407,7 +410,7 @@ private showYearValidationMessage(selectedYear: number): void {
 //       }
 //     }
 //   }
-  
+
 //   // Only validate if the input looks like it might be complete or nearly complete
 //   if (value.length > 0) {
 //     if (!this.isPartialInputValid(value)) {
@@ -425,7 +428,7 @@ private hasConsecutiveSeparators(value: string): boolean {
 
 private hasInvalidSeparatorPattern(value: string): boolean {
   const separator = this.getDateSeparator();
-  
+
   // Check if starts or ends with separator
   if (value.startsWith(separator) ) {
     return true; // Allow trailing separator during typing
@@ -437,7 +440,7 @@ private hasInvalidSeparatorPattern(value: string): boolean {
   }
 
   if (value.endsWith(separator)) {
-    return false; 
+    return false;
   }
 
   // Check if there are more than 2 separators
@@ -445,7 +448,7 @@ private hasInvalidSeparatorPattern(value: string): boolean {
   if (separatorCount > 2) {
     return true;
   }
-  
+
   // Check for empty segments (like "12//12" or "12/12/")
   const parts = value.split(separator);
   let emptySegments = 0;
@@ -454,16 +457,16 @@ private hasInvalidSeparatorPattern(value: string): boolean {
       emptySegments++;
     }
   }
-  
+
   // Allow one empty segment at the end (for typing), but not in the middle
   if (emptySegments > 1) {
     return true;
   }
-  
+
   if (emptySegments === 1 && parts[parts.length - 1] !== '') {
     return true; // Empty segment in the middle
   }
-  
+
   return false;
 }
 
@@ -472,44 +475,44 @@ private hasInvalidSeparatorPattern(value: string): boolean {
 
   // onKeyDown(event: KeyboardEvent): void {
   //   const format = this.dateFormat();
-    
+
   //   // Handle the 'DD MMM, YYYY' display format
   //   if (format === 'DD MMM, YYYY') {
   //     const allowedKeys = [
   //       'Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'Home', 'End',
   //       'ArrowLeft', 'ArrowRight', 'Clear', 'Copy', 'Paste', ' '
   //     ];
-      
+
   //     const isNumberKey = (event.key >= '0' && event.key <= '9');
   //     const isLetterKey = (event.key >= 'a' && event.key <= 'z') || (event.key >= 'A' && event.key <= 'Z');
   //     const isCommaKey = event.key === ',';
-      
+
   //     if (!allowedKeys.includes(event.key) && !isNumberKey && !isLetterKey && !isCommaKey) {
   //       event.preventDefault();
   //       return;
   //     }
   //     return; // Don't apply auto-separator logic for this format
   //   }
-    
+
   //   // Original logic for other formats
   //   const allowedKeys = [
   //     'Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'Home', 'End',
   //     'ArrowLeft', 'ArrowRight', 'Clear', 'Copy', 'Paste'
   //   ];
-    
+
   //   const isNumberKey = (event.key >= '0' && event.key <= '9');
   //   const isSeparatorKey = event.key === this.getDateSeparator();
-    
+
   //   if (!allowedKeys.includes(event.key) && !isNumberKey && !isSeparatorKey) {
   //     event.preventDefault();
   //     return;
   //   }
-    
+
   //   // Auto-add separators but be less aggressive
   //   const input = event.target as HTMLInputElement;
   //   const currentValue = input.value;
   //   const cursorPosition = input.selectionStart || 0;
-    
+
   //   if (isNumberKey) {
   //     const newValue = currentValue.substring(0, cursorPosition) + event.key + currentValue.substring(cursorPosition);
   //     console.log("New value:", newValue);
@@ -520,7 +523,7 @@ private hasInvalidSeparatorPattern(value: string): boolean {
   //       const valueWithSeparator = currentValue + event.key + separator;
   //       input.value = valueWithSeparator;
   //       input.setSelectionRange(valueWithSeparator.length, valueWithSeparator.length);
-        
+
   //       // Trigger Angular change detection
   //       const changeEvent = new Event('input', { bubbles: true });
   //       input.dispatchEvent(changeEvent);
@@ -531,15 +534,15 @@ private hasInvalidSeparatorPattern(value: string): boolean {
   onInputChange(event: Event): void {
   const input = event.target as HTMLInputElement;
   let value = input.value;
-  
+
   // Ensure we're working with a string
   if (typeof value !== 'string') {
     value = String(value || '');
   }
-  
+
   const format = this.dateFormat();
   const control = this.frmGroup().get(this.controlName());
-  
+
   // Handle the 'DD MMM, YYYY' display format
   if (format === 'DD MMM, YYYY') {
     // Allow letters, numbers, spaces, and commas for month abbreviation format
@@ -562,7 +565,7 @@ private hasInvalidSeparatorPattern(value: string): boolean {
     // Remove any characters that are not numbers or the expected separator
     const separator = this.getDateSeparator();
     const cleanValue = value.replace(new RegExp(`[^0-9\\${separator}]`, 'g'), '');
-    
+
     if (cleanValue !== value) {
       input.value = cleanValue;
       control?.setValue(cleanValue);
@@ -578,7 +581,7 @@ private hasInvalidSeparatorPattern(value: string): boolean {
       }
     }
   }
-  
+
   // Only validate if the input looks like it might be complete or nearly complete
   if (value.length > 0) {
     if (!this.isPartialInputValid(value)) {
@@ -591,10 +594,10 @@ private hasInvalidSeparatorPattern(value: string): boolean {
 getDetailedErrorMessage(): string {
   const control = this.frmGroup().get(this.controlName());
   if (!control || !control.touched) return '';
-  
+
   const errors = control.errors;
   if (!errors) return '';
-  
+
   // Check for required error first
   if (errors['required']) {
     return this.hasCustomMessage('required')
@@ -675,7 +678,7 @@ getDetailedErrorMessage(): string {
           return `Date must be on or before ${maxDateStr}`;
         })();
   }
-  
+
   return 'Please enter a valid date';
 }
 onFocus(event: FocusEvent): void {
@@ -724,11 +727,11 @@ private isISOFormat(value: string): boolean {
 private convertDateObjectToInputFormat(date: Date): string | null {
   const format = this.dateFormat();
   const separator = this.getDateSeparator();
-  
+
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
-  
+
   switch (format) {
     case 'DD/MM/YYYY':
     case 'DD-MM-YYYY':
@@ -801,15 +804,15 @@ private convertDisplayFormatToInputFormat(displayValue: string): string | null {
 onBlur(): void {
   const control = this.frmGroup().get(this.controlName());
   const value = control ? control.value : undefined;
-  this.onBlurred.emit(value);  
+  this.onBlurred.emit(value);
 
   if (control && control.value) {
     let stringValue: string;
-    
+
     // Handle Date objects
     if (control.value instanceof Date) {
       const date = control.value as Date;
-      
+
       // Validate against minDate
       const minDate = this.getMinDate();
       if (minDate) {
@@ -856,13 +859,13 @@ onBlur(): void {
 
       const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       stringValue = `${String(date.getDate()).padStart(2, '0')} ${monthNames[date.getMonth()]}, ${date.getFullYear()}`;
-      
+
       // Update the input element to show the display format
       const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
       if (inputElement) {
         inputElement.value = stringValue;
       }
-      
+
       // Clear any min/max date errors if date is valid
       if (control.errors?.['minDate'] || control.errors?.['maxDate']) {
         const errors = { ...control.errors };
@@ -870,20 +873,20 @@ onBlur(): void {
         delete errors['maxDate'];
         control.setErrors(Object.keys(errors).length ? errors : null);
       }
-      
+
       return;
     } else {
       stringValue = typeof control.value === 'string' ? control.value : String(control.value);
     }
-    
+
     // Only validate complete dates on blur - don't clear partial input
     if (this.isCompleteInputDate(stringValue)) {
       const format = this.dateFormat();
       let isValid = false;
-      
+
       if (format === 'DD MMM, YYYY') {
         isValid = this.isValidMonthAbbreviationFormat(stringValue);
-        
+
         // If valid, validate against min/max dates
         if (isValid) {
           const match = stringValue.match(/^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/);
@@ -891,16 +894,16 @@ onBlur(): void {
             const day = parseInt(match[1]);
             const monthAbbr = match[2].toLowerCase();
             const year = parseInt(match[3]);
-            
+
             const monthMap: { [key: string]: number } = {
               'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
               'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12
             };
-            
+
             const month = monthMap[monthAbbr];
             if (month) {
               const dateObj = new Date(year, month - 1, day);
-              
+
               // Validate against minDate
               const minDate = this.getMinDate();
               if (minDate) {
@@ -961,7 +964,7 @@ onBlur(): void {
         }
       } else {
         isValid = this.isValidDateFormat(stringValue);
-        
+
         // If valid and not already in display format, convert to display format
         if (isValid && !this.isDisplayFormat(stringValue)) {
           const displayValue = this.convertInputFormatToDisplayFormat(stringValue);
@@ -1018,7 +1021,7 @@ onBlur(): void {
               if (inputElement) {
                 inputElement.value = displayValue;
               }
-              
+
               // Store the Date object in the control for consistency
               setTimeout(() => {
                 control.setValue(dateObj, { emitEvent: false });
@@ -1034,7 +1037,7 @@ onBlur(): void {
           }
         }
       }
-      
+
       if (!isValid) {
         this.clearField();
       }
@@ -1046,11 +1049,11 @@ private createDateFromInputString(inputValue: string): Date | null {
   const format = this.dateFormat();
   const separator = this.getDateSeparator();
   const parts = inputValue.split(separator);
-  
+
   if (parts.length !== 3) return null;
-  
+
   let day: number, month: number, year: number;
-  
+
   switch (format) {
     case 'DD/MM/YYYY':
     case 'DD-MM-YYYY':
@@ -1073,9 +1076,9 @@ private createDateFromInputString(inputValue: string): Date | null {
     default:
       return null;
   }
-  
+
   if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
-  
+
   return new Date(year, month - 1, day);
 }
 
@@ -1083,11 +1086,11 @@ private convertInputFormatToDisplayFormat(inputValue: string): string | null {
   const format = this.dateFormat();
   const separator = this.getDateSeparator();
   const parts = inputValue.split(separator);
-  
+
   if (parts.length !== 3) return null;
-  
+
   let day: string, month: string, year: string;
-  
+
   switch (format) {
     case 'DD/MM/YYYY':
     case 'DD-MM-YYYY':
@@ -1104,43 +1107,43 @@ private convertInputFormatToDisplayFormat(inputValue: string): string | null {
     default:
       return null;
   }
-  
+
   // Convert month number to abbreviation
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const monthNum = parseInt(month);
-  
+
   if (isNaN(monthNum) || monthNum < 1 || monthNum > 12) return null;
-  
+
   const monthAbbr = monthNames[monthNum - 1];
   const dayNum = parseInt(day);
-  
+
   if (isNaN(dayNum)) return null;
-  
+
   return `${dayNum.toString().padStart(2, '0')} ${monthAbbr}, ${year}`;
 }
 
   private isCompleteInputDate(value: string): boolean {
     if (!value) return false;
-    
+
     const format = this.dateFormat();
-    
+
     // Handle the 'DD MMM, YYYY' display format
     if (format === 'DD MMM, YYYY') {
       // Check if it matches the pattern "18 Aug, 2025" or "18 Aug 2025"
       const match = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/);
       return !!match;
     }
-    
+
     const separator = this.getDateSeparator();
     const parts = value.split(separator);
-    
+
     // Don't validate if it ends with separator (still typing)
     if (value.endsWith(separator)) return false;
-    
+
     // Check if we have 3 non-empty parts
     if (parts.length !== 3) return false;
-    
+
     // Check that all parts have content and reasonable lengths
     if (format.startsWith('YYYY')) {
       return parts[0].length === 4 && parts[1].length >= 1 && parts[1].length <= 2 && parts[2].length >= 1 && parts[2].length <= 2;
@@ -1155,11 +1158,11 @@ private clearField(): void {
     // Only clear if the field is not currently focused
     const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
     const isCurrentlyFocused = inputElement === document.activeElement;
-    
+
     if (!isCurrentlyFocused) {
       control.setValue('');
       control.markAsTouched();
-      
+
       // Clear the input element as well
       if (inputElement) {
         inputElement.value = '';
@@ -1184,43 +1187,43 @@ private clearField(): void {
 
 private isPartialInputValid(value: string): boolean {
   if (!value) return true;
-  
+
   const format = this.dateFormat();
-  
+
   // Handle the 'DD MMM, YYYY' display format
   if (format === 'DD MMM, YYYY') {
     return this.isPartialMonthAbbreviationInputValid(value);
   }
-  
+
   const separator = this.getDateSeparator();
-  
+
   // Check for consecutive separators
   if (this.hasConsecutiveSeparators(value)) {
     return false;
   }
-  
+
   // Check for invalid separator patterns
   if (this.hasInvalidSeparatorPattern(value)) {
     return false;
   }
-  
+
   const parts = value.split(separator);
-  
+
   // Allow trailing separators during typing (e.g., "02/03/")
   if (value.endsWith(separator)) {
     return true;
   }
-  
+
   // Very lenient validation for partial input - only check obvious errors
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i].trim();
-    
+
     // Allow completely empty parts during typing
     if (part === '') continue;
-    
+
     const num = parseInt(part);
     if (isNaN(num)) return false;
-    
+
     // Basic range checks based on position and format
     if (format.startsWith('YYYY')) {
       if (i === 0) { // Year position
@@ -1232,7 +1235,7 @@ private isPartialInputValid(value: string): boolean {
       } else if (i === 1) { // Month position
         if (part.length > 2) return false;
         if (part.length === 2 && (num > 12 || num < 1)) return false;
-      } else if (i === 2) { // Day position  
+      } else if (i === 2) { // Day position
         if (part.length > 2) return false;
         if (part.length === 2 && (num > 31 || num < 1)) return false;
         if (part.length === 1 && num > 3) return false;
@@ -1269,7 +1272,7 @@ private isPartialInputValid(value: string): boolean {
       }
     }
   }
-  
+
   return true;
 }
 
@@ -1302,7 +1305,7 @@ private isPartialInputValid(value: string): boolean {
         return parts[1].length === 2; // After month/day
       }
     }
-    
+
     return false;
   }
 
@@ -1310,18 +1313,18 @@ private isPartialInputValid(value: string): boolean {
 
 private isValidDateFormat(value: any): boolean {
   if (!value) return true; // Empty is valid (let required validator handle it)
-  
+
   // Convert to string if it's not already
   const stringValue = typeof value === 'string' ? value : String(value);
-  
+
   const format = this.dateFormat();
   const separator = format.includes('/') ? '/' : '-';
   const parts = stringValue.split(separator);
-  
+
   if (parts.length !== 3) return false;
-  
+
   let day: number, month: number, year: number;
-  
+
   switch (format) {
     case 'DD/MM/YYYY':
     case 'DD-MM-YYYY':
@@ -1338,69 +1341,69 @@ private isValidDateFormat(value: any): boolean {
     default:
       return false;
   }
-  
+
   // Check for NaN values
   if (isNaN(day) || isNaN(month) || isNaN(year)) return false;
-  
+
   // Validate ranges
   if (year < 1900 || year > 2030) return false;
   if (month < 1 || month > 12) return false;
   if (day < 1 || day > 31) return false;
-  
+
   // FIXED: Proper date validation - this will catch invalid dates like June 31
   const date = new Date(year, month - 1, day);
-  return date.getFullYear() === year && 
-         date.getMonth() === (month - 1) && 
+  return date.getFullYear() === year &&
+         date.getMonth() === (month - 1) &&
          date.getDate() === day;
 }
 
 private isValidMonthAbbreviationFormat(value: string): boolean {
   // Expected format: "18 Aug, 2025" or "18 Aug 2025"
   const match = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/);
-  
+
   if (!match) return false;
-  
+
   const day = parseInt(match[1]);
   const monthAbbr = match[2].toLowerCase();
   const year = parseInt(match[3]);
-  
+
   // Check for NaN values
   if (isNaN(day) || isNaN(year)) return false;
-  
+
   // Month abbreviation mapping
   const monthMap: { [key: string]: number } = {
     'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
     'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12
   };
-  
+
   const month = monthMap[monthAbbr];
   if (month === undefined) return false;
-  
+
   // Validate ranges
   if (year < 1900 || year > 2030) return false;
   if (month < 1 || month > 12) return false;
   if (day < 1 || day > 31) return false;
-  
+
   // FIXED: Proper date validation - this will catch invalid dates like "31 Jun, 2025"
   const date = new Date(year, month - 1, day);
-  return date.getFullYear() === year && 
-         date.getMonth() === (month - 1) && 
+  return date.getFullYear() === year &&
+         date.getMonth() === (month - 1) &&
          date.getDate() === day;
 }
 
 private isPartialMonthAbbreviationInputValid(value: string): boolean {
   // Allow partial input during typing
   if (!value.trim()) return true;
-  
+
   // For partial input, be more lenient
   // Check if it's a complete date first
   const completeMatch = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/);
-  
+
   if (completeMatch) {
     // If it looks complete, validate it properly
     return this.isValidMonthAbbreviationFormat(value);
   }
-  
+
   // For partial input, just check basic patterns
   const partialPattern = /^(\d{0,2})(\s+([A-Za-z]{0,3})(\s*,?\s*(\d{0,4}))?)?$/;
   const match = value.match(partialPattern);
