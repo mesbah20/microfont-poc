@@ -26,6 +26,8 @@ import { FormControlHighlightDirective } from '../../../directives/form-control-
 import { InputTextBox } from '../../../common-components/input-types/input-text-box/input-text-box';
 import { ApprovalRequest } from '../../../models/approval';
 import { GenericButton } from '../../../common-components/generic-component-type/generic-button/generic-button';
+import { UserService } from '../../../../core/user/user.service';
+import { User } from '../../../../core/user/user.types';
 
 type DiffMap = Record<string, boolean>;
 
@@ -48,7 +50,10 @@ export class ApprovalMovement implements OnInit, AfterViewInit {
     private diffMap: DiffMap = {};
     private setId: number;
     private approvalRequest: ApprovalRequest;
+    userId: string = '';
+    officeId: string = '';
     rejectReason: string = '';
+
     businessHeaderPanel: WritableSignal<boolean> = signal(true);
     constructor(
         private registry: ComponentRegistry,
@@ -57,6 +62,7 @@ export class ApprovalMovement implements OnInit, AfterViewInit {
         private router: Router,
         private location: Location,
         private hl: HighlightService,
+        private userService: UserService
     ) {
         const nav = this.router.getCurrentNavigation();
         this.data = nav?.extras.state?.['data'] || null;
@@ -83,7 +89,15 @@ export class ApprovalMovement implements OnInit, AfterViewInit {
                 return;
             }
         }
+
+         this.userService.user$.subscribe((user: User) => {
+              this.userId = user.username;
+              this.officeId = user.officeId;
+            });
+
         this.setId = this.data.setId;
+
+        console.log('user id : ', this.userId);
         console.log('data line movement : ', this.data);
         this.data.currentUxContent = this.data.currentContext || this.safeParse(this.data.currentUxContent);
         this.data.previousUxContent = this.data.previousContext || this.safeParse(this.data.previousUxContent);
@@ -190,20 +204,20 @@ export class ApprovalMovement implements OnInit, AfterViewInit {
 
     onApprove() {
         this.approvalService.performApprovalOperation({
-            officeId: Number(sessionStorage.getItem('officeId')),
+            officeId: Number(this.officeId),
             appId: 1,
             setId: this.setId,
             approvalLevel: 0,
             nextApprovalLevel: 1,
             remarks: this.rejectReason,
-            userId: sessionStorage.getItem('userId') ?? '',
+            userId: this.userId,
             approvalFlag: 1
         }).subscribe({
             next: res => {
                 console.log('Approval success:');
                 this.toastr.success('Approved successfully');
 
-                this.router.navigate(['/approval-items']);
+                this.router.navigate(['/poc/approval-items']);
             },
             error: err => {
                 console.error('Approval failed:', err);
@@ -217,19 +231,19 @@ export class ApprovalMovement implements OnInit, AfterViewInit {
         }
         else {
             this.approvalService.performApprovalOperation({
-                officeId: Number(sessionStorage.getItem('officeId')),
+                officeId: Number(this.officeId),
                 appId: 1,
                 setId: this.setId,
                 approvalLevel: 0,
                 nextApprovalLevel: 1,
                 remarks: this.rejectReason,
-                userId: sessionStorage.getItem('userId') ?? '',
+                userId: this.userId,
                 approvalFlag: 2
             }).subscribe({
                 next: res => {
                     console.log('Approval success:');
                     this.toastr.success('Approved successfully');
-                    this.router.navigate(['/approval-items']);
+                    this.router.navigate(['/poc/approval-items']);
                 },
                 error: err => {
                     console.error('Approval failed:', err);
@@ -247,19 +261,19 @@ export class ApprovalMovement implements OnInit, AfterViewInit {
         }
         else {
             this.approvalService.performApprovalOperation({
-                officeId: Number(sessionStorage.getItem('officeId')),
+                officeId: Number(this.officeId),
                 appId: 1,
                 setId: this.setId,
                 approvalLevel: 0,
                 nextApprovalLevel: 1,
                 remarks: this.rejectReason,
-                userId: sessionStorage.getItem('userId') ?? '',
+                userId: this.userId,
                 approvalFlag: 3
             }).subscribe({
                 next: res => {
                     console.log('Approval success:');
                     this.toastr.success('Approved successfully');
-                    this.router.navigate(['/approval-items']);
+                    this.router.navigate(['/poc/approval-items']);
                 },
                 error: err => {
                     console.error('Approval failed:', err);
@@ -319,4 +333,4 @@ function buildDiffMap(
 
     walk(a, b, base);
     return map;
-}
+} 
