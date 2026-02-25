@@ -1070,12 +1070,16 @@ onCheckboxChange(item: T, property: string, checked: boolean, displayIndex: numb
   getRowStyle(item: T): any {
     for (const designer of this.rowDesignerList()) {
       if (designer.condition(item)) {
-        return {
-          backgroundColor: designer.backgroundColor,
-          color: designer.textColor,
-          fontWeight: designer.fontWeight,
-          borderColor: designer.borderColor
-        };
+        const style: any = {};
+        if (designer.backgroundColor) style.backgroundColor = designer.backgroundColor;
+        if (designer.textColor) style.color = designer.textColor;
+        if (designer.fontWeight) style.fontWeight = designer.fontWeight;
+        if (designer.borderColor) {
+          style.borderColor = designer.borderColor;
+          style.borderStyle = 'solid'; // Ensure border is visible
+          style.borderWidth = '1px';
+        }
+        return style;
       }
     }
 
@@ -1130,6 +1134,13 @@ onCheckboxChange(item: T, property: string, checked: boolean, displayIndex: numb
           break;
         }
       }
+    }
+
+    // Apply row-level styles that affect cells (color, fontWeight)
+    const rowStyles = this.getRowStyle(rowData);
+    if (rowStyles) {
+      if (rowStyles.color) styles.color = rowStyles.color;
+      if (rowStyles.fontWeight) styles.fontWeight = rowStyles.fontWeight;
     }
 
     return styles;
