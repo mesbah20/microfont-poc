@@ -175,6 +175,21 @@
         min-height: 10px !important;
         padding: 12px;
 
+        &.numeric-cell {
+          text-align: right;
+        }
+
+        .header-content {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          width: 100%;
+
+          &.numeric-cell {
+            justify-content: flex-end;
+          }
+        }
+
         &.sortable {
           cursor: pointer;
           user-select: none;
@@ -184,9 +199,7 @@
           }
 
           .header-content {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            width: 100%; // ensure sortable header content fills cell
             // border: 1px solid brown;
 
             .sort-icon {
@@ -222,7 +235,10 @@
         text-align: left;
         vertical-align: middle;
         .numeric {
-          font-family: 'Roboto Mono', monospace;
+          text-align: right;
+        }
+
+        &.numeric-cell {
           text-align: right;
         }
 
