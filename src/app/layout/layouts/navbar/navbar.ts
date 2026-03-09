@@ -64,7 +64,11 @@ export class Navbar {
       this.updatePageNameFromRoute();
     });
 
-    // Immediately resolve page name for the CURRENT route (handles full page reloads / URL bar changes)
+    // Proactively initialize page name from local storage to prevent flashing empty
+    // when a page is manually reloaded
+    this.sidebarService.initializePageName();
+    
+    // Attempt to resolve immediately in case resources are already available
     const currentUrl = this.router.url;
     if (currentUrl.includes('/landing/home')) {
       this.sidebarService.setCurrentPageName('');
@@ -75,30 +79,29 @@ export class Navbar {
     // Subscribe for subsequent in-app navigations
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(() => {
-        const url = this.router.url;
+      .subscribe((event: any) => {
+        const url = event.urlAfterRedirects || this.router.url;
 
         if (url.includes('/landing/home')) {
           this.sidebarService.setCurrentPageName('');
           return;
         }
 
-        this.updatePageNameFromRoute();
+        this.updatePageNameFromRoute(url);
       });
   }
 
 
 
 
-  private updatePageNameFromRoute() {
+  private updatePageNameFromRoute(urlOverride?: string) {
     try {
-      const currentUrl = this.router.url;
+      const currentUrl = urlOverride || this.router.url;
       console.log('Current URL:', currentUrl);
 
       const resourceListString = localStorage.getItem('resourceList');
       if (!resourceListString) {
         console.log('No resourceList found');
-        this.sidebarService.setCurrentPageName('');
         return;
       }
 
@@ -106,13 +109,36 @@ export class Navbar {
 
       // Find matching function based on current route
       const matchingFunction = resourceList.find((item: any) => {
-        if (item?.attributes?.functionId && item?.attributes?.functionName) {
+        if (!item?.attributes?.functionName) return false;
+        
+        const currentPath = currentUrl.split('?')[0].toLowerCase();
+        
+        // Match against routePath
+        const routePathStr = Array.isArray(item.routePath) ? item.routePath[0] : item.routePath;
+        if (routePathStr) {
+           const normRoutePath = (routePathStr.startsWith('/') ? routePathStr : '/' + routePathStr).toLowerCase();
+           if (currentPath === normRoutePath || currentPath.startsWith(normRoutePath + '/')) {
+              return true;
+           }
+        }
+        
+        // Match against uris
+        const urisStr = Array.isArray(item.uris) ? item.uris[0] : item.uris;
+        if (urisStr) {
+           const normUris = (urisStr.startsWith('/') ? urisStr : '/' + urisStr).toLowerCase();
+           if (currentPath === normUris || currentPath.startsWith(normUris + '/')) {
+              return true;
+           }
+        }
+
+        // Fallback to functionId
+        if (item?.attributes?.functionId) {
           const functionId = item.attributes.functionId.toLowerCase();
-          const currentPath = currentUrl.toLowerCase();
           return currentPath.includes(functionId) ||
             currentPath.includes(functionId.replace(/[^a-z0-9]/g, '')) ||
             this.isRouteMatch(currentPath, functionId);
         }
+        
         return false;
       });
 
@@ -122,7 +148,9 @@ export class Navbar {
         );
       } else {
         // Clear stale page name when no match is found for the new route
-        this.sidebarService.setCurrentPageName('');
+        // EXCEPT on initial load where resourceList or Angular routing might be out of sync
+        // Instead of aggressively clearing, we leave whatever was restored from localStorage,
+        // because we explicitly clear for the home page elsewhere.
       }
 
 

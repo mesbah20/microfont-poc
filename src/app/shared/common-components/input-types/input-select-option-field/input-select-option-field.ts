@@ -56,7 +56,6 @@ export class InputSelectOptionField implements OnInit {
 
   private _lastControlValue: any = '';
   private _lastOptionsRef: Option[] | null = null;
-  private _isMouseDownOnOption = false; // NEW: Track mouse interaction
 
   constructor() {
     effect(() => {
@@ -176,17 +175,10 @@ export class InputSelectOptionField implements OnInit {
 
   // NEW: Handle mousedown on dropdown options
   onOptionMouseDown(event: MouseEvent): void {
-    this._isMouseDownOnOption = true;
     event.preventDefault(); // Prevent input blur
   }
 
   onInputBlur(): void {
-    // NEW: Don't close if user is clicking on an option
-    if (this._isMouseDownOnOption) {
-      this._isMouseDownOnOption = false;
-      return;
-    }
-
     setTimeout(() => {
       this.closeDropdown();
       if (this.searchable()) {

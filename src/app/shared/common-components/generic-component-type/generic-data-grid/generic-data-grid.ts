@@ -266,6 +266,12 @@ export class GenericDataGrid<T extends Record<string, any> = any> implements OnI
     pageNumber: number;
   }>();
 
+  readonly onRowEditStart = output<{
+  rowData: T;
+  rowIndex: number;
+  displayIndex: number;
+}>();
+
   // NEW: Backend-driven pagination state change event
   /**
    * Emitted when pagination state changes (page, sort, filter, search)
@@ -929,6 +935,13 @@ onPageChange(event: PageEvent): void {
     this._editingRow.set(index);
     const rowData = { ...this.displayedData()[index] };
     this._editingData.set(rowData);
+
+  //  Emit the row being edited with full row data
+  this.onRowEditStart.emit({
+    rowData: rowData,
+    rowIndex: this._currentPage() * this._pageSize() + index, // absolute index in filtered data
+    displayIndex: index // index on current page
+  });
 
     // Create form group for time and date fields
     const formControls: any = {};
