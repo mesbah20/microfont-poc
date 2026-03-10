@@ -13,6 +13,8 @@ export class ExpansionPanelHeader {
   // htmlElement = input.required<any>();
   panelTitle = input<string>();
   isOpenSignal = input.required<WritableSignal<boolean>>();
+  private static nextId = 0;
+  panelId = `expansion-header-${ExpansionPanelHeader.nextId++}`;
 
   togglePanel() {
     const sig = this.isOpenSignal();

@@ -12,6 +12,8 @@ export class ExpansionSubPanelHeader {
   // htmlElement = input.required<any>();
   readonly subPanelTitle = input<string>();
   isOpenSignal = input.required<WritableSignal<boolean>>();
+  private static nextId = 0;
+  panelId = `expansion-header-${ExpansionSubPanelHeader.nextId++}`;
 
   // Optional action button properties
   readonly isButton = input<boolean>(false);

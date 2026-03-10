@@ -1,4 +1,4 @@
-<div class="expansion-sub-header" (click)="togglePanel()">
+<div [attr.panelId]="panelId" class="expansion-sub-header" (click)="togglePanel()">
   <div class="flex gap-2 items-center relative justify-between">
     <div class="flex gap-2 items-center">
       <div class="w-5 h-5 mr-3 -mt-[1px]">
@@ -45,7 +45,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" [class.rotate-180]="isOpenSignal()()"  class=" transition-transform duration-200" height="24px" viewBox="0 -960 960 960"  fill="black"><path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/></svg>
 
 
-      
+
     </div>
   </div>
 </div>

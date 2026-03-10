@@ -2157,6 +2157,14 @@
       dd(){
         alert('dd');
       }
+
+      handleRowEditStart(event: { rowData: any; rowIndex: number; displayIndex: number }) {
+  console.log('Editing row data:', event.rowData);
+  console.log('Absolute index:', event.rowIndex);
+  console.log('Page index:', event.displayIndex);
+
+
+}
     // Row-level action visibility for the transaction grid
     private getTransactionActionVisibility(row: any) {
       return {
