@@ -1,4 +1,4 @@
-﻿import {Component, effect, inject, signal, Input} from '@angular/core';
+﻿import {Component, effect, inject, signal, Input, computed} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatDialog} from '@angular/material/dialog';
 import { FormGroup } from '@angular/forms';
@@ -6,6 +6,7 @@ import { ConfirmationDialogue } from '../../../../../shared/common-components/co
 import { FormGroupSignal } from '../../../../../shared/constant/button-signals.constant';
 import { ActivityLogService } from '../../../../../shared/services/activity-log.service';
 import { LoaderService } from '../../../../../shared/services/loader.service';
+import { BrandingService } from '../../../../../core/services/branding.service';
 
 @Component({
   selector: 'app-delete',
@@ -22,6 +23,8 @@ export class Delete {
   frmGroup = signal<FormGroup>(FormGroupSignal());
   private activityLog = inject(ActivityLogService);
   private loaderService = inject(LoaderService);
+  private branding = inject(BrandingService);
+  protected readonly iconPath = computed(() => this.branding.iconsPath());
    constructor() {
     effect(() => {
       const formGroup = FormGroupSignal();

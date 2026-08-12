@@ -20,6 +20,25 @@
   --theme-text-light: #6b7280;
   --theme-btn: #096EFA;
   --theme-border: #e5e7eb;
+
+  /* Bank brand tokens — defaults match the active CBPLC palette.
+     BrandingService pushes the real values onto :root on bootstrap,
+     so these are just fallbacks for the brief moment before the
+     manifest has loaded. */
+  --brand-primary: #940103;
+  --brand-primary-dark: #6a0306;
+  --brand-primary-deep: #1a0303;
+  --brand-primary-hover: #7a0102;
+  --brand-primary-hover-dark: #5a0102;
+  --brand-accent: #dc2626;
+  --brand-on-primary: #ffffff;
+  --brand-on-primary-muted: rgba(255, 255, 255, 0.85);
+  --brand-tint: rgba(148, 1, 3, 0.12);
+  --brand-tint-strong: rgba(148, 1, 3, 0.22);
+  --brand-ring: rgba(148, 1, 3, 0.30);
+  --brand-border-tint: rgba(148, 1, 3, 0.30);
+  --brand-gradient: linear-gradient(135deg, #940103 0%, #6a0306 60%, #1a0303 100%);
+  --brand-gradient-soft: linear-gradient(135deg, #940103 0%, #6a0306 100%);
 }
 
 /* Theme Classes */
@@ -1102,4 +1121,24 @@ body.modal-open app-sidebar,
 .isHighlight {
   background-color: #fef9c3 !important; /* soft yellow */
   transition: background-color 0.2s ease-in-out;
+}
+
+/* ===========================================================
+   Advertisement Carousel Dialog (demo-faithful sizing)
+   Mirrors demo's `mobile-popup.component.scss`:
+     - ::ng-deep .mat-dialog-container { padding: 0 }
+     - .slider-img { max-height: 400px; max-width: 1052px }
+   We use a custom `panelClass` instead of `::ng-deep` so the
+   rule is scoped to the advertisement popup only.
+   =========================================================== */
+.ad-popup-panel .mat-mdc-dialog-container {
+  padding: 0 !important;
+  max-width: 1052px;
+  width: 92vw;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.ad-popup-panel .mat-mdc-dialog-surface {
+  border-radius: 14px !important;
+  overflow: hidden;
 }

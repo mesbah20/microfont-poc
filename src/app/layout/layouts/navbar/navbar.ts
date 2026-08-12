@@ -1,4 +1,4 @@
-import { Component, effect, signal, WritableSignal } from '@angular/core';
+import { Component, computed, effect, inject, signal, WritableSignal } from '@angular/core';
 import { Save } from './actions/save/save';
 import { View } from './actions/view/view';
 import { Delete } from './actions/delete/delete';
@@ -13,6 +13,7 @@ import { BUTTON_VISIBILITY, ONCLICK_SAVE_NEXT, ONCLICK_UPDATE_NEXT, ButtonUtils 
 import { SidebarService } from '../../service/sidebar.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { BrandingService } from '../../../core/services/branding.service';
 
 @Component({
   selector: 'app-navbar',
@@ -36,8 +37,10 @@ export class Navbar {
   onClickUpdateNext = ONCLICK_UPDATE_NEXT;
   toggleMenu: boolean = false;
   sidebarExpanded: boolean = false;
+  private branding = inject(BrandingService);
+  protected readonly logosPath = computed(() => this.branding.logosPath());
   moduleName = signal('');
-  moduleLogo = signal('/asset/logos/default.png');
+  moduleLogo = signal('');
   currentPageName = signal('');
   constructor(private sidebarService: SidebarService, private router: Router, private http: HttpClient) {
     // this.sidebarService.selectedModuleName$.subscribe(name => {
@@ -217,7 +220,8 @@ export class Navbar {
   //   }
   private computeModuleLogo(): string {
     const appListString = localStorage.getItem('appList');
-    const defaultLogo = '/asset/logos/default.png';
+    const base = this.logosPath();
+    const defaultLogo = `${base}/default.png`;
 
     if (!appListString) {
       return defaultLogo;
@@ -226,7 +230,7 @@ export class Navbar {
     //  CASE 1: appList is just a string like "Sentinel"
     if (!appListString.trim().startsWith('[')) {
       console.warn('appList is not JSON, treating as module name:', appListString);
-      return `/asset/logos/${this.apporSlug(appListString)}.png`;
+      return `${base}/${this.apporSlug(appListString)}.png`;
     }
 
     try {
@@ -237,7 +241,7 @@ export class Navbar {
       );
 
       if (currentModule?.appId) {
-        return `/asset/logos/${currentModule.appId}.png`;
+        return `${base}/${currentModule.appId}.png`;
       }
 
       return defaultLogo;

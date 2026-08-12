@@ -1,9 +1,10 @@
-﻿import { Component, Input, WritableSignal, effect, inject, signal } from '@angular/core';
+﻿import { Component, Input, WritableSignal, computed, effect, inject, signal } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {MatIcon} from '@angular/material/icon';
 import { ONCLICK_UPDATE, FormGroupSignal } from '../../../../../shared/constant/button-signals.constant';
 import { ActivityLogService } from '../../../../../shared/services/activity-log.service';
 import { LoaderService } from '../../../../../shared/services/loader.service';
+import { BrandingService } from '../../../../../core/services/branding.service';
 
 
 @Component({
@@ -24,6 +25,8 @@ export class Update {
     frmGroup = signal<FormGroup>(FormGroupSignal());
 private loaderService = inject(LoaderService);
 private activityLog = inject(ActivityLogService);
+private branding = inject(BrandingService);
+protected readonly iconPath = computed(() => this.branding.iconsPath());
 
 async update() {
   if (this.frmGroup().invalid) {

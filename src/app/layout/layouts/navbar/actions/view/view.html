@@ -18,6 +18,6 @@
 </button> -->
 
 <button (click)="view()" [disabled]="disabled || frmGroup().invalid" class="a_demo_four icon-view">
-  <img src="/asset/icons/view.svg" alt="" class="icon" />
+  <img [src]="iconPath() + '/view.svg'" alt="" class="icon" />
   View
 </button>

@@ -1,21 +1,14 @@
 export const environment = {
-  production: false,
-  apiBaseUrl:'http://localhost:8092/centrino',
-  // apiBaseUrl: 'http://localhost:8095/swiftFusionAPI/api/v1/',
-  // coreBaseUrl: 'http://192.168.20.250:8090/api/user-login/signIn',
-  // coreBaseUrl: 'http://192.168.20.93:8091/api/auth/userLogin',
-  // coreBaseUrl: 'http://192.168.20.250:9090/oauth2/token',
-  loginUrl: 'http://192.168.20.250:9090/oauth2/token',
-  logoutUrl: 'http://192.168.20.250:9090/auth/logout',
-  coreBaseUrl: 'http://192.168.20.93:8091/api/auth/userLogin',
-  centrinoBaseUrl: 'http://192.168.20.93:8097/centrino',
+  production: true,
+  appName: 'Microfont POC',
+  appId: '1',
+  appConfigUrl: '/asset/config/app-config.json',
 
-  keycloak: {
-    url: 'http://192.168.10.56:9080',
-    realm: 'MicroCube_dev',
-    clientId: 'BFF'
-  },
-
+  apiBaseUrl: 'http://192.168.20.218/CloudNetAPI',
+  centrinoUrl: 'http://192.168.20.218/CentrinoAPI',
+  sentinelUrl: 'http://192.168.20.218/SentinelAPI',
+  bffUrl: 'http://192.168.20.218/BffAPI',
+  reportManagementApiUrl: 'http://192.168.20.218/ReportManagementAPI',
+  novu_api: 'https://api.novu.co',
+  novu_socket: 'wss://ws.novu.co',
 };
-
-

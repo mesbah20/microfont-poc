@@ -1,11 +1,12 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '../../../../../shared/services/theme.service';
 import { SidebarService } from '../../../../service/sidebar.service';
+import { BrandingService } from '../../../../../core/services/branding.service';
 
 interface ModuleItem {
   id: string;
@@ -41,6 +42,8 @@ export class ModuleDrawer implements OnInit {
   isLoading = true;
   error: string | null = null;
   private themeSub?: Subscription;
+  private branding = inject(BrandingService);
+  protected readonly logosPath = computed(() => this.branding.logosPath());
 
   constructor(
     private http: HttpClient,
@@ -126,7 +129,7 @@ loadModulesList(): void {
 
     let appList = JSON.parse(appListString);
     const apps: ModuleItem[] = appList.map((m: any, index: number) => {
-      const iconPath = `/asset/logos/${m.appId?m.appId:'nexoLogo1'}.png`;
+      const iconPath = `${this.logosPath()}/${m.appId?m.appId:'nexoLogo1'}.png`;
       console.log('Icon path for', m.appName, ':', iconPath); // Debug log
 
       return {

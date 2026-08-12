@@ -15,7 +15,7 @@
   class="a_demo_four icon-save"
   [attr.aria-label]="label"
 >
-  <img src="/asset/icons/save.svg" alt="" class="icon" />
+  <img [src]="iconPath() + '/save.svg'" alt="" class="icon" />
   {{ label }}
 </button>
 

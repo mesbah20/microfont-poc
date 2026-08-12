@@ -2,7 +2,9 @@ import {
   ApplicationConfig,
   EnvironmentProviders,
   provideBrowserGlobalErrorListeners, Provider,
-  provideZoneChangeDetection
+  provideZoneChangeDetection,
+  provideAppInitializer,
+  inject
 } from '@angular/core';
 import {provideRouter} from '@angular/router';
 
@@ -12,7 +14,9 @@ import {provideToastr} from 'ngx-toastr';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {tokenInterceptor} from './TokenInterceptor';
+import {errorInterceptor} from './core/interceptors/error.interceptor';
 import { provideAuth } from './core/auth/auth.provider';
+import { BrandingService } from './core/services/branding.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,8 +27,9 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideToastr(),
     provideHttpClient(
-      withInterceptors([tokenInterceptor])
+      withInterceptors([tokenInterceptor, errorInterceptor])
     ),
     provideAuth(),
+    provideAppInitializer(() => inject(BrandingService).load()),
   ]
 };

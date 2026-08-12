@@ -1,6 +1,6 @@
   import { Moment } from 'moment';
   // Enhanced TypeScript Component with Relatable Fields
-  import { Component, effect, inject, OnInit, signal, TemplateRef, ViewChild, WritableSignal, Type, ChangeDetectorRef } from '@angular/core';
+  import { Component, effect, inject, OnInit, signal, TemplateRef, ViewChild, WritableSignal, Type, ChangeDetectorRef, computed } from '@angular/core';
 
   import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
   import { InputTextBox } from '../../input-types/input-text-box/input-text-box';
@@ -24,6 +24,7 @@
   import { CommonModule } from '@angular/common';
   import {ToastHelperService} from '../../../services/toast-helper.service';
   import { InputAmount } from '../../input-types/input-amount/input-amount';
+import { BrandingService } from '../../../../core/services/branding.service';
   import { Tooltip } from 'highcharts';
   import { GenericButton } from '../../generic-component-type/generic-button/generic-button';
   import { GenericSwitch } from '../../generic-component-type/generic-switch/generic-switch';
@@ -132,6 +133,8 @@
     toastr = inject(ToastHelperService);
     private dialog = inject(MatDialog);
     private autoTable = inject(AutoTableService);
+    private branding = inject(BrandingService);
+    protected readonly iconPath = computed(() => this.branding.iconsPath());
     businessHeaderPanel: WritableSignal<boolean> = signal(true);
     subPanel1: WritableSignal<boolean> = signal(true);
     timePickerHeaderPanel: WritableSignal<boolean> = signal(true);

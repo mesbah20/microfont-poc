@@ -1,53 +1,78 @@
-import {Component, HostListener} from '@angular/core';
-import {RouterOutlet} from '@angular/router';
-import { Navbar } from './layouts/navbar/navbar';
-import { Sidebar } from './layouts/sidebar/sidebar';
+import {
+  Component,
+  inject,
+  signal,
+  effect,
+  HostListener,
+  OnInit,
+} from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { Topbar } from './topbar/topbar';
+import { Sidebar } from './sidebar/sidebar';
+import { SidebarStateService } from '../core/services/sidebar-state.service';
 
+/**
+ * Application shell: topbar + sidebar + routed outlet.
+ *
+ * Owns the responsive mode-resolution (mobile / tablet / desktop) and
+ * updates the shared `SidebarStateService` so that:
+ *   - topbar hamburger clicks toggle the sidebar across all modes
+ *   - the sidebar reflects the correct layout state on resize
+ *   - the `.layout-content` margin-left adjusts to the sidebar width
+ *
+ * The hamburger is **always visible** on every breakpoint, including
+ * desktop — the user can collapse the sidebar on a wide screen too.
+ */
 @Component({
   selector: 'app-layout',
-  imports: [
-    Navbar,
-    Sidebar,
-    RouterOutlet
-  ],
+  standalone: true,
+  imports: [Topbar, Sidebar, RouterOutlet],
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
 })
-export class Layout {
+export class Layout implements OnInit {
+  readonly state = inject(SidebarStateService);
 
-  isBlurred = false;
-  ctrlPressed = false;
-  spacePressCount = 0;
-  lastPressTime = 0;
+  /** Reactive left-margin for the content area based on sidebar mode + state. */
+  readonly contentMargin = signal<string>('260px');
 
-  @HostListener('document:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) {
-    const now = Date.now();
-
-    if (event.code === 'ControlLeft' || event.code === 'ControlRight') {
-      this.ctrlPressed = true;
-    }
-
-    if (this.ctrlPressed && event.code === 'Space') {
-      if (now - this.lastPressTime < 600) {
-        this.spacePressCount++;
+  constructor() {
+    // Re-derive marginLeft whenever mode or open-state changes.
+    effect(() => {
+      const mode = this.state.mode();
+      const open = this.state.isOpen();
+      let m: string;
+      if (mode === 'mobile') {
+        m = '0';
+      } else if (mode === 'tablet') {
+        m = open ? '260px' : '72px';
       } else {
-        this.spacePressCount = 1;
+        // desktop — collapsed = hidden, expanded = 260px
+        m = open ? '260px' : '0';
       }
+      this.contentMargin.set(m);
+    });
+  }
 
-      this.lastPressTime = now;
-      if (this.spacePressCount === 2) {
-        this.isBlurred = !this.isBlurred;
-        this.spacePressCount = 0;
-      }
+  ngOnInit(): void {
+    this.syncMode();
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.syncMode();
+  }
+
+  private syncMode(): void {
+    const w = window.innerWidth;
+    const next: 'mobile' | 'tablet' | 'desktop' =
+      w < 768 ? 'mobile' : w <= 1024 ? 'tablet' : 'desktop';
+    if (next !== this.state.mode()) {
+      this.state.setMode(next);
     }
   }
 
-  @HostListener('document:keyup', ['$event'])
-  resetCtrlKey(event: KeyboardEvent) {
-    if (event.code === 'ControlLeft' || event.code === 'ControlRight') {
-      this.ctrlPressed = false;
-    }
+  onToggleSidebar(): void {
+    this.state.toggle();
   }
-
 }

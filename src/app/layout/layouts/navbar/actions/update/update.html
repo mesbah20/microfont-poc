@@ -4,7 +4,7 @@
   [disabled]="disabled || frmGroup().invalid"
   [attr.aria-label]="label"
 >
-  <img src="/asset/icons/save.svg" alt="" class="icon" />
+  <img [src]="iconPath() + '/save.svg'" alt="" class="icon" />
   <p class="text">{{ label }}</p>
 </button>
 

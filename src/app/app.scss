@@ -1,0 +1,12 @@
+/* =================================================================
+   App root — host sizing
+   Locks `<app-root>` to the viewport so the routed layout inside can
+   use `height: 100vh` reliably. Without this, an empty `app.scss`
+   leaves the root element with its default `display: inline` and
+   no height — which silently breaks the flex chain in <app-layout>.
+   ================================================================= */
+:host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}

@@ -1,7 +1,6 @@
 import {Component, inject, OnInit, OnDestroy, AfterViewInit, ElementRef, Renderer2} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import { AuthService } from '../../core/auth/auth.service';
-import { KeyclockService } from '../../core/service/keyclock.service';
 import { UserService } from '../../core/user/user.service';
 
 @Component({
@@ -11,7 +10,6 @@ import { UserService } from '../../core/user/user.service';
   styleUrl: './home.scss'
 })
 export class Home implements OnInit, AfterViewInit, OnDestroy {
-  keyclock: KeyclockService = inject(KeyclockService);
   private userService = inject(UserService);
   private authService = inject(AuthService);
   private renderer = inject(Renderer2);

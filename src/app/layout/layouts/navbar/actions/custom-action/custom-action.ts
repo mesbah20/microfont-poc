@@ -1,9 +1,10 @@
-import {Component, inject, Input, signal, WritableSignal} from '@angular/core';
+import {Component, computed, inject, Input, signal, WritableSignal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import { ONCLICK_CUSTOM_ACTION, BUTTON_VISIBILITY, FormGroupSignal } from '../../../../../shared/constant/button-signals.constant';
 import { ActivityLogService } from '../../../../../shared/services/activity-log.service';
 import { LoaderService } from '../../../../../shared/services/loader.service';
+import { BrandingService } from '../../../../../core/services/branding.service';
 @Component({
   selector: 'custom-action',
   imports: [CommonModule,],
@@ -20,11 +21,15 @@ export class CustomAction {
   frmGroup = signal<FormGroup>(FormGroupSignal());
   private loaderService = inject(LoaderService);
   private activityLog = inject(ActivityLogService);
+  private branding = inject(BrandingService);
   level: string;
   icon: string;
+  protected readonly iconPath = computed(() => this.branding.iconsPath());
   constructor() {
     this.level = this.buttons()?.customButton?.customLevel ?? '';
-    this.icon = this.buttons()?.customButton?.customIcon ? `/asset/icons/${this.buttons()?.customButton?.customIcon}.svg` : '';
+    this.icon = this.buttons()?.customButton?.customIcon
+      ? `${this.iconPath()}/${this.buttons()?.customButton?.customIcon}.svg`
+      : '';
   }
   async customAction() {
     if (this.frmGroup().invalid) {

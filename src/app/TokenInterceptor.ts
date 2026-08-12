@@ -1,10 +1,19 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { environment } from '../environments/environment';
-import { AuthService } from './core/auth/auth.service';
+import { AuthenticationService } from './core/services/authentication.service';
+
+/**
+ * Attaches the demo-faithful JWT bearer to every outbound request that
+ * targets one of our configured API roots. Mirrors demo's
+ * `JwtInterceptor` which reads from `localStorage.currentUser.access_token`.
+ *
+ * Falls back to `AuthService` (sentinel) for the legacy sentinel API so the
+ * two coexisting auth systems don't break each other.
+ */
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
-  const auth = inject(AuthService);
-  const token = auth.token;
+  const auth = inject(AuthenticationService);
+  const token = auth.getToken();
 
   // APIs where token must be added
   const shouldAttachToken =
@@ -13,15 +22,11 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
     req.url.startsWith(environment.bffUrl);
 
   if (shouldAttachToken && token) {
-    // console.log('🔐 Attaching token to:', req.url);
-    // console.log('🔐 token:', token);
-
     const authReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
       },
     });
-
     return next(authReq);
   }
 

@@ -1,4 +1,4 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, computed, inject } from '@angular/core';
 import { MenuDrawer } from './drawers/menu-drawer/menu-drawer';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
@@ -15,6 +15,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { NotificationService } from '../../../shared/services/notification.service';
 import { NovuService } from '../../../shared/services/novu.service';
 import { ThemeService } from '../../../shared/services/theme.service';
+import { BrandingService } from '../../../core/services/branding.service';
 import { ToastHelperService } from '../../../shared/services/toast-helper.service';
 import { SidebarService } from '../../service/sidebar.service';
 
@@ -50,6 +51,8 @@ export class Sidebar {
   public messages$: Observable<number>;
   isMobile = false;
   toastr = inject(ToastHelperService);
+  private branding = inject(BrandingService);
+  protected readonly iconPath = computed(() => this.branding.iconsPath());
   // New property for sidebar expansion
   sidebarExpanded: boolean = false;
   isMobileOpen: boolean = false;

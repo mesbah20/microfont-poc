@@ -1,9 +1,10 @@
-﻿import { Component, effect, inject, signal, Input } from '@angular/core';
+﻿import { Component, effect, inject, signal, Input, computed } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import { FormGroup } from '@angular/forms';
 import { FormGroupSignal, ONCLICK_VIEW } from '../../../../../shared/constant/button-signals.constant';
 import { ActivityLogService } from '../../../../../shared/services/activity-log.service';
 import { LoaderService } from '../../../../../shared/services/loader.service';
+import { BrandingService } from '../../../../../core/services/branding.service';
 
 
 @Component({
@@ -20,6 +21,8 @@ export class View {
     frmGroup = signal<FormGroup>(FormGroupSignal());
     private activityLog = inject(ActivityLogService);
     private loaderService = inject(LoaderService);
+    private branding = inject(BrandingService);
+    protected readonly iconPath = computed(() => this.branding.iconsPath());
 
     constructor() {
       effect(() => {

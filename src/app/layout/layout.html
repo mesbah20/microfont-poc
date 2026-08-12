@@ -1,19 +1,10 @@
-<div [class.blur-screen]="isBlurred" class="bg-gray-50 font-inter h-screen flex flex-col overflow-hidden">
-  <!-- Navbar -->
-  <div class="flex-shrink-0">
-    <app-navbar></app-navbar>
-  </div>
-  
-  <!-- Main Content Area -->
-  <div class="flex flex-1 min-h-0">
-    <!-- Sidebar -->
-    <div class="w-0 md:w-auto">
-      <app-sidebar></app-sidebar>
-    </div>
+<div class="layout-shell">
+  <app-topbar (toggleSidebar)="onToggleSidebar()"></app-topbar>
 
-    <!-- Main Content -->
-    <div class="flex-1 overflow-y-auto bg-gray-100 p-2">
+  <div class="layout-body">
+    <app-sidebar></app-sidebar>
+    <main class="layout-content" [style.marginLeft]="contentMargin()">
       <router-outlet></router-outlet>
-    </div>
+    </main>
   </div>
 </div>

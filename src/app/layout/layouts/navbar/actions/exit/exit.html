@@ -13,6 +13,6 @@
 </button> -->
 
 <button (click)="exit()" [disabled]="disabled || frmGroup().invalid" class="a_demo_four icon-exit">
-  <img src="/asset/icons/exit.svg" alt="" class="icon" />
+  <img [src]="iconPath() + '/exit.svg'" alt="" class="icon" />
   Exit
 </button>

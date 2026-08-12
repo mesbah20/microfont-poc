@@ -1,452 +1,571 @@
-<div class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
-  <div class="mx-auto">
-    <!-- Today's Status Header -->
-    <div class="px-4 py-3 rounded-lg">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-          <h2 class="text-2xl font-medium text-gray-800">Today's Status</h2>
-          <!--          <span class="px-3 py-1 bg-blue-50 rounded-full text-sm font-medium border border-blue-200">-->
-          <!--            Live-->
-          <!--          </span>-->
-        </div>
-        <div class="text-sm text-gray-500">
-          Last updated: <span class="font-medium text-gray-700">now</span>
-        </div>
+<div class="dashboard">
+  <!-- ====================================================== -->
+  <!-- COMMAND BAR — greeting left, utility pills right -->
+  <!-- BD time clock removed (now in topbar) -->
+  <!-- ====================================================== -->
+  <header class="command-bar">
+    <div class="command-bar-left">
+      <div class="command-bar-avatar" [matTooltip]="userEmail()">
+        {{ userAvatar() }}
       </div>
-      <div class="w-full h-px bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 mt-3"></div>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
-      <!--      <div-->
-      <!--        class="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform border border-gray-200 cursor-pointer min-h-48 col-span-1 group relative hover:-translate-y-1">-->
-      <!--        <div class="flex flex-col h-full">-->
-      <!--          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">-->
-      <!--            <p class="text-xl text-gray-800">Incoming Amount</p>-->
-      <!--            &lt;!&ndash; <div-->
-      <!--              class="w-10 h-10 bg-[#C5BCF7] rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">-->
-      <!--              <i data-lucide="dollar-sign" class="w-5 h-5 text-white"></i>-->
-      <!--            </div> &ndash;&gt;-->
-      <!--          </div>-->
-      <!--          <div class="space-y-1.5 flex-1 overflow-hidden">-->
-      <!--              <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">-->
-      <!--              <span class="text-sm text-gray-600">USD</span>-->
-      <!--              <span class="text-sm font-medium text-gray-800">200M</span>-->
-      <!--            </div>-->
-      <!--              <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">-->
-      <!--                <span class="text-sm text-gray-600">GBP</span>-->
-      <!--                <span class="text-sm font-medium text-gray-800">150M</span>-->
-      <!--              </div>-->
-      <!--              <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">-->
-      <!--                <span class="text-sm text-gray-600">EURO</span>-->
-      <!--                <span class="text-sm font-medium text-gray-800">180M</span>-->
-      <!--              </div>-->
-
-      <!--          </div>-->
-
-      <!--          &lt;!&ndash; Hidden content that shows on hover &ndash;&gt;-->
-      <!--          &lt;!&ndash; <div class="hidden group-hover:block mt-4 pt-4 border-t border-gray-200">-->
-      <!--            <div class="space-y-2" >-->
-      <!--              <div class="flex justify-between items-center py-1 border-b border-gray-100">-->
-      <!--                <span class="text-sm text-gray-600">USD</span>-->
-      <!--                <span class="text-base font-semibold text-gray-800">2000M</span>-->
-      <!--              </div>-->
-      <!--              <div class="flex justify-between items-center py-1 border-b border-gray-100">-->
-      <!--                <span class="text-sm text-gray-600">JPY</span>-->
-      <!--                <span class="text-base font-semibold text-gray-800">3200M</span>-->
-      <!--              </div>-->
-      <!--              <div class="flex justify-between items-center py-1 border-b border-gray-100">-->
-      <!--                <span class="text-sm text-gray-600">CHF</span>-->
-      <!--                <span class="text-base font-semibold text-gray-800">1800M</span>-->
-      <!--              </div>-->
-      <!--              <div class="flex justify-between items-center py-1 border-b border-gray-100">-->
-      <!--                <span class="text-sm text-gray-600">CAD</span>-->
-      <!--                <span class="text-base font-semibold text-gray-800">1400M</span>-->
-      <!--              </div>-->
-      <!--              <div class="flex justify-between items-center py-1">-->
-      <!--                <span class="text-sm text-gray-600">Total</span>-->
-      <!--                <span class="text-base font-bold text-blue-600">18.1B</span>-->
-      <!--              </div>-->
-      <!--            </div>-->
-      <!--          </div> &ndash;&gt;-->
-      <!--        </div>-->
-      <!--      </div>-->
-
-      <div
-        class="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform border border-gray-200 cursor-pointer min-h-48 col-span-1 group relative hover:-translate-y-1">
-        <div class="flex flex-col h-full">
-          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
-            <p class="text-xl text-gray-800">Transaction Amount</p>
-            <!-- <div
-              class="w-10 h-10 bg-[#B2F5EA] rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
-              <i data-lucide="bar-chart-3" class="w-5 h-5 text-white"></i>
-            </div> -->
-          </div>
-          <div class="space-y-1.5 flex-1 overflow-hidden">
-            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-              <span class="text-sm text-gray-600 font-medium">USD</span>
-              <div class="flex items-center gap-2">
-                <span
-                  class="px-2 py-1 bg-green-50 text-gray-700 rounded-md text-xs font-medium border border-green-200 w-16 text-center">
-                  <span class="font-bold">↓</span> 1000
-                </span>
-                <span
-                  class="px-2 py-1 bg-red-50 text-gray-700 rounded-md text-xs font-medium border border-red-200 w-16 text-center">
-                  <span class="font-bold">↑</span> 500
-                </span>
-              </div>
-            </div>
-            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-              <span class="text-sm text-gray-600 font-medium">GBP</span>
-              <div class="flex items-center gap-2">
-                <span
-                  class="px-2 py-1 bg-green-50 text-gray-700 rounded-md text-xs font-medium border border-green-200 w-16 text-center">
-                  <span class="font-bold">↓</span> 700.2
-                </span>
-                <span
-                  class="px-2 py-1 bg-red-50 text-gray-700 rounded-md text-xs font-medium border border-red-200 w-16 text-center">
-                  <span class="font-bold">↑</span> 430.7
-                </span>
-              </div>
-            </div>
-            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-              <span class="text-sm text-gray-600 font-medium">EURO</span>
-              <div class="flex items-center gap-2">
-                <span
-                  class="px-2 py-1 bg-green-50 text-gray-700 rounded-md text-xs font-medium border border-green-200 w-16 text-center">
-                  <span class="font-bold">↓</span> 2500
-                </span>
-                <span
-                  class="px-2 py-1 bg-red-50 text-gray-700 rounded-md text-xs font-medium border border-red-200 w-16 text-center">
-                  <span class="font-bold">↑</span> 75.98
-                </span>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Hidden content that shows on hover -->
-          <!-- <div class="hidden group-hover:block mt-4 pt-4 border-t border-gray-200">
-            <div class="">
-              <div class="flex justify-between items-center py-1 border-b border-gray-100">
-                <span class="text-sm text-gray-600">JPY</span>
-                <span class="text-sm font-semibold text-gray-800">IN-280/OUT-160</span>
-              </div>
-              <div class="flex justify-between items-center py-1 border-b border-gray-100">
-                <span class="text-sm text-gray-600">CHF</span>
-                <span class="text-sm font-semibold text-gray-800">IN-190/OUT-110</span>
-              </div>
-              <div class="flex justify-between items-center py-1 border-b border-gray-100">
-                <span class="text-sm text-gray-600">CAD</span>
-                <span class="text-sm font-semibold text-gray-800">IN-150/OUT-85</span>
-              </div>
-              <div class="flex justify-between items-center py-1">
-                <span class="text-sm text-gray-600">Total</span>
-                <span class="text-sm font-bold text-blue-600">IN-1590/OUT-945</span>
-              </div>
-            </div>
-          </div> -->
-        </div>
-      </div>
-
-      <div
-        class="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform border border-gray-200 cursor-pointer min-h-48 col-span-1 group relative hover:-translate-y-1">
-        <div class="flex flex-col h-full">
-          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
-            <p class="text-xl text-gray-800">No of Transactions</p>
-            <!-- <div
-              class="w-10 h-10 bg-[#B2F5EA] rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
-              <i data-lucide="bar-chart-3" class="w-5 h-5 text-white"></i>
-            </div> -->
-          </div>
-          <div class="space-y-1.5 flex-1 overflow-hidden">
-            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-              <span class="text-sm text-gray-600 font-medium">USD</span>
-              <div class="flex items-center gap-2">
-                <span
-                  class="px-2 py-1 bg-green-50 text-gray-700 rounded-md text-xs font-medium border border-green-200 w-16 text-center">
-                  <span class="font-bold">↓</span> 220
-                </span>
-                <span
-                  class="px-2 py-1 bg-red-50 text-gray-700 rounded-md text-xs font-medium border border-red-200 w-16 text-center">
-                  <span class="font-bold">↑</span> 140
-                </span>
-              </div>
-            </div>
-            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-              <span class="text-sm text-gray-600 font-medium">GBP</span>
-              <div class="flex items-center gap-2">
-                <span
-                  class="px-2 py-1 bg-green-50 text-gray-700 rounded-md text-xs font-medium border border-green-200 w-16 text-center">
-                  <span class="font-bold">↓</span> 180
-                </span>
-                <span
-                  class="px-2 py-1 bg-red-50 text-gray-700 rounded-md text-xs font-medium border border-red-200 w-16 text-center">
-                  <span class="font-bold">↑</span> 95
-                </span>
-              </div>
-            </div>
-            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-              <span class="text-sm text-gray-600 font-medium">EURO</span>
-              <div class="flex items-center gap-2">
-                <span
-                  class="px-2 py-1 bg-green-50 text-gray-700 rounded-md text-xs font-medium border border-green-200 w-16 text-center">
-                  <span class="font-bold">↓</span> 150
-                </span>
-                <span
-                  class="px-2 py-1 bg-red-50 text-gray-700 rounded-md text-xs font-medium border border-red-200 w-16 text-center">
-                  <span class="font-bold">↑</span> 75
-                </span>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Hidden content that shows on hover -->
-          <!-- <div class="hidden group-hover:block mt-4 pt-4 border-t border-gray-200">
-            <div class="">
-              <div class="flex justify-between items-center py-1 border-b border-gray-100">
-                <span class="text-sm text-gray-600">JPY</span>
-                <span class="text-sm font-semibold text-gray-800">IN-280/OUT-160</span>
-              </div>
-              <div class="flex justify-between items-center py-1 border-b border-gray-100">
-                <span class="text-sm text-gray-600">CHF</span>
-                <span class="text-sm font-semibold text-gray-800">IN-190/OUT-110</span>
-              </div>
-              <div class="flex justify-between items-center py-1 border-b border-gray-100">
-                <span class="text-sm text-gray-600">CAD</span>
-                <span class="text-sm font-semibold text-gray-800">IN-150/OUT-85</span>
-              </div>
-              <div class="flex justify-between items-center py-1">
-                <span class="text-sm text-gray-600">Total</span>
-                <span class="text-sm font-bold text-blue-600">IN-1590/OUT-945</span>
-              </div>
-            </div>
-          </div> -->
-        </div>
-      </div>
-
-      <div
-        class="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform border border-gray-200 cursor-pointer min-h-48 col-span-1 group relative hover:-translate-y-1">
-        <div class="flex flex-col h-full">
-          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
-            <p class="text-xl text-gray-800">Incoming Messages</p>
-            <!-- <div
-              class="w-10 h-10 bg-[#FFC4B9] rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
-              <i data-lucide="inbox" class="w-5 h-5 text-white"></i>
-            </div> -->
-          </div>
-          <div class="space-y-1.5 flex-1 overflow-hidden">
-            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-              <span class="text-sm text-gray-600">Total</span>
-              <span class="text-sm font-medium text-gray-800">130</span>
-            </div>
-            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-              <span class="text-sm text-gray-600">Processed</span>
-              <span class="text-sm font-medium text-gray-800">100</span>
-            </div>
-            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-              <span class="text-sm text-gray-600">Pending</span>
-              <span class="text-sm font-medium text-gray-800">30</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform border border-gray-200 cursor-pointer min-h-48 col-span-1 group relative hover:-translate-y-1">
-        <div class="flex flex-col h-full">
-          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
-            <p class="text-xl text-gray-800">Outgoing Messages</p>
-            <!-- <div
-              class="w-10 h-10 bg-[#A0AEC0] rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
-              <i data-lucide="send" class="w-5 h-5 text-white"></i>
-            </div> -->
-          </div>
-          <div class="space-y-1.5 flex-1 overflow-hidden">
-            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-              <span class="text-sm text-gray-600">Total</span>
-              <span class="text-sm font-medium text-gray-800">123</span>
-            </div>
-            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-              <span class="text-sm text-gray-600">ACK</span>
-              <span class="text-sm font-medium text-gray-800">80</span>
-            </div>
-            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-              <span class="text-sm text-gray-600">NACK</span>
-              <span class="text-sm font-medium text-gray-800">43</span>
-            </div>
-          </div>
-        </div>
+      <div class="command-bar-greeting">
+        <p class="command-bar-hello">Welcome back</p>
+        <h1 class="command-bar-name">{{ userName() }}</h1>
+        <p class="command-bar-meta">{{ bankName() }} · {{ today | date: 'EEEE, d MMMM y' }}</p>
       </div>
     </div>
 
-    <!-- Content Sections -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Pie Chart Area -->
-<!--      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">-->
-<!--        <div class="flex items-center justify-between mb-6">-->
-<!--          <h3 class="text-xl text-gray-800">Incoming Messages</h3>-->
-<!--          <div class="flex space-x-2">-->
-<!--            <button-->
-<!--              (click)="setPieChartFilter('weekly')"-->
-<!--              [class]="pieChartFilter === 'weekly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">-->
-<!--              Weekly-->
-<!--            </button>-->
-<!--            <button-->
-<!--              (click)="setPieChartFilter('monthly')"-->
-<!--              [class]="pieChartFilter === 'monthly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">-->
-<!--              Monthly-->
-<!--            </button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div-->
-<!--          class="mt-10 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-200">-->
-<!--          <div class="text-center w-full h-full">-->
-<!--            <highcharts-chart-->
-<!--              [Highcharts]="Highcharts"-->
-<!--              [options]="chartOptionsPie"-->
-<!--              style="width: 100%; height: 350px; display: block;">-->
-<!--            </highcharts-chart>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
+    <div class="command-bar-right">
+      <button
+        type="button"
+        class="command-eye"
+        [matTooltip]="showBalance() ? 'Hide balances' : 'Show balances'"
+        (click)="toggleBalance()">
+        <mat-icon>{{ showBalance() ? 'visibility' : 'visibility_off' }}</mat-icon>
+        <span>{{ showBalance() ? 'Hide' : 'Show' }} balance</span>
+      </button>
+      <a routerLink="/profile/changepassword" class="command-action">
+        <mat-icon>settings</mat-icon>
+        <span>Quick settings</span>
+      </a>
+    </div>
+  </header>
 
-      <!-- Bar Chart Area -->
-<!--      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">-->
-<!--        <div class="flex items-center justify-between mb-6">-->
-<!--          <h3 class="text-xl text-gray-800">Outgoing Messages</h3>-->
-<!--          <div class="flex space-x-2">-->
-<!--            <button-->
-<!--              (click)="setBarChartFilter('weekly')"-->
-<!--              [class]="barChartFilter === 'weekly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">-->
-<!--              Weekly-->
-<!--            </button>-->
-<!--            <button-->
-<!--              (click)="setBarChartFilter('monthly')"-->
-<!--              [class]="barChartFilter === 'monthly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">-->
-<!--              Monthly-->
-<!--            </button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div-->
-<!--          class="mt-10 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-200">-->
-<!--          <div class="text-center w-full h-full">-->
-<!--            <highcharts-chart-->
-<!--              [Highcharts]="Highcharts"-->
-<!--              [options]="chartOptionsBar"-->
-<!--              style="width: 100%; height: 350px; display: block;">-->
-<!--            </highcharts-chart>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
-        <common-gauge-chart
-          [headerTitle]="'Transaction Success Rate'"
-          [dataByRange]="gaugeData"
-          [height]="280"
-          [min]="0"
-          [max]="100"
-          [suffix]="'%'"
-          [gradient]="true"
-          [showWeekly]="true"
-          [showMonthly]="true"
-          [showYearly]="true">
-        </common-gauge-chart>
+  <!-- ====================================================== -->
+  <!-- KPI STRIP — 4 cards (Total / MTD / Spend / Unread) -->
+  <!-- ====================================================== -->
+  <section class="kpis">
+    <article class="kpi kpi--brand">
+      <div class="kpi-icon"><mat-icon>account_balance_wallet</mat-icon></div>
+      <div class="kpi-body">
+        <p class="kpi-label">Total Balance</p>
+        <p class="kpi-value">
+          {{ primaryCurrency() }} {{ masked(showBalance(), totalBalance()) }}
+        </p>
+        <p class="kpi-meta">
+          <mat-icon>account_balance</mat-icon>
+          {{ accountsCount() }} account{{ accountsCount() === 1 ? '' : 's' }}
+        </p>
+      </div>
+      <div class="kpi-spark">
+        <svg viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="kpiSparkFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45" />
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <path [attr.d]="sparkArea()" fill="url(#kpiSparkFill)" />
+          <path
+            [attr.d]="sparkPath()"
+            fill="none"
+            stroke="#ffffff"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </div>
+    </article>
+
+    <article class="kpi kpi--emerald">
+      <div class="kpi-icon"><mat-icon>trending_up</mat-icon></div>
+      <div class="kpi-body">
+        <p class="kpi-label">MTD Income</p>
+        <p class="kpi-value">
+          {{ primaryCurrency() }} {{ masked(showBalance(), mtdIncome()) }}
+        </p>
+        <p class="kpi-meta">
+          <mat-icon>south_west</mat-icon>
+          Money in this month
+        </p>
+      </div>
+    </article>
+
+    <article class="kpi kpi--rose">
+      <div class="kpi-icon"><mat-icon>trending_down</mat-icon></div>
+      <div class="kpi-body">
+        <p class="kpi-label">MTD Spend</p>
+        <p class="kpi-value">
+          {{ primaryCurrency() }} {{ masked(showBalance(), mtdSpend()) }}
+        </p>
+        <p class="kpi-meta">
+          <mat-icon>north_east</mat-icon>
+          {{ spendPct() }}% of income used
+        </p>
+      </div>
+    </article>
+
+    <article class="kpi kpi--indigo">
+      <div class="kpi-icon"><mat-icon>notifications_active</mat-icon></div>
+      <div class="kpi-body">
+        <p class="kpi-label">Inbox</p>
+        <p class="kpi-value">{{ unreadCount() }}</p>
+        <p class="kpi-meta">
+          <mat-icon>mark_email_unread</mat-icon>
+          Unread notification{{ unreadCount() === 1 ? '' : 's' }}
+        </p>
+      </div>
+    </article>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- HERO — Net worth + sparkline + donut + monthly spend -->
+  <!-- ====================================================== -->
+  <section class="hero">
+    <!-- NET WORTH CARD -->
+    <article class="hero-card hero-card--networth">
+      <div class="hero-card-top">
+        <div>
+          <p class="hero-eyebrow">Total Net Worth</p>
+          <h2 class="hero-amount">
+            {{ primaryCurrency() }} {{ masked(showBalance(), totalBalance()) }}
+          </h2>
+          <p class="hero-sub">
+            Across {{ accountsCount() }} account{{ accountsCount() === 1 ? '' : 's' }}
+            · last refresh {{ today | date: 'h:mm a' }}
+          </p>
+        </div>
+        <div class="hero-spark">
+          <svg viewBox="0 0 100 32" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--brand-primary)" stop-opacity="0.35" />
+                <stop offset="100%" stop-color="var(--brand-primary)" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <path [attr.d]="sparkArea()" fill="url(#sparkFill)" />
+            <path
+              [attr.d]="sparkPath()"
+              fill="none"
+              stroke="var(--brand-primary)"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </div>
       </div>
 
-      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
-        <common-line-chart
-          [headerTitle]="'Transactions Trend'"
-          [dataByRange]="LineChartData"
-          [height]="350"
-          yTitle="Count"
-          xTitle="Period"
-          [curve]="'smooth'"
-          [showLegend]="true"
-          [showWeekly]="true"
-          [showMonthly]="true"
-          [showYearly]="true"
-          [showToolbar]="false">
-        </common-line-chart>
+      <div class="hero-card-bottom">
+        <div class="hero-allocation">
+          <div class="hero-donut" [style.background]="donutGradient()">
+            <div class="hero-donut-center">
+              <mat-icon>account_balance_wallet</mat-icon>
+            </div>
+          </div>
+          <ul class="hero-allocation-list">
+            @for (a of allocation(); track a.label) {
+              <li>
+                <span class="hero-allocation-swatch" [class]="'swatch--' + a.color"></span>
+                <span class="hero-allocation-name">{{ a.label }}</span>
+                <span class="hero-allocation-pct">{{ a.pct }}%</span>
+              </li>
+            } @empty {
+              <li class="hero-allocation-empty">No accounts yet</li>
+            }
+          </ul>
+        </div>
+        <a routerLink="/account" class="hero-cta">
+          Manage accounts
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+    </article>
+
+    <!-- SPENDING CARD -->
+    <article class="hero-card hero-card--spend">
+      <div class="hero-card-top">
+        <div>
+          <p class="hero-eyebrow">Spending this month</p>
+          <h2 class="hero-amount hero-amount--md">
+            {{ primaryCurrency() }} {{ masked(showBalance(), mtdSpend()) }}
+          </h2>
+          <p class="hero-sub">
+            of
+            <strong>{{ primaryCurrency() }} {{ formatAmount(mtdIncome()) }}</strong>
+            income · {{ spendPct() }}% used
+          </p>
+        </div>
+        <div class="hero-spark hero-spark--muted">
+          <div class="hero-spark-meter">
+            <div class="hero-spark-meter-fill" [style.width.%]="spendPct()"></div>
+          </div>
+        </div>
       </div>
 
-      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
-        <common-stacked-column-chart
-          [headerTitle]="'Outgoing Messages'"
-          [dataByRange]="stackedData"
-          [height]="350"
-          [colors]="barColors"
-          yTitle="Message Count"
-          xTitle="Period"
-          [showLegend]="true"
-          [showWeekly]="true"
-          [showMonthly]="true"
-          [showYearly]="true"
-          [showToolbar]="false">
-        </common-stacked-column-chart>
+      <ul class="hero-categories">
+        @for (c of spending; track c.label) {
+          <li class="hero-category">
+            <div class="hero-category-row">
+              <span class="hero-category-icon" [class]="'hero-category-icon--' + c.color">
+                <mat-icon>{{ c.icon }}</mat-icon>
+              </span>
+              <span class="hero-category-label">{{ c.label }}</span>
+              <span class="hero-category-amount">{{ formatCompact(c.amount) }}</span>
+            </div>
+            <div class="hero-category-bar">
+              <div
+                class="hero-category-bar-fill"
+                [class]="'fill--' + c.color"
+                [style.width.%]="c.pct"></div>
+            </div>
+          </li>
+        }
+      </ul>
+    </article>
 
+    <!-- INSIGHT CARD -->
+    <article class="hero-card hero-card--insight">
+      <p class="hero-eyebrow">Insight</p>
+      <h3 class="hero-insight-title">
+        <mat-icon>auto_awesome</mat-icon> You saved 18% more than July
+      </h3>
+      <p class="hero-insight-body">
+        You spent {{ primaryCurrency() }} 7,320 less this month compared to July.
+        Keep it up — your savings rate is now 56%.
+      </p>
+      <div class="hero-insight-actions">
+        <a routerLink="/account/statement">
+          <mat-icon>insights</mat-icon> See breakdown
+        </a>
+        <a routerLink="/myservices">
+          <mat-icon>tune</mat-icon> Set a budget
+        </a>
       </div>
+    </article>
+  </section>
 
-      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
-        <common-histogram
-          [headerTitle]="'Processing Time Distribution'"
-          [dataByRange]="histogramData"
-          [tooltipLabel]="'Avg Processing Time:'"
-          [height]="350"
-          [barColor]="'#3b82f6'"
-          [showWeekly]="true"
-          [showMonthly]="true"
-          [showYearly]="true">
-        </common-histogram>
+  <!-- ====================================================== -->
+  <!-- QUICK ACTIONS -->
+  <!-- ====================================================== -->
+  <section class="quick">
+    @for (a of quickActions; track a.label) {
+      <a
+        [routerLink]="a.route"
+        class="quick-tile"
+        [class]="'quick-tile--' + a.color">
+        <span class="quick-tile-icon">
+          <mat-icon>{{ a.icon }}</mat-icon>
+        </span>
+        <span class="quick-tile-label">{{ a.label }}</span>
+        <mat-icon class="quick-tile-arrow">arrow_outward</mat-icon>
+      </a>
+    }
+    <button type="button" class="quick-tile quick-tile--more" [matMenuTriggerFor]="moreMenu">
+      <span class="quick-tile-icon">
+        <mat-icon>apps</mat-icon>
+      </span>
+      <span class="quick-tile-label">More</span>
+      <mat-icon class="quick-tile-arrow">expand_more</mat-icon>
+    </button>
+    <mat-menu #moreMenu="matMenu" xPosition="after" class="quick-more-menu">
+      @for (a of secondaryActions; track a.label) {
+        <a mat-menu-item [routerLink]="a.route">
+          <mat-icon>{{ a.icon }}</mat-icon>
+          <span>{{ a.label }}</span>
+        </a>
+      }
+    </mat-menu>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- RECENTLY USED — top activities from /api/ActivityLog/GetTopActivityLog -->
+  <!-- ====================================================== -->
+  @if (shortcuts().length > 0) {
+    <section class="shortcuts">
+      <header class="shortcuts-head">
+        <div>
+          <h2 class="shortcuts-title">Recently used</h2>
+          <p class="shortcuts-sub">Jump back into your top activities</p>
+        </div>
+      </header>
+      <div class="shortcuts-row">
+        @for (s of shortcuts(); track s.id) {
+          <a
+            [routerLink]="s.url"
+            (click)="onShortcutClick(s)"
+            class="shortcut-chip">
+            <mat-icon>{{ s.icon }}</mat-icon>
+            <span>{{ s.shortTitle || s.title }}</span>
+          </a>
+        }
       </div>
+    </section>
+  }
 
-      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
-        <common-bar-chart
-          [headerTitle]="'Department Performance'"
-          [tooltipLabel]="'Performance Score'"
-          [dataByRange]="barData"
-          [height]="350"
-          [barColor]="'#06b6d4'"
-          [colors]="barColors"
-          [showWeekly]="true"
-          [showMonthly]="true"
-          [showYearly]="true"
-          [horizontal]="true">
-        </common-bar-chart>
+  <!-- ====================================================== -->
+  <!-- ACCOUNTS — left, BIG rail — right -->
+  <!-- ====================================================== -->
+  <section class="grid">
+    <!-- ========== ACCOUNTS ========== -->
+    <article class="card card--accounts">
+      <header class="card-head">
+        <div>
+          <h2 class="card-title">My Accounts</h2>
+          <p class="card-sub">{{ accountsCount() }} linked · refreshed just now</p>
+        </div>
+        <a routerLink="/account" class="card-link">View all <mat-icon>arrow_forward</mat-icon></a>
+      </header>
+
+      @if (accountsLoading()) {
+        <div class="card-state">
+          <mat-icon>hourglass_top</mat-icon><span>Loading…</span>
+        </div>
+      } @else {
+        <!-- Featured primary account card -->
+        @if (accounts()[0]; as primary) {
+          <div class="featured-account" [class]="'featured-account--brand'">
+            <div class="featured-account-row">
+              <div class="featured-account-chip">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <span class="featured-account-bank">{{ bankName() }}</span>
+            </div>
+            <p class="featured-account-type">{{ primary.accountTitle }}</p>
+            <p class="featured-account-number">{{ primary.maskedAccount }}</p>
+            <div class="featured-account-row featured-account-row--end">
+              <div>
+                <p class="featured-account-metaLabel">Available balance</p>
+                <p class="featured-account-balance">
+                  {{ primary.currency }} {{ masked(showBalance(), primary.availableBalance) }}
+                </p>
+                @if (primary.branchName) {
+                  <p class="featured-account-branch">{{ primary.branchName }}</p>
+                }
+              </div>
+              <div class="featured-account-actions">
+                <a [routerLink]="['/account/account-details']">
+                  <mat-icon>visibility</mat-icon> Details
+                </a>
+                <a class="featured-account-cta" [routerLink]="['/account/fundtransfer']">
+                  <mat-icon>swap_horiz</mat-icon> Transfer
+                </a>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Compact list for the rest -->
+        <ul class="account-list">
+          @for (a of accounts().slice(1); track a.accountNumber) {
+            <li class="account-row">
+              <span class="account-row-icon" [class]="'icon--' + (a.productType === 'F' ? 'emerald' : 'amber')">
+                <mat-icon>{{ a.productType === 'F' ? 'savings' : 'account_balance' }}</mat-icon>
+              </span>
+              <div class="account-row-info">
+                <p class="account-row-name">{{ a.accountTitle }}</p>
+                <p class="account-row-meta">A/C {{ a.maskedAccount }} · {{ a.productName }}</p>
+              </div>
+              <div class="account-row-balance">
+                <p class="account-row-amount">{{ a.currency }} {{ masked(showBalance(), a.availableBalance) }}</p>
+                <p class="account-row-label">Available</p>
+              </div>
+            </li>
+          } @empty {
+            <li class="card-empty">No additional accounts.</li>
+          }
+        </ul>
+      }
+    </article>
+
+    <!-- ========== RIGHT RAIL ========== -->
+    <aside class="rail">
+      <!-- Security card -->
+      <article class="card card--security">
+        <header class="card-head">
+          <h2 class="card-title card-title--sm">Security</h2>
+          <span class="card-pill card-pill--success">
+            <mat-icon>verified_user</mat-icon> Secure
+          </span>
+        </header>
+        <ul class="rail-list">
+          <li class="rail-row">
+            <span class="rail-row-icon rail-row-icon--info">
+              <mat-icon>schedule</mat-icon>
+            </span>
+            <div>
+              <p class="rail-row-label">Last login</p>
+              <p class="rail-row-value">{{ lastLogin() }}</p>
+            </div>
+          </li>
+          <li class="rail-row">
+            <span class="rail-row-icon rail-row-icon--info">
+              <mat-icon>devices</mat-icon>
+            </span>
+            <div>
+              <p class="rail-row-label">Device</p>
+              <p class="rail-row-value">{{ lastLoginIp() }}</p>
+            </div>
+          </li>
+        </ul>
+        <a routerLink="/securityadvice" class="rail-cta">
+          Security tips <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </article>
+
+      <!-- Notifications card -->
+      <article class="card card--notify">
+        <header class="card-head">
+          <div>
+            <h2 class="card-title card-title--sm">
+              Inbox
+              @if (unreadCount() > 0) {
+                <span class="card-badge">{{ unreadCount() }} new</span>
+              }
+            </h2>
+            <p class="card-sub">From your bank</p>
+          </div>
+          <a routerLink="/otherservices/notifications" class="card-link">All <mat-icon>arrow_forward</mat-icon></a>
+        </header>
+        @if (notifyLoading()) {
+          <div class="card-state">
+            <mat-icon>hourglass_top</mat-icon><span>Loading…</span>
+          </div>
+        } @else {
+          <ul class="notify-list">
+            @for (n of notifications(); track n.notificationID) {
+              <li class="notify-row" [class.is-unread]="!n.isRead">
+                <span class="notify-dot" [class]="'dot--' + n.category"></span>
+                <div class="notify-body">
+                  <p class="notify-title">{{ n.title }}</p>
+                  <p class="notify-msg">{{ n.body }}</p>
+                  <p class="notify-date">{{ n.date }}</p>
+                </div>
+              </li>
+            } @empty {
+              <li class="card-empty">You're all caught up.</li>
+            }
+          </ul>
+        }
+      </article>
+
+      <!-- Relationship manager card -->
+      <article class="card card--rm">
+        <header class="card-head">
+          <h2 class="card-title card-title--sm">Your RM</h2>
+          <span class="card-pill" [class.card-pill--online]="rm().online">
+            <span class="online-dot"></span>
+            {{ rm().online ? 'Online' : 'Offline' }}
+          </span>
+        </header>
+        <div class="rm-body">
+          <span class="rm-avatar">{{ rm().initials }}</span>
+          <div>
+            <p class="rm-name">{{ rm().name }}</p>
+            <p class="rm-role">{{ rm().role }}</p>
+          </div>
+        </div>
+        <div class="rm-actions">
+          <a class="rm-action" [href]="'tel:' + rm().phone" [matTooltip]="'Call ' + rm().name">
+            <mat-icon>call</mat-icon><span>Call</span>
+          </a>
+          <a class="rm-action" [href]="'mailto:' + rm().email" [matTooltip]="'Email ' + rm().name">
+            <mat-icon>email</mat-icon><span>Email</span>
+          </a>
+          <button type="button" class="rm-action" [matTooltip]="'Chat with ' + rm().name">
+            <mat-icon>chat</mat-icon><span>Chat</span>
+          </button>
+        </div>
+      </article>
+
+      <!-- Offers card -->
+      <article class="card card--offers">
+        <header class="card-head">
+          <h2 class="card-title card-title--sm">For you</h2>
+          <span class="card-sub">Personalized offers</span>
+        </header>
+        <ul class="offers-list">
+          @for (o of offers(); track o.title) {
+            <li class="offer-row" [class]="'offer-row--' + o.accent">
+              <span class="offer-icon"><mat-icon>{{ o.icon }}</mat-icon></span>
+              <div>
+                <p class="offer-title">{{ o.title }}</p>
+                <p class="offer-sub">{{ o.subtitle }}</p>
+              </div>
+              <mat-icon class="offer-arrow">arrow_forward</mat-icon>
+            </li>
+          }
+        </ul>
+      </article>
+    </aside>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- ACTIVITY STREAM -->
+  <!-- ====================================================== -->
+  <section class="card card--activity">
+    <header class="card-head card-head--sticky">
+      <div>
+        <h2 class="card-title">Recent Activity</h2>
+        <p class="card-sub">{{ filteredActivities().length }} transactions</p>
       </div>
-      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
-        <common-pie-chart
-          [headerTitle]="'Revenue Breakdown'"
-          [tooltipLabel]="'Revenue Share'"
-          [dataByRange]="pieData"
-          [colors]="['#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444']"
-          [height]="340"
-          [showLegend]="true"
-          [showWeekly]="true"
-          [showMonthly]="true"
-          [showYearly]="true">
-        </common-pie-chart>
+      <div class="activity-toolbar">
+        <label class="activity-search">
+          <mat-icon>search</mat-icon>
+          <input
+            type="text"
+            placeholder="Search transactions…"
+            (input)="onSearch($event)" />
+        </label>
+        <a routerLink="/activity" class="card-link">View all <mat-icon>arrow_forward</mat-icon></a>
       </div>
+    </header>
 
-      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
-        <common-donut-chart
-          [headerTitle]="'Revenue Share'"
-          [dataByRange]="donutData"
-          [showWeekly]="true"
-          [showMonthly]="true"
-          [showYearly]="true"
-          [colors]="['#3b82f6', '#06b6d4', '#10b981', '#f59e0b']">
-        </common-donut-chart>
-      </div>
-
-
-
-
+    <div class="activity-filters" role="tablist">
+      @for (f of activityFilters; track f.id) {
+        <button
+          type="button"
+          role="tab"
+          [attr.aria-selected]="activityFilter() === f.id"
+          class="activity-chip"
+          [class.is-active]="activityFilter() === f.id"
+          (click)="setFilter(f.id)">
+          <mat-icon>{{ f.icon }}</mat-icon>
+          <span>{{ f.label }}</span>
+        </button>
+      }
     </div>
 
-  </div>
-
+    @if (activityLoading()) {
+      <div class="card-state">
+        <mat-icon>hourglass_top</mat-icon><span>Loading activity…</span>
+      </div>
+    } @else {
+      <ul class="activity-list">
+        @for (a of filteredActivities(); track a.id) {
+          <li class="activity-row" [class.is-pending]="a.status === 'pending'">
+            <span class="activity-icon" [class]="'icon--' + a.type">
+              <mat-icon>{{ a.icon }}</mat-icon>
+            </span>
+            <div class="activity-meta">
+              <p class="activity-label">
+                {{ a.label }}
+                @if (a.status === 'pending') {
+                  <span class="activity-pill activity-pill--pending">Pending</span>
+                }
+              </p>
+              <p class="activity-sub">
+                {{ a.counterparty ? a.counterparty + ' · ' : '' }}{{ a.category }} · {{ a.rawDate | date: 'EEE, d MMM' }}
+              </p>
+            </div>
+            <div class="activity-amount">
+              <p
+                class="activity-amount-value"
+                [class.is-credit]="a.isCredit"
+                [class.is-debit]="!a.isCredit">
+                {{ a.isCredit ? '+' : '−' }} {{ masked(showBalance(), a.amount) }}
+              </p>
+              <p class="activity-amount-balance">
+                Bal · {{ masked(showBalance(), a.runningBalance ?? 0) }}
+              </p>
+            </div>
+          </li>
+        } @empty {
+          <li class="card-empty">No transactions match your filters.</li>
+        }
+      </ul>
+    }
+  </section>
 </div>
-
