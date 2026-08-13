@@ -1,0 +1,150 @@
+<!-- Mobile backdrop -->
+@if (state.mode() === 'mobile' && state.isOpen()) {
+  <div class="sidebar-backdrop" (click)="closeMobile()" aria-hidden="true"></div>
+}
+
+<aside
+  class="sidebar"
+  [class.is-open]="state.isOpen()"
+  [class.mode-mobile]="state.mode() === 'mobile'"
+  [class.mode-tablet]="state.mode() === 'tablet'"
+  [class.mode-desktop]="state.mode() === 'desktop'"
+  [attr.aria-hidden]="state.mode() === 'mobile' && !state.isOpen()"
+  aria-label="Primary navigation">
+
+  <!-- ============ Brand header (sits flush under topbar) ============ -->
+  <header class="sidebar-brand">
+    <a routerLink="/dashboard" class="sidebar-brand-link" (click)="closeMobile()">
+      <img
+        [src]="logoUrl()"
+        [alt]="bankName() + ' logo'"
+        class="sidebar-brand-logo" />
+      @if (state.isOpen() || state.mode() === 'desktop') {
+        <span class="sidebar-brand-text">
+          <span class="sidebar-brand-name">{{ displayName() || bankName() }}</span>
+          <span class="sidebar-brand-subtitle">Internet Banking</span>
+        </span>
+      }
+    </a>
+  </header>
+
+  <!-- ============ Search filter ============ -->
+  @if (state.mode() === 'desktop' || state.isOpen()) {
+    <div class="sidebar-search">
+      <mat-icon class="sidebar-search-icon">search</mat-icon>
+      <input
+        type="text"
+        class="sidebar-search-input"
+        placeholder="Search menu…"
+        aria-label="Search menu"
+        [ngModel]="navSearch()"
+        (ngModelChange)="onSearchChange($event)" />
+      @if (navSearch()) {
+        <button
+          type="button"
+          class="sidebar-search-clear"
+          (click)="clearSearch()"
+          aria-label="Clear search">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </div>
+  }
+
+  <!-- ============ Nav ============ -->
+  <nav class="sidebar-scroll" aria-label="Primary">
+    @if (hasResults()) {
+      <ul class="sidebar-nav">
+        @for (node of filteredNav(); track node.key) {
+          <li class="nav-row" [class.is-parent]="node.expandable">
+            @if (node.expandable) {
+              <button
+                type="button"
+                class="nav-item"
+                [class.is-active]="isExpanded(node.key)"
+                [attr.aria-expanded]="isExpanded(node.key)"
+                [attr.aria-controls]="'submenu-' + node.key"
+                [matTooltip]="(!state.isOpen() && state.mode() !== 'desktop') ? node.label : ''"
+                matTooltipPosition="right"
+                (click)="toggleAccordion(node.key)">
+                <span class="nav-icon">
+                  <mat-icon>{{ node.icon }}</mat-icon>
+                </span>
+                <span class="nav-label">{{ node.label }}</span>
+                <span class="nav-arrow" [class.is-expanded]="isExpanded(node.key)">
+                  <mat-icon>expand_more</mat-icon>
+                </span>
+              </button>
+              <!-- Submenu: animated accordion with light-dark slate background -->
+              <div
+                class="submenu"
+                [class.is-open]="isExpanded(node.key)"
+                [id]="'submenu-' + node.key"
+                role="region"
+                [attr.aria-hidden]="!isExpanded(node.key)">
+                <ul class="submenu-list">
+                  @for (child of node.children; track child.key) {
+                    <li>
+                      <a
+                        [routerLink]="child.route"
+                        routerLinkActive="is-active"
+                        [routerLinkActiveOptions]="{ exact: false }"
+                        (click)="closeMobile()"
+                        class="submenu-item">
+                        <span class="submenu-dot" aria-hidden="true"></span>
+                        <span class="submenu-label">{{ child.label }}</span>
+                      </a>
+                    </li>
+                  }
+                </ul>
+              </div>
+            } @else {
+              <a
+                [routerLink]="node.url"
+                routerLinkActive="is-active"
+                [routerLinkActiveOptions]="{ exact: false }"
+                (click)="closeMobile()"
+                [matTooltip]="(!state.isOpen() && state.mode() !== 'desktop') ? node.label : ''"
+                matTooltipPosition="right"
+                class="nav-item">
+                <span class="nav-icon">
+                  <mat-icon>{{ node.icon }}</mat-icon>
+                </span>
+                <span class="nav-label">{{ node.label }}</span>
+              </a>
+            }
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="sidebar-empty">
+        <mat-icon>search_off</mat-icon>
+        <p class="sidebar-empty-title">No menu items match</p>
+        <p class="sidebar-empty-sub">
+          Try a different keyword or
+          <button type="button" class="sidebar-empty-clear" (click)="clearSearch()">
+            clear the filter
+          </button>.
+        </p>
+      </div>
+    }
+  </nav>
+
+  <!-- ============ Footer: ONLY user avatar + sign-out (no profile redirect) ============ -->
+  <footer class="sidebar-footer">
+    <button
+      type="button"
+      class="sidebar-signout"
+      (click)="onSignOut()"
+      [matTooltip]="(!state.isOpen() && state.mode() !== 'desktop') ? 'Sign out' : ''"
+      matTooltipPosition="right"
+      aria-label="Sign out">
+      <span class="sidebar-signout-icon">
+        <mat-icon>logout</mat-icon>
+      </span>
+      @if (state.isOpen() || state.mode() !== 'tablet') {
+        <span class="sidebar-signout-label">Sign out</span>
+      }
+    </button>
+  </footer>
+</aside>

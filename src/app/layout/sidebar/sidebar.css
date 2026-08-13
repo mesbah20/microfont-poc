@@ -1,0 +1,576 @@
+/* =================================================================
+   Sidebar — UBL collapse pattern + CBPLC demo color alignment
+   Topbar is fixed 56px tall — sidebar starts directly below it so
+   their top corners align perfectly (no height mismatch).
+   ================================================================= */
+
+@layer base {
+  .sidebar {
+    /* Topbar = 56px — matches `.mat-toolbar-single-row` from CBPLC demo.
+       The sidebar starts at this offset so the top-left corner of the
+       sidebar sits flush with the topbar's bottom-left corner. */
+    --side-top-offset: 56px;
+    --side-topbar-h: 56px;
+
+    /* Color tokens — all-light scheme that complements the red topbar.
+       Submenu items get a slate panel for visual hierarchy. */
+    --side-bg: #ffffff;
+    --side-bg-submenu: #f1f5f9;
+    --side-bg-footer: #f8fafc;
+    --side-divider: #e2e8f0;
+    --side-divider-strong: #cbd5e1;
+    --side-text: #0f172a;
+    --side-text-muted: #64748b;
+    --side-text-disabled: #94a3b8;
+    --side-hover: #f1f5f9;
+    --side-active-bg: rgba(148, 1, 3, 0.08);
+    --side-active-text: var(--brand-primary-deep, #1a0303);
+    --side-accent: var(--brand-primary, #940103);
+    --side-accent-soft: var(--brand-tint-strong, rgba(148, 1, 3, 0.18));
+    --side-signout: var(--brand-primary, #940103);
+    --side-signout-hover: var(--brand-primary-hover, #7a0102);
+    --side-signout-text: #ffffff;
+
+    /* Sizing — UBL collapse pattern: 260/78 */
+    --side-w: 260px;
+    --side-w-rail: 78px;
+    --side-w-mobile: 86vw;
+    --side-w-mobile-max: 320px;
+
+    /* Motion — UBL uses all 0.5s ease */
+    --side-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --side-dur: 280ms;
+  }
+}
+
+/* =================================================================
+   Shell — sits flush under the topbar (corner-aligned)
+   ================================================================= */
+.sidebar {
+  position: fixed;
+  top: var(--side-top-offset);
+  left: 0;
+  bottom: 0;
+  width: var(--side-w);
+  background: var(--side-bg);
+  color: var(--side-text);
+  display: flex;
+  flex-direction: column;
+  z-index: 25;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  border-right: 1px solid var(--side-divider);
+  border-top: 1px solid var(--side-divider);
+  transition:
+    width var(--side-dur) var(--side-ease),
+    transform var(--side-dur) var(--side-ease),
+    box-shadow var(--side-dur) var(--side-ease);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+/* Desktop collapsed: slide completely off-screen */
+.mode-desktop.sidebar:not(.is-open) {
+  transform: translateX(-100%);
+}
+
+/* Tablet rail — UBL pattern: 78px collapsed, 260px expanded */
+.mode-tablet.sidebar {
+  width: var(--side-w-rail);
+}
+.mode-tablet.sidebar.is-open {
+  width: var(--side-w);
+}
+.mode-tablet.sidebar:not(.is-open) {
+  transform: translateX(-100%);
+}
+
+/* Mobile drawer */
+.mode-mobile.sidebar {
+  width: var(--side-w-mobile);
+  max-width: var(--side-w-mobile-max);
+  transform: translateX(-100%);
+  box-shadow: 0 24px 48px -16px rgba(15, 23, 42, 0.45);
+}
+.mode-mobile.sidebar.is-open {
+  transform: translateX(0);
+}
+
+/* ===== Backdrop ===== */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 24;
+  animation: sideFade 200ms ease-out;
+}
+@keyframes sideFade { from { opacity: 0 } to { opacity: 1 } }
+
+/* =================================================================
+   Brand header — CBPLC-style logo (60 × 50) — same height as topbar
+   so the top corner of the sidebar aligns with the topbar corner.
+   ================================================================= */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  height: var(--side-topbar-h, 56px);
+  padding: 0 14px;
+  border-bottom: 1px solid var(--side-divider);
+  flex-shrink: 0;
+  background: #ffffff;
+}
+
+.sidebar-brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+  text-decoration: none;
+  color: inherit;
+  padding: 4px;
+  margin: -4px;
+  border-radius: 8px;
+  transition: background 150ms ease;
+}
+.sidebar-brand-link:hover { background: var(--side-hover); }
+
+.sidebar-brand-logo {
+  /* CBPLC demo header logo: 60 × 50 (full size in sidebar brand header) */
+  width: 60px;
+  height: 50px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Tablet rail mode: small icon-only logo */
+.mode-tablet:not(.is-open) .sidebar-brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 2px;
+  border: 1px solid var(--side-divider);
+}
+
+.sidebar-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.sidebar-brand-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--side-text);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar-brand-subtitle {
+  font-size: 10px;
+  color: var(--side-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Tablet rail mode: hide text */
+.mode-tablet:not(.is-open) .sidebar-brand-text { display: none; }
+.mode-tablet:not(.is-open) .sidebar-brand-link { justify-content: center; }
+.mode-tablet:not(.is-open) .sidebar-brand { padding: 0 12px; }
+
+/* =================================================================
+   Search filter
+   ================================================================= */
+.sidebar-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 12px 14px 8px;
+  flex-shrink: 0;
+}
+.mode-tablet:not(.is-open) .sidebar-search { display: none; }
+
+.sidebar-search-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: var(--side-text-muted);
+  pointer-events: none;
+}
+.sidebar-search-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 32px 0 36px;
+  border: 1px solid var(--side-divider);
+  background: #f8fafc;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--side-text);
+  outline: none;
+  transition: border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+}
+.sidebar-search-input::placeholder { color: var(--side-text-disabled); }
+.sidebar-search-input:focus {
+  border-color: var(--side-accent);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px var(--side-accent-soft);
+}
+.sidebar-search-clear {
+  position: absolute;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  background: transparent;
+  color: var(--side-text-muted);
+  cursor: pointer;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 150ms ease, color 150ms ease;
+}
+.sidebar-search-clear:hover { background: var(--side-hover); color: var(--side-text); }
+.sidebar-search-clear mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+/* =================================================================
+   Nav scroll area
+   ================================================================= */
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 23, 42, 0.15) transparent;
+}
+.sidebar-scroll::-webkit-scrollbar { width: 6px; }
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.18);
+  border-radius: 999px;
+}
+
+/* =================================================================
+   Nav items + accordion
+   ================================================================= */
+.sidebar-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.nav-row { display: block; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 12px;
+  border: 0;
+  background: transparent;
+  border-radius: 9px;
+  text-decoration: none;
+  color: var(--side-text);
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.nav-item:hover {
+  background: var(--side-hover);
+  color: var(--side-accent);
+  transform: translateX(2px);
+}
+.nav-item:hover .nav-icon {
+  background: var(--side-accent-soft);
+  color: var(--side-accent);
+}
+
+.nav-item.is-active {
+  background: var(--side-active-bg);
+  color: var(--side-active-text);
+  font-weight: 700;
+}
+.nav-item.is-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--side-accent);
+}
+.nav-item.is-active .nav-icon {
+  background: var(--side-accent-soft);
+  color: var(--side-accent);
+}
+
+.nav-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--side-text-muted);
+  transition: background 150ms ease, color 150ms ease;
+}
+.nav-icon mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.nav-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  color: var(--side-text-muted);
+  transition: transform 220ms var(--side-ease), color 220ms var(--side-ease);
+}
+.nav-arrow.is-expanded { transform: rotate(180deg); color: var(--side-accent); }
+.nav-arrow mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+/* Tablet rail: hide text + arrow, show tooltip on hover */
+.mode-tablet:not(.is-open) .nav-label,
+.mode-tablet:not(.is-open) .nav-arrow {
+  display: none;
+}
+.mode-tablet:not(.is-open) .nav-item {
+  justify-content: center;
+  padding: 10px;
+}
+
+/* ===== Submenu (accordion) — LIGHT DARK SLATE ===== */
+.submenu {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  overflow: hidden;
+  background: var(--side-bg-submenu);    /* light dark slate */
+  border-radius: 8px;
+  margin: 2px 4px 4px 4px;
+  transition:
+    grid-template-rows 260ms var(--side-ease),
+    opacity 200ms ease,
+    margin 260ms var(--side-ease);
+}
+.submenu.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  margin: 2px 4px 8px 4px;
+}
+.submenu > .submenu-list {
+  min-height: 0;
+}
+.submenu-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.submenu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px 7px 16px;
+  border-radius: 7px;
+  margin: 0 6px;
+  text-decoration: none;
+  color: var(--side-text-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+}
+.submenu-item:hover {
+  background: rgba(148, 1, 3, 0.06);
+  color: var(--side-accent);
+  transform: translateX(2px);
+}
+.submenu-item.is-active {
+  background: var(--side-active-bg);
+  color: var(--side-accent);
+  font-weight: 700;
+}
+.submenu-item.is-active .submenu-dot {
+  background: var(--side-accent);
+  box-shadow: 0 0 0 3px var(--side-accent-soft);
+}
+.submenu-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  flex-shrink: 0;
+  transition: background 150ms ease, box-shadow 150ms ease;
+}
+.submenu-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Tablet rail mode: submenu hidden (pop-out handled by tooltip on parent) */
+.mode-tablet:not(.is-open) .submenu { display: none; }
+
+/* ===== Empty state ===== */
+.sidebar-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 28px 14px;
+  gap: 6px;
+  color: var(--side-text-muted);
+}
+.sidebar-empty mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #cbd5e1;
+}
+.sidebar-empty-title {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--side-text);
+}
+.sidebar-empty-sub {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.sidebar-empty-clear {
+  border: 0;
+  background: transparent;
+  color: var(--side-accent);
+  font: inherit;
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* =================================================================
+   Footer — ONLY the sign-out button (no profile redirect)
+   ================================================================= */
+.sidebar-footer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--side-divider);
+  background: var(--side-bg-footer);
+}
+
+/* Sign-out button — RED demo style + slightly larger */
+.sidebar-signout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--side-signout);
+  background: var(--side-signout);
+  border-radius: 10px;
+  color: var(--side-signout-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  text-transform: none;
+  box-shadow: 0 4px 10px -2px rgba(148, 1, 3, 0.35);
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+.sidebar-signout:hover {
+  background: var(--side-signout-hover);
+  border-color: var(--side-signout-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px -2px rgba(148, 1, 3, 0.45);
+}
+.sidebar-signout:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px -2px rgba(148, 1, 3, 0.4);
+}
+.sidebar-signout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.sidebar-signout-icon mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+.sidebar-signout-label {
+  display: inline-block;
+  line-height: 1;
+}
+
+/* Tablet rail mode: icon-only square button */
+.mode-tablet:not(.is-open) .sidebar-signout {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin: 0 auto;
+}
+.mode-tablet:not(.is-open) .sidebar-signout-label {
+  display: none;
+}
+
+/* =================================================================
+   Mobile tweaks
+   ================================================================= */
+@media (max-width: 767px) {
+  .sidebar-brand { padding: 0 12px; }
+}

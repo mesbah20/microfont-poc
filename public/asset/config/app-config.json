@@ -1,0 +1,35 @@
+{
+  "bankName": "CBPLC",
+  "api": {
+    "rootUrl": "http://192.168.20.218/CloudNetAPI",
+    "reportApiUrl": "http://192.168.20.218/CloudNetReportAPI",
+    "userIpUrl": "http://192.168.20.218/userIp/api/ip"
+  },
+  "endpoints": {
+    "login": "/api/Login/Login",
+    "isValidUserID": "/api/Login/isValidUserID",
+    "signOut": "/api/SignoutRequest/SignOut",
+    "getAccountListWithBalance": "/api/BankAccount/getAccountListWithBalance",
+    "getAccountBalance": "/api/BankAccount/getAccountBalance",
+    "getAccountInterest": "/api/BankAccount/getAccountInterest",
+    "getChequeBookList": "/api/BankAccount/getChequeBookList",
+    "getUnUsedChequeDetail": "/api/BankAccount/getUnUsedChequeDetail",
+    "lastNumberOfTransactions": "/api/BankAccount/lastNumberofTransactions",
+    "getCbsAccInfo": "/api/BankAccount/getCbsAccInfo",
+    "creditCardBankInfo": "/api/BankInfo/CreditCardBankInfo",
+    "branchInfo": "/api/BankAccount/branchInfo",
+    "getAdvertisementList": "/api/BankAccount/GetAdvertisementList",
+    "bankInfo": "/api/BankAccount/bankInfo",
+    "bankBranchInfo": "/api/BankAccount/bankBranchInfo",
+    "getRtgsBankList": "/api/BankAccount/getRtgsBankList",
+    "getRtgsBranchList": "/api/BankAccount/getRtgsBranchList",
+    "getRtgsCountryList": "/api/BankAccount/getRtgsCountryList",
+    "bankAbout": "/api/BankInfo/About",
+    "getAllNotifications": "/api/Notification/GetAllNotifications",
+    "updateNotificationAsRead": "/api/Notification/UpdateNotificationAsRead",
+    "getAppSettingsByKey": "/api/AppConfigs/getAppSettingsbykey",
+    "mobileVerification": "/api/Verification/MobileVerification",
+    "signup": "/api/SignupRequest/Signup",
+    "proprietorshipSignup": "/api/SignupRequest/ProprietorshipSignupRequest"
+  }
+}

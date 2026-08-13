@@ -1,0 +1,198 @@
+<header class="topbar">
+  <div class="topbar-inner">
+    <!-- Hamburger (always visible — desktop, tablet, mobile) -->
+    <button
+      type="button"
+      (click)="onToggleSidebar()"
+      class="topbar-hamburger"
+      [attr.aria-label]="sidebarState.isOpen() ? 'Hide menu' : 'Show menu'"
+      matTooltip="Toggle sidebar"
+      matTooltipPosition="below">
+      <mat-icon>{{ sidebarState.isOpen() ? 'menu_open' : 'menu' }}</mat-icon>
+    </button>
+
+    <!-- Brand (CBPLC demo: logo 60×50 + title) -->
+    <a routerLink="/dashboard" class="topbar-brand">
+      <img
+        [src]="logoUrl()"
+        [alt]="displayName() + ' logo'"
+        class="topbar-brand-logo" />
+      <div class="topbar-brand-text">
+        <p class="topbar-brand-name">{{ displayName() }}</p>
+        <p class="topbar-brand-subtitle">Internet Banking</p>
+      </div>
+    </a>
+
+    <div class="topbar-spacer"></div>
+
+    <!-- Home shortcut (demo uses mat-icon-button) -->
+    <button
+      type="button"
+      class="topbar-icon-btn only-desktop"
+      (click)="goHome()"
+      matTooltip="Home"
+      matTooltipPosition="below"
+      aria-label="Home">
+      <mat-icon>home</mat-icon>
+    </button>
+
+    <!-- Security Advice shortcut -->
+    <a
+      routerLink="/securityadvice"
+      class="topbar-icon-btn only-desktop"
+      matTooltip="Security Advice"
+      matTooltipPosition="below"
+      aria-label="Security Advice">
+      <mat-icon>verified_user</mat-icon>
+    </a>
+
+    <!-- Theme menu -->
+    <button
+      type="button"
+      class="topbar-icon-btn only-desktop"
+      [matMenuTriggerFor]="themeMenu"
+      matTooltip="Appearance"
+      matTooltipPosition="below"
+      aria-label="Theme">
+      <mat-icon>palette</mat-icon>
+    </button>
+    <mat-menu #themeMenu="matMenu" xPosition="before" class="topbar-theme-menu">
+      <div class="topbar-theme-menu-inner" (click)="$event.stopPropagation()">
+        <p class="topbar-theme-menu-title">Appearance</p>
+        @for (opt of themeOptions; track opt.value) {
+          <button
+            type="button"
+            class="topbar-theme-option"
+            [class.is-active]="currentTheme() === opt.value"
+            (click)="setTheme(opt.value)">
+            <mat-icon class="topbar-theme-option-icon">{{ opt.icon }}</mat-icon>
+            <span class="topbar-theme-option-label">{{ opt.label }}</span>
+            @if (currentTheme() === opt.value) {
+              <mat-icon class="topbar-theme-check">check</mat-icon>
+            }
+          </button>
+        }
+      </div>
+    </mat-menu>
+
+    <!-- Notifications bell -->
+    <app-notifications-menu class="only-desktop"></app-notifications-menu>
+
+    <!-- User avatar (desktop) -->
+    <button
+      type="button"
+      [matMenuTriggerFor]="userMenu"
+      class="topbar-user only-desktop"
+      aria-label="User menu">
+      <span class="topbar-avatar">{{ userInitials() }}</span>
+      <span class="topbar-user-info">
+        <span class="topbar-user-name">{{ userName() }}</span>
+        <span class="topbar-user-role">Account holder</span>
+      </span>
+      <mat-icon class="topbar-user-chevron">expand_more</mat-icon>
+    </button>
+
+    <!-- Mobile trigger -->
+    <button
+      type="button"
+      (click)="toggleMobileMenu()"
+      class="topbar-mobile-trigger only-mobile"
+      aria-label="User menu"
+      [attr.aria-expanded]="mobileMenuOpen()">
+      <span class="topbar-avatar topbar-avatar-sm">{{ userInitials() }}</span>
+    </button>
+
+    <!-- Desktop user dropdown -->
+    <mat-menu #userMenu="matMenu" xPosition="before" class="topbar-user-menu">
+      <div class="topbar-user-menu-inner" (click)="$event.stopPropagation()">
+        <header class="topbar-user-menu-header">
+          <span class="topbar-avatar topbar-avatar-lg">{{ userInitials() }}</span>
+          <div class="topbar-user-menu-meta">
+            <p class="topbar-user-menu-name">{{ userName() }}</p>
+            @if (userEmail()) {
+              <p class="topbar-user-menu-email">{{ userEmail() }}</p>
+            }
+            <p class="topbar-user-menu-time">
+              <mat-icon class="topbar-time-icon">schedule</mat-icon>
+              <span>{{ bdTime() }} (BD)</span>
+            </p>
+          </div>
+        </header>
+
+        <nav class="topbar-user-menu-nav">
+          @if (!isFirstLogin()) {
+            <a routerLink="/profile/detailprofile" mat-menu-item class="topbar-user-menu-item">
+              <mat-icon>person</mat-icon>
+              <span>Profile</span>
+            </a>
+          }
+          <a routerLink="/account/changepassword" mat-menu-item class="topbar-user-menu-item">
+            <mat-icon>lock_reset</mat-icon>
+            <span>Change Password</span>
+          </a>
+          @if (!isFirstLogin()) {
+            <a routerLink="/activity/useractivity" mat-menu-item class="topbar-user-menu-item">
+              <mat-icon>timeline</mat-icon>
+              <span>Activity</span>
+            </a>
+          }
+        </nav>
+
+        <footer class="topbar-user-menu-footer">
+          <button mat-menu-item class="topbar-user-menu-item topbar-signout" (click)="onSignOut()">
+            <mat-icon>logout</mat-icon>
+            <span>Sign out</span>
+          </button>
+        </footer>
+      </div>
+    </mat-menu>
+  </div>
+
+  <!-- Mobile sheet -->
+  @if (mobileMenuOpen()) {
+    <div class="topbar-mobile-sheet only-mobile">
+      <header class="topbar-mobile-sheet-header">
+        <span class="topbar-avatar">{{ userInitials() }}</span>
+        <div class="topbar-mobile-sheet-meta">
+          <p class="topbar-mobile-sheet-name">{{ userName() }}</p>
+          @if (userEmail()) {
+            <p class="topbar-mobile-sheet-email">{{ userEmail() }}</p>
+          }
+          <p class="topbar-mobile-sheet-time">{{ bdTime() }} (BD)</p>
+        </div>
+      </header>
+
+      <nav class="topbar-mobile-nav">
+        <button (click)="goHome(); closeMobileMenu()" type="button" class="topbar-mobile-link">
+          <mat-icon>home</mat-icon>
+          <span>Home</span>
+        </button>
+        <a routerLink="/securityadvice" (click)="closeMobileMenu()" class="topbar-mobile-link">
+          <mat-icon>verified_user</mat-icon>
+          <span>Security Advice</span>
+        </a>
+        @if (!isFirstLogin()) {
+          <a routerLink="/profile/detailprofile" routerLinkActive="is-active" (click)="closeMobileMenu()" class="topbar-mobile-link">
+            <mat-icon>person</mat-icon>
+            <span>Profile</span>
+          </a>
+        }
+        <a routerLink="/account/changepassword" routerLinkActive="is-active" (click)="closeMobileMenu()" class="topbar-mobile-link">
+          <mat-icon>lock_reset</mat-icon>
+          <span>Change Password</span>
+        </a>
+        @if (!isFirstLogin()) {
+          <a routerLink="/activity/useractivity" routerLinkActive="is-active" (click)="closeMobileMenu()" class="topbar-mobile-link">
+            <mat-icon>timeline</mat-icon>
+            <span>Activity</span>
+          </a>
+        }
+      </nav>
+
+      <button (click)="onSignOut()" type="button" class="topbar-mobile-logout">
+        <mat-icon>logout</mat-icon>
+        <span>Sign out</span>
+      </button>
+    </div>
+  }
+</header>

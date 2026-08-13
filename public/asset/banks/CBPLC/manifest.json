@@ -1,0 +1,28 @@
+{
+  "bankName": "CBPLC",
+  "displayName": "CITIZEN Bank PLC",
+  "shortName": "CBPLC",
+  "tagline": "Secure Internet Banking",
+  "supportEmail": "support@cbplc.com",
+  "supportPhone": "+880-2-0000000",
+  "colors": {
+    "primary": "#940103",
+    "primaryDark": "#6a0306",
+    "primaryDeep": "#1a0303",
+    "primaryHover": "#7a0102",
+    "primaryHoverDark": "#5a0102",
+    "accent": "#dc2626",
+    "onPrimary": "#ffffff",
+    "onPrimaryMuted": "rgba(255, 255, 255, 0.85)",
+    "tint": "rgba(148, 1, 3, 0.12)",
+    "tintStrong": "rgba(148, 1, 3, 0.22)",
+    "ringShadow": "rgba(148, 1, 3, 0.30)",
+    "borderTint": "rgba(148, 1, 3, 0.30)"
+  },
+  "assets": {
+    "logo": "logo.png",
+    "logoLarge": "logo-large.png",
+    "favicon": "favicon.png",
+    "loginBackground": "login-background.jpg"
+  }
+}

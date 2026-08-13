@@ -1,0 +1,31 @@
+<div class="seg-shell" role="tablist">
+  <!-- Animated sliding indicator -->
+  <span
+    class="seg-pill"
+    [style.transform]="pillTransform()"
+    [style.width]="pillWidth()"
+    aria-hidden="true">
+  </span>
+
+  @for (tab of tabsSig(); track tab.id) {
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="isActive(tab.id)"
+      [attr.aria-controls]="'panel-' + tab.id"
+      [class.is-active]="isActive(tab.id)"
+      [id]="'tab-' + tab.id"
+      (click)="select(tab.id)"
+      class="seg-tab">
+      @if (tab.icon) {
+        <span class="seg-icon">
+          <mat-icon>{{ tab.icon }}</mat-icon>
+        </span>
+      }
+      <span class="seg-label">{{ tab.label }}</span>
+      @if (tab.badge) {
+        <span class="seg-badge">{{ tab.badge }}</span>
+      }
+    </button>
+  }
+</div>

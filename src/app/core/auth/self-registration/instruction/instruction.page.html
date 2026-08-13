@@ -1,0 +1,28 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-red-50 px-4 py-10">
+  <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+    <div class="flex items-center gap-3 mb-6">
+      <img [src]="logosPath() + '/small_logo.png'" class="h-12" [alt]="displayName() + ' logo'" />
+      <h1 class="text-2xl font-semibold text-brand-primary">Sign Up Instructions</h1>
+    </div>
+
+    <ol class="space-y-4 text-slate-700 leading-relaxed list-decimal pl-6">
+      <li>Visit the nearest <b>{{ displayName() }}</b> branch with your valid photo ID (NID / Passport) and a recent passport-size photograph.</li>
+      <li>Fill out the <b>Account Opening Form</b> provided at the branch.</li>
+      <li>Submit your application — the bank will create your <b>Customer ID</b>.</li>
+      <li>Default banking credentials (Customer ID + temporary password) will be sent via SMS to your registered mobile number.</li>
+      <li>Visit the eBanking portal and log in with your credentials. You will be prompted to change the password on first login.</li>
+      <li>For any assistance, call the 24/7 helpline: <b>16210</b>.</li>
+    </ol>
+
+    <div class="mt-8 flex gap-3">
+      <a [href]="filesPath() + '/RegistrationForm.pdf'" target="_blank"
+         class="bg-brand-primary hover:bg-brand-primary-hover text-white px-5 py-2.5 rounded-lg inline-flex items-center gap-2">
+        <mat-icon>download</mat-icon> Download Registration Form
+      </a>
+      <a routerLink="/login"
+         class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2.5 rounded-lg inline-flex items-center gap-2">
+        <mat-icon>arrow_back</mat-icon> Back to Login
+      </a>
+    </div>
+  </div>
+</div>

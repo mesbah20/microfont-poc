@@ -1,0 +1,13 @@
+<ol>
+    <li>From the <a href="">login</a> page click on&nbsp;"Self-Registration" tab</li>
+    <li>Select your branch</li>
+    <li>Enter your 11 digit account number</li>
+    <li>Enter your account title</li>
+    <li>Enter your mobile number</li>
+    <li>Enter your email address</li>
+    <li>Select your birthdate</li>  
+    <li>Press submit button</li>  
+    <li>Enter OTP that received by sms/email</li>
+    <li>After successful registration you will receive an confirmation email with User ID and temporary password</li>
+    <li>Please change your temporary password after login</li> 
+</ol>

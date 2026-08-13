@@ -1,0 +1,67 @@
+<button
+  type="button"
+  class="notif-bell"
+  [matMenuTriggerFor]="notifMenu"
+  aria-label="Notifications"
+  [attr.aria-describedby]="unreadCount() > 0 ? 'notif-badge' : null">
+  <mat-icon
+    [matBadge]="unreadCount() > 0 ? unreadCount() : null"
+    matBadgeColor="warn"
+    matBadgeSize="small"
+    matBadgePosition="above after"
+    class="notif-bell-icon">
+    notifications
+  </mat-icon>
+</button>
+
+<mat-menu #notifMenu="matMenu" xPosition="before" class="notif-menu-panel">
+  <div class="notif-menu" (click)="$event.stopPropagation()">
+    <header class="notif-menu-header">
+      <div>
+        <p class="notif-menu-title">Notifications</p>
+        <p class="notif-menu-sub">
+          @if (unreadCount() > 0) {
+            {{ unreadCount() }} unread
+          } @else {
+            You're all caught up
+          }
+        </p>
+      </div>
+      <span class="notif-menu-badge" aria-hidden="true">{{ all().length }}</span>
+    </header>
+
+    <div class="notif-menu-list" role="list">
+      @if (visible().length === 0) {
+        <div class="notif-menu-empty">
+          <mat-icon class="notif-menu-empty-icon">notifications_none</mat-icon>
+          <p class="notif-menu-empty-text">No notifications yet</p>
+        </div>
+      } @else {
+        @for (n of visible(); track n.notificationId) {
+          <button
+            type="button"
+            class="notif-item"
+            [class.is-unread]="!n.isRead"
+            (click)="onNotificationClick(n)"
+            role="listitem">
+            <span class="notif-item-dot" [class.is-unread]="!n.isRead" aria-hidden="true"></span>
+            <span class="notif-item-body">
+              <span class="notif-item-title">{{ n.title || 'Notification' }}</span>
+              @if (n.message) {
+                <span class="notif-item-msg">{{ n.message }}</span>
+              }
+              <span class="notif-item-time">{{ n.createdOn | date:'short' }}</span>
+            </span>
+          </button>
+        }
+      }
+    </div>
+
+    <footer class="notif-menu-footer">
+      <a routerLink="/otherservices/notifications" class="notif-menu-showall" (click)="showAll()">
+        <span>Show all</span>
+        <mat-icon class="notif-menu-arrow">arrow_forward</mat-icon>
+      </a>
+    </footer>
+  </div>
+</mat-menu>

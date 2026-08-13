@@ -42,5 +42,7 @@ testem.log
 Thumbs.db
 /NUL
 
+# Local Puku CLI files
+/.puku-cli/
 
 /CONTROLS_DOCUMENTATION.md

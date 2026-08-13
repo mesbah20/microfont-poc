@@ -1,0 +1,38 @@
+@if (visible()) {
+  <div
+    class="popup-backdrop"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="'popup-header'"
+    (click)="close()">
+    <div
+      class="popup-card"
+      [class.is-failure]="tone() === 'failure'"
+      [class.is-success]="tone() === 'success'"
+      [class.is-pending]="tone() === 'pending'"
+      (click)="$event.stopPropagation()">
+
+      <!-- ===== Floating circular icon (echoes demo's .icon-box-*) ===== -->
+      <div class="popup-icon">
+        <mat-icon>{{ iconName() }}</mat-icon>
+      </div>
+
+      <!-- ===== Body ===== -->
+      <div class="popup-body">
+        <h2 id="popup-header" class="popup-header">{{ header() }}</h2>
+        <p class="popup-message" [innerHTML]="message() | newline"></p>
+      </div>
+
+      <!-- ===== Footer — full-width colored action button ===== -->
+      <div class="popup-footer">
+        <button
+          type="button"
+          class="popup-action"
+          [disabled]="btnDisable()"
+          (click)="close()">
+          {{ btnText() }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

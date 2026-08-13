@@ -1,0 +1,41 @@
+<!-- Desktop: advertisement carousel -->
+<div class="ad-popup" *ngIf="!data.ismobileRegulation">
+  <button
+    type="button"
+    class="ad-popup-close"
+    (click)="onNoClick()"
+    aria-label="Close advertisement">
+    ✕
+  </button>
+
+  <div class="ad-popup-carousel" *ngIf="data.images?.length">
+    <div
+      *ngFor="let image of data.images; let index = index; let isFirst = first"
+      class="ad-popup-slide"
+      [class.is-active]="index === activeIndex">
+      <img class="ad-popup-img" [src]="image" alt="Advertisement" />
+    </div>
+  </div>
+</div>
+
+<!-- Mobile: app download prompt -->
+<div class="ad-popup ad-popup-mobile" *ngIf="data.ismobileRegulation">
+  <button
+    type="button"
+    class="ad-popup-close ad-popup-close-light"
+    (click)="onNoClick()"
+    aria-label="Close">
+    ✕
+  </button>
+
+  <div class="ad-popup-mobile-inner">
+    <p class="ad-popup-mobile-title">Download our mobile app</p>
+    <a
+      class="ad-popup-mobile-link"
+      [href]="data.url"
+      target="_blank"
+      rel="noopener noreferrer">
+      <img class="ad-popup-mobile-icon" [src]="data.icon" alt="Get the app" />
+    </a>
+  </div>
+</div>

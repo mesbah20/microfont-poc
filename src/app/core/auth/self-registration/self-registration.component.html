@@ -1,0 +1,132 @@
+@if (otpStep()) {
+  <div class="reg-otp-wrap">
+    <app-confirm-otp
+      [isRegisterComponent]="true"
+      [mobileHint]="form.value.mobileNo"
+      (otpSubmit)="onOtpSubmit($event)"
+      (goBack)="onOtpBack()">
+    </app-confirm-otp>
+  </div>
+} @else {
+  <div class="reg-shell">
+    <header class="reg-header">
+      <h3 class="reg-title">Open a new account</h3>
+      <p class="reg-sub">Sign up for {{ userType === 'PROPRIETORSHIP' ? 'your proprietorship' : 'personal' }} internet banking</p>
+    </header>
+
+    <!-- Segmented control for user type -->
+    <div class="reg-segmented" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="userType === 'INDIVIDUAL'"
+        [class.is-active]="userType === 'INDIVIDUAL'"
+        (click)="onUserTypeChange('INDIVIDUAL')">
+        <mat-icon>person</mat-icon>
+        <span>Individual</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="userType === 'PROPRIETORSHIP'"
+        [class.is-active]="userType === 'PROPRIETORSHIP'"
+        (click)="onUserTypeChange('PROPRIETORSHIP')">
+        <mat-icon>storefront</mat-icon>
+        <span>Proprietorship</span>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="reg-form" autocomplete="off">
+      @if (showUserId()) {
+        <label class="reg-field reg-field-full">
+          <span class="reg-label">User ID <small>(optional)</small></span>
+          <div class="reg-input-wrap">
+            <mat-icon class="reg-input-icon">badge</mat-icon>
+            <input formControlName="userId" type="text" placeholder="Choose a user ID" class="reg-input" />
+          </div>
+        </label>
+      }
+
+      <label class="reg-field reg-field-full">
+        <span class="reg-label">Home Branch <span class="reg-required">*</span></span>
+        <mat-form-field appearance="outline" class="reg-select-field" subscriptSizing="dynamic">
+          <mat-select
+            formControlName="branch"
+            placeholder="Select branch"
+            [panelClass]="'reg-branch-panel'"
+            (selectionChange)="onBranchChange($event)">
+            @for (b of branches(); track b.brancH_ID ?? $index) {
+              <mat-option [value]="b.brancH_ID">{{ b.brancH_NM }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </label>
+
+      <label class="reg-field">
+        <span class="reg-label">Account Number</span>
+        <div class="reg-input-wrap">
+          <mat-icon class="reg-input-icon">account_balance</mat-icon>
+          <input formControlName="accountNo" type="text" inputmode="numeric" placeholder="Account number" class="reg-input" />
+        </div>
+      </label>
+
+      <label class="reg-field">
+        <span class="reg-label">{{ accountTitleLabel }}</span>
+        <div class="reg-input-wrap">
+          <mat-icon class="reg-input-icon">{{ userType === 'PROPRIETORSHIP' ? 'receipt_long' : 'person' }}</mat-icon>
+          <input formControlName="accountTitle" type="text" [placeholder]="accountTitleLabel" class="reg-input" />
+        </div>
+      </label>
+
+      <label class="reg-field">
+        <span class="reg-label">Mobile Number</span>
+        <div class="reg-input-wrap">
+          <mat-icon class="reg-input-icon">phone_android</mat-icon>
+          <input formControlName="mobileNo" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX" class="reg-input" />
+        </div>
+      </label>
+
+      <label class="reg-field">
+        <span class="reg-label">Email</span>
+        <div class="reg-input-wrap">
+          <mat-icon class="reg-input-icon">email</mat-icon>
+          <input formControlName="email" type="email" placeholder="you@example.com" class="reg-input" />
+        </div>
+      </label>
+
+      <label class="reg-field reg-field-full" [class.reg-field-hidden]="userType !== 'INDIVIDUAL'" [attr.aria-hidden]="userType !== 'INDIVIDUAL'">
+        <span class="reg-label">Date of Birth</span>
+        <mat-form-field appearance="outline" class="reg-date-field" subscriptSizing="dynamic">
+          <input matInput [matDatepicker]="picker" formControlName="birthDate" placeholder="MM/DD/YYYY" />
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </label>
+
+      <!-- Demo-faithful action row: Refresh + Submit -->
+      <div class="reg-actions reg-field-full">
+        <button
+          type="button"
+          class="reg-btn reg-btn-refresh"
+          (click)="onRefresh()"
+          [disabled]="isLoading()"
+          aria-label="Refresh the form">
+          <mat-icon class="reg-btn-icon">refresh</mat-icon>
+          <span>Refresh</span>
+        </button>
+
+        <button
+          type="submit"
+          class="reg-btn reg-btn-submit"
+          [disabled]="isLoading()"
+          aria-label="Submit registration">
+          <span class="reg-btn-spinner" [class.is-loading]="isLoading()"></span>
+          <span class="reg-btn-label">{{ isLoading() ? 'Verifying…' : 'Submit' }}</span>
+          @if (!isLoading()) {
+            <mat-icon class="reg-btn-arrow">arrow_forward</mat-icon>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+}

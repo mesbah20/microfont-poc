@@ -1,0 +1,28 @@
+{
+  "bankName": "UBL",
+  "displayName": "United Bank Limited",
+  "shortName": "UBL",
+  "tagline": "Secure Internet Banking",
+  "supportEmail": "support@ubl.com",
+  "supportPhone": "+880-2-0000000",
+  "colors": {
+    "primary": "#0F4C81",
+    "primaryDark": "#0a3a64",
+    "primaryDeep": "#062545",
+    "primaryHover": "#0d3f6e",
+    "primaryHoverDark": "#082c50",
+    "accent": "#1f7ad4",
+    "onPrimary": "#ffffff",
+    "onPrimaryMuted": "rgba(255, 255, 255, 0.85)",
+    "tint": "rgba(15, 76, 129, 0.12)",
+    "tintStrong": "rgba(15, 76, 129, 0.22)",
+    "ringShadow": "rgba(15, 76, 129, 0.30)",
+    "borderTint": "rgba(15, 76, 129, 0.30)"
+  },
+  "assets": {
+    "logo": "logo.png",
+    "logoLarge": "logo-large.png",
+    "favicon": "favicon.png",
+    "loginBackground": "login-background.jpg"
+  }
+}

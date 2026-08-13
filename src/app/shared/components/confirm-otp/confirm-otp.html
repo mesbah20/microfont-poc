@@ -1,0 +1,39 @@
+<div class="otp-card">
+  <div class="otp-icon">
+    <mat-icon>sms</mat-icon>
+  </div>
+  <h3 class="otp-title">Verify your mobile number</h3>
+  <p class="otp-sub">
+    We have sent a one-time password to
+    @if (mobileHint) {
+      <strong class="text-[#940103]">{{ mobileHint }}</strong>
+    } @else {
+      your registered mobile.
+    }
+    Enter the code below to continue{{ isRegisterComponent ? ' registration' : '' }}.
+  </p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="otp-form">
+    <label class="otp-label">OTP Code</label>
+    <input
+      formControlName="otp"
+      type="text"
+      inputmode="numeric"
+      autocomplete="one-time-code"
+      maxlength="8"
+      placeholder="Enter OTP"
+      class="otp-input"
+      aria-label="OTP code"
+    />
+
+    <div class="otp-actions">
+      <button type="button" class="otp-back" (click)="back()">
+        <mat-icon>arrow_back</mat-icon>
+        <span>Back</span>
+      </button>
+      <button type="submit" class="otp-submit">
+        Verify
+      </button>
+    </div>
+  </form>
+</div>

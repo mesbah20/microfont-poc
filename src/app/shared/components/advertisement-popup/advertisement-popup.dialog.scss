@@ -1,0 +1,166 @@
+/* ===========================================================
+   Advertisement Carousel / Mobile Regulation Dialog
+   Demo-faithful sizing: images render at max-width 1052px,
+   max-height 400px — matches demo's `.slider-img` rule.
+   Modern styling (radius, shadow, transitions) layered on top.
+   The dialog panel itself is sized via the global
+   `.ad-popup-panel` class declared in `styles.scss`.
+   =========================================================== */
+
+:host {
+  display: block;
+  position: relative;
+  outline: none;
+}
+
+/* ===== Shared shell — large like demo ===== */
+.ad-popup {
+  position: relative;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 24px 48px -16px rgba(15, 23, 42, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.6) inset;
+  width: 100%;
+  max-width: 1052px; /* demo-faithful */
+}
+
+/* ===== Close button (red circle, top-right, z-index 999 like demo) ===== */
+.ad-popup-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--brand-primary, #d81d24);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 999; /* demo-faithful */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.3);
+  transition: transform 150ms ease, background 150ms ease;
+}
+.ad-popup-close:hover {
+  transform: scale(1.06);
+  background: var(--brand-primary-dark, #940103);
+}
+.ad-popup-close-light {
+  background: rgba(15, 23, 42, 0.55);
+}
+.ad-popup-close-light:hover {
+  background: rgba(15, 23, 42, 0.8);
+}
+
+/* ===== Carousel — large, demo-faithful ===== */
+.ad-popup-carousel {
+  position: relative;
+  width: 100%;
+  max-width: 1052px; /* demo-faithful */
+  height: 400px;     /* demo-faithful */
+  max-height: 400px; /* demo-faithful */
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.ad-popup-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity 600ms ease, transform 600ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ad-popup-slide.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.ad-popup-img {
+  display: block;
+  width: 100%;
+  max-width: 1052px; /* demo-faithful */
+  max-height: 400px;  /* demo-faithful */
+  height: auto;
+  object-fit: contain;
+  background: #ffffff;
+}
+
+/* ===== Mobile regulation (download app) ===== */
+.ad-popup-mobile {
+  padding: 40px 28px 32px;
+  text-align: center;
+  min-height: 280px;
+}
+
+.ad-popup-mobile-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.ad-popup-mobile-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  width: 90%;
+}
+
+.ad-popup-mobile-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 150ms ease;
+}
+.ad-popup-mobile-link:hover {
+  transform: translateY(-1px);
+}
+
+.ad-popup-mobile-icon {
+  display: block;
+  width: 75%;
+  max-width: 280px;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* ===== Compact heights ===== */
+@media (max-height: 760px) {
+  .ad-popup-carousel { height: 320px; max-height: 320px; }
+  .ad-popup-img { max-height: 320px; }
+  .ad-popup-mobile { padding: 28px 20px 22px; }
+  .ad-popup-mobile-title { font-size: 16px; }
+}
+
+/* ===== Tablet ===== */
+@media (max-width: 1100px) {
+  .ad-popup { max-width: 92vw; }
+  .ad-popup-carousel { max-width: 92vw; }
+  .ad-popup-img { max-width: 92vw; }
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 640px) {
+  .ad-popup { max-width: 96vw; border-radius: 12px; }
+  .ad-popup-carousel { height: 240px; max-height: 240px; }
+  .ad-popup-img { max-height: 240px; }
+}
+@media (max-width: 480px) {
+  .ad-popup-carousel { height: 200px; max-height: 200px; }
+  .ad-popup-img { max-height: 200px; }
+  .ad-popup-mobile { padding: 24px 16px 20px; }
+}

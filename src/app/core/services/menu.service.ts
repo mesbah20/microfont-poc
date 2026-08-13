@@ -1,0 +1,191 @@
+import { Injectable } from '@angular/core';
+import { IMenu } from '../models/menu.model';
+
+@Injectable({ providedIn: 'root' })
+export class MenuService {
+  menuList: IMenu[] = [
+    {
+      key: 'PROFILE',
+      title: 'Profile',
+      localTitle: 'প্রোফাইল',
+      enabled: true,
+      imagePath: 'asset/icons/Menu/ic_account_balance.png',
+      url: '/profile/detailprofile',
+    },
+    {
+      key: 'ACCOUNTS',
+      title: 'Accounts',
+      localTitle: 'হিসাব সমূহ',
+      enabled: true,
+      imagePath: 'asset/icons/Menu/Account summary.png',
+      children: [
+        {
+          key: 'ACCOUNT-DETAILS',
+          title: 'Account Details',
+          localTitle: '',
+          enabled: true,
+          imagePath: 'asset/icons/Menu/Account details.png',
+          url: '/account/account-details',
+        },
+        {
+          key: 'STATEMENT',
+          title: 'Statement',
+          localTitle: '',
+          enabled: true,
+          imagePath: 'asset/icons/Menu/Statement.png',
+          url: '/account/statement',
+        },
+        {
+          key: 'ACCOUNT-OPEN',
+          title: 'New FDR/Scheme',
+          localTitle: '',
+          enabled: true,
+          imagePath: 'asset/icons/Menu/New Account.png',
+          url: '/account/account-open',
+        },
+        {
+          key: 'ACCOUNT-OPENING-RECEIPT',
+          title: 'Account Opening Receipt',
+          localTitle: '',
+          enabled: true,
+          imagePath: 'asset/icons/Menu/Statement.png',
+          url: '/account/account-opening-receipt',
+        },
+      ],
+    },
+    {
+      key: 'SERVICES',
+      title: 'Requests',
+      localTitle: 'রিকোয়েষ্টস',
+      enabled: true,
+      imagePath: 'asset/icons/Menu/ic_request.png',
+      children: [
+        {
+          key: 'CHEQUEBOOK',
+          title: 'Chequebook',
+          localTitle: 'নির্দেশনা',
+          enabled: true,
+          imagePath: 'asset/icons/Menu/Chequebook.png',
+          url: '/myservices/chequebookrequest',
+        },
+        {
+          key: 'INSTRUCTION',
+          title: 'Standing Instruction',
+          localTitle: 'নির্দেশনা',
+          enabled: true,
+          imagePath: 'asset/icons/Menu/ic_instructions.png',
+          url: '/transactions/standinginstruction',
+        },
+        {
+          key: 'POSITIVEPAY',
+          title: 'Positive Pay',
+          localTitle: 'নির্দেশনা',
+          enabled: true,
+          imagePath: 'asset/icons/Menu/Chequebook.png',
+          url: '/myservices/positivepayrequest',
+        },
+        {
+          key: 'TAX_DOC_UPLOAD',
+          title: 'Tax Document Upload',
+          localTitle: '',
+          enabled: true,
+          imagePath: 'asset/icons/Menu/Chequebook.png',
+          url: '/myservices/tax-document-upload-request',
+        },
+        {
+          key: 'STOP_CHEQUE',
+          title: 'Stop Cheque',
+          localTitle: 'নির্দেশনা',
+          enabled: true,
+          imagePath: 'asset/icons/Menu/Stop Cheque.png',
+          url: '/myservices/stopchequerequest',
+        },
+      ],
+    },
+    {
+      key: 'HISTORY',
+      title: 'History',
+      localTitle: 'নির্দেশনা',
+      enabled: true,
+      imagePath: 'asset/icons/Menu/ic_instructions.png',
+      children: [
+        {
+          key: 'FINANCIAL-TRANSACTION-DETAILS',
+          title: 'Fund Transfer Log',
+          localTitle: '',
+          enabled: true,
+          imagePath: 'asset/icons/Menu/ic_fund_transfer.png',
+          url: '/account/financial-transactions',
+        },
+        {
+          key: 'TRANSACTION-RECEIPT',
+          title: 'Transaction receipt',
+          localTitle: '',
+          enabled: true,
+          imagePath: 'asset/icons/Menu/Statement.png',
+          url: '/account/transaction-receipt',
+        },
+        {
+          key: 'REQUEST_LOG',
+          title: 'Request Log',
+          localTitle: 'নির্দেশনা',
+          enabled: true,
+          imagePath: 'asset/icons/Menu/Request log.png',
+          url: '/myservices/request-log',
+        },
+        {
+          key: 'USERACTIVITY',
+          title: 'Activity Log',
+          localTitle: '',
+          enabled: true,
+          imagePath: 'asset/icons/Menu/ic_instructions.png',
+          url: '/activity/useractivity',
+        },
+      ],
+    },
+    {
+      key: 'BENEFICIARY',
+      title: 'Beneficiary',
+      localTitle: 'কিউআর পে',
+      enabled: true,
+      imagePath: 'asset/icons/Menu/ic_qr_cash.png',
+      url: '/beneficiary',
+    },
+    {
+      key: 'TRANSFER',
+      title: 'Fund Transfer',
+      localTitle: 'হস্তান্তর',
+      enabled: true,
+      imagePath: 'asset/icons/Menu/ic_fund_transfer.png',
+      url: '/transactions/fundtransfer',
+    },
+    {
+      key: 'TOPUP',
+      title: 'Top Up',
+      localTitle: '',
+      enabled: true,
+      imagePath: 'asset/icons/Menu/ic_action_topup.png',
+      url: '/topup',
+    },
+    {
+      key: 'UTILITY_BILLS',
+      title: 'Bill Pay',
+      localTitle: 'বিল পে',
+      enabled: true,
+      imagePath: 'asset/icons/Menu/ic_bill_payment.png',
+      url: '/utility/billpayment',
+    },
+    {
+      key: 'CHANGE-PASSWORD',
+      title: 'Change Password',
+      localTitle: '',
+      enabled: true,
+      imagePath: 'asset/icons/Menu/ic_notifications.png',
+      url: '/account/changepassword',
+    },
+  ];
+
+  getMainMenu(): IMenu[] {
+    return this.menuList;
+  }
+}

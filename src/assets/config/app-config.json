@@ -1,0 +1,5 @@
+{
+  "rootUrl": "http://192.168.20.218/CloudNetAPI",
+  "reportApiUrl": "http://192.168.20.218/CloudNetReportAPI",
+  "UserIPUrl": "http://192.168.20.218/userIp/api/ip"
+}
