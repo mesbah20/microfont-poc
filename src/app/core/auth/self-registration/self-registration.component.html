@@ -10,11 +10,10 @@
 } @else {
   <div class="reg-shell">
     <header class="reg-header">
-      <h3 class="reg-title">Open a new account</h3>
-      <p class="reg-sub">Sign up for {{ userType === 'PROPRIETORSHIP' ? 'your proprietorship' : 'personal' }} internet banking</p>
+      <h3 class="reg-title">Create Your Account</h3>
+      <p class="reg-sub">Fill in your details below to register for Citizens Bank Internet Banking.</p>
     </header>
 
-    <!-- Segmented control for user type -->
     <div class="reg-segmented" role="tablist">
       <button
         type="button"
@@ -22,7 +21,12 @@
         [attr.aria-selected]="userType === 'INDIVIDUAL'"
         [class.is-active]="userType === 'INDIVIDUAL'"
         (click)="onUserTypeChange('INDIVIDUAL')">
-        <mat-icon>person</mat-icon>
+        <span class="reg-tab-icon">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+            <circle cx="8" cy="5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.33"/>
+            <path d="M3 13.5C3.5 11 5.5 9.5 8 9.5s4.5 1.5 5 4" fill="none" stroke="currentColor" stroke-width="1.33" stroke-linecap="round"/>
+          </svg>
+        </span>
         <span>Individual</span>
       </button>
       <button
@@ -31,100 +35,179 @@
         [attr.aria-selected]="userType === 'PROPRIETORSHIP'"
         [class.is-active]="userType === 'PROPRIETORSHIP'"
         (click)="onUserTypeChange('PROPRIETORSHIP')">
-        <mat-icon>storefront</mat-icon>
+        <span class="reg-tab-icon">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+            <path d="M2.5 13.5V4l4-1.5L10.5 4v9.5M7.5 7h.01M7.5 9.5h.01M7.5 12h.01M10.5 7h3v6.5" fill="none" stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
         <span>Proprietorship</span>
       </button>
     </div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="reg-form" autocomplete="off">
       @if (showUserId()) {
-        <label class="reg-field reg-field-full">
-          <span class="reg-label">User ID <small>(optional)</small></span>
-          <div class="reg-input-wrap">
-            <mat-icon class="reg-input-icon">badge</mat-icon>
-            <input formControlName="userId" type="text" placeholder="Choose a user ID" class="reg-input" />
-          </div>
-        </label>
+        <div class="reg-field reg-field-full">
+          <app-floating-input
+            name="userId"
+            inputId="regUserId"
+            label="User ID (Optional)"
+            icon="badge"
+            formControlName="userId">
+          </app-floating-input>
+        </div>
       }
 
-      <label class="reg-field reg-field-full">
-        <span class="reg-label">Home Branch <span class="reg-required">*</span></span>
-        <mat-form-field appearance="outline" class="reg-select-field" subscriptSizing="dynamic">
-          <mat-select
-            formControlName="branch"
-            placeholder="Select branch"
-            [panelClass]="'reg-branch-panel'"
-            (selectionChange)="onBranchChange($event)">
-            @for (b of branches(); track b.brancH_ID ?? $index) {
-              <mat-option [value]="b.brancH_ID">{{ b.brancH_NM }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </label>
+      <div class="reg-field reg-field-full">
+        <div
+          class="reg-branch-wrap"
+          [class.is-open]="branchDropdownOpen()"
+          [class.is-invalid]="showError('branch')"
+        >
+          <span class="reg-branch-icon" aria-hidden="true">
+            <svg viewBox="0 0 18 18" width="18" height="18">
+              <path d="M2.5 14.5h13M4 14.5V6.5l5-3 5 3v8M1.5 10.5l1.5-2M16.5 10.5l-1.5-2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
 
-      <label class="reg-field">
-        <span class="reg-label">Account Number</span>
-        <div class="reg-input-wrap">
-          <mat-icon class="reg-input-icon">account_balance</mat-icon>
-          <input formControlName="accountNo" type="text" inputmode="numeric" placeholder="Account number" class="reg-input" />
+          <div class="reg-branch-input-wrap">
+            <button
+              type="button"
+              class="reg-branch-trigger"
+              (click)="toggleBranchDropdown()"
+              [class.is-lifted]="selectedBranchName || branchDropdownOpen()"
+              [attr.aria-expanded]="branchDropdownOpen()"
+              aria-haspopup="listbox"
+            >
+              <span class="reg-branch-value">{{ selectedBranchName || '' }}</span>
+            </button>
+            <label
+              class="reg-branch-label"
+              [class.is-lifted]="selectedBranchName || branchDropdownOpen()"
+            >Home Branch <span class="reg-required">*</span></label>
+          </div>
+
+          <button
+            type="button"
+            class="reg-branch-arrow"
+            (click)="toggleBranchDropdown()"
+            tabindex="-1"
+            aria-hidden="true">
+            <svg viewBox="0 0 16 16" width="16" height="16">
+              <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          @if (branchDropdownOpen()) {
+            <div class="reg-branch-dropdown" role="listbox">
+              @if (branches().length === 0) {
+                <div class="reg-branch-empty">No branches available</div>
+              }
+              @for (b of branches(); track b.brancH_ID ?? $index) {
+                <button
+                  type="button"
+                  class="reg-branch-item"
+                  role="option"
+                  [class.is-selected]="selectedBranchId === (b.brancH_ID ?? '').toString()"
+                  (click)="selectBranch(b)">
+                  {{ b.brancH_NM }}
+                </button>
+              }
+            </div>
+          }
         </div>
-      </label>
+        @if (showError('branch')) {
+          <span class="reg-error">Home branch is required</span>
+        }
+      </div>
 
-      <label class="reg-field">
-        <span class="reg-label">{{ accountTitleLabel }}</span>
-        <div class="reg-input-wrap">
-          <mat-icon class="reg-input-icon">{{ userType === 'PROPRIETORSHIP' ? 'receipt_long' : 'person' }}</mat-icon>
-          <input formControlName="accountTitle" type="text" [placeholder]="accountTitleLabel" class="reg-input" />
+      <div class="reg-field">
+        <app-floating-input
+          name="accountNo"
+          inputId="regAccountNo"
+          label="Account Number"
+          icon="account"
+          inputmode="numeric"
+          [invalid]="showError('accountNo')"
+          formControlName="accountNo">
+        </app-floating-input>
+        @if (showError('accountNo')) {
+          <span class="reg-error">Account number is required</span>
+        }
+      </div>
+
+      <div class="reg-field">
+        <app-floating-input
+          name="accountTitle"
+          inputId="regAccountTitle"
+          [label]="accountTitleLabel"
+          [icon]="accountTitleIcon"
+          [invalid]="showError('accountTitle')"
+          formControlName="accountTitle">
+        </app-floating-input>
+        @if (showError('accountTitle')) {
+          <span class="reg-error">{{ accountTitleLabel }} is required</span>
+        }
+      </div>
+
+      <div class="reg-field">
+        <app-floating-input
+          name="mobileNo"
+          inputId="regMobileNo"
+          label="Mobile Number"
+          icon="phone"
+          type="tel"
+          inputmode="numeric"
+          [invalid]="showError('mobileNo')"
+          formControlName="mobileNo">
+        </app-floating-input>
+        @if (showError('mobileNo')) {
+          <span class="reg-error">Valid mobile number is required</span>
+        }
+      </div>
+
+      <div class="reg-field">
+        <app-floating-input
+          name="email"
+          inputId="regEmail"
+          label="Email"
+          icon="mail"
+          type="email"
+          [invalid]="showError('email')"
+          formControlName="email">
+        </app-floating-input>
+        @if (showError('email')) {
+          <span class="reg-error">Valid email is required</span>
+        }
+      </div>
+
+      @if (userType === 'INDIVIDUAL') {
+        <div class="reg-field reg-field-full">
+          <app-floating-input
+            name="birthDateStr"
+            inputId="regBirthDate"
+            label="Date of Birth"
+            icon="calendar"
+            type="date"
+            [invalid]="showError('birthDateStr')"
+            formControlName="birthDateStr"
+          >
+          </app-floating-input>
+          @if (showError('birthDateStr')) {
+            <span class="reg-error">Date of birth is required</span>
+          }
         </div>
-      </label>
+      } @else {
+        <div class="reg-field reg-field-full reg-field-spacer"></div>
+      }
 
-      <label class="reg-field">
-        <span class="reg-label">Mobile Number</span>
-        <div class="reg-input-wrap">
-          <mat-icon class="reg-input-icon">phone_android</mat-icon>
-          <input formControlName="mobileNo" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX" class="reg-input" />
-        </div>
-      </label>
-
-      <label class="reg-field">
-        <span class="reg-label">Email</span>
-        <div class="reg-input-wrap">
-          <mat-icon class="reg-input-icon">email</mat-icon>
-          <input formControlName="email" type="email" placeholder="you@example.com" class="reg-input" />
-        </div>
-      </label>
-
-      <label class="reg-field reg-field-full" [class.reg-field-hidden]="userType !== 'INDIVIDUAL'" [attr.aria-hidden]="userType !== 'INDIVIDUAL'">
-        <span class="reg-label">Date of Birth</span>
-        <mat-form-field appearance="outline" class="reg-date-field" subscriptSizing="dynamic">
-          <input matInput [matDatepicker]="picker" formControlName="birthDate" placeholder="MM/DD/YYYY" />
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-      </label>
-
-      <!-- Demo-faithful action row: Refresh + Submit -->
-      <div class="reg-actions reg-field-full">
-        <button
-          type="button"
-          class="reg-btn reg-btn-refresh"
-          (click)="onRefresh()"
-          [disabled]="isLoading()"
-          aria-label="Refresh the form">
-          <mat-icon class="reg-btn-icon">refresh</mat-icon>
-          <span>Refresh</span>
-        </button>
-
+      <div class="reg-submit-wrap reg-field-full">
         <button
           type="submit"
-          class="reg-btn reg-btn-submit"
+          class="reg-btn-submit"
           [disabled]="isLoading()"
-          aria-label="Submit registration">
+          aria-label="Register account">
           <span class="reg-btn-spinner" [class.is-loading]="isLoading()"></span>
-          <span class="reg-btn-label">{{ isLoading() ? 'Verifying…' : 'Submit' }}</span>
-          @if (!isLoading()) {
-            <mat-icon class="reg-btn-arrow">arrow_forward</mat-icon>
-          }
+          <span>{{ isLoading() ? 'Registering…' : 'Register Account' }}</span>
         </button>
       </div>
     </form>

@@ -1,210 +1,244 @@
-<div class="login-page" [style.background-image]="'linear-gradient(135deg, rgba(15,23,42,0.55), rgba(148,1,3,0.45)), url(' + loginBackgroundUrl() + ')'">
-  <div class="login-shell">
-    <!-- Brand panel (left, hidden on mobile) -->
-    <aside class="login-brand hidden md:flex">
-      <div class="login-brand-inner">
-        <img [src]="logoLargeUrl()" [alt]="displayName() + ' logo'" class="login-brand-logo" />
-        <div>
-          <h1 class="login-brand-name">{{ displayName() }}</h1>
-          <p class="login-brand-tagline">{{ tagline() }}</p>
+<div class="login-page">
+  <main class="login-shell">
+    <aside class="login-brand" [class.is-signup]="view() === 'signup'" aria-label="Brand highlights">
+      <div class="login-brand-header">
+        <div class="login-brand-logo-tile">
+          <img
+            [src]="leftLogoUrl"
+            [alt]="branding.displayName() + ' logo'"
+            class="login-brand-logo"
+          />
         </div>
+        <span class="login-brand-eyebrow">INTERNET BANKING</span>
+      </div>
 
-        <div class="login-features">
-          <div class="login-feature">
-            <span class="login-feature-icon"><mat-icon>shield</mat-icon></span>
-            <div class="login-feature-text">
-              <p class="login-feature-title">Bank-grade security</p>
-              <p class="login-feature-sub">Encrypted sessions & multi-factor auth</p>
+      <div class="login-brand-slides">
+        @for (slide of slides; track $index) {
+          <section
+            class="login-slide"
+            [class.is-active]="activeSlide() === $index"
+            [attr.aria-hidden]="activeSlide() !== $index">
+            <div class="login-slide-mockup" aria-hidden="true">
+              <div class="login-phone">
+                <span class="login-phone-notch"></span>
+                <span class="login-phone-bar login-phone-bar--left"></span>
+                <span class="login-phone-bar login-phone-bar--right"></span>
+                <span class="login-phone-card login-phone-card--left"></span>
+                <span class="login-phone-card login-phone-card--right"></span>
+                <span class="login-phone-pill"></span>
+                <span class="login-phone-block"></span>
+                <span class="login-phone-home"></span>
+              </div>
             </div>
-          </div>
-          <div class="login-feature">
-            <span class="login-feature-icon"><mat-icon>flash_on</mat-icon></span>
-            <div class="login-feature-text">
-              <p class="login-feature-title">Real-time transfers</p>
-              <p class="login-feature-sub">Move money across accounts instantly</p>
-            </div>
-          </div>
-          <div class="login-feature">
-            <span class="login-feature-icon"><mat-icon>phone_android</mat-icon></span>
-            <div class="login-feature-text">
-              <p class="login-feature-title">Bills & top-up</p>
-              <p class="login-feature-sub">Pay utilities & recharge anywhere</p>
-            </div>
-          </div>
-        </div>
 
-        <div class="login-support">
-          <p class="login-support-title">24/7 Support</p>
-          <p class="login-support-value">{{ contactNumbers()[0] }}</p>
-          <p class="login-support-sub">Toll-free helpline</p>
-        </div>
+            <h1 class="login-slide-title">{{ slide.title }}</h1>
+            <p class="login-slide-text">{{ slide.description }}</p>
+
+            <span class="login-slide-badge">{{ slide.badge }}</span>
+          </section>
+        }
+      </div>
+
+      <div class="login-brand-dots" role="tablist" aria-label="Carousel navigation">
+        @for (slide of slides; track $index) {
+          <button
+            type="button"
+            class="login-dot"
+            [class.is-active]="activeSlide() === $index"
+            [attr.aria-selected]="activeSlide() === $index"
+            [attr.aria-label]="'Go to slide ' + ($index + 1)"
+            (click)="selectSlide($index)">
+          </button>
+        }
       </div>
     </aside>
 
-    <!-- Form card (right) -->
-    <section class="login-card-wrap">
-      <div class="login-card">
-        <!-- Modern segmented tab control (replaces mat-tab-group) -->
-        <app-segmented-tabs
-          class="login-tabs"
-          [tabs]="tabs"
-          [activeId]="activeTab()"
-          (tabChange)="onTabChange($event)">
-        </app-segmented-tabs>
+    <section class="login-form-wrap">
+      @if (view() === 'signup') {
+        <button
+          type="button"
+          class="login-back-btn"
+          (click)="switchToLogin()"
+          aria-label="Back to login">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+            <path d="M10 12L6 8l4-4" fill="none" stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Back to Login</span>
+        </button>
+      }
 
-        <!-- Tab panel: Login -->
-        @if (activeTab() === 'login') {
-          <div
-            class="login-panel"
-            role="tabpanel"
-            id="panel-login"
-            aria-labelledby="tab-login">
-            <div class="login-card-header">
-              <h2 class="login-card-title">Welcome back</h2>
-              <p class="login-card-subtitle">Login to your {{ displayName() }} account</p>
-            </div>
+      <div class="login-form-inner" [class.is-signup]="view() === 'signup'">
+        @if (view() === 'login') {
+          <div class="login-form-logo">
+            <img
+              [src]="mainLogoUrl"
+              [alt]="branding.displayName() + ' logo'"
+              class="login-form-logo-img"
+            />
+          </div>
+        }
 
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" autocomplete="off" class="login-form" novalidate>
-              <label class="login-field">
-                <span class="login-label">Customer ID <span class="login-required">*</span></span>
-                <div class="login-input-wrap" [class.is-invalid]="showError('username')">
-                  <mat-icon class="login-input-icon">person</mat-icon>
-                  <input
-                    formControlName="username"
-                    type="text"
-                    placeholder="Enter your customer ID"
-                    class="login-input"
-                    [class.is-invalid]="showError('username')"
-                    aria-label="Customer ID"
-                    [attr.aria-invalid]="showError('username')"
-                  />
-                </div>
-                @if (showError('username')) {
-                  <span class="login-error-text">
-                    <mat-icon>error_outline</mat-icon>
-                    <span>Customer ID is required</span>
-                  </span>
-                }
-              </label>
+        @if (view() === 'login') {
+          <header class="login-form-header">
+            <h2 class="login-form-title">Welcome back! to Citizens Bank</h2>
+            <p class="login-form-sub">
+              Access the Citizens Bank PLC. Panel using your Mobile Number &amp; Password.
+            </p>
+          </header>
 
-              <label class="login-field">
-                <span class="login-label">Password <span class="login-required">*</span></span>
-                <div class="login-input-wrap" [class.is-invalid]="showError('password')">
-                  <mat-icon class="login-input-icon">lock</mat-icon>
-                  <input
-                    [type]="passwordVisibility ? 'text' : 'password'"
-                    formControlName="password"
-                    placeholder="Enter your password"
-                    class="login-input login-input-password"
-                    [class.is-invalid]="showError('password')"
-                    aria-label="Password"
-                    [attr.aria-invalid]="showError('password')"
-                  />
-                  <button
-                    type="button"
-                    (click)="changePassVisibility()"
-                    class="login-input-action"
-                    [attr.aria-label]="passwordVisibility ? 'Hide password' : 'Show password'">
-                    <mat-icon>{{ passwordVisibility ? 'visibility_off' : 'visibility' }}</mat-icon>
-                  </button>
-                </div>
-                @if (showError('password')) {
-                  <span class="login-error-text">
-                    <mat-icon>error_outline</mat-icon>
-                    <span>Password is required</span>
-                  </span>
-                }
-              </label>
+          <form
+            [formGroup]="loginForm"
+            (ngSubmit)="onSubmit()"
+            autocomplete="off"
+            class="login-form"
+            novalidate>
+            <app-floating-input
+              name="customerId"
+              inputId="loginCustomerId"
+              label="Customer ID"
+              icon="user"
+              [invalid]="showError('customerId')"
+              formControlName="customerId">
+            </app-floating-input>
+            @if (showError('customerId')) {
+              <span class="login-error">Customer ID is required</span>
+            }
 
-              <!-- Demo-faithful action row: Refresh (resets the form) + Login (submits) -->
-              <div class="login-actions">
-                <button
-                  type="button"
-                  (click)="onReset()"
-                  class="login-btn login-btn-refresh"
-                  [disabled]="isLoading"
-                  aria-label="Refresh the form">
-                  <mat-icon class="login-btn-icon">refresh</mat-icon>
-                  <span>Refresh</span>
-                </button>
-
-                <button
-                  type="submit"
-                  class="login-btn login-btn-login"
-                  [disabled]="isLoading"
-                  aria-label="Login">
-                  <span class="login-btn-spinner" [class.is-loading]="isLoading"></span>
-                  <span class="login-btn-label">{{ isLoading ? 'Logging in…' : 'Login' }}</span>
-                  @if (!isLoading) {
-                    <mat-icon class="login-btn-arrow">arrow_forward</mat-icon>
+            <app-floating-input
+              name="password"
+              inputId="loginPassword"
+              label="Password"
+              [type]="passwordVisibility ? 'text' : 'password'"
+              icon="lock"
+              [invalid]="showError('password')"
+              formControlName="password">
+              <button
+                slot="suffix"
+                type="button"
+                (click)="changePassVisibility()"
+                class="login-input-action"
+                [attr.aria-label]="passwordVisibility ? 'Hide password' : 'Show password'">
+                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round">
+                  @if (passwordVisibility) {
+                    <path d="M2.5 8s2.5-4.5 6-4.5c1.4 0 2.6.5 3.6 1.2M14 8s-1 1.7-2.7 3M3 3l10 10"/>
+                  } @else {
+                    <path d="M1.5 8s2.5-4.5 6.5-4.5S14.5 8 14.5 8s-2.5 4.5-6.5 4.5S1.5 8 1.5 8z"/>
+                    <circle cx="8" cy="8" r="2"/>
                   }
-                </button>
-              </div>
-            </form>
+                </svg>
+              </button>
+            </app-floating-input>
+            @if (showError('password')) {
+              <span class="login-error">Password is required</span>
+            }
 
-            <!-- Demo-faithful secondary links (4 links) -->
-            <div class="login-links">
-              <div class="login-links-row">
-                <a routerLink="/passwordrecovery" class="login-link">
-                  <mat-icon>lock_reset</mat-icon>
-                  <span>Password Recovery</span>
-                </a>
-                <a routerLink="/useridrecovery" class="login-link">
-                  <mat-icon>help_outline</mat-icon>
-                  <span>Forgotten your User ID?</span>
-                </a>
+            <div class="login-captcha-row">
+              <div class="login-captcha-art" role="img" aria-label="Captcha image placeholder">
+                <span class="login-captcha-text">07HLI</span>
               </div>
-              <div class="login-links-row login-links-ekyc">
-                <a
-                  href="https://ekyc.citizensbankbd.com/ekyc"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="login-link login-link-ekyc">
-                  <mat-icon>fingerprint</mat-icon>
-                  <span>Open Account through e-KYC</span>
-                </a>
-                <a routerLink="/instruction" class="login-link">
-                  <mat-icon>menu_book</mat-icon>
-                  <span>How to Sign Up?</span>
-                </a>
+
+              <div class="login-captcha-input">
+                <app-floating-input
+                  name="captcha"
+                  inputId="loginCaptcha"
+                  label="Enter the CAPTCHA"
+                  [invalid]="showError('captcha')"
+                  formControlName="captcha">
+                  <button
+                    slot="suffix"
+                    type="button"
+                    (click)="refreshCaptcha()"
+                    class="login-input-action"
+                    aria-label="Refresh captcha">
+                    <!-- Figma RefreshIcon: circular arrow + arrow head -->
+                    <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round">
+                      <!-- Circular arrow body (open at top-right) -->
+                      <path d="M13.5 8a5.5 5.5 0 1 1-1.7-4"/>
+                      <!-- Arrow head pointing into the circle (top-right) -->
+                      <path d="M11.5 1.5v3.2h-3.2"/>
+                    </svg>
+                  </button>
+                </app-floating-input>
               </div>
             </div>
-          </div>
-        }
+            @if (showError('captcha')) {
+              <span class="login-error">Please enter the captcha</span>
+            }
 
-        <!-- Tab panel: Self Registration -->
-        @if (activeTab() === 'register') {
-          <div
-            class="login-panel"
-            role="tabpanel"
-            id="panel-register"
-            aria-labelledby="tab-register">
-            <app-self-registration></app-self-registration>
-          </div>
-        }
+            <div class="login-meta-row">
+              <label class="login-remember">
+                <input
+                  type="checkbox"
+                  class="login-checkbox"
+                  [checked]="rememberMe()"
+                  (change)="toggleRememberMe()" />
+                <span class="login-checkbox-box" aria-hidden="true">
+                  @if (rememberMe()) {
+                    <svg viewBox="0 0 14 14" width="14" height="14">
+                      <path d="M2.5 7.5l3 3 6-7" fill="none" stroke="#ffffff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  }
+                </span>
+                <span class="login-remember-text">Remember Me</span>
+              </label>
 
-        <!-- Demo-faithful advertisement popup trigger.
-             Mirrors demo's <app-mobile-popup [appDownloadUrl] [appIconUrl]>. -->
-        <app-advertisement-popup
-          [appDownloadUrl]="appDownloadUrl"
-          [appIconUrl]="appIconUrl">
-        </app-advertisement-popup>
+              <a routerLink="/passwordrecovery" class="login-forgot">
+                Forgot Password?
+              </a>
+            </div>
 
-        <footer class="login-footer">
-          <p class="login-footer-line">
-            <mat-icon>verified</mat-icon>
-            <span>Always check the URL begins with <strong>https://</strong></span>
+            <button
+              type="submit"
+              class="login-btn-primary"
+              [disabled]="isLoading"
+              aria-label="Sign in">
+              <span class="login-btn-spinner" [class.is-loading]="isLoading"></span>
+              <span>{{ isLoading ? 'Signing in…' : 'Sign In' }}</span>
+            </button>
+
+            <button
+              type="button"
+              class="login-signup-cta"
+              (click)="switchToSignup()"
+              aria-label="New to Citizens Bank? Sign up">
+              <span>New to Citizens Bank? <strong>Sign up</strong></span>
+            </button>
+
+            <!-- Figma: "Don't have bank account? Create One" link.
+                 Legacy app sends this to the e-KYC external portal
+                 (https://ekyc.citizensbankbd.com/ekyc) which opens in a new tab. -->
+            <p class="login-meta-line login-meta-line--create">
+              Don't have bank account?
+              <a
+                class="login-meta-link login-meta-link--ekyc"
+                href="https://ekyc.citizensbankbd.com/ekyc"
+                target="_blank"
+                rel="noopener noreferrer">
+                Create One
+              </a>
+            </p>
+          </form>
+
+          <footer class="login-footer">
+            © 2026 Citizens Bank PLC. All Rights Reserved.
+            <a routerLink="/instruction" class="login-footer-link">Terms</a>
+            <span class="login-footer-dot">·</span>
+            <a routerLink="/instruction" class="login-footer-link">Privacy</a>
+          </footer>
+        } @else {
+          <app-self-registration></app-self-registration>
+
+          <p class="login-meta-line login-meta-line--muted login-meta-line--bottom">
+            Already have an account?
+            <button type="button" class="login-meta-link" (click)="switchToLogin()">Sign in</button>
           </p>
-          <p class="login-footer-line">
-            <mat-icon>warning</mat-icon>
-            <span>Never share your password or OTP with anyone.</span>
-          </p>
-        </footer>
+        }
       </div>
     </section>
-  </div>
-</div>
+  </main>
 
-<!-- Demo-faithful: advertisement popup is rendered via <app-advertisement-popup>
-     (mirrors demo's <app-mobile-popup>); the carousel pops up after login page
-     loads instead of being an inline marquee. -->
+  <app-advertisement-popup
+    [appDownloadUrl]="appDownloadUrl"
+    [appIconUrl]="appIconUrl">
+  </app-advertisement-popup>
+</div>

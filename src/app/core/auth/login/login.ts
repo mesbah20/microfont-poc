@@ -1,9 +1,19 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { BrandingService } from '../../services/branding.service';
 import { AuthenticationService } from '../../services/authentication.service';
 import { BankInfoService } from '../../services/bank-info.service';
@@ -14,33 +24,14 @@ import { User } from '../../models/user.model';
 import { IBankContact } from '../../models/ibankcontact.model';
 import { SelfRegistrationComponent } from '../self-registration/self-registration.component';
 import {
-  SegmentedTabs,
-  SegmentTab,
-} from '../../../shared/components/segmented-tabs/segmented-tabs';
-import {
   AdvertisementPopupComponent,
 } from '../../../shared/components/advertisement-popup/advertisement-popup.component';
+import { FloatingInput } from '../../../shared/components/floating-input/floating-input';
 
-export interface UserAccessItem {
-  functionId: string;
-  functionName: string;
-  HOFunctionFlag: string;
-  AllowMaintAddFlag: string;
-  AllowMaintEditFlag: string;
-  AllowMaintDelFlag: string;
-  AllowMaintViewFlag: string;
-  AllowMaintAuthFlag: string;
-  AllowProcessFlag: string;
-  AllowReportViewFlag: string;
-  AllowReportPrintFlag: string;
-  AllowReportGenFlag: string;
-  AllowAnyOfficeOpsFlag: string;
-  moduleId: string;
-  moduleName: string;
-  appRoute: string;
-  itemType: string;
-  quickRouteNo: string;
-  IsFinancial: string;
+interface LoginSlide {
+  readonly title: string;
+  readonly description: string;
+  readonly badge: string;
 }
 
 @Component({
@@ -50,20 +41,18 @@ export interface UserAccessItem {
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
-    MatIconModule,
-    MatButtonModule,
-    SegmentedTabs,
     SelfRegistrationComponent,
     AdvertisementPopupComponent,
+    FloatingInput,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
-export class Login implements OnInit {
+export class Login implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private branding = inject(BrandingService);
+  branding = inject(BrandingService);
   private auth = inject(AuthenticationService);
   private bankInfoService = inject(BankInfoService);
   private ipService = inject(IpServiceService);
@@ -76,47 +65,93 @@ export class Login implements OnInit {
   ipAddress = '';
   isLoading = false;
 
-  /** Mobile-app download URL passed to <app-advertisement-popup>. */
   readonly appDownloadUrl =
     'https://play.google.com/store/apps/details?id=com.citizensbankbd.fast';
-  /** Mobile-app icon URL passed to <app-advertisement-popup>. */
   readonly appIconUrl = 'assets/images/Google-Play-icon.jpg';
 
   contactNumbers = signal<string[]>([]);
   mailAddresses = signal<string[]>([]);
   officeAddresses = signal<string[]>([]);
 
-  /** Active tab id for the modern segmented control */
-  readonly activeTab = signal<'login' | 'register'>('login');
-  readonly tabs: SegmentTab[] = [
-    { id: 'login', label: 'Login', icon: 'login' },
-    { id: 'register', label: 'Self Registration', icon: 'person_add', badge: 'New' },
+  readonly view = signal<'login' | 'signup'>('login');
+  readonly rememberMe = signal(false);
+
+  readonly slides: LoginSlide[] = [
+    {
+      title: 'Bank Smarter, Live Better.',
+      description:
+        "Citizens Bank PLC.'s digital platform gives you full control of your finances — transfers, bill payments, investments, and more — at your fingertips, 24 hours a day.",
+      badge: 'Trusted by 2.4 million customers',
+    },
+    {
+      title: 'Instant Transfers, Zero Hassle.',
+      description:
+        'Send money across accounts in real time with industry-leading security and zero hidden fees.',
+      badge: '24/7 customer support',
+    },
+    {
+      title: 'Bills, Top-ups & More.',
+      description:
+        'Pay utilities, recharge mobile, and manage all your recurring payments from a single dashboard.',
+      badge: 'Over 500 billers supported',
+    },
   ];
 
-  onTabChange(id: string): void {
-    if (id === 'login' || id === 'register') {
-      this.activeTab.set(id);
-    }
+  readonly activeSlide = signal(0);
+  private autoRotateHandle: ReturnType<typeof setInterval> | null = null;
+  private corporateRedirectHandle: ReturnType<typeof setTimeout> | null = null;
+
+  private clean(value: string | undefined | null, fallback: string): string {
+    const trimmed = (value ?? '').toString().trim();
+    if (!trimmed) return fallback;
+    if (trimmed.length > 140) return trimmed.slice(0, 137).trim() + '…';
+    return trimmed;
   }
 
-  bankName = computed(() => this.branding.bankName());
-  displayName = computed(() => this.branding.displayName());
-  tagline = computed(() => this.branding.tagline());
-  logoLargeUrl = computed(() => this.branding.logoLargeUrl());
-  loginBackgroundUrl = computed(() => this.branding.loginBackgroundUrl());
+  contactDisplay = computed(() => {
+    const raw = this.contactNumbers()[0] ?? '';
+    const digits = raw.replace(/[^0-9+]/g, '');
+    return digits || '16757';
+  });
+
+  mailDisplay = computed(() =>
+    this.clean(this.mailAddresses()[0], 'info@citizensbankbd.com'),
+  );
+
+  addressDisplay = computed(() =>
+    this.clean(
+      this.officeAddresses()[0],
+      'Chowdhury Bhaban, 2, 76 Motijheel C/A, Dhaka-1000, Bangladesh',
+    ),
+  );
+
+  logoLargeUrl = this.branding.logoLargeUrl;
+  // Clear Citizens Bank PLC logo (red diamond + wordmark + tagline) used
+  // for BOTH the upper-left brand tile and the right-side main logo.
+  readonly leftLogoUrl = `${this.branding.logosPath()}/citizens_bank_plc.png`;
+  readonly mainLogoUrl = `${this.branding.logosPath()}/citizens_bank_plc.png`;
 
   ngOnInit(): void {
     if (this.auth.currentUserValue) {
       this.router.navigate(['/dashboard']);
       return;
     }
+    this.startAutoRotate();
     this.loginForm = this.fb.group({
-      username: ['', Validators.required],
+      customerId: ['', [Validators.required, Validators.pattern('[A-Za-z0-9]+')]],
       password: ['', Validators.required],
+      captcha: ['', Validators.required],
     });
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
     this.getIPAddress();
     this.getbankContactInfo();
+  }
+
+  ngOnDestroy(): void {
+    this.stopAutoRotate();
+    if (this.corporateRedirectHandle !== null) {
+      clearTimeout(this.corporateRedirectHandle);
+    }
   }
 
   get f() {
@@ -155,16 +190,49 @@ export class Login implements OnInit {
     this.passwordVisibility = !this.passwordVisibility;
   }
 
-  onReset(): void {
-    this.loginForm.reset();
-    this.submitted = false;
+  toggleRememberMe(): void {
+    this.rememberMe.update((v) => !v);
   }
 
-  /** True when a field has errors and either the user touched it OR the form was submitted. */
-  showError(field: 'username' | 'password'): boolean {
+  selectSlide(index: number): void {
+    if (index === this.activeSlide()) return;
+    this.activeSlide.set(index);
+    this.startAutoRotate();
+  }
+
+  private startAutoRotate(): void {
+    this.stopAutoRotate();
+    if (this.slides.length < 2) return;
+    this.autoRotateHandle = setInterval(() => {
+      const next = (this.activeSlide() + 1) % this.slides.length;
+      this.activeSlide.set(next);
+    }, 5000);
+  }
+
+  private stopAutoRotate(): void {
+    if (this.autoRotateHandle !== null) {
+      clearInterval(this.autoRotateHandle);
+      this.autoRotateHandle = null;
+    }
+  }
+
+  showError(field: 'customerId' | 'password' | 'captcha'): boolean {
     const ctrl = this.loginForm.get(field);
     if (!ctrl) return false;
     return !!ctrl.errors && (ctrl.touched || this.submitted);
+  }
+
+  refreshCaptcha(): void {
+    this.loginForm.patchValue({ captcha: '' });
+  }
+
+  switchToSignup(): void {
+    this.view.set('signup');
+  }
+
+  switchToLogin(): void {
+    this.view.set('login');
+    this.loginForm.patchValue({ captcha: '' });
   }
 
   onSubmit(): void {
@@ -175,16 +243,21 @@ export class Login implements OnInit {
     }
     this.isLoading = true;
 
-    const username = (this.f['username']?.value ?? '').toString().trim();
+    const customerId = (this.f['customerId']?.value ?? '').toString().trim();
     const password = (this.f['password']?.value ?? '').toString().trim();
 
     this.auth
-      .login(username, password, this.ipAddress)
+      .login(customerId, password, this.ipAddress)
       .subscribe({
         next: (data: RootResponse<User>) => {
           this.isLoading = false;
           if (data.Status !== 'OK') {
-            this.popup.showSuccessOrErrorPopup('Failure', data.Message || 'Login failed');
+            this.popup.showSuccessOrErrorPopup(
+              'Login Failed',
+              data.Message || 'Login failed',
+              'error',
+            );
+            this.resetPasswordAndRefocus();
             return;
           }
           const result: User | undefined = data.Result as User | undefined;
@@ -194,7 +267,7 @@ export class Login implements OnInit {
               'Sorry! Corporate users are not allowed to login here.',
               'error',
             );
-            setTimeout(() => {
+            this.corporateRedirectHandle = setTimeout(() => {
               this.auth.logout();
               this.router.navigate(['/login']);
             }, 3000);
@@ -208,17 +281,31 @@ export class Login implements OnInit {
         },
         error: (err: any) => {
           this.isLoading = false;
+          this.resetPasswordAndRefocus();
           const message =
             err?.error?.Message ||
             err?.error?.message ||
             err?.message ||
             'Login failed. Please try again.';
           this.popup.showSuccessOrErrorPopup(
-            'Failure',
+            'Login Failed',
             message,
             'error',
           );
         },
       });
+  }
+
+  private resetPasswordAndRefocus(): void {
+    if (!this.loginForm) return;
+    this.loginForm.patchValue({ password: '' });
+    this.passwordVisibility = false;
+    this.f['password']?.markAsPristine();
+    this.f['password']?.markAsUntouched();
+    this.f['password']?.setErrors({ required: true });
+    setTimeout(() => {
+      const el = document.querySelector<HTMLInputElement>('input[name="password"]');
+      el?.focus();
+    });
   }
 }

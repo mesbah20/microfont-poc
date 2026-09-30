@@ -1,13 +1,20 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  HostListener,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule, MatSelectChange } from '@angular/material/select';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VerificationService } from '../../services/verification.service';
 import { SignupService } from '../../services/signup.service';
 import { BankAccountService } from '../../services/bank-account.service';
@@ -16,27 +23,19 @@ import { ConfirmOtp } from '../../../shared/components/confirm-otp/confirm-otp';
 import { RootResponse } from '../../models/root-response.model';
 import { IHomeBranchInfoResponse } from '../../models/bankinfo.model';
 import { ISignup } from '../../models/signup.model';
+import { FloatingInput } from '../../../shared/components/floating-input/floating-input';
 
 @Component({
   selector: 'app-self-registration',
   standalone: true,
-  providers: [provideNativeDateAdapter()],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    ConfirmOtp,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, ConfirmOtp, FloatingInput],
   templateUrl: './self-registration.component.html',
   styleUrl: './self-registration.component.scss',
 })
 export class SelfRegistrationComponent implements OnInit {
   private fb = inject(FormBuilder);
+  private destroyRef = inject(DestroyRef);
+  private host = inject(ElementRef<HTMLElement>);
   private verification = inject(VerificationService);
   private signupService = inject(SignupService);
   private bankAccount = inject(BankAccountService);
@@ -46,25 +45,43 @@ export class SelfRegistrationComponent implements OnInit {
   userType: 'INDIVIDUAL' | 'PROPRIETORSHIP' = 'INDIVIDUAL';
   showUserId = signal(true);
   otpStep = signal(false);
-  otp = '';
+  otp = signal('');
   isLoading = signal(false);
+  submitted = signal(false);
   branches = signal<IHomeBranchInfoResponse[]>([]);
-  /** Branch ID (string) selected from the dropdown — mirrors demo's `branchID` field */
   selectedBranchId = '';
-  /** Branch display name — mirrors demo's `branchName` field */
   selectedBranchName = '';
+  branchDropdownOpen = signal(false);
 
   ngOnInit(): void {
     this.form = this.fb.group({
       userId: [''],
-      /** Stored as branch ID string (per demo `value="{{ branch.brancH_ID }}"`) */
       branch: ['', Validators.required],
       accountNo: ['', [Validators.required, Validators.pattern('[0-9]+')]],
       accountTitle: ['', Validators.required],
-      mobileNo: ['', [Validators.required, Validators.pattern('[0-9]+'), Validators.minLength(11)]],
-      email: ['', [Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
+      mobileNo: [
+        '',
+        [Validators.required, Validators.pattern('[0-9]+'), Validators.minLength(11)],
+      ],
+      email: [
+        '',
+        [
+          Validators.required,
+          Validators.email,
+          Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+        ],
+      ],
       birthDate: [null],
+      birthDateStr: [''],
     });
+
+    this.form
+      .get('birthDateStr')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((val) => {
+        this.form.get('birthDate')?.setValue(val ? new Date(val as string) : null);
+      });
+
     this.checkAutoUserId();
     this.loadBranches();
   }
@@ -98,40 +115,100 @@ export class SelfRegistrationComponent implements OnInit {
   onUserTypeChange(value: 'INDIVIDUAL' | 'PROPRIETORSHIP'): void {
     this.userType = value;
     const dobCtrl = this.form.get('birthDate');
+    const dobStrCtrl = this.form.get('birthDateStr');
     if (value === 'PROPRIETORSHIP') {
       dobCtrl?.clearValidators();
       dobCtrl?.setValue(null);
+      dobStrCtrl?.clearValidators();
+      dobStrCtrl?.setValue('');
     } else {
       dobCtrl?.setValidators(Validators.required);
+      dobStrCtrl?.setValidators(Validators.required);
     }
     dobCtrl?.updateValueAndValidity();
+    dobStrCtrl?.updateValueAndValidity();
   }
 
   get accountTitleLabel(): string {
     return this.userType === 'PROPRIETORSHIP' ? 'E-TIN' : 'Account Title';
   }
 
+  get accountTitleIcon(): 'building' | 'user' {
+    return this.userType === 'PROPRIETORSHIP' ? 'building' : 'user';
+  }
+
   get f() {
     return this.form.controls;
   }
 
-  /**
-   * Demo-faithful branch selection handler.
-   * Captures the selected branch ID (from form value) and the viewValue (display name).
-   */
-  onBranchChange(event: MatSelectChange): void {
-    this.selectedBranchId = (event?.value ?? '').toString();
-    // viewValue is the displayed text (matches demo's event.source.selected.viewValue)
-    const selected = event?.source?.selected;
-    const viewValue = Array.isArray(selected) ? selected[0]?.viewValue : selected?.viewValue;
-    this.selectedBranchName = (viewValue ?? '').toString();
+  selectBranch(b: IHomeBranchInfoResponse): void {
+    this.selectedBranchId = (b.brancH_ID ?? '').toString();
+    this.selectedBranchName = (b.brancH_NM ?? '').toString();
+    this.form.patchValue({ branch: this.selectedBranchId });
+    this.branchDropdownOpen.set(false);
+    this.f['branch']?.markAsTouched();
   }
 
-  formatDob(date: Date | null): string {
+  toggleBranchDropdown(): void {
+    this.branchDropdownOpen.update((v) => !v);
+  }
+
+  closeBranchDropdown(): void {
+    this.branchDropdownOpen.set(false);
+  }
+
+  /**
+   * Close the home-branch dropdown when the user clicks anywhere outside
+   * of the `.reg-branch-wrap` element (matches the natural Material
+   * select / native `<select>` behaviour).
+   */
+  @HostListener('document:mousedown', ['$event'])
+  onDocumentMouseDown(ev: MouseEvent): void {
+    if (!this.branchDropdownOpen()) return;
+    const target = ev.target as Node | null;
+    if (!target) return;
+    const root = this.host.nativeElement;
+    // Find the branch wrapper element via closest() so clicks on the trigger,
+    // arrow, or dropdown items themselves don't immediately re-close it.
+    const inside = target instanceof Node && root.contains(target)
+      ? (target as Element).closest('.reg-branch-wrap')
+      : null;
+    if (!inside) {
+      this.closeBranchDropdown();
+    }
+  }
+
+  showError(field: 'userId' | 'branch' | 'accountNo' | 'accountTitle' | 'mobileNo' | 'email' | 'birthDate' | 'birthDateStr'): boolean {
+    const ctrl = this.form.get(field);
+    if (!ctrl) return false;
+    return !!ctrl.errors && (ctrl.touched || this.submitted());
+  }
+
+  onSubmit(): void {
+    this.submitted.set(true);
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.verifyMobile();
+  }
+
+  onRefresh(): void {
+    this.form.reset();
+    this.otp.set('');
+    this.otpStep.set(false);
+    this.selectedBranchId = '';
+    this.selectedBranchName = '';
+    this.submitted.set(false);
+  }
+
+  formatDob(date: Date | null | string): string {
     if (!date) return this.userType === 'PROPRIETORSHIP' ? '01/01/0001' : '';
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    const yyyy = date.getFullYear();
+    const d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return '';
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const yyyy = d.getFullYear();
     return `${mm}/${dd}/${yyyy}`;
   }
 
@@ -151,29 +228,12 @@ export class SelfRegistrationComponent implements OnInit {
     };
   }
 
-  onSubmit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-    this.verifyMobile();
-  }
-
-  /** Demo-faithful: resets the form to its initial state */
-  onRefresh(): void {
-    this.form.reset();
-    this.otp = '';
-    this.otpStep.set(false);
-    this.selectedBranchId = '';
-    this.selectedBranchName = '';
-  }
-
   private verifyMobile(): void {
     this.isLoading.set(true);
     const v = this.form.value;
     this.verification
       .verifyMobile(
-        this.otp,
+        this.otp(),
         v.mobileNo,
         this.selectedBranchId || v.branch,
         v.accountNo,
@@ -202,23 +262,19 @@ export class SelfRegistrationComponent implements OnInit {
             err?.error?.message ||
             err?.message ||
             'Verification failed';
-          this.popup.showSuccessOrErrorPopup(
-            'Failure',
-            message,
-            'error',
-          );
+          this.popup.showSuccessOrErrorPopup('Failure', message, 'error');
         },
       });
   }
 
   onOtpSubmit(otp: string): void {
-    this.otp = otp;
+    this.otp.set(otp);
     this.verifyMobile();
   }
 
   onOtpBack(): void {
     this.otpStep.set(false);
-    this.otp = '';
+    this.otp.set('');
   }
 
   private createUser(): void {
@@ -241,7 +297,8 @@ export class SelfRegistrationComponent implements OnInit {
           this.selectedBranchId = '';
           this.selectedBranchName = '';
           this.otpStep.set(false);
-          this.otp = '';
+          this.otp.set('');
+          this.submitted.set(false);
         } else {
           this.popup.showSuccessOrErrorPopup(
             'Failure',
@@ -257,11 +314,7 @@ export class SelfRegistrationComponent implements OnInit {
           err?.error?.message ||
           err?.message ||
           'Signup failed';
-        this.popup.showSuccessOrErrorPopup(
-          'Failure',
-          message,
-          'error',
-        );
+        this.popup.showSuccessOrErrorPopup('Failure', message, 'error');
       },
     });
   }
