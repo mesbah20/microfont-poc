@@ -12,22 +12,6 @@
   [attr.aria-hidden]="state.mode() === 'mobile' && !state.isOpen()"
   aria-label="Primary navigation">
 
-  <!-- ============ Brand header (sits flush under topbar) ============ -->
-  <header class="sidebar-brand">
-    <a routerLink="/dashboard" class="sidebar-brand-link" (click)="closeMobile()">
-      <img
-        [src]="logoUrl()"
-        [alt]="bankName() + ' logo'"
-        class="sidebar-brand-logo" />
-      @if (state.isOpen() || state.mode() === 'desktop') {
-        <span class="sidebar-brand-text">
-          <span class="sidebar-brand-name">{{ displayName() || bankName() }}</span>
-          <span class="sidebar-brand-subtitle">Internet Banking</span>
-        </span>
-      }
-    </a>
-  </header>
-
   <!-- ============ Search filter ============ -->
   @if (state.mode() === 'desktop' || state.isOpen()) {
     <div class="sidebar-search">

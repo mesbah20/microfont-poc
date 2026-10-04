@@ -139,4 +139,13 @@ export class AuthenticationService {
   public isLoggedIn(): boolean {
     return !!this.currentUserValue && !!this.getToken();
   }
+
+  public persistSession(user: User | null | undefined): void {
+    if (!user) return;
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    if ((user as any)?.access_token) {
+      sessionStorage.setItem('access_token', (user as any).access_token);
+    }
+    this.currentUserSubject.next(user);
+  }
 }

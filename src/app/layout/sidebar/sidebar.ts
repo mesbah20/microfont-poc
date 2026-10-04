@@ -22,7 +22,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { MenuService } from '../../core/services/menu.service';
-import { BrandingService } from '../../core/services/branding.service';
 import { AuthenticationService } from '../../core/services/authentication.service';
 import { ConfirmationDialogService } from '../../shared/components/confirmation-dialog/confirmation-dialog.service';
 import { SidebarStateService } from '../../core/services/sidebar-state.service';
@@ -99,18 +98,12 @@ interface NavNode {
   styleUrl: './sidebar.css',
 })
 export class Sidebar implements OnInit {
-  private readonly branding = inject(BrandingService);
   private readonly menuService = inject(MenuService);
   private readonly auth = inject(AuthenticationService);
   private readonly confirm = inject(ConfirmationDialogService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   readonly state = inject(SidebarStateService);
-
-  // ============ Brand ============
-  logoUrl = computed(() => this.branding.logoUrl());
-  bankName = computed(() => this.branding.bankName());
-  displayName = computed(() => this.branding.displayName());
 
   // ============ User (used only for avatar fallback) ============
   userName = computed(() => {
@@ -125,6 +118,16 @@ export class Sidebar implements OnInit {
   /** Build flat nav tree from MenuService, preserving parents with children. */
   readonly nav = computed<NavNode[]>(() => {
     const out: NavNode[] = [];
+
+    // Synthetic Home shortcut — sits at the very top of the nav, above Profile.
+    out.push({
+      key: 'HOME',
+      label: 'Home',
+      icon: 'home',
+      url: '/dashboard',
+      expandable: false,
+    });
+
     for (const item of this.menuService.getMainMenu()) {
       if (!item.enabled) continue;
       if (item.url) {
@@ -159,6 +162,17 @@ export class Sidebar implements OnInit {
         }
       }
     }
+
+    // Synthetic Security Advice entry — moved from the topbar.
+    // Sits at the very bottom of the scroll list, just above the pinned footer.
+    out.push({
+      key: 'SECURITY_ADVICE',
+      label: 'Security Advice',
+      icon: 'verified_user',
+      url: '/securityadvice',
+      expandable: false,
+    });
+
     return out;
   });
 

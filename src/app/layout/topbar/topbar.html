@@ -25,27 +25,6 @@
 
     <div class="topbar-spacer"></div>
 
-    <!-- Home shortcut (demo uses mat-icon-button) -->
-    <button
-      type="button"
-      class="topbar-icon-btn only-desktop"
-      (click)="goHome()"
-      matTooltip="Home"
-      matTooltipPosition="below"
-      aria-label="Home">
-      <mat-icon>home</mat-icon>
-    </button>
-
-    <!-- Security Advice shortcut -->
-    <a
-      routerLink="/securityadvice"
-      class="topbar-icon-btn only-desktop"
-      matTooltip="Security Advice"
-      matTooltipPosition="below"
-      aria-label="Security Advice">
-      <mat-icon>verified_user</mat-icon>
-    </a>
-
     <!-- Theme menu -->
     <button
       type="button"
@@ -103,22 +82,13 @@
     </button>
 
     <!-- Desktop user dropdown -->
-    <mat-menu #userMenu="matMenu" xPosition="before" class="topbar-user-menu">
+    <mat-menu
+      #userMenu="matMenu"
+      xPosition="before"
+      yPosition="below"
+      class="topbar-user-menu"
+      [overlapTrigger]="false">
       <div class="topbar-user-menu-inner" (click)="$event.stopPropagation()">
-        <header class="topbar-user-menu-header">
-          <span class="topbar-avatar topbar-avatar-lg">{{ userInitials() }}</span>
-          <div class="topbar-user-menu-meta">
-            <p class="topbar-user-menu-name">{{ userName() }}</p>
-            @if (userEmail()) {
-              <p class="topbar-user-menu-email">{{ userEmail() }}</p>
-            }
-            <p class="topbar-user-menu-time">
-              <mat-icon class="topbar-time-icon">schedule</mat-icon>
-              <span>{{ bdTime() }} (BD)</span>
-            </p>
-          </div>
-        </header>
-
         <nav class="topbar-user-menu-nav">
           @if (!isFirstLogin()) {
             <a routerLink="/profile/detailprofile" mat-menu-item class="topbar-user-menu-item">
@@ -163,14 +133,6 @@
       </header>
 
       <nav class="topbar-mobile-nav">
-        <button (click)="goHome(); closeMobileMenu()" type="button" class="topbar-mobile-link">
-          <mat-icon>home</mat-icon>
-          <span>Home</span>
-        </button>
-        <a routerLink="/securityadvice" (click)="closeMobileMenu()" class="topbar-mobile-link">
-          <mat-icon>verified_user</mat-icon>
-          <span>Security Advice</span>
-        </a>
         @if (!isFirstLogin()) {
           <a routerLink="/profile/detailprofile" routerLinkActive="is-active" (click)="closeMobileMenu()" class="topbar-mobile-link">
             <mat-icon>person</mat-icon>

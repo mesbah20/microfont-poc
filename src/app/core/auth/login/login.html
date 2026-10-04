@@ -133,31 +133,17 @@
             }
 
             <div class="login-captcha-row">
-              <div class="login-captcha-art" role="img" aria-label="Captcha image placeholder">
-                <span class="login-captcha-text">07HLI</span>
+              <div class="login-captcha-art" role="img" aria-label="Captcha image">
+                <app-captcha #loginCaptcha></app-captcha>
               </div>
 
               <div class="login-captcha-input">
                 <app-floating-input
                   name="captcha"
-                  inputId="loginCaptcha"
+                  inputId="loginCaptchaInput"
                   label="Enter the CAPTCHA"
                   [invalid]="showError('captcha')"
-                  formControlName="captcha">
-                  <button
-                    slot="suffix"
-                    type="button"
-                    (click)="refreshCaptcha()"
-                    class="login-input-action"
-                    aria-label="Refresh captcha">
-                    <!-- Figma RefreshIcon: circular arrow + arrow head -->
-                    <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round">
-                      <!-- Circular arrow body (open at top-right) -->
-                      <path d="M13.5 8a5.5 5.5 0 1 1-1.7-4"/>
-                      <!-- Arrow head pointing into the circle (top-right) -->
-                      <path d="M11.5 1.5v3.2h-3.2"/>
-                    </svg>
-                  </button>
+                  [formControl]="captchaInputControl">
                 </app-floating-input>
               </div>
             </div>

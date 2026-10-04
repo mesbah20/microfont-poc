@@ -65,29 +65,12 @@ export class App implements OnInit {
 
     if (isAuthenticated) {
       this.authService.decodeToken();
-      this.authService.getResources().subscribe({
-        next: (res) => {
-          localStorage.setItem('resourceList', JSON.stringify(res));
-          this.sidebarService.notifyResourceListReady();
-        },
-        error: (error) => {
-          console.error('Error loading resources:', error);
-          localStorage.setItem('resourceList', '[]');
-          this.sidebarService.notifyResourceListReady();
-        }
-      });
 
-      this.authService.getUserWiseApplications().subscribe({
-        next: (res) => {
-          localStorage.setItem('appList', JSON.stringify(res));
-          this.sidebarService.notifyAppListReady();
-        },
-        error: (error) => {
-          console.error('Error loading applications:', error);
-          localStorage.setItem('appList', '[]');
-          this.sidebarService.notifyAppListReady();
-        }
-      });
+      localStorage.setItem('resourceList', '[]');
+      this.sidebarService.notifyResourceListReady();
+
+      localStorage.setItem('appList', '[]');
+      this.sidebarService.notifyAppListReady();
     }
 
     this.demoAuth.currentUser.subscribe((user) => {

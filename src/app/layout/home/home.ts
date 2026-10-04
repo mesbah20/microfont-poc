@@ -1,6 +1,5 @@
 import {Component, inject, OnInit, OnDestroy, AfterViewInit, ElementRef, Renderer2} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import { AuthService } from '../../core/auth/auth.service';
 import { UserService } from '../../core/user/user.service';
 
 @Component({
@@ -11,7 +10,6 @@ import { UserService } from '../../core/user/user.service';
 })
 export class Home implements OnInit, AfterViewInit, OnDestroy {
   private userService = inject(UserService);
-  private authService = inject(AuthService);
   private renderer = inject(Renderer2);
   private elementRef = inject(ElementRef);
 
@@ -25,12 +23,6 @@ export class Home implements OnInit, AfterViewInit, OnDestroy {
     this.userService.user$.subscribe(res => {
       this.username = res.name;
     });
-    this.authService.getResources().subscribe(res => {
-      localStorage.setItem('resourceList', JSON.stringify(res))
-    })
-    this.authService.getUserWiseApplications().subscribe(res => {
-      localStorage.setItem('appList', JSON.stringify(res))
-    })
 
     this.greeting = this.getGreeting();
   }

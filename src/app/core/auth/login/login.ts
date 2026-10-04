@@ -5,11 +5,14 @@ import {
   OnDestroy,
   OnInit,
   signal,
+  viewChild,
 } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   FormBuilder,
+  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
@@ -22,11 +25,14 @@ import { SuccessOrErrorPopupService } from '../../services/success-or-error-popu
 import { RootResponse } from '../../models/root-response.model';
 import { User } from '../../models/user.model';
 import { IBankContact } from '../../models/ibankcontact.model';
+import { LoginService } from '../../../shared/services/login.service';
+import { LoginPayload, LoginResponse } from '../../../shared/models/login-payload.model';
 import { SelfRegistrationComponent } from '../self-registration/self-registration.component';
 import {
   AdvertisementPopupComponent,
 } from '../../../shared/components/advertisement-popup/advertisement-popup.component';
 import { FloatingInput } from '../../../shared/components/floating-input/floating-input';
+import { CaptchaComponent } from '../../../shared/components/captcha/captcha.component';
 
 interface LoginSlide {
   readonly title: string;
@@ -44,6 +50,7 @@ interface LoginSlide {
     SelfRegistrationComponent,
     AdvertisementPopupComponent,
     FloatingInput,
+    CaptchaComponent,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -54,6 +61,7 @@ export class Login implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   branding = inject(BrandingService);
   private auth = inject(AuthenticationService);
+  private loginApi = inject(LoginService);
   private bankInfoService = inject(BankInfoService);
   private ipService = inject(IpServiceService);
   private popup = inject(SuccessOrErrorPopupService);
@@ -64,6 +72,11 @@ export class Login implements OnInit, OnDestroy {
   returnUrl = '/dashboard';
   ipAddress = '';
   isLoading = false;
+
+  captchaInputControl = new FormControl('', { nonNullable: true });
+  captchaMatched = signal(false);
+  captchaRef = viewChild<CaptchaComponent>('loginCaptcha');
+  private captchaSub: Subscription | null = null;
 
   readonly appDownloadUrl =
     'https://play.google.com/store/apps/details?id=com.citizensbankbd.fast';
@@ -140,11 +153,13 @@ export class Login implements OnInit, OnDestroy {
     this.loginForm = this.fb.group({
       customerId: ['', [Validators.required, Validators.pattern('[A-Za-z0-9]+')]],
       password: ['', Validators.required],
-      captcha: ['', Validators.required],
     });
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
     this.getIPAddress();
     this.getbankContactInfo();
+    this.captchaSub = this.captchaInputControl.valueChanges.subscribe(() => {
+      this.onCaptchaInput();
+    });
   }
 
   ngOnDestroy(): void {
@@ -152,6 +167,8 @@ export class Login implements OnInit, OnDestroy {
     if (this.corporateRedirectHandle !== null) {
       clearTimeout(this.corporateRedirectHandle);
     }
+    this.captchaSub?.unsubscribe();
+    this.captchaSub = null;
   }
 
   get f() {
@@ -217,13 +234,24 @@ export class Login implements OnInit, OnDestroy {
   }
 
   showError(field: 'customerId' | 'password' | 'captcha'): boolean {
+    if (field === 'captcha') {
+      return this.submitted && !this.captchaMatched();
+    }
     const ctrl = this.loginForm.get(field);
     if (!ctrl) return false;
     return !!ctrl.errors && (ctrl.touched || this.submitted);
   }
 
   refreshCaptcha(): void {
-    this.loginForm.patchValue({ captcha: '' });
+    this.captchaInputControl.setValue('');
+    this.captchaMatched.set(false);
+    this.captchaRef()?.refresh();
+  }
+
+  onCaptchaInput(): void {
+    const typed = this.captchaInputControl.value ?? '';
+    const matched = !!this.captchaRef()?.isMatch(typed);
+    this.captchaMatched.set(matched);
   }
 
   switchToSignup(): void {
@@ -232,7 +260,9 @@ export class Login implements OnInit, OnDestroy {
 
   switchToLogin(): void {
     this.view.set('login');
-    this.loginForm.patchValue({ captcha: '' });
+    this.captchaInputControl.setValue('');
+    this.captchaMatched.set(false);
+    this.captchaRef()?.refresh();
   }
 
   onSubmit(): void {
@@ -241,15 +271,37 @@ export class Login implements OnInit, OnDestroy {
       this.loginForm.markAllAsTouched();
       return;
     }
+    const typed = this.captchaInputControl.value ?? '';
+    const captcha = this.captchaRef();
+    if (!typed || !captcha || !captcha.isMatch(typed)) {
+      this.captchaInputControl.markAsTouched();
+      this.popup.showSuccessOrErrorPopup(
+        'Login Failed',
+        'Incorrect captcha. Please try again.',
+        'error',
+      );
+      this.captchaInputControl.setValue('');
+      this.captchaMatched.set(false);
+      captcha?.refresh();
+      return;
+    }
     this.isLoading = true;
 
     const customerId = (this.f['customerId']?.value ?? '').toString().trim();
     const password = (this.f['password']?.value ?? '').toString().trim();
 
-    this.auth
-      .login(customerId, password, this.ipAddress)
+    const payload: LoginPayload = {
+      username: customerId,
+      password: password,
+      imeiOrIP: this.ipAddress,
+      otp: '',
+      tpin: '',
+    };
+
+    this.loginApi
+      .login(payload)
       .subscribe({
-        next: (data: RootResponse<User>) => {
+        next: (data: RootResponse<LoginResponse>) => {
           this.isLoading = false;
           if (data.Status !== 'OK') {
             this.popup.showSuccessOrErrorPopup(
@@ -260,7 +312,7 @@ export class Login implements OnInit, OnDestroy {
             this.resetPasswordAndRefocus();
             return;
           }
-          const result: User | undefined = data.Result as User | undefined;
+          const result: LoginResponse | undefined = data.Result as LoginResponse | undefined;
           if (result && result.customerTypeID && result.customerTypeID !== '1') {
             this.popup.showSuccessOrErrorPopup(
               'Login Failed',
@@ -303,6 +355,9 @@ export class Login implements OnInit, OnDestroy {
     this.f['password']?.markAsPristine();
     this.f['password']?.markAsUntouched();
     this.f['password']?.setErrors({ required: true });
+    this.captchaInputControl.setValue('');
+    this.captchaMatched.set(false);
+    this.captchaRef()?.refresh();
     setTimeout(() => {
       const el = document.querySelector<HTMLInputElement>('input[name="password"]');
       el?.focus();

@@ -25,19 +25,7 @@ import { ConfirmationDialogService } from '../../shared/components/confirmation-
 import { NotificationsMenuComponent } from '../../shared/components/notifications-menu/notifications-menu';
 import { SidebarStateService } from '../../core/services/sidebar-state.service';
 
-/**
- * Modern, demo-faithful topbar.
- *
- * Layout (left → right):
- *   [Hamburger] [Brand logo + name]  …  [Home] [Security] [Theme] [Notifications bell] [User avatar]
- *
- * The user dropdown contains: gradient header with user name + Asia/Dhaka (BD) time,
- * followed by Profile (hidden if first login) / Change Password / Activity (hidden if
- * first login) / divider / Sign out (with confirmation dialog).
- *
- * Mobile (≤ 768px): brand collapses to logo only; user dropdown becomes a slide-down
- * sheet so it works without a hover surface.
- */
+
 @Component({
   selector: 'app-topbar',
   standalone: true,
@@ -159,11 +147,6 @@ export class Topbar implements OnInit {
       .subscribe((ok) => {
         if (ok) this.auth.logout();
       });
-  }
-
-  goHome(): void {
-    this.router.navigate(['/dashboard']);
-    this.closeMobileMenu();
   }
 
   @HostListener('document:click', ['$event'])

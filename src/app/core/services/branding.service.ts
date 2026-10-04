@@ -48,30 +48,6 @@ export interface BankColors {
 
 const ASSETS_BASE = '/asset/banks';
 
-/**
- * Per-bank subfolder layout (each bank is fully self-contained):
- *   public/asset/banks/<CODE>/
- *     ├─ favicon.png
- *     ├─ logo.png / logo-large.png / login-background.jpg
- *     ├─ manifest.json   (colors + asset filenames)
- *     ├─ files/          (PDFs, terms, registration forms, …)
- *     ├─ font/           (bank-specific fonts if any)
- *     ├─ icons/          (sidebar, navbar, action icons)
- *     ├─ images/         (banners, marketing images)
- *     └─ logos/          (per-app/module logos keyed by appId)
- *
- * Provides the bank's runtime configuration:
- *  - Loads `app-config.json` to read the active bank code + API endpoints
- *  - Loads `<bank>/manifest.json` to read colors + asset paths
- *  - Pushes brand CSS variables onto `:root` so every SCSS rule re-themes
- *  - Swaps the favicon dynamically
- *
- * To onboard a new bank:
- *   1. Create `public/asset/banks/<CODE>/` and drop logo/logo-large/favicon/login-background
- *   2. Add `public/asset/banks/<CODE>/manifest.json` (copy CBPLC, edit colors)
- *   3. Set `bankName: "<CODE>"` in `public/asset/config/app-config.json`
- *   4. Reload the browser — that's it.
- */
 @Injectable({ providedIn: 'root' })
 export class BrandingService {
   private http = inject(HttpClient);

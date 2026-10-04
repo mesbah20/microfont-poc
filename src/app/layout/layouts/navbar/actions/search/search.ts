@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { UserAccessItem } from '../../../../../core/auth/login/login';
+import { UserAccessItem } from '../../../../../core/models/user-access-item.model';
 import { SidebarService } from '../../../../service/sidebar.service';
 
 @Component({

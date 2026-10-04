@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
 import { Layout } from './layout/layout';
-import { Landing } from './layout/landing/landing';
 import { Login } from './core/auth/login/login';
 import { InstructionPage } from './core/auth/self-registration/instruction/instruction.page';
 import { PasswordRecoveryPage } from './core/auth/self-registration/password-recovery/password-recovery.page';
 import { UserIdRecoveryPage } from './core/auth/self-registration/userid-recovery/userid-recovery.page';
 import { Dashboard } from './layout/dashboard/dashboard';
 import { TemporaryComponent } from './shared/components/feature-stub/temporary.component';
+import { DetailProfileComponent } from './core/profile/detail-profile/detail-profile.component';
 import { AccessGuard } from './auth.guard';
 
 export const routes: Routes = [
@@ -53,7 +53,7 @@ export const routes: Routes = [
     canActivate: [AccessGuard],
     children: [
       { path: '', redirectTo: 'detailprofile', pathMatch: 'full' },
-      { path: 'detailprofile', component: TemporaryComponent, data: { title: 'Profile', subtitle: 'View and update your personal details', icon: 'badge' } },
+      { path: 'detailprofile', component: DetailProfileComponent, data: { title: 'Profile', icon: 'badge' } },
       { path: 'changepassword', component: TemporaryComponent, data: { title: 'Change Password', icon: 'lock_reset' } },
     ],
   },

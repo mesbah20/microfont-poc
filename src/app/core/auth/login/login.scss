@@ -60,21 +60,20 @@
   );
 }
 
+// Hex/honeycomb pattern as inline SVG (thin outlines only).
+// Tile = 60x52 hex lattice. Two hex shapes tile horizontally;
+// vertical offset of 26px on every other column creates the honeycomb.
+// stroke = white @ 0.7 opacity, no fill.
+$hex-tile: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='104' viewBox='0 0 90 104'><g fill='none' stroke='%23ffffff' stroke-width='1' opacity='0.7'><polygon points='22.5,1 45,14 45,40 22.5,53 0,40 0,14'/><polygon points='67.5,53 90,40 90,14 67.5,1 45,14 45,40'/><polygon points='22.5,53 45,40 45,66 22.5,79 0,66 0,40'/><polygon points='67.5,79 90,66 90,40 67.5,53 45,40 45,66'/></g></svg>";
+
 .login-brand::before {
   content: '';
   position: absolute;
   inset: 0;
-  opacity: 0.07;
-  background:
-    radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.7) 0%, transparent 35%),
-    radial-gradient(circle at 70% 75%, rgba(255, 255, 255, 0.5) 0%, transparent 40%),
-    repeating-linear-gradient(
-      60deg,
-      rgba(255, 255, 255, 0.4) 0,
-      rgba(255, 255, 255, 0.4) 1px,
-      transparent 1px,
-      transparent 60px
-    );
+  opacity: 0.10;
+  background-image: url($hex-tile);
+  background-size: 90px 104px;
+  background-repeat: repeat;
   pointer-events: none;
 }
 
@@ -352,6 +351,20 @@
   overflow-y: auto;
 }
 
+// Hex pattern overlay on the right form panel — darker stroke since the
+// background is light. Same honeycomb tile, scaled larger for breathing room.
+.login-form-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='104' viewBox='0 0 90 104'><g fill='none' stroke='%231a1a2e' stroke-width='1' opacity='0.18'><polygon points='22.5,1 45,14 45,40 22.5,53 0,40 0,14'/><polygon points='67.5,53 90,40 90,14 67.5,1 45,14 45,40'/><polygon points='22.5,53 45,40 45,66 22.5,79 0,66 0,40'/><polygon points='67.5,79 90,66 90,40 67.5,53 45,40 45,66'/></g></svg>");
+  background-size: 90px 104px;
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .login-back-btn {
   position: absolute;
   // Figma: back button sits at the TOP of the panel (upper alignment),
@@ -392,6 +405,8 @@
   align-items: stretch;
   gap: 0;
   padding: 0 0 clamp(16px, 1.8vw, 28px);
+  position: relative;
+  z-index: 1;
 }
 
 // Main logo above the form — the clear Citizens Bank PLC logo.
